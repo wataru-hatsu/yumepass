@@ -228,7 +228,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 @keyframes rainbowFlash{0%{opacity:0;transform:scale(0.3);}10%{opacity:0.9;transform:scale(1);}50%{opacity:0.6;}100%{opacity:0;}}
 .firework-big{position:absolute;width:14px;height:14px;border-radius:50%;animation:fireworkBigBurst var(--dur,1.5s) ease-out forwards;}
 @keyframes fireworkBigBurst{0%{transform:translate(0,0) scale(2);opacity:1;box-shadow:0 0 30px currentColor;}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0;}}
-.rainbow-title{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);font-size:2.8rem;font-weight:900;letter-spacing:6px;background:linear-gradient(90deg,#ff0080,#ff8000,#ffff00,#00ff80,#00bfff,#8000ff,#ff0080);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rainbowTitle 0.5s ease-out 0.5s both,rainbowShift 2s linear 1s infinite;text-shadow:0 0 40px rgba(255,255,255,0.5);}
+.rainbow-title{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);font-size:2.4rem;font-weight:900;letter-spacing:4px;background:linear-gradient(90deg,#ff0080,#ff8000,#ffff00,#00ff80,#00bfff,#8000ff,#ff0080);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rainbowTitle 0.5s ease-out 0.5s both,rainbowShift 2s linear 1s infinite;text-shadow:0 0 40px rgba(255,255,255,0.5);white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:14px;}
+.rainbow-title-star{font-size:2rem;line-height:1;color:#ffeb3b;text-shadow:0 0 20px #ffff00,0 0 40px #ff8000;-webkit-text-fill-color:initial;background:none;-webkit-background-clip:initial;}
 @keyframes rainbowTitle{0%{transform:translate(-50%,-50%) scale(0.3) rotate(-5deg);opacity:0;}100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1;}}
 @keyframes rainbowShift{0%{background-position:0% center;}100%{background-position:200% center;}}
 
@@ -2624,6 +2625,22 @@ function startGameStateWatch(){
 
 // ゲーム状態更新時の処理
 function onGameStateUpdate(game){
+  // ラウンド変化時にローカルトリガーフラグをリセット（次ラウンドで再発火させるため）
+  const lastRound = window.online._lastSeenRound;
+  if(lastRound !== game.currentRound){
+    window.online._lastSeenRound = game.currentRound;
+    // ラウンドが変わったらガードフラグもクリア（過去のラウンドでセットされたまま残らないように）
+    if(window.online._revealTriggered != null && window.online._revealTriggered !== game.currentRound){
+      delete window.online._revealTriggered;
+    }
+    if(window.online._resultTriggered != null && window.online._resultTriggered !== game.currentRound){
+      delete window.online._resultTriggered;
+    }
+    if(window.online._nextTriggered != null && window.online._nextTriggered !== game.currentRound){
+      delete window.online._nextTriggered;
+    }
+  }
+
   // フェーズに応じて画面遷移
   if(game.phase === 'topic-select' && !document.getElementById('screen-online-topic-select').classList.contains('active')){
     enterOnlineTopicSelect();
@@ -2646,7 +2663,7 @@ function onGameStateUpdate(game){
         updateBetWaitProgress(game);
       }
     }
-    // ホストは全員入力完了をチェック
+    // 全員が状態を見て、揃ったら遷移を試みる（冪等なのでOK）
     checkAllBetsSubmitted();
   }
   if(game.phase === 'reveal' && !document.getElementById('screen-online-reveal').classList.contains('active')){
@@ -3565,17 +3582,24 @@ function updateBetWaitProgress(game){
   });
   const rem = document.getElementById('obw-remaining');
   if(rem){
-    rem.textContent = remaining > 0 ? `あと${remaining}人が入力中...` : '✅ 全員入力完了！';
+    if(remaining > 0){
+      rem.textContent = `あと${remaining}人が入力中...`;
+      rem.style.color = '#f5c842';
+    } else {
+      rem.innerHTML = '✅ 全員入力完了！<br><span style="font-size:0.9rem;color:#aef5a0">まもなく公開されます...</span>';
+      rem.style.color = '#aef5a0';
+    }
   }
 }
 
 // ホストが全員入力完了をチェック → reveal フェーズへ
 async function checkAllBetsSubmitted(){
-  if(!window.online.isHost) return;
+  // 全員が状態を見て、揃ったらphase遷移を試みる（冪等なのでOK）
   try {
     const game = window.online.game;
     if(!game || game.phase !== 'betting') return;
     const players = getOnlinePlayersArray();
+    if(!players.length) return;
     const oyaIdx = game.oyaIndex || 0;
     const bets = game.bets || {};
     const oyaResult = game.oyaResult;
@@ -3587,9 +3611,20 @@ async function checkAllBetsSubmitted(){
     const allKoSubmitted = koPlayers.every(p => bets[p.id]);
     if(!allKoSubmitted) return;
 
-    // reveal フェーズへ
-    const phaseRef = ref(db, `rooms/${window.online.roomCode}/game/phase`);
-    await set(phaseRef, 'reveal');
+    // ホストのみが phase 遷移を書き込む（書き込み競合防止）
+    if(!window.online.isHost) return;
+
+    // 既にreveal遷移済みならスキップ
+    if(window.online._revealTriggered === game.currentRound) return;
+    window.online._revealTriggered = game.currentRound;
+
+    // 全員のDB同期が安定するまで少し待ってから遷移（同期感を高める）
+    setTimeout(async () => {
+      try {
+        const phaseRef = ref(db, `rooms/${window.online.roomCode}/game/phase`);
+        await set(phaseRef, 'reveal');
+      } catch(e){ console.error(e); }
+    }, 700);
   } catch(e){
     console.error('checkAllBetsSubmitted error:', e);
   }
@@ -3687,9 +3722,14 @@ async function checkAllReadyForResult(){
     const game = window.online.game;
     if(!game || game.phase !== 'reveal') return;
     const players = getOnlinePlayersArray();
+    if(!players.length) return;
     const ready = game.revealReady || {};
     const allReady = players.every(p => ready[p.id]);
     if(!allReady) return;
+
+    // 多重計算防止のローカルガード
+    if(window.online._resultTriggered === game.currentRound) return;
+    window.online._resultTriggered = game.currentRound;
 
     // 結果計算
     const results = calculateOnlineResults(game, players);
@@ -3971,12 +4011,17 @@ async function checkAllReadyForNext(){
     const game = window.online.game;
     if(!game || game.phase !== 'result') return;
     const players = getOnlinePlayersArray();
+    if(!players.length) return;
     const ready = game.nextReady || {};
     const allReady = players.every(p => ready[p.id]);
     if(!allReady) return;
 
     const totalRounds = window.online.settings?.rounds || 5;
     const currentRound = game.currentRound || 1;
+
+    // 多重トリガー防止
+    if(window.online._nextTriggered === currentRound) return;
+    window.online._nextTriggered = currentRound;
 
     if(currentRound >= totalRounds){
       // 最終結果へ
@@ -4124,6 +4169,12 @@ window.onlineRestartGame = async function(){
     await update(ref(db), updates);
     // 演出用キャッシュもクリア
     window.online._lastResultRound = null;
+    window.online._lastFinalShown = null;
+    window.online._revealTriggered = null;
+    window.online._resultTriggered = null;
+    window.online._nextTriggered = null;
+    window.online._lastSeenRound = null;
+    window.online._lastRevealKey = null;
   } catch(e){
     console.error(e);
     showNotif('⚠️ 再戦の開始に失敗しました');
@@ -4235,7 +4286,7 @@ function showHitEffect(hitType, onDone){
         sh.style.animationDelay = (Math.random()*1) + 's';
         content.appendChild(sh);
       }
-      content.innerHTML += `<div class="hit-title" style="background:linear-gradient(90deg,#d4ff00,#90ff5c,#ffeb3b,#d4ff00);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:2.6rem;text-shadow:0 0 30px rgba(212,255,0,0.5);letter-spacing:5px;font-weight:900">🌈 連単的中 🌈</div>`;
+      content.innerHTML += `<div class="hit-title" style="color:#ff8c00;text-shadow:0 0 20px rgba(255,140,0,1),0 0 40px rgba(255,107,0,0.8),0 4px 14px rgba(0,0,0,0.8);font-size:2.6rem;letter-spacing:5px;font-weight:900">🌈 連単的中 🌈</div>`;
     }, 600);
     duration = 2400;
   } else if(pr === 4){ // 三連複：ティファニーブルー
@@ -4298,7 +4349,7 @@ function showHitEffect(hitType, onDone){
       }, 300 + fi * 250);
     });
     setTimeout(() => {
-      content.innerHTML += `<div class="rainbow-title">★ 三連単的中 ★</div>`;
+      content.innerHTML += `<div class="rainbow-title"><span class="rainbow-title-star">★</span><span>三連単的中</span><span class="rainbow-title-star">★</span></div>`;
     }, 500);
     duration = 3500;
   }
@@ -4478,6 +4529,16 @@ window.leaveRoom = async function(skipConfirm){
     window.online.playerId = null;
     window.online.playerName = null;
     window.online.isHost = false;
+    window.online.game = null;
+    window.online.settings = null;
+    window.online.cachedPlayers = null;
+    window.online._lastResultRound = null;
+    window.online._lastFinalShown = null;
+    window.online._revealTriggered = null;
+    window.online._resultTriggered = null;
+    window.online._nextTriggered = null;
+    window.online._lastSeenRound = null;
+    window.online._lastRevealKey = null;
 
     // フォームをリセット
     document.getElementById('join-room-form').style.display = 'none';
