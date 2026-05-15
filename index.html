@@ -688,6 +688,11 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div style="color:#aef5a0;font-size:0.9rem;margin-top:10px">他のプレイヤーを待っています...</div>
       <div id="obw-remaining" style="color:#f5c842;font-weight:700;font-size:1.1rem;margin-top:10px"></div>
     </div>
+    <!-- 全員揃ったら表示される公開ボタンエリア -->
+    <div id="obw-reveal-area" style="display:none;margin:10px">
+      <button class="btn btn-primary" id="obw-reveal-btn" onclick="onlineReadyForReveal()" style="background:linear-gradient(135deg,#f5c842,#c9960a);font-size:1.1rem;padding:18px;box-shadow:0 0 20px rgba(245,200,66,0.5)">📢 賭け公開の準備OK！</button>
+      <div id="obw-reveal-status" style="text-align:center;color:#aef5a0;font-size:0.9rem;margin-top:10px;font-weight:700"></div>
+    </div>
     <div class="panel">
       <div class="panel-title">📊 進捗</div>
       <div id="obw-progress-list"></div>
@@ -2661,9 +2666,10 @@ function onGameStateUpdate(game){
       // 既に賭け関連画面にいる → 待機画面の進捗を更新
       if(document.getElementById('screen-online-bet-wait').classList.contains('active')){
         updateBetWaitProgress(game);
+        updateBetWaitRevealButton(game);
       }
     }
-    // 全員が状態を見て、揃ったら遷移を試みる（冪等なのでOK）
+    // 全員入力完了チェック → 公開ボタン表示 → 全員ボタン押下 → reveal遷移
     checkAllBetsSubmitted();
   }
   if(game.phase === 'reveal' && !document.getElementById('screen-online-reveal').classList.contains('active')){
@@ -3542,6 +3548,7 @@ function enterOnlineBetWait(){
     }
   }
   updateBetWaitProgress(game);
+  updateBetWaitRevealButton(game);
 }
 
 function updateBetWaitProgress(game){
@@ -3586,15 +3593,14 @@ function updateBetWaitProgress(game){
       rem.textContent = `あと${remaining}人が入力中...`;
       rem.style.color = '#f5c842';
     } else {
-      rem.innerHTML = '✅ 全員入力完了！<br><span style="font-size:0.9rem;color:#aef5a0">まもなく公開されます...</span>';
+      rem.innerHTML = '✅ 全員入力完了！';
       rem.style.color = '#aef5a0';
     }
   }
 }
 
-// ホストが全員入力完了をチェック → reveal フェーズへ
+// 全員入力完了 → bet-wait画面に公開ボタン表示 → 全員がボタンを押したら reveal フェーズへ
 async function checkAllBetsSubmitted(){
-  // 全員が状態を見て、揃ったらphase遷移を試みる（冪等なのでOK）
   try {
     const game = window.online.game;
     if(!game || game.phase !== 'betting') return;
@@ -3611,22 +3617,65 @@ async function checkAllBetsSubmitted(){
     const allKoSubmitted = koPlayers.every(p => bets[p.id]);
     if(!allKoSubmitted) return;
 
-    // ホストのみが phase 遷移を書き込む（書き込み競合防止）
+    // 全員入力完了 → bet-wait画面の公開ボタンを表示
+    updateBetWaitRevealButton(game);
+
+    // 全員が「公開準備OK」ボタンを押したか？
+    const waitReady = game.waitReady || {};
+    const allWaitReady = players.every(p => waitReady[p.id]);
+    if(!allWaitReady) return;
+
+    // ホストのみが phase 遷移を書き込む
     if(!window.online.isHost) return;
 
     // 既にreveal遷移済みならスキップ
     if(window.online._revealTriggered === game.currentRound) return;
     window.online._revealTriggered = game.currentRound;
 
-    // 全員のDB同期が安定するまで少し待ってから遷移（同期感を高める）
+    // 少し遅延して遷移（全員に「全員OK」が見えるよう）
     setTimeout(async () => {
       try {
         const phaseRef = ref(db, `rooms/${window.online.roomCode}/game/phase`);
         await set(phaseRef, 'reveal');
       } catch(e){ console.error(e); }
-    }, 700);
+    }, 500);
   } catch(e){
     console.error('checkAllBetsSubmitted error:', e);
+  }
+}
+
+// bet-wait画面の公開ボタン表示更新
+function updateBetWaitRevealButton(game){
+  // bet-wait画面じゃなければ何もしない
+  if(!document.getElementById('screen-online-bet-wait').classList.contains('active')) return;
+  const players = getOnlinePlayersArray();
+  if(!players.length) return;
+  const oyaIdx = game.oyaIndex || 0;
+  const bets = game.bets || {};
+  const oyaResult = game.oyaResult;
+  const koPlayers = players.filter((p, i) => i !== oyaIdx);
+  const allSubmitted = oyaResult && oyaResult.length === 3 && koPlayers.every(p => bets[p.id]);
+
+  const area = document.getElementById('obw-reveal-area');
+  if(!area) return;
+  if(allSubmitted){
+    area.style.display = '';
+    const myReady = !!(game.waitReady || {})[window.online.playerId];
+    const btn = document.getElementById('obw-reveal-btn');
+    if(btn){
+      btn.disabled = myReady;
+      btn.textContent = myReady ? '✅ 準備完了済み — 他の人を待っています' : '📢 賭け公開の準備OK！';
+      btn.style.opacity = myReady ? '0.6' : '1';
+    }
+    // 進捗表示
+    const status = document.getElementById('obw-reveal-status');
+    if(status){
+      const ready = game.waitReady || {};
+      const readyCount = players.filter(p => ready[p.id]).length;
+      status.textContent = `準備完了: ${readyCount}/${players.length}人`;
+    }
+  } else {
+    area.style.display = 'none';
   }
 }
 
@@ -3707,7 +3756,15 @@ function updateRevealReadyStatus(game){
   }
 }
 
-// 自分が「準備完了」を押した
+// 自分が「賭け公開の準備OK」を押した（bet-wait画面）
+window.onlineReadyForReveal = async function(){
+  try {
+    const myReadyRef = ref(db, `rooms/${window.online.roomCode}/game/waitReady/${window.online.playerId}`);
+    await set(myReadyRef, true);
+  } catch(e){ console.error(e); }
+};
+
+// 自分が「結果発表の準備完了」を押した（reveal画面）
 window.onlineReadyForResult = async function(){
   try {
     const myReadyRef = ref(db, `rooms/${window.online.roomCode}/game/revealReady/${window.online.playerId}`);
@@ -4038,6 +4095,7 @@ async function checkAllReadyForNext(){
     updates[`${baseRoom}/phase`] = 'topic-select';
     updates[`${baseRoom}/bets`] = null;
     updates[`${baseRoom}/oyaResult`] = null;
+    updates[`${baseRoom}/waitReady`] = null;
     updates[`${baseRoom}/revealReady`] = null;
     updates[`${baseRoom}/nextReady`] = null;
     updates[`${baseRoom}/results`] = null;
@@ -4159,6 +4217,7 @@ window.onlineRestartGame = async function(){
     updates[`${baseRoom}/history`] = null;
     updates[`${baseRoom}/bets`] = null;
     updates[`${baseRoom}/oyaResult`] = null;
+    updates[`${baseRoom}/waitReady`] = null;
     updates[`${baseRoom}/revealReady`] = null;
     updates[`${baseRoom}/nextReady`] = null;
     updates[`${baseRoom}/results`] = null;
