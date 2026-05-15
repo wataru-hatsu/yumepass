@@ -188,17 +188,23 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 @keyframes arrowImpact{0%{width:0;height:0;opacity:1;}50%{width:300px;height:300px;opacity:1;}100%{width:600px;height:600px;opacity:0;}}
 .arrow-flash-bg{background:radial-gradient(circle at center,rgba(255,200,100,0.4) 0%,rgba(180,80,0,0.3) 30%,rgba(40,20,0,0.7) 70%,#000 100%);animation:hitBgFade 1.5s ease-out forwards;}
 @keyframes hitBgFade{0%{opacity:0;}15%{opacity:1;}100%{opacity:0;}}
-.hit-title{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);color:white;font-size:2.2rem;font-weight:900;letter-spacing:3px;text-shadow:0 0 20px rgba(255,200,100,1),0 4px 14px rgba(0,0,0,0.8);animation:hitTitleAppear 0.4s ease-out 0.4s both;}
+.hit-title{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);color:white;font-size:2rem;font-weight:900;letter-spacing:2px;text-shadow:0 0 20px rgba(255,200,100,1),0 4px 14px rgba(0,0,0,0.8);animation:hitTitleAppear 0.4s ease-out 0.4s both;white-space:nowrap;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;}
 @keyframes hitTitleAppear{0%{transform:translate(-50%,-50%) scale(0.5);opacity:0;}60%{transform:translate(-50%,-50%) scale(1.15);opacity:1;}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
 
-/* 連複：雷 */
-.thunder-bg{background:radial-gradient(ellipse at center,rgba(180,180,255,0.3) 0%,rgba(60,60,120,0.5) 40%,rgba(20,20,40,0.95) 100%);animation:hitBgFade 2s ease-out forwards;}
-.thunder-flash{position:absolute;inset:0;background:white;opacity:0;animation:thunderFlash 1.8s ease-out forwards;}
-@keyframes thunderFlash{0%{opacity:0;}5%{opacity:0.9;}10%{opacity:0;}12%{opacity:0.7;}15%{opacity:0;}40%{opacity:0;}43%{opacity:0.5;}46%{opacity:0;}100%{opacity:0;}}
-.thunder-bolt{position:absolute;left:50%;top:0;width:8px;height:0;background:linear-gradient(to bottom,#fff,#aaf,#66f);box-shadow:0 0 30px #88f,0 0 60px #44f;transform-origin:top center;animation:thunderStrike 0.5s ease-out forwards;}
-@keyframes thunderStrike{0%{height:0;opacity:0;}10%{height:100vh;opacity:1;}80%{opacity:1;}100%{opacity:0;}}
-.thunder-particle{position:absolute;width:6px;height:6px;background:#88f;border-radius:50%;box-shadow:0 0 12px #44f;animation:thunderParticle 1s ease-out forwards;}
-@keyframes thunderParticle{0%{transform:translate(0,0) scale(1);opacity:1;}100%{transform:translate(var(--tx,0),var(--ty,0)) scale(0);opacity:0;}}
+/* 連複：忍者の手裏剣 */
+.shuriken-bg{background:radial-gradient(circle at center,#3a2a5a 0%,#1a1030 40%,#0a0520 80%,#000 100%);animation:hitBgFade 2.2s ease-out forwards;}
+.shuriken-smoke{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(70,50,90,0.8) 0%,rgba(40,30,60,0.5) 40%,transparent 80%);opacity:0;animation:shurikenSmokeFade 2.2s ease-out forwards;}
+@keyframes shurikenSmokeFade{0%{opacity:0;transform:scale(0.6);}30%{opacity:1;transform:scale(1.2);}100%{opacity:0;transform:scale(2);}}
+.shuriken{position:absolute;font-size:7rem;color:#c9b56a;text-shadow:0 0 30px #f5c842,0 0 60px rgba(245,200,66,0.5),0 4px 14px #000;animation:shurikenSpin var(--dur,1.5s) cubic-bezier(.3,.1,.4,1) forwards;filter:drop-shadow(0 0 15px rgba(245,200,66,0.6));}
+@keyframes shurikenSpin{
+  0%{transform:translate(var(--x0,-200vw),var(--y0,-100vh)) rotate(0deg) scale(0.5);opacity:0;}
+  10%{opacity:1;}
+  100%{transform:translate(var(--x1,0),var(--y1,0)) rotate(var(--rot,1800deg)) scale(var(--scale,1));opacity:1;}
+}
+.shuriken-trail{position:absolute;width:120px;height:3px;background:linear-gradient(to right,transparent,rgba(245,200,66,0.9),rgba(255,255,255,0.7),rgba(245,200,66,0.9),transparent);box-shadow:0 0 10px rgba(245,200,66,0.8);animation:shurikenTrail 1.2s ease-out forwards;}
+@keyframes shurikenTrail{0%{transform:translateX(-50vw) scaleX(0);opacity:0;}20%{opacity:1;}100%{transform:translateX(50vw) scaleX(2);opacity:0;}}
+.shuriken-slash{position:absolute;left:50%;top:50%;width:0;height:4px;background:linear-gradient(to right,transparent,rgba(255,255,255,1),transparent);transform:translate(-50%,-50%) rotate(var(--ang,0deg));box-shadow:0 0 12px rgba(255,255,255,0.9);animation:shurikenSlash 0.4s ease-out forwards;}
+@keyframes shurikenSlash{0%{width:0;opacity:0;}30%{width:120vw;opacity:1;}100%{width:120vw;opacity:0;}}
 
 /* 連単：オーロラ風（黄緑×黄色×黄緑） */
 .rentan-bg{background:linear-gradient(135deg,#0a3a1a 0%,#1a5a2a 30%,#3a7a3a 60%,#6aaa1a 100%);animation:hitBgFade 2.2s ease-out forwards;}
@@ -228,8 +234,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 @keyframes rainbowFlash{0%{opacity:0;transform:scale(0.3);}10%{opacity:0.9;transform:scale(1);}50%{opacity:0.6;}100%{opacity:0;}}
 .firework-big{position:absolute;width:14px;height:14px;border-radius:50%;animation:fireworkBigBurst var(--dur,1.5s) ease-out forwards;}
 @keyframes fireworkBigBurst{0%{transform:translate(0,0) scale(2);opacity:1;box-shadow:0 0 30px currentColor;}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0;}}
-.rainbow-title{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);font-size:2.4rem;font-weight:900;letter-spacing:4px;background:linear-gradient(90deg,#ff0080,#ff8000,#ffff00,#00ff80,#00bfff,#8000ff,#ff0080);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rainbowTitle 0.5s ease-out 0.5s both,rainbowShift 2s linear 1s infinite;text-shadow:0 0 40px rgba(255,255,255,0.5);white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:14px;}
-.rainbow-title-star{font-size:2rem;line-height:1;color:#ffeb3b;text-shadow:0 0 20px #ffff00,0 0 40px #ff8000;-webkit-text-fill-color:initial;background:none;-webkit-background-clip:initial;}
+.rainbow-title{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);font-size:1.9rem;font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#ff0080,#ff8000,#ffff00,#00ff80,#00bfff,#8000ff,#ff0080);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rainbowTitle 0.5s ease-out 0.5s both,rainbowShift 2s linear 1s infinite;text-shadow:0 0 40px rgba(255,255,255,0.5);white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:10px;}
+.rainbow-title-star{font-size:1.7rem;line-height:1;color:#ffeb3b;text-shadow:0 0 20px #ffff00,0 0 40px #ff8000;-webkit-text-fill-color:initial;background:none;-webkit-background-clip:initial;}
 @keyframes rainbowTitle{0%{transform:translate(-50%,-50%) scale(0.3) rotate(-5deg);opacity:0;}100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1;}}
 @keyframes rainbowShift{0%{background-position:0% center;}100%{background-position:200% center;}}
 
@@ -1367,19 +1373,29 @@ window.SFX = (function(){
     }, 450);
   }
 
-  // 連複：雷
+  // 連複：忍者の手裏剣
   function hitRenfuku(){
-    // ゴロゴロ
-    noise({freq:600, freqEnd:200, dur:0.5, gain:0.2, filterType:'lowpass'});
-    // 雷鳴
+    // 手裏剣の風切り音（高音で鋭く） シュッ シュッ シュッ
+    [0, 200, 400].forEach((delay, i) => {
+      setTimeout(() => {
+        noise({freq:6000, freqEnd:1500, dur:0.18, gain:0.18, filterType:'bandpass', Q:8});
+      }, delay);
+    });
+    // 斬撃音（金属がきしむ感じ）
     setTimeout(() => {
-      noise({freq:8000, freqEnd:500, dur:0.4, gain:0.35, filterType:'highpass'});
-      tone({type:'sawtooth', freq:120, freqEnd:60, dur:0.5, gain:0.2});
-    }, 400);
-    // 残響
+      noise({freq:8000, freqEnd:2000, dur:0.25, gain:0.2, filterType:'highpass'});
+      tone({type:'triangle', freq:2200, freqEnd:600, dur:0.2, gain:0.12});
+    }, 100);
+    // 手裏剣が突き刺さる ザクッ
     setTimeout(() => {
-      noise({freq:300, freqEnd:80, dur:0.6, gain:0.12, filterType:'lowpass'});
-    }, 700);
+      noise({freq:300, freqEnd:100, dur:0.15, gain:0.35, filterType:'lowpass'});
+      tone({type:'sine', freq:120, freqEnd:60, dur:0.18, gain:0.25});
+    }, 750);
+    // 余韻（金属音の残響）
+    setTimeout(() => {
+      tone({type:'sine', freq:880, dur:0.6, gain:0.1});
+      tone({type:'triangle', freq:1320, dur:0.5, gain:0.08});
+    }, 900);
   }
 
   // 連単：オーロラ風 黄緑×黄色 — 華やかで耳に残る
@@ -2111,10 +2127,12 @@ function renderRoundResult(){
   let topPriority=0;
   let topHitType=null;
   log.playerResults.forEach(r=>{if(priority[r.hitType]>topPriority){topPriority=priority[r.hitType];topHitType=r.hitType;}});
-  // 的中ありなら：ガチャ風 → 的中演出
-  if(topHitType && typeof showGachaRoundIntro === 'function' && typeof showHitEffect === 'function'){
+  // ガチャ風 → 的中演出（的中なしでも結果発表演出は出す）
+  if(typeof showGachaRoundIntro === 'function'){
     showGachaRoundIntro(log, () => {
-      showHitEffect(topHitType);
+      if(topHitType && typeof showHitEffect === 'function'){
+        showHitEffect(topHitType);
+      }
     });
   }
 }
@@ -4302,35 +4320,75 @@ function showHitEffect(hitType, onDone){
       content.innerHTML += `<div class="arrow-impact"></div><div class="hit-title">単勝的中！</div>`;
     }, 300);
     duration = 1500;
-  } else if(pr === 2){ // 連複：雷
-    bg.className = 'thunder-bg';
-    content.innerHTML = `<div class="thunder-flash"></div>`;
+  } else if(pr === 2){ // 連複：忍者の手裏剣
+    bg.className = 'shuriken-bg';
+    content.innerHTML = `<div class="shuriken-smoke"></div>`;
     setTimeout(() => window.SFX.hitRenfuku(), 0);
-    // 雷×複数
+    // 斜め斬撃（飛んできた手裏剣の軌跡）
     setTimeout(() => {
-      for(let i = 0; i < 5; i++){
+      [25, -25, 60].forEach((ang, i) => {
         setTimeout(() => {
-          const bolt = document.createElement('div');
-          bolt.className = 'thunder-bolt';
-          bolt.style.left = (15 + Math.random() * 70) + '%';
-          bolt.style.transform = `rotate(${(Math.random()-0.5)*30}deg)`;
-          content.appendChild(bolt);
-        }, i * 150);
-      }
-      // パーティクル
-      for(let i = 0; i < 20; i++){
-        const p = document.createElement('div');
-        p.className = 'thunder-particle';
-        p.style.left = (40 + Math.random()*20) + '%';
-        p.style.top = (40 + Math.random()*20) + '%';
-        p.style.setProperty('--tx', (Math.random()-0.5)*400 + 'px');
-        p.style.setProperty('--ty', (Math.random()-0.5)*400 + 'px');
-        p.style.animationDelay = (Math.random()*0.5) + 's';
-        content.appendChild(p);
-      }
-      content.innerHTML += `<div class="hit-title" style="color:#88ccff;text-shadow:0 0 20px #44f">⚡ 連複的中 ⚡</div>`;
-    }, 400);
-    duration = 2000;
+          const sl = document.createElement('div');
+          sl.className = 'shuriken-slash';
+          sl.style.setProperty('--ang', ang + 'deg');
+          content.appendChild(sl);
+        }, i * 120);
+      });
+    }, 100);
+    // 手裏剣が3つ画面を横切る（軌跡付き）
+    setTimeout(() => {
+      const positions = [
+        {x0:'-100vw', y0:'-50vh', x1:'30vw', y1:'10vh', rot:'1440deg', scale:'1', dur:'1.2s', delay:0},
+        {x0:'100vw',  y0:'-30vh', x1:'-25vw', y1:'-15vh', rot:'-1620deg', scale:'0.85', dur:'1.3s', delay:200},
+        {x0:'-80vw',  y0:'50vh',  x1:'20vw', y1:'-5vh',  rot:'1800deg', scale:'1.15', dur:'1.4s', delay:400},
+      ];
+      positions.forEach(p => {
+        setTimeout(() => {
+          const sh = document.createElement('div');
+          sh.className = 'shuriken';
+          sh.textContent = '✦';
+          sh.style.left = '50%';
+          sh.style.top = '50%';
+          sh.style.marginLeft = '-3.5rem';
+          sh.style.marginTop = '-3.5rem';
+          sh.style.setProperty('--x0', p.x0);
+          sh.style.setProperty('--y0', p.y0);
+          sh.style.setProperty('--x1', p.x1);
+          sh.style.setProperty('--y1', p.y1);
+          sh.style.setProperty('--rot', p.rot);
+          sh.style.setProperty('--scale', p.scale);
+          sh.style.setProperty('--dur', p.dur);
+          content.appendChild(sh);
+          // 軌跡のライン
+          const tr = document.createElement('div');
+          tr.className = 'shuriken-trail';
+          tr.style.left = '0';
+          tr.style.top = (40 + Math.random() * 20) + '%';
+          content.appendChild(tr);
+        }, p.delay);
+      });
+      // 大きな手裏剣が中央に居座る
+      setTimeout(() => {
+        const center = document.createElement('div');
+        center.className = 'shuriken';
+        center.textContent = '✦';
+        center.style.left = '50%';
+        center.style.top = '40%';
+        center.style.marginLeft = '-3.5rem';
+        center.style.marginTop = '-3.5rem';
+        center.style.fontSize = '8rem';
+        center.style.setProperty('--x0', '0');
+        center.style.setProperty('--y0', '0');
+        center.style.setProperty('--x1', '0');
+        center.style.setProperty('--y1', '0');
+        center.style.setProperty('--rot', '720deg');
+        center.style.setProperty('--scale', '1.2');
+        center.style.setProperty('--dur', '0.8s');
+        content.appendChild(center);
+      }, 800);
+      content.innerHTML += `<div class="hit-title" style="color:#f5c842;text-shadow:0 0 20px rgba(245,200,66,1),0 0 40px rgba(245,200,66,0.6),0 4px 14px #000;font-size:2.2rem;letter-spacing:3px;font-weight:900"><span>🥷</span><span>連複的中</span><span>🥷</span></div>`;
+    }, 250);
+    duration = 2200;
   } else if(pr === 3){ // 連単：オーロラ風 黄緑×黄色
     bg.className = 'rentan-bg';
     setTimeout(() => window.SFX.hitRentan(), 0);
@@ -4345,7 +4403,7 @@ function showHitEffect(hitType, onDone){
         sh.style.animationDelay = (Math.random()*1) + 's';
         content.appendChild(sh);
       }
-      content.innerHTML += `<div class="hit-title" style="color:#ff8c00;text-shadow:0 0 20px rgba(255,140,0,1),0 0 40px rgba(255,107,0,0.8),0 4px 14px rgba(0,0,0,0.8);font-size:2.6rem;letter-spacing:5px;font-weight:900">🌈 連単的中 🌈</div>`;
+      content.innerHTML += `<div class="hit-title" style="color:#ff8c00;text-shadow:0 0 20px rgba(255,140,0,1),0 0 40px rgba(255,107,0,0.8),0 4px 14px rgba(0,0,0,0.8);font-size:2.2rem;letter-spacing:3px;font-weight:900"><span>🌈</span><span>連単的中</span><span>🌈</span></div>`;
     }, 600);
     duration = 2400;
   } else if(pr === 4){ // 三連複：ティファニーブルー
@@ -4383,7 +4441,7 @@ function showHitEffect(hitType, onDone){
         sp.style.animationDelay = (Math.random()*1.2) + 's';
         content.appendChild(sp);
       }
-      content.innerHTML += `<div class="hit-title" style="background:linear-gradient(90deg,#ffffff,#b4f0ee,#0abab5,#b4f0ee,#ffffff);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:2.6rem;text-shadow:0 0 30px rgba(180,240,238,0.7);letter-spacing:5px;font-weight:900">💎 3連複的中 💎</div>`;
+      content.innerHTML += `<div class="hit-title" style="font-size:2.2rem;letter-spacing:3px;font-weight:900"><span style="-webkit-text-fill-color:initial;color:#fff;text-shadow:0 0 20px rgba(180,240,238,0.9)">💎</span><span style="background:linear-gradient(90deg,#ffffff,#b4f0ee,#0abab5,#b4f0ee,#ffffff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 30px rgba(180,240,238,0.7)">3連複的中</span><span style="-webkit-text-fill-color:initial;color:#fff;text-shadow:0 0 20px rgba(180,240,238,0.9)">💎</span></div>`;
     }, 400);
     duration = 2500;
   } else if(pr === 5){ // 三連単：虹色花火
@@ -4445,7 +4503,7 @@ function showGachaRoundIntro(log, onDone){
     if(pr > maxPriority){ maxPriority = pr; maxHit = r.hitType; }
   });
 
-  // 的中なしの場合は演出を完全にスキップ
+  // 的中なしの場合は演出も音も完全になし
   if(maxPriority === 0){
     if(onDone) onDone();
     return;
@@ -4459,7 +4517,7 @@ function showGachaRoundIntro(log, onDone){
   if(maxPriority === 5){ emoji = '💎'; title = 'TRIFECTA！'; sub = '三連単的中🎊'; bg = 'linear-gradient(135deg,#ff007f 0%,#ff1493 25%,#9b00ff 60%,#3300ff 100%)'; }
   else if(maxPriority === 4){ emoji = '💎'; title = '3連複的中！'; bg = 'linear-gradient(135deg,#0abab5 0%,#06908e 50%,#024a4a 100%)'; }
   else if(maxPriority === 3){ emoji = '🌈'; title = '連単的中！'; bg = 'linear-gradient(135deg,#d4ff00 0%,#ffeb3b 40%,#90ff5c 70%,#00bcd4 100%)'; }
-  else if(maxPriority === 2){ emoji = '⚡'; title = '連複的中！'; bg = 'linear-gradient(135deg,#3a4a8a 0%,#1a2050 60%,#0a0a30 100%)'; }
+  else if(maxPriority === 2){ emoji = '🥷'; title = '連複的中！'; bg = 'linear-gradient(135deg,#1a1a1a 0%,#2d1a4d 60%,#0a0520 100%)'; }
   else if(maxPriority === 1){ emoji = '🎯'; title = '単勝的中！'; bg = 'linear-gradient(135deg,#ffaa33 0%,#cc6600 60%,#552200 100%)'; }
 
   overlay.style.background = bg;
