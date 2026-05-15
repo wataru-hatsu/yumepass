@@ -166,9 +166,69 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .final-sub{font-size:0.9rem;color:rgba(255,255,255,0.6);font-weight:700;letter-spacing:2px;margin-top:20px;animation:finalSubPulse 1.6s ease-in-out infinite;}
 @keyframes finalSubPulse{0%,100%{opacity:0.5;}50%{opacity:1;}}
 .final-confetti{position:absolute;inset:0;pointer-events:none;z-index:1;}
+
+/* ============================================================
+   的中演出 (Hit Overlay) — 5段階
+   ============================================================ */
+#hit-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9997;pointer-events:none;overflow:hidden;}
+#hit-overlay.hidden{display:none;}
+#hit-overlay-bg{position:absolute;inset:0;opacity:0;}
+#hit-overlay-content{position:relative;width:100%;height:100%;}
+
+/* 単勝：弓矢 */
+.arrow-target{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:8rem;animation:arrowTargetAppear 0.3s ease-out forwards;}
+@keyframes arrowTargetAppear{0%{transform:translate(-50%,-50%) scale(0.4);opacity:0;}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
+.arrow-shot{position:absolute;font-size:5rem;animation:arrowShoot 0.3s linear forwards;z-index:2;}
+@keyframes arrowShoot{0%{transform:translate(-120vw,-50%) rotate(0);}100%{transform:translate(-50%,-50%) rotate(0);}}
+.arrow-impact{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:0;height:0;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.95) 0%,rgba(255,200,100,0.7) 30%,transparent 70%);animation:arrowImpact 0.4s ease-out forwards;}
+@keyframes arrowImpact{0%{width:0;height:0;opacity:1;}50%{width:300px;height:300px;opacity:1;}100%{width:600px;height:600px;opacity:0;}}
+.arrow-flash-bg{background:radial-gradient(circle at center,rgba(255,200,100,0.4) 0%,rgba(180,80,0,0.3) 30%,rgba(40,20,0,0.7) 70%,#000 100%);animation:hitBgFade 1.5s ease-out forwards;}
+@keyframes hitBgFade{0%{opacity:0;}15%{opacity:1;}100%{opacity:0;}}
+.hit-title{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);color:white;font-size:2.2rem;font-weight:900;letter-spacing:3px;text-shadow:0 0 20px rgba(255,200,100,1),0 4px 14px rgba(0,0,0,0.8);animation:hitTitleAppear 0.4s ease-out 0.4s both;}
+@keyframes hitTitleAppear{0%{transform:translate(-50%,-50%) scale(0.5);opacity:0;}60%{transform:translate(-50%,-50%) scale(1.15);opacity:1;}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
+
+/* 連複：雷 */
+.thunder-bg{background:radial-gradient(ellipse at center,rgba(180,180,255,0.3) 0%,rgba(60,60,120,0.5) 40%,rgba(20,20,40,0.95) 100%);animation:hitBgFade 2s ease-out forwards;}
+.thunder-flash{position:absolute;inset:0;background:white;opacity:0;animation:thunderFlash 1.8s ease-out forwards;}
+@keyframes thunderFlash{0%{opacity:0;}5%{opacity:0.9;}10%{opacity:0;}12%{opacity:0.7;}15%{opacity:0;}40%{opacity:0;}43%{opacity:0.5;}46%{opacity:0;}100%{opacity:0;}}
+.thunder-bolt{position:absolute;left:50%;top:0;width:8px;height:0;background:linear-gradient(to bottom,#fff,#aaf,#66f);box-shadow:0 0 30px #88f,0 0 60px #44f;transform-origin:top center;animation:thunderStrike 0.5s ease-out forwards;}
+@keyframes thunderStrike{0%{height:0;opacity:0;}10%{height:100vh;opacity:1;}80%{opacity:1;}100%{opacity:0;}}
+.thunder-particle{position:absolute;width:6px;height:6px;background:#88f;border-radius:50%;box-shadow:0 0 12px #44f;animation:thunderParticle 1s ease-out forwards;}
+@keyframes thunderParticle{0%{transform:translate(0,0) scale(1);opacity:1;}100%{transform:translate(var(--tx,0),var(--ty,0)) scale(0);opacity:0;}}
+
+/* 連単：おしゃれ水色 */
+.rentan-bg{background:linear-gradient(135deg,#001f4d 0%,#003366 30%,#0066aa 70%,#00bfff 100%);animation:hitBgFade 2.2s ease-out forwards;}
+.rentan-orb{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:300px;height:300px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,1) 0%,#7df5ff 20%,#00bfff 50%,#0066cc 80%,#001f4d 100%);box-shadow:0 0 80px rgba(125,245,255,0.9),0 0 160px rgba(0,191,255,0.6);animation:rentanOrbAppear 1.5s ease-out forwards;}
+@keyframes rentanOrbAppear{0%{transform:translate(-50%,-50%) scale(0);opacity:0;}40%{transform:translate(-50%,-50%) scale(1.1);opacity:1;}70%{transform:translate(-50%,-50%) scale(0.95);opacity:1;}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
+.rentan-shimmer{position:absolute;width:8px;height:8px;background:radial-gradient(circle,#fff 0%,transparent 70%);box-shadow:0 0 12px #7df5ff;border-radius:50%;animation:rentanShimmer 1.6s ease-out forwards;}
+@keyframes rentanShimmer{0%{transform:scale(0) rotate(0);opacity:0;}50%{transform:scale(1.2) rotate(180deg);opacity:1;}100%{transform:scale(0) rotate(360deg);opacity:0;}}
+
+/* 三連複：アイコニックピンク */
+.iconic-bg{background:radial-gradient(circle at 50% 40%,#ff66cc 0%,#ff1493 25%,#c2185b 55%,#7b1fa2 80%,#1a0033 100%);animation:hitBgFade 2.5s ease-out forwards;}
+.iconic-burst{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:0;height:0;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(255,180,230,0.95) 25%,rgba(255,20,147,0.7) 60%,transparent 100%);animation:iconicBurst 0.8s cubic-bezier(.22,1.4,.4,1) forwards;}
+@keyframes iconicBurst{0%{width:0;height:0;opacity:0;}30%{width:200px;height:200px;opacity:1;}70%{width:1200px;height:1200px;opacity:0.5;}100%{width:2000px;height:2000px;opacity:0;}}
+.iconic-wind{position:absolute;height:3px;background:linear-gradient(to right,transparent,rgba(255,200,230,0.95),transparent);animation:iconicWind 1.2s ease-out forwards;border-radius:2px;}
+@keyframes iconicWind{0%{transform:translateX(-100vw);opacity:0;}30%{opacity:1;}100%{transform:translateX(100vw);opacity:0;}}
+.iconic-sparkle{position:absolute;width:12px;height:12px;background:radial-gradient(circle,#fff 0%,#ffb3d9 60%,transparent 100%);box-shadow:0 0 20px #ff66cc;border-radius:50%;animation:iconicSparkle 1.4s ease-out forwards;}
+@keyframes iconicSparkle{0%{transform:scale(0);opacity:0;}30%{transform:scale(1.5);opacity:1;}100%{transform:scale(0);opacity:0;}}
+
+/* 三連単：超豪快な虹色花火 */
+.rainbow-bg{background:radial-gradient(circle at 50% 50%,#000 0%,#1a0033 30%,#000 80%);animation:hitBgFade 3s ease-out forwards;}
+.rainbow-flash{position:absolute;inset:0;background:conic-gradient(from 0deg,#ff0080,#ff8000,#ffff00,#00ff80,#00bfff,#8000ff,#ff0080);opacity:0;animation:rainbowFlash 3s ease-out forwards;mix-blend-mode:overlay;}
+@keyframes rainbowFlash{0%{opacity:0;transform:scale(0.3);}10%{opacity:0.9;transform:scale(1);}50%{opacity:0.6;}100%{opacity:0;}}
+.firework-big{position:absolute;width:14px;height:14px;border-radius:50%;animation:fireworkBigBurst var(--dur,1.5s) ease-out forwards;}
+@keyframes fireworkBigBurst{0%{transform:translate(0,0) scale(2);opacity:1;box-shadow:0 0 30px currentColor;}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0;}}
+.rainbow-title{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);font-size:2.8rem;font-weight:900;letter-spacing:6px;background:linear-gradient(90deg,#ff0080,#ff8000,#ffff00,#00ff80,#00bfff,#8000ff,#ff0080);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rainbowTitle 0.5s ease-out 0.5s both,rainbowShift 2s linear 1s infinite;text-shadow:0 0 40px rgba(255,255,255,0.5);}
+@keyframes rainbowTitle{0%{transform:translate(-50%,-50%) scale(0.3) rotate(-5deg);opacity:0;}100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1;}}
+@keyframes rainbowShift{0%{background-position:0% center;}100%{background-position:200% center;}}
+
+/* サウンドON/OFFボタン */
+.sound-toggle{position:fixed;top:12px;right:12px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.sound-toggle:active{transform:scale(0.92);}
 </style>
 </head>
 <body>
+<button id="sound-toggle" class="sound-toggle" onclick="toggleSound()" title="サウンド切り替え">🔊</button>
 <div class="notif" id="notif"></div>
 <div id="celebration-overlay" class="hidden"></div>
 
@@ -182,6 +242,12 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div class="gacha-title" id="gacha-title">結果発表</div>
     <div class="gacha-sub" id="gacha-sub"></div>
   </div>
+</div>
+
+<!-- 的中演出専用オーバーレイ -->
+<div id="hit-overlay" class="hidden">
+  <div id="hit-overlay-bg"></div>
+  <div id="hit-overlay-content"></div>
 </div>
 
 <!-- 最終フィナーレ用フルスクリーン演出 -->
@@ -574,15 +640,11 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     </div>
     <!-- 順位確認チケット -->
     <div style="background:linear-gradient(135deg,#1a3d2a 0%,#0d2a1a 100%);margin:10px;border-radius:12px;border:2px solid #c060c0;overflow:hidden;box-shadow:0 0 20px rgba(192,96,192,0.4)">
-      <div style="background:linear-gradient(135deg,#a040a0,#c060c0);padding:8px 16px;text-align:center">
-        <div style="font-family:'Racing Sans One',cursive;color:white;font-size:1rem;letter-spacing:3px">👑 OYA RANKING 👑</div>
+      <div style="background:linear-gradient(135deg,#a040a0,#c060c0);padding:12px 16px;text-align:center">
+        <div style="font-family:'Racing Sans One',cursive;color:white;font-size:1.1rem;letter-spacing:4px;margin-bottom:4px">RANKING</div>
+        <div style="color:white;font-size:1.2rem;font-weight:900" id="ooc-name">—</div>
       </div>
       <div style="padding:16px">
-        <div style="text-align:center;margin-bottom:14px">
-          <div style="color:#aef5a0;font-size:0.65rem;letter-spacing:3px;margin-bottom:4px">YOU (OYA)</div>
-          <div style="color:white;font-size:1.4rem;font-weight:900" id="ooc-name">—</div>
-        </div>
-        <div style="border-top:1px dashed rgba(192,96,192,0.4);margin-bottom:14px"></div>
         <div style="color:#aef5a0;font-size:0.7rem;letter-spacing:2px;margin-bottom:10px;text-align:center">YOUR RANKING</div>
         <div id="ooc-ranking" style="display:flex;flex-direction:column;gap:8px"></div>
         <div style="border-top:1px dashed rgba(192,96,192,0.4);margin-top:14px;padding-top:10px;text-align:center;color:rgba(174,245,160,0.7);font-size:0.7rem;line-height:1.5">
@@ -1156,6 +1218,260 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 </div>
 
 <script>
+// ============================================================
+// サウンドエンジン (Web Audio API)
+// ============================================================
+window.SFX = (function(){
+  let ctx = null;
+  let masterGain = null;
+  let enabled = true;
+  function getCtx(){
+    if(!ctx){
+      try {
+        ctx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = ctx.createGain();
+        masterGain.gain.value = 0.5;
+        masterGain.connect(ctx.destination);
+      } catch(e){ return null; }
+    }
+    if(ctx.state === 'suspended'){ ctx.resume().catch(()=>{}); }
+    return ctx;
+  }
+  // ユーザー操作で初期化
+  function init(){ getCtx(); }
+
+  function setEnabled(b){ enabled = !!b; try { localStorage.setItem('yumepass_sfx', enabled ? '1' : '0'); } catch(e){} }
+  function isEnabled(){ return enabled; }
+  try {
+    const s = localStorage.getItem('yumepass_sfx');
+    if(s === '0') enabled = false;
+  } catch(e){}
+
+  // 基本波形
+  function tone(opts){
+    if(!enabled) return;
+    const c = getCtx(); if(!c) return;
+    const t = c.currentTime;
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = opts.type || 'sine';
+    o.frequency.setValueAtTime(opts.freq || 440, t);
+    if(opts.freqEnd != null){
+      o.frequency.exponentialRampToValueAtTime(Math.max(opts.freqEnd, 0.001), t + (opts.dur || 0.2));
+    }
+    const dur = opts.dur || 0.15;
+    const peak = opts.gain != null ? opts.gain : 0.25;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(masterGain);
+    o.start(t);
+    o.stop(t + dur + 0.02);
+  }
+
+  // ノイズバースト（打撃音・風音・花火）
+  function noise(opts){
+    if(!enabled) return;
+    const c = getCtx(); if(!c) return;
+    const t = c.currentTime;
+    const dur = opts.dur || 0.3;
+    const buffer = c.createBuffer(1, Math.max(1, Math.floor(c.sampleRate * dur)), c.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i = 0; i < data.length; i++){ data[i] = (Math.random() * 2 - 1); }
+    const src = c.createBufferSource();
+    src.buffer = buffer;
+    const filter = c.createBiquadFilter();
+    filter.type = opts.filterType || 'lowpass';
+    filter.frequency.setValueAtTime(opts.freq || 800, t);
+    if(opts.freqEnd != null){
+      filter.frequency.exponentialRampToValueAtTime(Math.max(opts.freqEnd, 50), t + dur);
+    }
+    if(opts.Q != null) filter.Q.value = opts.Q;
+    const g = c.createGain();
+    const peak = opts.gain != null ? opts.gain : 0.2;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(filter); filter.connect(g); g.connect(masterGain);
+    src.start(t);
+    src.stop(t + dur + 0.02);
+  }
+
+  // ============================================================
+  // ゲーム中の効果音（控えめ）
+  // ============================================================
+  function tap(){ tone({type:'sine', freq:600, dur:0.06, gain:0.08}); }
+  function click(){ tone({type:'square', freq:800, freqEnd:400, dur:0.08, gain:0.07}); }
+  function select(){ tone({type:'triangle', freq:700, freqEnd:900, dur:0.1, gain:0.1}); }
+  function confirm(){ tone({type:'triangle', freq:500, dur:0.08, gain:0.12}); setTimeout(()=>tone({type:'triangle', freq:800, dur:0.12, gain:0.12}), 60); }
+  function notify(){ tone({type:'sine', freq:880, dur:0.12, gain:0.1}); setTimeout(()=>tone({type:'sine', freq:1320, dur:0.15, gain:0.1}), 80); }
+  function warn(){ tone({type:'sawtooth', freq:300, freqEnd:200, dur:0.18, gain:0.1}); }
+  function whoosh(){ noise({freq:2000, freqEnd:200, dur:0.4, gain:0.15, filterType:'bandpass', Q:3}); }
+  function lottery(){
+    // ルーレットの「カチカチ」
+    tone({type:'square', freq:1200, dur:0.04, gain:0.05});
+  }
+  function lotteryDecide(){
+    // 当選音
+    tone({type:'triangle', freq:600, dur:0.1, gain:0.15});
+    setTimeout(()=>tone({type:'triangle', freq:900, dur:0.1, gain:0.15}), 80);
+    setTimeout(()=>tone({type:'triangle', freq:1200, dur:0.25, gain:0.18}), 160);
+  }
+  function reveal(){
+    // 賭け公開「ジャーン」
+    tone({type:'triangle', freq:400, dur:0.2, gain:0.15});
+    tone({type:'triangle', freq:600, dur:0.3, gain:0.12});
+    noise({freq:3000, freqEnd:500, dur:0.5, gain:0.08, filterType:'highpass'});
+  }
+  function roundIntro(){
+    // ラウンド導入「ファンファーレ」
+    tone({type:'triangle', freq:523, dur:0.12, gain:0.12});
+    setTimeout(()=>tone({type:'triangle', freq:659, dur:0.12, gain:0.12}), 100);
+    setTimeout(()=>tone({type:'triangle', freq:784, dur:0.25, gain:0.15}), 200);
+  }
+
+  // ============================================================
+  // 的中演出の効果音
+  // ============================================================
+  // 単勝：弓矢が的に突き刺さる
+  function hitTansho(){
+    // 矢が飛ぶシュッ
+    noise({freq:3500, freqEnd:1500, dur:0.25, gain:0.18, filterType:'bandpass', Q:6});
+    // 突き刺さるドスッ
+    setTimeout(() => {
+      noise({freq:200, freqEnd:80, dur:0.18, gain:0.4, filterType:'lowpass'});
+      tone({type:'sine', freq:80, dur:0.15, gain:0.25});
+    }, 230);
+    // 余韻
+    setTimeout(() => {
+      tone({type:'triangle', freq:880, dur:0.3, gain:0.1});
+    }, 450);
+  }
+
+  // 連複：雷
+  function hitRenfuku(){
+    // ゴロゴロ
+    noise({freq:600, freqEnd:200, dur:0.5, gain:0.2, filterType:'lowpass'});
+    // 雷鳴
+    setTimeout(() => {
+      noise({freq:8000, freqEnd:500, dur:0.4, gain:0.35, filterType:'highpass'});
+      tone({type:'sawtooth', freq:120, freqEnd:60, dur:0.5, gain:0.2});
+    }, 400);
+    // 残響
+    setTimeout(() => {
+      noise({freq:300, freqEnd:80, dur:0.6, gain:0.12, filterType:'lowpass'});
+    }, 700);
+  }
+
+  // 連単：おしゃれで耳に残る水色音
+  function hitRentan(){
+    // クリスタルベル
+    [880, 1320, 1760, 2200].forEach((f, i) => {
+      setTimeout(() => tone({type:'sine', freq:f, dur:0.5, gain:0.15}), i * 60);
+    });
+    // パッドのような厚み
+    setTimeout(() => {
+      tone({type:'triangle', freq:440, dur:0.8, gain:0.1});
+      tone({type:'triangle', freq:660, dur:0.8, gain:0.08});
+    }, 100);
+    // シマー
+    setTimeout(() => {
+      noise({freq:6000, freqEnd:4000, dur:0.6, gain:0.06, filterType:'bandpass', Q:8});
+    }, 200);
+  }
+
+  // 三連複：ウイイレアイコニック風 ドンッ+ピンク
+  function hitSanrenfuku(){
+    // 大きなドンッ
+    tone({type:'sine', freq:80, freqEnd:40, dur:0.4, gain:0.45});
+    noise({freq:200, freqEnd:60, dur:0.3, gain:0.35, filterType:'lowpass'});
+    // キラキラ（風が流れる）
+    setTimeout(() => {
+      [1500, 2000, 2500, 3000, 3500].forEach((f, i) => {
+        setTimeout(() => tone({type:'sine', freq:f, dur:0.4, gain:0.1}), i * 80);
+      });
+      noise({freq:4000, freqEnd:1000, dur:1.0, gain:0.1, filterType:'bandpass', Q:4});
+    }, 250);
+    // 上昇音
+    setTimeout(() => {
+      tone({type:'triangle', freq:440, freqEnd:1760, dur:0.8, gain:0.15});
+    }, 350);
+  }
+
+  // 三連単：超豪快な打ち上げ花火
+  function hitSanrentan(){
+    // 大ドン（バンッ）
+    tone({type:'sine', freq:60, freqEnd:30, dur:0.6, gain:0.5});
+    noise({freq:150, freqEnd:40, dur:0.5, gain:0.5, filterType:'lowpass'});
+    // 花火の打ち上げシュー
+    setTimeout(() => {
+      noise({freq:1500, freqEnd:5000, dur:0.5, gain:0.2, filterType:'highpass'});
+    }, 100);
+    // 花火炸裂×3
+    [400, 900, 1500].forEach((d) => {
+      setTimeout(() => {
+        // 爆発音
+        noise({freq:300, freqEnd:60, dur:0.4, gain:0.4, filterType:'lowpass'});
+        tone({type:'sine', freq:90 + Math.random()*30, freqEnd:30, dur:0.35, gain:0.35});
+        // キラキラ
+        setTimeout(() => {
+          for(let i = 0; i < 6; i++){
+            setTimeout(() => tone({type:'sine', freq:2000 + Math.random()*3000, dur:0.3, gain:0.08}), i * 30);
+          }
+        }, 80);
+      }, d);
+    });
+    // ファンファーレ（虹）
+    setTimeout(() => {
+      [523, 659, 784, 1047].forEach((f, i) => {
+        setTimeout(() => tone({type:'triangle', freq:f, dur:0.4, gain:0.18}), i * 80);
+      });
+    }, 1800);
+  }
+
+  // 最終結果：超盛大なフィナーレ
+  function finale(){
+    // 大ドン
+    tone({type:'sine', freq:50, freqEnd:25, dur:0.8, gain:0.5});
+    noise({freq:200, freqEnd:40, dur:0.6, gain:0.5, filterType:'lowpass'});
+    // 上昇するクリスタル
+    [262, 330, 392, 523, 659, 784, 1047, 1319].forEach((f, i) => {
+      setTimeout(() => tone({type:'triangle', freq:f, dur:0.4, gain:0.15}), 200 + i * 60);
+    });
+    // ファンファーレ和音
+    setTimeout(() => {
+      tone({type:'triangle', freq:523, dur:0.5, gain:0.15});
+      tone({type:'triangle', freq:659, dur:0.5, gain:0.13});
+      tone({type:'triangle', freq:784, dur:0.5, gain:0.13});
+    }, 800);
+    // 花火連発
+    [1400, 1800, 2200, 2600].forEach((d) => {
+      setTimeout(() => {
+        noise({freq:300, freqEnd:60, dur:0.4, gain:0.35, filterType:'lowpass'});
+        tone({type:'sine', freq:80, freqEnd:30, dur:0.3, gain:0.3});
+        for(let i = 0; i < 5; i++){
+          setTimeout(() => tone({type:'sine', freq:1500 + Math.random()*3500, dur:0.25, gain:0.08}), i * 40);
+        }
+      }, d);
+    });
+  }
+
+  return {
+    init, setEnabled, isEnabled,
+    tap, click, select, confirm, notify, warn, whoosh,
+    lottery, lotteryDecide, reveal, roundIntro,
+    hitTansho, hitRenfuku, hitRentan, hitSanrenfuku, hitSanrentan,
+    finale
+  };
+})();
+
+// 最初のユーザー操作で AudioContext を起動
+(function(){
+  const initOnce = () => { try { SFX.init(); } catch(e){} document.removeEventListener('click', initOnce); document.removeEventListener('touchstart', initOnce); };
+  document.addEventListener('click', initOnce);
+  document.addEventListener('touchstart', initOnce);
+})();
+
 let state={players:[],rounds:5,initialPoints:5000,minBet:500,oyaBonusRate:50,odds:{tansho:2,renfuku:5,rentan:10,sanrenfuku:7,sanrentan:30},currentRound:0,oyaIndex:0,currentBetPlayerIndex:0,koPlayers:[],selectedTopic:null,currentBets:[],actualResult:[],history:[],topics:[],usedTopicIds:[],prevScreen:'screen-home'};
 const CATEGORIES=[
   {id:'g1',label:'G1',sub:'最高峰｜本音と価値観に踏み込む重いお題',icon:'🏆',color:'#8b1a8b',textColor:'white'},
@@ -1231,7 +1547,17 @@ function saveTopics(){localStorage.setItem('sanrentan_topics',JSON.stringify(sta
 function getAllTopics(){return[...BASE_TOPICS,...state.topics];}
 function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='screen-rules')renderRulesScreen();}
 function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
-function showNotif(msg){const n=document.getElementById('notif');n.textContent=msg;n.classList.add('show');setTimeout(()=>n.classList.remove('show'),2500);}
+function showNotif(msg){
+  const n=document.getElementById('notif');
+  n.textContent=msg;
+  n.classList.add('show');
+  // 警告/エラーは警告音、それ以外は通知音
+  try {
+    if(/⚠️|❌|×/.test(msg)) window.SFX.warn();
+    else window.SFX.notify();
+  } catch(e){}
+  setTimeout(()=>n.classList.remove('show'),2500);
+}
 
 function initSetupScreen(){
   const pcb=document.getElementById('playerCountBtns');pcb.innerHTML='';
@@ -1653,7 +1979,7 @@ function showOyaResultScreen(){
 function selectHorseForResult(idx){const p=resultSelections.indexOf(idx);if(p>=0)resultSelections.splice(p,1);else{if(resultSelections.length>=3)return;resultSelections.push(idx);}renderHorseGrid('result-horse-grid',resultSelections,selectHorseForResult);updateResultPreview();}
 function updateResultPreview(){const c=document.getElementById('result-preview-content');const btn=document.getElementById('result-confirm-btn');const t=state.selectedTopic;if(!resultSelections.length){c.innerHTML='<div class="empty">馬を選んでください</div>';btn.disabled=true;return;}c.innerHTML=resultSelections.map((hi,i)=>`<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]||''}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700">${t.horses[hi]}</div></div>`).join('');btn.disabled=resultSelections.length<3;}
 
-function goToReveal(){state.actualResult=[...resultSelections];document.getElementById('rv-round-label').textContent=`ROUND ${state.currentRound} REVEAL`;document.getElementById('rv-topic-name').textContent=`${state.selectedTopic.icon} ${state.selectedTopic.title}`;const t=state.selectedTopic;const betNames={tansho:'単勝',rentan:'連単狙い',sanrentan:'三連単狙い'};const posL=['1位','2位','3位'];document.getElementById('rv-bets-list').innerHTML=state.currentBets.map(bet=>{const p=state.players[bet.playerIndex];if(bet.skipped||bet.amount===0){return`<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;}const tags=(bet.selections||[]).map((hi,si)=>`<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700"><span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem">${hi+1}</span>${t.horses[hi]}<span style="color:#aaa;font-size:0.65rem">(${posL[si]})</span></span>`).join('');return`<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span class="reveal-bet-type">${betNames[bet.betType]}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${tags}</div><div style="font-size:0.85rem;color:#888;margin-top:6px">賭け金：<strong>${bet.amount.toLocaleString()}点</strong></div></div>`;}).join('');goTo('screen-reveal');}
+function goToReveal(){try{window.SFX.reveal();}catch(e){}state.actualResult=[...resultSelections];document.getElementById('rv-round-label').textContent=`ROUND ${state.currentRound} REVEAL`;document.getElementById('rv-topic-name').textContent=`${state.selectedTopic.icon} ${state.selectedTopic.title}`;const t=state.selectedTopic;const betNames={tansho:'単勝',rentan:'連単狙い',sanrentan:'三連単狙い'};const posL=['1位','2位','3位'];document.getElementById('rv-bets-list').innerHTML=state.currentBets.map(bet=>{const p=state.players[bet.playerIndex];if(bet.skipped||bet.amount===0){return`<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;}const tags=(bet.selections||[]).map((hi,si)=>`<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700"><span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem">${hi+1}</span>${t.horses[hi]}<span style="color:#aaa;font-size:0.65rem">(${posL[si]})</span></span>`).join('');return`<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span class="reveal-bet-type">${betNames[bet.betType]}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${tags}</div><div style="font-size:0.85rem;color:#888;margin-top:6px">賭け金：<strong>${bet.amount.toLocaleString()}点</strong></div></div>`;}).join('');goTo('screen-reveal');}
 
 function calculateResults(){const [r1,r2,r3]=state.actualResult;const oya=state.players[state.oyaIndex];let oyaBonus=0;const roundLog={round:state.currentRound,topic:state.selectedTopic.title,oyaName:oya.name,result:state.actualResult.map(i=>state.selectedTopic.horses[i]),playerResults:[],oyaBonus:0};state.currentBets.forEach(bet=>{const p=state.players[bet.playerIndex];if(bet.skipped||bet.amount===0){p.history.push({round:state.currentRound,change:0,hitType:'見送り'});roundLog.playerResults.push({name:p.name,hitType:'見送り',change:0,amount:0,betType:bet.betType,multiplier:0,oyaBonusFromThis:0,skipped:true});return;}const s=bet.selections;let multiplier=0,hitType='外れ';if(bet.betType==='tansho'){if(s[0]===r1){multiplier=state.odds.tansho;hitType='単勝的中';}}else if(bet.betType==='rentan'){if(s[0]===r1&&s[1]===r2){multiplier=state.odds.rentan;hitType='連単的中';}else if(s[0]===r2&&s[1]===r1){multiplier=state.odds.renfuku;hitType='連複的中';}}else if(bet.betType==='sanrentan'){const a3=s.every(i=>[r1,r2,r3].includes(i));if(s[0]===r1&&s[1]===r2&&s[2]===r3){multiplier=state.odds.sanrentan;hitType='三連単的中🎊';}else if(a3){multiplier=state.odds.sanrenfuku;hitType='3連複的中';}}const change=multiplier>0?bet.amount*multiplier:-bet.amount;p.points+=change;if(p.points<0)p.points=0;let thisBonus=0;if(multiplier>0){thisBonus=Math.floor(bet.amount*multiplier*(state.oyaBonusRate/100));oyaBonus+=thisBonus;}p.history.push({round:state.currentRound,change,hitType});roundLog.playerResults.push({name:p.name,hitType,change,amount:bet.amount,betType:bet.betType,multiplier,oyaBonusFromThis:thisBonus,selections:[...s]});});oya.points+=oyaBonus;roundLog.oyaBonus=oyaBonus;oya.history.push({round:state.currentRound,change:oyaBonus,hitType:'親ボーナス'});state.history.push(roundLog);renderRoundResult();goTo('screen-roundresult');}
 
@@ -1748,13 +2074,10 @@ function renderRoundResult(){
   // 演出の優先度判定（一番高い的中のみ演出）
   const priority={'三連単的中🎊':5,'3連複的中':4,'連単的中':3,'連複的中':2,'単勝的中':1};
   let topPriority=0;
-  log.playerResults.forEach(r=>{if(priority[r.hitType]>topPriority)topPriority=priority[r.hitType];});
+  let topHitType=null;
+  log.playerResults.forEach(r=>{if(priority[r.hitType]>topPriority){topPriority=priority[r.hitType];topHitType=r.hitType;}});
   setTimeout(()=>{
-    if(topPriority===5)launchFireworks();
-    else if(topPriority===4)launchColorBurst();
-    else if(topPriority===3)launchGoldFlash();
-    else if(topPriority===2)launchConfetti();
-    else if(topPriority===1)launchStars();
+    if(topHitType && typeof showHitEffect === 'function') showHitEffect(topHitType);
   },400);
 }
 
@@ -1838,7 +2161,23 @@ function launchStars(){
   }
   setTimeout(clearCelebration,1800);
 }
-function nextRound(){if(state.currentRound>=state.rounds){renderFinalScreen();goTo('screen-final');}else goToRoundStart();}
+function nextRound(){
+  if(state.currentRound>=state.rounds){
+    renderFinalScreen();
+    // 豪華フィナーレを先に出してから画面遷移
+    const sorted=[...state.players].sort((a,b)=>b.points-a.points);
+    const winners=sorted.filter(p=>p.points===sorted[0].points);
+    const winnerNames=winners.map(p=>p.name).join(' & ');
+    const winnerPts=sorted[0].points.toLocaleString()+' 点';
+    if(typeof showFinalCurtain === 'function'){
+      showFinalCurtain(winnerNames, winnerPts, ()=>goTo('screen-final'));
+    } else {
+      goTo('screen-final');
+    }
+  } else {
+    goToRoundStart();
+  }
+}
 
 function renderScoreTable(tid){const sorted=[...state.players].map((p,i)=>({...p,oi:i})).sort((a,b)=>b.points-a.points);document.getElementById(tid).innerHTML=`<tr><th>順位</th><th>プレイヤー</th><th>点数</th><th>役割</th></tr>${sorted.map((p,i)=>`<tr class="${i===0?'leader':''}"><td><span class="rank-badge rank-${i<3?i+1:'other'}">${i+1}</span></td><td style="text-align:left">${p.name}</td><td style="font-weight:700">${p.points.toLocaleString()}</td><td>${p.oi===state.oyaIndex?'<span class="oya-badge">親</span>':'<span class="ko-badge">子</span>'}</td></tr>`).join('')}`;}
 
@@ -2567,6 +2906,7 @@ function enterOnlineTopicLottery(game){
     const rand = candidates[Math.floor(Math.random() * candidates.length)];
     const topic = topics.find(t => t.id === rand.topicId);
     if(topic) displayEl.textContent = topic.title;
+    try { window.SFX.lottery(); } catch(e){}
     count++;
     if(count >= totalSteps){
       clearInterval(stepInterval);
@@ -2575,6 +2915,7 @@ function enterOnlineTopicLottery(game){
       const winPlayer = players.find(p => p.id === lottery.chosenByPlayerId);
       displayEl.textContent = winTopic ? winTopic.title : '(不明)';
       displayEl.style.transform = 'scale(1.1)';
+      try { window.SFX.lotteryDecide(); } catch(e){}
       setTimeout(() => { displayEl.style.transform = 'scale(1)'; }, 200);
       document.getElementById('lottery-result-info').style.display = 'block';
       document.getElementById('lottery-chosen-by').textContent = winPlayer ? `${winPlayer.name}さんのお題に決定！` : '';
@@ -3211,6 +3552,12 @@ async function checkAllBetsSubmitted(){
 function enterOnlineReveal(game){
   goTo('screen-online-reveal');
   document.getElementById('orv-round-label').textContent = `ROUND ${game.currentRound || 1} REVEAL`;
+  // 初回遷移時のみ音
+  const revealKey = `r${game.currentRound || 1}_reveal`;
+  if(window.online._lastRevealKey !== revealKey){
+    window.online._lastRevealKey = revealKey;
+    try { window.SFX.reveal(); } catch(e){}
+  }
   const topic = game.selectedTopic;
   if(topic){
     document.getElementById('orv-topic-name').textContent = `${topic.icon || '🎯'} ${topic.title || ''}`;
@@ -3503,15 +3850,10 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
 // 既存の演出関数を活用（オフライン版と同じ）
 function triggerHitCelebration(hitType){
   try {
-    const priority = {'三連単的中🎊':5, '3連複的中':4, '連単的中':3, '連複的中':2, '単勝的中':1};
-    const pr = priority[hitType] || 0;
-    setTimeout(() => {
-      if(pr === 5 && typeof launchFireworks === 'function') launchFireworks();
-      else if(pr === 4 && typeof launchColorBurst === 'function') launchColorBurst();
-      else if(pr === 3 && typeof launchGoldFlash === 'function') launchGoldFlash();
-      else if(pr === 2 && typeof launchConfetti === 'function') launchConfetti();
-      else if(pr === 1 && typeof launchStars === 'function') launchStars();
-    }, 400);
+    // 新しい段階別演出を発動（オフライン版も使う）
+    if(typeof showHitEffect === 'function'){
+      showHitEffect(hitType);
+    }
   } catch(e){ console.error(e); }
 }
 
@@ -3731,6 +4073,168 @@ window.onlineRestartGame = async function(){
 };
 
 // ============================================================
+// サウンド切替UI
+// ============================================================
+window.toggleSound = function(){
+  const next = !window.SFX.isEnabled();
+  window.SFX.setEnabled(next);
+  const btn = document.getElementById('sound-toggle');
+  if(btn) btn.textContent = next ? '🔊' : '🔇';
+  if(next){
+    window.SFX.confirm();
+    showNotif('🔊 サウンドON');
+  } else {
+    showNotif('🔇 サウンドOFF');
+  }
+};
+// 初期化
+(function(){
+  setTimeout(() => {
+    const btn = document.getElementById('sound-toggle');
+    if(btn) btn.textContent = window.SFX.isEnabled() ? '🔊' : '🔇';
+  }, 100);
+})();
+
+// ============================================================
+// 的中演出ビジュアル（5段階）
+// ============================================================
+function showHitEffect(hitType, onDone){
+  const priority = {'三連単的中🎊':5, '3連複的中':4, '連単的中':3, '連複的中':2, '単勝的中':1};
+  const pr = priority[hitType] || 0;
+  if(pr === 0){ if(onDone) onDone(); return; }
+  const overlay = document.getElementById('hit-overlay');
+  const bg = document.getElementById('hit-overlay-bg');
+  const content = document.getElementById('hit-overlay-content');
+  if(!overlay || !bg || !content){ if(onDone) onDone(); return; }
+  // クリーンアップ
+  content.innerHTML = '';
+  bg.className = '';
+  overlay.classList.remove('hidden');
+  let duration = 1500;
+  if(pr === 1){ // 単勝：弓矢
+    bg.className = 'arrow-flash-bg';
+    content.innerHTML = `<div class="arrow-target">🎯</div><div class="arrow-shot">➤</div>`;
+    setTimeout(() => {
+      window.SFX.hitTansho();
+    }, 0);
+    setTimeout(() => {
+      content.innerHTML += `<div class="arrow-impact"></div><div class="hit-title">単勝的中！</div>`;
+    }, 300);
+    duration = 1500;
+  } else if(pr === 2){ // 連複：雷
+    bg.className = 'thunder-bg';
+    content.innerHTML = `<div class="thunder-flash"></div>`;
+    setTimeout(() => window.SFX.hitRenfuku(), 0);
+    // 雷×複数
+    setTimeout(() => {
+      for(let i = 0; i < 5; i++){
+        setTimeout(() => {
+          const bolt = document.createElement('div');
+          bolt.className = 'thunder-bolt';
+          bolt.style.left = (15 + Math.random() * 70) + '%';
+          bolt.style.transform = `rotate(${(Math.random()-0.5)*30}deg)`;
+          content.appendChild(bolt);
+        }, i * 150);
+      }
+      // パーティクル
+      for(let i = 0; i < 20; i++){
+        const p = document.createElement('div');
+        p.className = 'thunder-particle';
+        p.style.left = (40 + Math.random()*20) + '%';
+        p.style.top = (40 + Math.random()*20) + '%';
+        p.style.setProperty('--tx', (Math.random()-0.5)*400 + 'px');
+        p.style.setProperty('--ty', (Math.random()-0.5)*400 + 'px');
+        p.style.animationDelay = (Math.random()*0.5) + 's';
+        content.appendChild(p);
+      }
+      content.innerHTML += `<div class="hit-title" style="color:#88ccff;text-shadow:0 0 20px #44f">⚡ 連複的中 ⚡</div>`;
+    }, 400);
+    duration = 2000;
+  } else if(pr === 3){ // 連単：水色
+    bg.className = 'rentan-bg';
+    setTimeout(() => window.SFX.hitRentan(), 0);
+    content.innerHTML = `<div class="rentan-orb"></div>`;
+    // シマー粒子多数
+    setTimeout(() => {
+      for(let i = 0; i < 30; i++){
+        const sh = document.createElement('div');
+        sh.className = 'rentan-shimmer';
+        sh.style.left = (Math.random()*100) + '%';
+        sh.style.top = (Math.random()*100) + '%';
+        sh.style.animationDelay = (Math.random()*0.8) + 's';
+        content.appendChild(sh);
+      }
+      content.innerHTML += `<div class="hit-title" style="color:#7df5ff;text-shadow:0 0 20px #00bfff,0 0 40px #0066cc">✦ 連単的中 ✦</div>`;
+    }, 600);
+    duration = 2200;
+  } else if(pr === 4){ // 三連複：アイコニックピンク
+    bg.className = 'iconic-bg';
+    setTimeout(() => window.SFX.hitSanrenfuku(), 0);
+    content.innerHTML = `<div class="iconic-burst"></div>`;
+    // ピンクの風ライン
+    for(let i = 0; i < 8; i++){
+      const w = document.createElement('div');
+      w.className = 'iconic-wind';
+      w.style.top = (10 + Math.random() * 80) + '%';
+      w.style.width = (200 + Math.random() * 400) + 'px';
+      w.style.animationDelay = (Math.random() * 0.6) + 's';
+      content.appendChild(w);
+    }
+    // スパークル
+    setTimeout(() => {
+      for(let i = 0; i < 40; i++){
+        const sp = document.createElement('div');
+        sp.className = 'iconic-sparkle';
+        sp.style.left = (Math.random()*100) + '%';
+        sp.style.top = (Math.random()*100) + '%';
+        sp.style.animationDelay = (Math.random()*1) + 's';
+        content.appendChild(sp);
+      }
+      content.innerHTML += `<div class="hit-title" style="background:linear-gradient(90deg,#fff,#ffb3d9,#ff66cc,#fff);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:2.6rem;text-shadow:none;letter-spacing:5px">🌹 3連複的中 🌹</div>`;
+    }, 400);
+    duration = 2500;
+  } else if(pr === 5){ // 三連単：虹色花火
+    bg.className = 'rainbow-bg';
+    setTimeout(() => window.SFX.hitSanrentan(), 0);
+    content.innerHTML = `<div class="rainbow-flash"></div>`;
+    // 花火6連発（3倍サイズ）
+    const colors = ['#ff0080','#ff8000','#ffff00','#00ff80','#00bfff','#8000ff','#ff44aa','#ffffff'];
+    [[50,50],[30,40],[70,40],[40,55],[60,55],[50,30]].forEach(([cx,cy], fi) => {
+      setTimeout(() => {
+        for(let i = 0; i < 36; i++){
+          const p = document.createElement('div');
+          p.className = 'firework-big';
+          const angle = (i/36) * Math.PI * 2;
+          const dist = 180 + Math.random() * 180; // 3倍
+          const tx = Math.cos(angle) * dist;
+          const ty = Math.sin(angle) * dist;
+          const color = colors[Math.floor(Math.random()*colors.length)];
+          p.style.cssText = `left:${cx}%;top:${cy}%;background:${color};color:${color};--tx:${tx}px;--ty:${ty}px;--dur:${1.5+Math.random()*0.8}s;`;
+          content.appendChild(p);
+        }
+      }, 300 + fi * 250);
+    });
+    setTimeout(() => {
+      content.innerHTML += `<div class="rainbow-title">★ 三連単的中 ★</div>`;
+    }, 500);
+    duration = 3500;
+  }
+  // 自動消去
+  setTimeout(() => {
+    overlay.style.transition = 'opacity 0.4s ease-out';
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+      overlay.style.opacity = '';
+      overlay.style.transition = '';
+      content.innerHTML = '';
+      bg.className = '';
+      if(onDone) onDone();
+    }, 400);
+  }, duration);
+}
+
+// ============================================================
 // ガチャ風ラウンド演出
 // ============================================================
 
@@ -3764,6 +4268,7 @@ function showGachaRoundIntro(log, onDone){
   document.getElementById('gacha-title').textContent = title;
   document.getElementById('gacha-sub').textContent = sub;
   overlay.classList.remove('hidden');
+  try { window.SFX.roundIntro(); } catch(e){}
 
   // 1.8秒後にフェードアウトしてコールバック
   setTimeout(() => {
@@ -3790,8 +4295,17 @@ function showFinalCurtain(winnerName, winnerPts, onDismiss){
   // 紙吹雪/星をふんだんに撒く
   spawnFinalConfetti(curtain);
 
-  // 既存の花火演出も発動
-  try { if(typeof launchFireworks === 'function') setTimeout(launchFireworks, 600); } catch(e){}
+  // 超盛大サウンド
+  try { window.SFX.finale(); } catch(e){}
+
+  // 既存の花火演出も発動（連発）
+  try {
+    if(typeof launchFireworks === 'function'){
+      setTimeout(launchFireworks, 600);
+      setTimeout(launchFireworks, 1800);
+      setTimeout(launchFireworks, 3000);
+    }
+  } catch(e){}
 
   // タップで閉じる
   let dismissed = false;
@@ -3810,8 +4324,8 @@ function showFinalCurtain(winnerName, winnerPts, onDismiss){
     }, 500);
   };
   curtain.onclick = dismiss;
-  // 自動で4秒後にも閉じる
-  setTimeout(dismiss, 4000);
+  // 自動で5秒後にも閉じる（盛大に楽しめるよう少し長く）
+  setTimeout(dismiss, 5000);
 }
 
 function spawnFinalConfetti(curtain){
