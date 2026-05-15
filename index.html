@@ -35,7 +35,7 @@
 :root{--green:#1a6b2a;--green-light:#2d9e44;--gold:#f5c842;--gold-dark:#c9960a;--red:#c0392b;--white:#f9f5e8;--dark:#1a1a1a;--panel:#fdf8ed;--border:#c9960a;--oya:#8b1a8b;--oya-light:#c060c0;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--green);color:var(--dark);min-height:100vh;overflow-x:hidden;}
-.screen{display:none;min-height:100vh;flex-direction:column;}.screen.active{display:flex;}
+.screen{display:none;min-height:100vh;flex-direction:column;background:#0a0a0a;}.screen.active{display:flex;}
 .header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:12px 16px;text-align:center;border-bottom:3px solid var(--gold);}
 .header h1{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:1.8rem;letter-spacing:2px;}
 .header .subtitle{color:#aaa;font-size:0.7rem;letter-spacing:3px;}
@@ -136,7 +136,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 @keyframes st-pop{0%{transform:translate(0,0) scale(0) rotate(0deg);opacity:1;}60%{opacity:1;}100%{transform:translate(var(--tx),var(--ty)) scale(0.3) rotate(var(--rot,180deg));opacity:0;}}
 
 /* ガチャ風ラウンド結果オーバーレイ */
-#gacha-overlay{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#ff1493 0%,#c2185b 35%,#7b1fa2 70%,#311b92 100%);}
+#gacha-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;min-height:100vh;z-index:9998;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#ff1493 0%,#c2185b 35%,#7b1fa2 70%,#311b92 100%);}
 #gacha-overlay.hidden{display:none;}
 .gacha-rays{position:absolute;inset:-50%;background:conic-gradient(from 0deg,rgba(255,255,255,0.15) 0deg 8deg,transparent 8deg 30deg,rgba(255,255,255,0.18) 30deg 38deg,transparent 38deg 60deg,rgba(255,255,255,0.12) 60deg 68deg,transparent 68deg 90deg);animation:gachaRays 6s linear infinite;}
 @keyframes gachaRays{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
@@ -150,7 +150,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .gacha-title{font-size:2.2rem;font-weight:900;color:#fff;text-shadow:0 0 18px rgba(255,255,255,0.9),0 4px 12px rgba(0,0,0,0.3);letter-spacing:2px;margin-bottom:8px;line-height:1.2;}
 .gacha-sub{font-size:1rem;color:rgba(255,255,255,0.95);font-weight:700;text-shadow:0 2px 6px rgba(0,0,0,0.4);margin-top:6px;}
 /* 最終フィナーレ */
-#final-curtain{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;}
+#final-curtain{position:fixed;top:0;left:0;width:100vw;height:100vh;min-height:100vh;z-index:9999;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;}
 #final-curtain.hidden{display:none;}
 .final-bg{position:absolute;inset:0;background:radial-gradient(ellipse at center,#3a1f6a 0%,#1a0a2a 60%,#000 100%);}
 .final-rays{position:absolute;inset:-30%;background:conic-gradient(from 0deg,rgba(245,200,66,0.25) 0deg 6deg,transparent 6deg 24deg,rgba(245,200,66,0.18) 24deg 30deg,transparent 30deg 48deg,rgba(255,215,100,0.22) 48deg 54deg,transparent 54deg 72deg);animation:finalRays 10s linear infinite;}
@@ -387,7 +387,9 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div class="panel" style="background:linear-gradient(135deg,#0d3d7a,#1a5fcc);border:2px solid #4a8fff;text-align:center;padding:30px">
         <div style="color:white;font-size:1.2rem;font-weight:700">✅ お題を選びました</div>
         <div style="color:#aef5a0;font-size:0.9rem;margin-top:10px">あなたが選んだお題：</div>
-        <div id="my-selected-topic" style="color:white;font-weight:700;font-size:1rem;margin-top:6px"></div>
+        <div id="my-selected-topic-icon" style="font-size:1.8rem;margin-top:8px">🎯</div>
+        <div id="my-selected-topic" style="color:white;font-weight:900;font-size:1.1rem;margin-top:4px"></div>
+        <div id="my-selected-topic-horses" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px"></div>
         <div style="color:#aaa;font-size:0.85rem;margin-top:20px">他の人を待っています...</div>
         <div id="topic-remaining-count" style="color:#f5c842;font-weight:700;font-size:1.1rem;margin-top:6px"></div>
       </div>
@@ -474,7 +476,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         <div class="horse-grid" id="ob-oya-horse-grid"></div>
       </div>
       <div class="panel"><div class="panel-title">📊 入力内容</div><div id="ob-oya-preview"><div class="empty">馬を選んでください</div></div></div>
-      <div style="margin:10px"><button class="btn btn-oya" id="ob-oya-confirm-btn" onclick="onlineSubmitOyaResult()" disabled>✅ この順位で確定する</button></div>
+      <div style="margin:10px"><button class="btn btn-oya" id="ob-oya-confirm-btn" onclick="onlineSubmitOyaResult()" disabled>📋 この順位で確認する</button></div>
     </div>
   </div>
 </div>
@@ -553,6 +555,44 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div style="margin:10px">
       <button class="btn btn-primary" onclick="onlineConfirmSkip()">✅ 見送る</button>
       <button class="btn btn-secondary" onclick="goTo('screen-online-betting')" style="margin-top:8px">← 戻って賭ける</button>
+    </div>
+  </div>
+</div>
+
+<!-- ONLINE: 親の順位確認画面 -->
+<div class="screen" id="screen-online-oya-confirm">
+  <div class="round-header" id="ooc-round-header">ROUND 1 — 順位確認</div>
+  <div class="scroll-content">
+    <!-- お題パネル -->
+    <div id="ooc-topic-panel" style="margin:10px;background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:12px">
+      <div style="color:rgba(245,200,66,0.6);font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TODAY'S TOPIC</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:1.4rem" id="ooc-topic-icon">🎯</div>
+        <div style="color:var(--gold);font-size:1rem;font-weight:900" id="ooc-topic-title">—</div>
+      </div>
+      <div id="ooc-topic-horses" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
+    </div>
+    <!-- 順位確認チケット -->
+    <div style="background:linear-gradient(135deg,#1a3d2a 0%,#0d2a1a 100%);margin:10px;border-radius:12px;border:2px solid #c060c0;overflow:hidden;box-shadow:0 0 20px rgba(192,96,192,0.4)">
+      <div style="background:linear-gradient(135deg,#a040a0,#c060c0);padding:8px 16px;text-align:center">
+        <div style="font-family:'Racing Sans One',cursive;color:white;font-size:1rem;letter-spacing:3px">👑 OYA RANKING 👑</div>
+      </div>
+      <div style="padding:16px">
+        <div style="text-align:center;margin-bottom:14px">
+          <div style="color:#aef5a0;font-size:0.65rem;letter-spacing:3px;margin-bottom:4px">YOU (OYA)</div>
+          <div style="color:white;font-size:1.4rem;font-weight:900" id="ooc-name">—</div>
+        </div>
+        <div style="border-top:1px dashed rgba(192,96,192,0.4);margin-bottom:14px"></div>
+        <div style="color:#aef5a0;font-size:0.7rem;letter-spacing:2px;margin-bottom:10px;text-align:center">YOUR RANKING</div>
+        <div id="ooc-ranking" style="display:flex;flex-direction:column;gap:8px"></div>
+        <div style="border-top:1px dashed rgba(192,96,192,0.4);margin-top:14px;padding-top:10px;text-align:center;color:rgba(174,245,160,0.7);font-size:0.7rem;line-height:1.5">
+          ⚠️ この内容で決定すると変更できません<br>子の予想と照合されます
+        </div>
+      </div>
+    </div>
+    <div style="margin:10px">
+      <button class="btn btn-oya" onclick="onlineConfirmOyaResult()" style="background:linear-gradient(135deg,#8b1a8b,#5a0d5a);box-shadow:0 3px 8px rgba(139,26,139,0.4)">🏁 この順位で決定！</button>
+      <button class="btn btn-secondary" onclick="goTo('screen-online-betting')" style="margin-top:8px">← 順位を修正する</button>
     </div>
   </div>
 </div>
@@ -2416,6 +2456,14 @@ window.selectOnlineTopic = async function(topicId){
 function showTopicSubmitted(topicId){
   const topic = getOnlineTopics().find(t => t.id === topicId);
   document.getElementById('my-selected-topic').textContent = topic ? topic.title : '(不明)';
+  // アイコン
+  const iconEl = document.getElementById('my-selected-topic-icon');
+  if(iconEl) iconEl.textContent = topic?.icon || '🎯';
+  // 選択肢を色付きで描画
+  const horsesEl = document.getElementById('my-selected-topic-horses');
+  if(horsesEl && topic){
+    horsesEl.innerHTML = (topic.horses || []).map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+  }
   document.getElementById('online-topic-submitted').style.display = 'block';
   // お題リストを隠す
   document.querySelectorAll('#screen-online-topic-select .panel').forEach((p, i) => {
@@ -3013,8 +3061,26 @@ window.onlineConfirmSkip = async function(){
   }
 };
 
-// 親の順位確定
-window.onlineSubmitOyaResult = async function(){
+// 親の順位「確認画面へ」
+window.onlineSubmitOyaResult = function(){
+  if(window.onlineBet.oyaSelections.length < 3){ showNotif('⚠️ 1位・2位・3位を選んでください'); return; }
+  const game = window.online.game;
+  const myName = getOnlinePlayersArray().find(p => p.id === window.online.playerId)?.name || '';
+  const topic = game.selectedTopic;
+  if(!topic){ showNotif('⚠️ お題情報が見つかりません'); return; }
+  // 確認画面のお題＋ランキング描画
+  document.getElementById('ooc-round-header').textContent = `ROUND ${game.currentRound || 1} — 順位確認`;
+  document.getElementById('ooc-name').textContent = myName;
+  renderTopicWithHorses('ooc-topic-icon', 'ooc-topic-title', 'ooc-topic-horses', topic);
+  const rankingEl = document.getElementById('ooc-ranking');
+  if(rankingEl){
+    rankingEl.innerHTML = window.onlineBet.oyaSelections.map((hi, i) => `<div style="display:flex;align-items:center;gap:10px;background:rgba(192,96,192,0.12);border:1px solid rgba(192,96,192,0.4);border-radius:8px;padding:10px 12px"><div style="font-size:1.5rem;width:36px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}" style="width:32px;height:32px;font-size:1rem;flex-shrink:0">${hi+1}</div><div style="color:white;font-weight:700;font-size:1rem">${escapeHtml(topic.horses[hi] || '')}</div></div>`).join('');
+  }
+  goTo('screen-online-oya-confirm');
+};
+
+// 親の順位を実際にDB送信
+window.onlineConfirmOyaResult = async function(){
   if(window.onlineBet.oyaSelections.length < 3){ showNotif('⚠️ 1位・2位・3位を選んでください'); return; }
   try {
     const oyaResultRef = ref(db, `rooms/${window.online.roomCode}/game/oyaResult`);
@@ -3045,7 +3111,8 @@ function enterOnlineBetWait(){
       const r = window.onlineBet.oyaSelections;
       const topic = game?.selectedTopic;
       if(r.length === 3 && topic){
-        msgEl.innerHTML = `👑 順位入力完了！<div style="font-size:0.85rem;color:#aef5a0;margin-top:8px">あなたが入力した順位：</div><div style="font-size:0.9rem;color:white;margin-top:4px">🥇${topic.horses[r[0]]} → 🥈${topic.horses[r[1]]} → 🥉${topic.horses[r[2]]}</div>`;
+        const items = r.map((hi, i) => `<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border-radius:8px;padding:6px 10px;margin-top:6px"><div style="font-size:1.1rem;width:26px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}" style="width:24px;height:24px;font-size:0.8rem">${hi+1}</div><div style="color:white;font-weight:700;font-size:0.9rem">${escapeHtml(topic.horses[hi] || '')}</div></div>`).join('');
+        msgEl.innerHTML = `👑 順位入力完了！<div style="font-size:0.85rem;color:#aef5a0;margin-top:10px;margin-bottom:4px">あなたが入力した順位：</div>${items}`;
       } else {
         msgEl.textContent = '👑 順位入力完了！';
       }
@@ -3055,7 +3122,14 @@ function enterOnlineBetWait(){
         msgEl.textContent = '🎯 見送りで確定しました';
       } else {
         const betNames = {tansho:'単勝', rentan:'連単狙い', sanrentan:'三連単狙い'};
-        msgEl.innerHTML = `🎯 賭け確定！<div style="font-size:0.85rem;color:#aef5a0;margin-top:8px">${betNames[window.onlineBet.betType] || '単勝'} に ${amount.toLocaleString()}点</div>`;
+        const topic = game?.selectedTopic;
+        const sel = window.onlineBet.selectedHorses || [];
+        const posL = ['1位', '2位', '3位'];
+        let selItems = '';
+        if(topic && sel.length){
+          selItems = `<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px">` + sel.map((hi, i) => `<div style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.1);padding:4px 8px;border-radius:10px"><div class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.7rem">${hi+1}</div><span style="color:white;font-size:0.75rem;font-weight:700">${escapeHtml(topic.horses[hi] || '')}</span><span style="color:#aef5a0;font-size:0.65rem">(${posL[i]})</span></div>`).join('') + `</div>`;
+        }
+        msgEl.innerHTML = `🎯 賭け確定！<div style="font-size:0.85rem;color:#aef5a0;margin-top:8px">${betNames[window.onlineBet.betType] || '単勝'} に ${amount.toLocaleString()}点</div>${selItems}`;
       }
     }
   }
