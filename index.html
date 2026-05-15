@@ -350,6 +350,204 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
   </div>
 </div>
 
+<!-- ONLINE: BETTING (子=賭け入力 / 親=順位入力) -->
+<div class="screen" id="screen-online-betting">
+  <div class="round-header" id="ob-round-header">ROUND 1 — 賭けフェーズ</div>
+  <div class="scroll-content">
+    <!-- お題表示 -->
+    <div id="ob-topic-panel" style="margin:10px;background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:12px;cursor:pointer;user-select:none">
+      <div style="color:rgba(245,200,66,0.6);font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TODAY'S TOPIC（長押し/右クリックで選択肢を確認）</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:1.4rem" id="ob-topic-icon">🎯</div>
+        <div style="color:var(--gold);font-size:1rem;font-weight:900" id="ob-topic-title">—</div>
+      </div>
+    </div>
+
+    <!-- 役割バナー -->
+    <div id="ob-role-banner-wrap" style="margin:6px 10px"></div>
+
+    <!-- 自分の情報 -->
+    <div class="panel" style="background:#1a1a1a;border-color:#333">
+      <div style="color:var(--gold);font-size:0.75rem;letter-spacing:2px;margin-bottom:4px" id="ob-my-label">YOUR TURN</div>
+      <div style="color:white;font-size:1.3rem;font-weight:900" id="ob-my-name">—</div>
+      <div style="color:#aaa;font-size:0.75rem;margin-top:4px">持ち点: <span id="ob-my-points" style="color:var(--gold);font-weight:700">5000</span> 点</div>
+    </div>
+
+    <!-- 子用 賭け入力エリア -->
+    <div id="ob-ko-area">
+      <!-- 全員の得点 -->
+      <div class="panel" style="padding:10px 12px">
+        <div class="panel-title">📊 現在の得点</div>
+        <table class="score-table" id="ob-score-table"></table>
+      </div>
+      <div class="panel">
+        <div class="panel-title">🎰 賭けの種類</div>
+        <div class="bet-types">
+          <div class="bet-type-btn active" onclick="onlineSelectBetType('tansho',this)"><div class="bet-name">単勝</div><div class="bet-mult">×2</div><div class="bet-desc">1位を当てる</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('rentan',this)"><div class="bet-name">連単狙い</div><div class="bet-mult">×10/×5</div><div class="bet-desc">1・2位を予想</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('sanrentan',this)"><div class="bet-name">三連単狙い</div><div class="bet-mult">×30/×7</div><div class="bet-desc">1・2・3位予想</div></div>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-title" id="ob-horse-title">🏇 馬を選ぶ（1頭）</div><div class="horse-grid" id="ob-horse-grid"></div></div>
+      <div class="panel">
+        <div class="panel-title">💴 ベット額</div>
+        <div id="ob-bet-hint" style="font-size:0.75rem;color:#888;margin-bottom:8px">最低500点 / 1点単位でOK</div>
+        <div id="ob-bet-display" style="background:#1a1a1a;border-radius:10px;padding:14px 16px;text-align:right;font-size:1.8rem;font-weight:900;color:var(--gold);letter-spacing:2px;min-height:58px;margin-bottom:10px">0</div>
+        <div id="ob-point-presets" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
+        <div id="ob-keypad" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
+      </div>
+      <div style="margin:10px"><button class="btn btn-primary" onclick="onlineSubmitKoBet()">✅ この内容で確定する</button></div>
+    </div>
+
+    <!-- 親用 順位入力エリア -->
+    <div id="ob-oya-area" style="display:none">
+      <div class="panel" style="background:linear-gradient(135deg,#1a3d2a,#0d2a1a);border:2px solid #7dff7d">
+        <div style="color:#aef5a0;font-size:0.85rem;line-height:1.5">👑 <strong>あなた自身</strong>の順位（1位→2位→3位）を入力してください</div>
+        <div style="color:#5dcc5d;font-size:0.75rem;margin-top:4px">他のプレイヤーには見えません</div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">🏆 あなたの順位を入力</div>
+        <div style="font-size:0.8rem;color:#888;margin-bottom:10px">タップして 1位→2位→3位 の順に選んでください</div>
+        <div class="horse-grid" id="ob-oya-horse-grid"></div>
+      </div>
+      <div class="panel"><div class="panel-title">📊 入力内容</div><div id="ob-oya-preview"><div class="empty">馬を選んでください</div></div></div>
+      <div style="margin:10px"><button class="btn btn-oya" id="ob-oya-confirm-btn" onclick="onlineSubmitOyaResult()" disabled>✅ この順位で確定する</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ONLINE: BETTING CONFIRM (子の最終確認) -->
+<div class="screen" id="screen-online-bet-confirm">
+  <div class="round-header" id="obc-round-header">ROUND 1 — 確認</div>
+  <div class="scroll-content">
+    <div style="background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);margin:10px;border-radius:12px;border:2px solid var(--gold);overflow:hidden;box-shadow:0 0 20px rgba(245,200,66,0.3)">
+      <div style="background:var(--gold);padding:8px 16px;text-align:center">
+        <div style="font-family:'Racing Sans One',cursive;color:#1a1a1a;font-size:1rem;letter-spacing:3px">🏇 TICKET CONFIRMATION 🏇</div>
+      </div>
+      <div style="padding:16px">
+        <div style="text-align:center;margin-bottom:14px">
+          <div style="color:#aaa;font-size:0.65rem;letter-spacing:3px;margin-bottom:4px">BETTOR</div>
+          <div style="color:white;font-size:1.4rem;font-weight:900" id="obc-name">—</div>
+          <div style="color:var(--gold);font-size:0.8rem;margin-top:2px">持ち点 <span id="obc-points" style="font-weight:700">5000</span> 点</div>
+        </div>
+        <div style="border-top:1px dashed rgba(245,200,66,0.3);margin-bottom:14px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div style="color:#aaa;font-size:0.7rem;letter-spacing:2px">BET TYPE</div>
+          <div id="obc-bet-type" style="background:var(--gold);color:#1a1a1a;font-size:0.9rem;font-weight:900;padding:4px 14px;border-radius:20px">単勝</div>
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="color:#aaa;font-size:0.7rem;letter-spacing:2px;margin-bottom:8px">SELECTION</div>
+          <div id="obc-horses" style="display:flex;flex-direction:column;gap:6px"></div>
+        </div>
+        <div style="border-top:1px dashed rgba(245,200,66,0.3);margin-bottom:14px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="color:#aaa;font-size:0.7rem;letter-spacing:2px">BET AMOUNT</div>
+          <div id="obc-amount" style="color:var(--gold);font-size:2rem;font-weight:900;text-shadow:0 0 10px rgba(245,200,66,0.5)">0 点</div>
+        </div>
+        <div id="obc-payout-info" style="margin-top:8px;text-align:right;color:#aaa;font-size:0.75rem"></div>
+      </div>
+    </div>
+    <div style="margin:10px">
+      <button class="btn btn-primary" onclick="onlineConfirmBet()" style="background:linear-gradient(135deg,#c0392b,#922b21);box-shadow:0 3px 8px rgba(192,57,43,0.4)">🏁 この馬券で勝負する！</button>
+      <button class="btn btn-secondary" onclick="goTo('screen-online-betting')" style="margin-top:8px">← 賭けを修正する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ONLINE: 見送り確認 -->
+<div class="screen" id="screen-online-skip-confirm">
+  <div class="round-header" id="osc-round-header">ROUND 1 — 見送り確認</div>
+  <div class="scroll-content">
+    <div style="background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);margin:10px;border-radius:12px;border:2px solid #555;overflow:hidden;opacity:0.9">
+      <div style="background:#555;padding:8px 16px;text-align:center">
+        <div style="font-family:'Racing Sans One',cursive;color:#ddd;font-size:1rem;letter-spacing:3px">🎫 PASS — 見送り 🎫</div>
+      </div>
+      <div style="padding:16px;text-align:center">
+        <div style="color:white;font-size:1.4rem;font-weight:900" id="osc-name">—</div>
+        <div style="color:#aaa;font-size:0.8rem;margin-top:6px">持ち点 <span id="osc-points">5000</span> 点</div>
+        <div style="margin:20px 0;color:#aaa;font-size:0.9rem">このラウンドは賭けずに見送ります</div>
+        <div style="color:#888;font-size:0.75rem">点数の増減はありません</div>
+      </div>
+    </div>
+    <div style="margin:10px">
+      <button class="btn btn-primary" onclick="onlineConfirmSkip()">✅ 見送る</button>
+      <button class="btn btn-secondary" onclick="goTo('screen-online-betting')" style="margin-top:8px">← 戻って賭ける</button>
+    </div>
+  </div>
+</div>
+
+<!-- ONLINE: 待機画面（自分は入力完了、他人を待つ） -->
+<div class="screen" id="screen-online-bet-wait">
+  <div class="header"><div class="subtitle" id="obw-round-label">ROUND 1</div><h1>⏳ 待機中</h1></div>
+  <div class="scroll-content">
+    <div class="panel" style="background:linear-gradient(135deg,#0d3d7a,#1a5fcc);border:2px solid #4a8fff;text-align:center;padding:30px">
+      <div style="color:white;font-size:1.2rem;font-weight:700" id="obw-message">✅ 入力完了しました</div>
+      <div style="color:#aef5a0;font-size:0.9rem;margin-top:10px">他のプレイヤーを待っています...</div>
+      <div id="obw-remaining" style="color:#f5c842;font-weight:700;font-size:1.1rem;margin-top:10px"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">📊 進捗</div>
+      <div id="obw-progress-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ONLINE: 一斉公開 -->
+<div class="screen" id="screen-online-reveal">
+  <div class="header"><div class="subtitle" id="orv-round-label">ROUND 1 REVEAL</div><h1>📢 賭け公開！</h1></div>
+  <div class="scroll-content">
+    <div class="panel" style="background:#1a1a1a;border-color:#333;text-align:center">
+      <div style="color:#aaa;font-size:0.75rem;letter-spacing:2px;margin-bottom:6px">TODAY'S TOPIC</div>
+      <div style="color:var(--gold);font-size:1.3rem;font-weight:900" id="orv-topic-name">—</div>
+    </div>
+    <div class="panel"><div class="panel-title">🎰 みんなの賭け内容</div><div id="orv-bets-list"></div></div>
+    <div style="color:#fdf8ed;text-align:center;padding:12px;font-size:0.85rem">みんなで確認したら結果発表！</div>
+    <div style="margin:10px">
+      <button class="btn btn-primary" id="orv-reveal-btn" onclick="onlineReadyForResult()">🎊 結果発表の準備完了！</button>
+      <div id="orv-ready-status" style="text-align:center;color:#aaa;font-size:0.85rem;margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ONLINE: ラウンド結果 -->
+<div class="screen" id="screen-online-roundresult">
+  <div class="header"><div class="subtitle" id="orr-round-label">ROUND 1 RESULT</div><h1>🎊 ラウンド結果</h1></div>
+  <div class="scroll-content">
+    <div class="panel"><div class="panel-title">🏆 親の実際の順位</div><div id="orr-actual-result"></div></div>
+    <div class="panel"><div class="panel-title">💰 子の結果</div><div id="orr-player-results"></div></div>
+    <div class="panel" id="orr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="orr-oya-summary"></div></div>
+    <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="orr-score-table"></table></div>
+    <div style="margin:10px">
+      <button class="btn btn-primary" id="orr-next-btn" onclick="onlineReadyForNext()">次のラウンドへ →</button>
+      <div id="orr-ready-status" style="text-align:center;color:#aaa;font-size:0.85rem;margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ONLINE: 最終結果 -->
+<div class="screen" id="screen-online-final">
+  <div class="header"><div class="subtitle">GAME OVER</div><h1>🏆 最終結果</h1></div>
+  <div class="scroll-content">
+    <div class="panel" style="text-align:center;padding:20px">
+      <div style="font-size:3rem;margin-bottom:8px">🥇</div>
+      <div style="font-size:0.75rem;letter-spacing:3px;color:var(--gold-dark);margin-bottom:4px">WINNER</div>
+      <div style="font-size:2rem;font-weight:900" id="ofn-winner"></div>
+      <div style="font-size:1.2rem;color:var(--gold-dark);font-weight:700;margin-top:4px" id="ofn-winner-pts"></div>
+    </div>
+    <div class="panel"><div class="panel-title">📊 最終得点表</div><table class="score-table" id="ofn-score-table"></table></div>
+    <!-- ホスト用：もう一度ボタン -->
+    <div id="ofn-host-controls" style="display:none;margin:10px">
+      <button class="btn btn-primary" onclick="onlineRestartGame()" style="background:linear-gradient(135deg,#c0392b,#922b21)">🔄 同じメンバーでもう一度</button>
+    </div>
+    <div id="ofn-guest-info" style="display:none;text-align:center;color:#aaa;font-size:0.85rem;padding:8px 16px">
+      ホストが「もう一度」を押すと再戦できます
+    </div>
+    <div style="margin:10px">
+      <button class="btn btn-secondary" onclick="leaveRoom(true)">🏠 ホームに戻る</button>
+    </div>
+  </div>
+</div>
+
 <!-- SETUP -->
 <div class="screen" id="screen-setup">
   <div class="header"><div class="subtitle">GAME SETUP</div><h1>🏇 ゲーム設定</h1></div>
@@ -1794,8 +1992,10 @@ function enterLobby(){
   window.online.settingsUnsub = onValue(settingsRef, (snap) => {
     const settings = snap.val();
     if(!settings) return;
+    // 全員：常にローカル設定を最新化
+    window.online.settings = settings;
     if(window.online.isHost){
-      // ホストは自分が編集中なので反映しない
+      // ホストは自分が編集中なので表示は反映しない
     } else {
       // ゲストには表示
       const disp = document.getElementById('lobby-settings-display');
@@ -1910,10 +2110,46 @@ function onGameStateUpdate(game){
   if(game.phase === 'topic-lottery' && !document.getElementById('screen-online-topic-lottery').classList.contains('active')){
     enterOnlineTopicLottery(game);
   }
+  if(game.phase === 'betting'){
+    // 初回遷移
+    const onBettingScreen = document.getElementById('screen-online-betting').classList.contains('active')
+                          || document.getElementById('screen-online-bet-confirm').classList.contains('active')
+                          || document.getElementById('screen-online-skip-confirm').classList.contains('active')
+                          || document.getElementById('screen-online-bet-wait').classList.contains('active');
+    if(!onBettingScreen){
+      enterOnlineBetting(game);
+    } else {
+      // 既に賭け関連画面にいる → 待機画面の進捗を更新
+      if(document.getElementById('screen-online-bet-wait').classList.contains('active')){
+        updateBetWaitProgress(game);
+      }
+    }
+    // ホストは全員入力完了をチェック
+    checkAllBetsSubmitted();
+  }
+  if(game.phase === 'reveal' && !document.getElementById('screen-online-reveal').classList.contains('active')){
+    enterOnlineReveal(game);
+  }
+  if(game.phase === 'reveal' && document.getElementById('screen-online-reveal').classList.contains('active')){
+    updateRevealReadyStatus(game);
+    checkAllReadyForResult();
+  }
+  if(game.phase === 'result' && !document.getElementById('screen-online-roundresult').classList.contains('active')){
+    enterOnlineRoundResult(game);
+  }
+  if(game.phase === 'result' && document.getElementById('screen-online-roundresult').classList.contains('active')){
+    updateNextReadyStatus(game);
+    checkAllReadyForNext();
+  }
+  if(game.phase === 'final' && !document.getElementById('screen-online-final').classList.contains('active')){
+    enterOnlineFinal(game);
+  }
 
   // お題選択の進捗を表示
   if(game.phase === 'topic-select' && game.topicSelections){
     updateTopicWaitingDisplay(game.topicSelections);
+    // ホストは他人の選択完了も検知して抽選チェック
+    checkAllTopicsSelected();
   }
 }
 
@@ -2187,6 +2423,29 @@ function enterOnlineTopicLottery(game){
       if(window.online.isHost){
         setTimeout(async () => {
           try {
+            // 選ばれたお題の情報をDBに保存（全員が同じデータを使えるように）
+            const winTopicFull = topics.find(t => t.id === lottery.chosenTopicId);
+            if(winTopicFull){
+              const topicRef = ref(db, `rooms/${window.online.roomCode}/game/selectedTopic`);
+              await set(topicRef, {
+                id: winTopicFull.id,
+                title: winTopicFull.title,
+                icon: winTopicFull.icon || '🎯',
+                horses: winTopicFull.horses || [],
+                category: winTopicFull.category || 'g3'
+              });
+            }
+            // 初期持ち点をまだ設定していなければ設定
+            const pointsRef = ref(db, `rooms/${window.online.roomCode}/game/points`);
+            const pointsSnap = await get(pointsRef);
+            if(!pointsSnap.exists()){
+              const initial = window.online.settings?.initialPoints || 5000;
+              const players = getOnlinePlayersArray();
+              const pointsObj = {};
+              players.forEach(p => { pointsObj[p.id] = initial; });
+              await set(pointsRef, pointsObj);
+            }
+            // 賭けフェーズへ
             const phaseRef = ref(db, `rooms/${window.online.roomCode}/game/phase`);
             await set(phaseRef, 'betting');
           } catch(e) { console.error(e); }
@@ -2226,6 +2485,17 @@ function renderLobbyPlayers(players){
         document.getElementById('lobby-host-controls').style.display = 'block';
         document.getElementById('lobby-guest-info').style.display = 'none';
         showNotif('👑 あなたがホストになりました');
+        // 新ホストとして、ゲーム進行が止まらないよう自動チェックを起動
+        setTimeout(() => {
+          try {
+            const game = window.online.game;
+            if(!game) return;
+            if(game.phase === 'topic-select') checkAllTopicsSelected();
+            else if(game.phase === 'betting') checkAllBetsSubmitted();
+            else if(game.phase === 'reveal') checkAllReadyForResult();
+            else if(game.phase === 'result') checkAllReadyForNext();
+          } catch(e){ console.error(e); }
+        }, 500);
       } catch(e) { console.error(e); }
     }
   }
@@ -2238,9 +2508,932 @@ function renderLobbyPlayers(players){
   }).join('');
 }
 
+// ============================================================
+// オンライン賭けフェーズ
+// ============================================================
+
+// オンライン用 賭けの状態管理
+window.onlineBet = {
+  betType: 'tansho',
+  selectedHorses: [],
+  betInputVal: '',
+  oyaSelections: [] // 親の順位入力
+};
+
+// 賭けフェーズに入る
+function enterOnlineBetting(game){
+  goTo('screen-online-betting');
+
+  // 状態リセット
+  window.onlineBet.betType = 'tansho';
+  window.onlineBet.selectedHorses = [];
+  window.onlineBet.betInputVal = '';
+  window.onlineBet.oyaSelections = [];
+
+  const players = getOnlinePlayersArray();
+  const oyaIdx = game.oyaIndex || 0;
+  const oyaPlayer = players[oyaIdx];
+  const isOya = oyaPlayer && oyaPlayer.id === window.online.playerId;
+  const myPlayer = players.find(p => p.id === window.online.playerId);
+  const myPoints = (game.points && game.points[window.online.playerId]) || (window.online.settings?.initialPoints || 5000);
+
+  document.getElementById('ob-round-header').textContent = `ROUND ${game.currentRound || 1} — 賭けフェーズ`;
+  document.getElementById('ob-my-name').textContent = myPlayer ? myPlayer.name : '—';
+  document.getElementById('ob-my-points').textContent = myPoints.toLocaleString();
+
+  // お題情報
+  const topic = game.selectedTopic;
+  if(topic){
+    document.getElementById('ob-topic-icon').textContent = topic.icon || '🎯';
+    document.getElementById('ob-topic-title').textContent = topic.title || '—';
+    // お題長押しで選択肢確認
+    const tp = document.getElementById('ob-topic-panel');
+    if(tp){
+      let pt = null;
+      tp.onclick = null;
+      tp.oncontextmenu = (e) => { e.preventDefault(); openOnlineTopicPopup(topic); };
+      tp.ontouchstart = () => { pt = setTimeout(() => openOnlineTopicPopup(topic), 400); };
+      tp.ontouchend = () => clearTimeout(pt);
+      tp.ontouchmove = () => clearTimeout(pt);
+      tp.onmousedown = (e) => { if(e.button === 0) pt = setTimeout(() => openOnlineTopicPopup(topic), 600); };
+      tp.onmouseup = () => clearTimeout(pt);
+    }
+  }
+
+  // 役割バナー
+  const bannerWrap = document.getElementById('ob-role-banner-wrap');
+  if(isOya){
+    bannerWrap.innerHTML = `
+      <div style="background:linear-gradient(135deg,#f9eef9,#f5e0f5);border:2px solid #c060c0;border-radius:8px;padding:10px 14px">
+        <div style="color:#a040a0;font-size:0.85rem;font-weight:900">👑 あなたは親です！</div>
+        <div style="color:#a060a0;font-size:0.75rem;margin-top:2px">あなた自身の順位（1位・2位・3位）を入力してください</div>
+      </div>`;
+    document.getElementById('ob-ko-area').style.display = 'none';
+    document.getElementById('ob-oya-area').style.display = '';
+    document.getElementById('ob-my-label').textContent = '👑 親 — YOUR TURN';
+    renderOyaHorseGrid();
+  } else {
+    bannerWrap.innerHTML = `
+      <div style="background:#0d2a3a;border:1px solid #4488ff;border-radius:8px;padding:10px 14px">
+        <div style="color:#88ccff;font-size:0.85rem;font-weight:900">🎯 あなたは子です</div>
+        <div style="color:#66aadd;font-size:0.75rem;margin-top:2px">親の「${oyaPlayer?.name || '?'}さん」の順位を予想して賭けてください</div>
+      </div>`;
+    document.getElementById('ob-ko-area').style.display = '';
+    document.getElementById('ob-oya-area').style.display = 'none';
+    document.getElementById('ob-my-label').textContent = '🎯 子 — YOUR TURN';
+    // 得点表
+    renderOnlineScoreTable('ob-score-table', game);
+    // 倍率表示更新
+    updateOnlineBetTypeLabels();
+    // 馬グリッド初期描画（単勝）
+    document.querySelectorAll('#screen-online-betting .bet-type-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+    updateOnlineHorseTitle();
+    renderOnlineHorseGrid();
+    renderOnlineKeypad(myPoints);
+    const disp = document.getElementById('ob-bet-display');
+    if(disp){ disp.textContent = '0'; disp.style.color = 'var(--gold)'; }
+  }
+}
+
+// お題ポップアップ（オンライン版、既存のopenTopicPopupを使うが念のためカスタム）
+function openOnlineTopicPopup(topic){
+  if(typeof openTopicPopup === 'function'){
+    openTopicPopup(topic);
+  }
+}
+
+// 倍率ラベル更新
+function updateOnlineBetTypeLabels(){
+  // オフライン版と同じデフォルト倍率（settings.oddsは未実装なのでデフォルト固定）
+  const btns = document.querySelectorAll('#screen-online-betting .bet-type-btn .bet-mult');
+  if(btns[0]) btns[0].textContent = '×2';
+  if(btns[1]) btns[1].textContent = '×10/×5';
+  if(btns[2]) btns[2].textContent = '×30/×7';
+}
+
+// 賭けタイプ選択
+window.onlineSelectBetType = function(type, el){
+  window.onlineBet.betType = type;
+  window.onlineBet.selectedHorses = [];
+  document.querySelectorAll('#screen-online-betting .bet-type-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  updateOnlineHorseTitle();
+  renderOnlineHorseGrid();
+};
+
+function updateOnlineHorseTitle(){
+  const t = {tansho:'🏇 馬を選ぶ（1頭：1位予想）', rentan:'🏇 馬を選ぶ（2頭：1位→2位の順に）', sanrentan:'🏇 馬を選ぶ（3頭：1位→2位→3位の順に）'};
+  document.getElementById('ob-horse-title').textContent = t[window.onlineBet.betType];
+}
+
+function getOnlineMaxSel(){ return {tansho:1, rentan:2, sanrentan:3}[window.onlineBet.betType]; }
+
+function renderOnlineHorseGrid(){
+  const game = window.online.game;
+  const topic = game?.selectedTopic;
+  const c = document.getElementById('ob-horse-grid');
+  if(!c || !topic) return;
+  c.innerHTML = '';
+  const sel = window.onlineBet.selectedHorses;
+  (topic.horses || []).forEach((name, i) => {
+    const pi = sel.indexOf(i);
+    const d = document.createElement('div');
+    d.className = 'horse-card' + (pi===0?' selected-1':pi===1?' selected-2':pi===2?' selected-3':'');
+    let badge = '';
+    if(pi >= 0){
+      const cls = pi===0?'':(pi===1?' pos-2':' pos-3');
+      badge = `<div class="sel-label${cls}">${['1位','2位','3位'][pi]}</div>`;
+    }
+    d.innerHTML = `${badge}<div class="num-badge ${HC[i]}">${i+1}</div><div class="horse-name">${name}</div>`;
+    d.onclick = () => onlineSelectHorseForBet(i);
+    c.appendChild(d);
+  });
+}
+
+function onlineSelectHorseForBet(idx){
+  const sel = window.onlineBet.selectedHorses;
+  const p = sel.indexOf(idx);
+  if(p >= 0) sel.splice(p, 1);
+  else {
+    if(sel.length >= getOnlineMaxSel()) sel.shift();
+    sel.push(idx);
+  }
+  renderOnlineHorseGrid();
+}
+
+// 親の順位入力グリッド
+function renderOyaHorseGrid(){
+  const game = window.online.game;
+  const topic = game?.selectedTopic;
+  const c = document.getElementById('ob-oya-horse-grid');
+  if(!c || !topic) return;
+  c.innerHTML = '';
+  const sel = window.onlineBet.oyaSelections;
+  (topic.horses || []).forEach((name, i) => {
+    const pi = sel.indexOf(i);
+    const d = document.createElement('div');
+    d.className = 'horse-card' + (pi===0?' selected-1':pi===1?' selected-2':pi===2?' selected-3':'');
+    let badge = '';
+    if(pi >= 0){
+      const cls = pi===0?'':(pi===1?' pos-2':' pos-3');
+      badge = `<div class="sel-label${cls}">${['1位','2位','3位'][pi]}</div>`;
+    }
+    d.innerHTML = `${badge}<div class="num-badge ${HC[i]}">${i+1}</div><div class="horse-name">${name}</div>`;
+    d.onclick = () => onlineSelectOyaHorse(i);
+    c.appendChild(d);
+  });
+  updateOyaPreview();
+}
+
+function onlineSelectOyaHorse(idx){
+  const sel = window.onlineBet.oyaSelections;
+  const p = sel.indexOf(idx);
+  if(p >= 0) sel.splice(p, 1);
+  else {
+    if(sel.length >= 3) return;
+    sel.push(idx);
+  }
+  renderOyaHorseGrid();
+}
+
+function updateOyaPreview(){
+  const game = window.online.game;
+  const topic = game?.selectedTopic;
+  const c = document.getElementById('ob-oya-preview');
+  const btn = document.getElementById('ob-oya-confirm-btn');
+  if(!c || !topic) return;
+  const sel = window.onlineBet.oyaSelections;
+  if(!sel.length){
+    c.innerHTML = '<div class="empty">馬を選んでください</div>';
+    btn.disabled = true;
+    return;
+  }
+  c.innerHTML = sel.map((hi, i) => `<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i] || ''}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700">${topic.horses[hi]}</div></div>`).join('');
+  btn.disabled = sel.length < 3;
+}
+
+// ベット額入力
+function setOnlineBetInputVal(v){
+  window.onlineBet.betInputVal = v;
+  const display = document.getElementById('ob-bet-display');
+  if(!display) return;
+  const num = parseInt(v) || 0;
+  display.textContent = num > 0 ? num.toLocaleString() + ' 点' : '0';
+  try {
+    const game = window.online.game;
+    const myPoints = (game?.points && game.points[window.online.playerId]) || 0;
+    const minBetRaw = window.online.settings?.minBet || 0;
+    const minBet = myPoints <= minBetRaw ? myPoints : minBetRaw;
+    display.style.color = num > myPoints ? '#e74c3c' : num >= minBet ? '#2ecc71' : 'var(--gold)';
+  } catch(e){}
+}
+
+function renderOnlineKeypad(maxPoints){
+  const minBetRaw = window.online.settings?.minBet || 0;
+  const isAllin = maxPoints <= minBetRaw && minBetRaw > 0 || maxPoints <= 0;
+  const keypadEl = document.getElementById('ob-keypad');
+  const presetEl = document.getElementById('ob-point-presets');
+  if(!keypadEl || !presetEl) return;
+  keypadEl.innerHTML = '';
+  presetEl.innerHTML = '';
+  if(isAllin){
+    const hintEl = document.getElementById('ob-bet-hint');
+    if(hintEl) hintEl.innerHTML = `<span style="color:var(--red);font-weight:700">⚠️ 最低ベット額以下 — オールインのみ（${Math.max(maxPoints,0).toLocaleString()}点）</span>`;
+    window.onlineBet.betInputVal = String(Math.max(maxPoints, 0));
+    setOnlineBetInputVal(window.onlineBet.betInputVal);
+    keypadEl.style.display = 'none';
+    presetEl.style.display = 'none';
+    return;
+  }
+  const hintEl = document.getElementById('ob-bet-hint');
+  if(hintEl) hintEl.textContent = `最低${minBetRaw.toLocaleString()}点 / 最大${maxPoints.toLocaleString()}点 / 1点単位でOK`;
+  keypadEl.style.display = 'grid';
+  presetEl.style.display = 'flex';
+  const presets = minBetRaw === 0 ? [0, 500, 1000, 2000, 3000, 5000] : [minBetRaw, 500, 1000, 2000, 3000, 5000];
+  [...new Set(presets)].filter(n => n <= maxPoints && n >= 0).forEach(n => {
+    const b = document.createElement('button');
+    b.className = 'point-btn';
+    b.textContent = n === 0 ? '0点' : n.toLocaleString();
+    b.addEventListener('click', () => setOnlineBetInputVal(String(n)));
+    presetEl.appendChild(b);
+  });
+  const ai = document.createElement('button');
+  ai.className = 'point-btn';
+  ai.textContent = 'ALL IN';
+  ai.style.cssText = 'background:#ffebee;border-color:#e57373;color:#c0392b;font-weight:900';
+  ai.addEventListener('click', () => setOnlineBetInputVal(String(maxPoints)));
+  presetEl.appendChild(ai);
+  ['1','2','3','4','5','6','7','8','9','00','0','DEL'].forEach(k => {
+    const b = document.createElement('button');
+    b.textContent = k === 'DEL' ? '⌫' : k;
+    b.style.cssText = `padding:16px 4px;font-size:${k==='DEL'?'1.3rem':'1.2rem'};font-weight:700;border:2px solid #ddd;border-radius:10px;background:${k==='DEL'?'#fee':'white'};cursor:pointer;-webkit-tap-highlight-color:transparent;`;
+    b.addEventListener('click', (e) => { e.preventDefault(); handleOnlineKey(k, maxPoints); });
+    keypadEl.appendChild(b);
+  });
+}
+
+function handleOnlineKey(k, max){
+  try {
+    let v = window.onlineBet.betInputVal;
+    if(k === 'DEL') v = v.slice(0, -1);
+    else if(k === '00'){ if(v === '' || v === '0') return; v += '00'; }
+    else { if(v === '0') v = k; else v += k; }
+    const num = parseInt(v) || 0;
+    if(num > max) v = String(max);
+    v = v.replace(/^0+(\d)/, '$1');
+    window.onlineBet.betInputVal = v;
+    setOnlineBetInputVal(v);
+  } catch(e){}
+}
+
+// 子が「確定」を押した
+window.onlineSubmitKoBet = function(){
+  const game = window.online.game;
+  const myPoints = (game?.points && game.points[window.online.playerId]) || 0;
+  const amount = parseInt(window.onlineBet.betInputVal) || 0;
+  const needed = getOnlineMaxSel();
+  const minBetRaw = window.online.settings?.minBet || 0;
+  const minBet = myPoints <= minBetRaw ? myPoints : minBetRaw;
+
+  // 見送り（minBet=0かつ0点入力）
+  if(amount === 0 && minBetRaw === 0){
+    const myName = getOnlinePlayersArray().find(p => p.id === window.online.playerId)?.name || '';
+    document.getElementById('osc-round-header').textContent = `ROUND ${game.currentRound || 1} — 見送り確認`;
+    document.getElementById('osc-name').textContent = myName;
+    document.getElementById('osc-points').textContent = myPoints.toLocaleString();
+    goTo('screen-online-skip-confirm');
+    return;
+  }
+  if(amount < minBet){
+    showNotif(`⚠️ ${minBet.toLocaleString()}点以上を入力してください`);
+    return;
+  }
+  if(amount > myPoints){ showNotif('⚠️ 持ち点が足りません'); return; }
+  if(window.onlineBet.selectedHorses.length < needed){ showNotif(`⚠️ 馬を${needed}頭選んでください`); return; }
+
+  // 確認画面へ
+  const myName = getOnlinePlayersArray().find(p => p.id === window.online.playerId)?.name || '';
+  const topic = game.selectedTopic;
+  const betNames = {tansho:'単勝', rentan:'連単狙い', sanrentan:'三連単狙い'};
+  const odds = {tansho:2, renfuku:5, rentan:10, sanrenfuku:7, sanrentan:30}; // デフォルト固定
+  const multInfo = {
+    tansho: `的中で ×${odds.tansho}（${Math.floor(amount*odds.tansho).toLocaleString()}点獲得）`,
+    rentan: `連単的中で ×${odds.rentan}（${Math.floor(amount*odds.rentan).toLocaleString()}点）/ 連複で ×${odds.renfuku}（${Math.floor(amount*odds.renfuku).toLocaleString()}点）`,
+    sanrentan: `三連単で ×${odds.sanrentan}（${Math.floor(amount*odds.sanrentan).toLocaleString()}点）/ 3連複で ×${odds.sanrenfuku}（${Math.floor(amount*odds.sanrenfuku).toLocaleString()}点）`
+  };
+  const posLabels = ['🥇 1位', '🥈 2位', '🥉 3位'];
+  document.getElementById('obc-round-header').textContent = `ROUND ${game.currentRound || 1} — 馬券確認`;
+  document.getElementById('obc-name').textContent = myName;
+  document.getElementById('obc-points').textContent = myPoints.toLocaleString();
+  document.getElementById('obc-bet-type').textContent = betNames[window.onlineBet.betType];
+  document.getElementById('obc-amount').textContent = amount.toLocaleString() + ' 点';
+  document.getElementById('obc-payout-info').textContent = multInfo[window.onlineBet.betType];
+  document.getElementById('obc-horses').innerHTML = window.onlineBet.selectedHorses.map((hi, i) => `<div style="display:flex;align-items:center;gap:8px;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);border-radius:8px;padding:8px 12px"><div style="color:var(--gold);font-size:0.8rem;font-weight:900;min-width:50px">${posLabels[i] || ''}</div><div class="ibadge ${HC[hi]}" style="width:24px;height:24px;font-size:0.8rem">${hi+1}</div><div style="color:white;font-weight:700">${topic.horses[hi]}</div></div>`).join('');
+  goTo('screen-online-bet-confirm');
+};
+
+// 馬券確定 → DBに保存
+window.onlineConfirmBet = async function(){
+  const amount = parseInt(window.onlineBet.betInputVal) || 0;
+  try {
+    const myBetRef = ref(db, `rooms/${window.online.roomCode}/game/bets/${window.online.playerId}`);
+    await set(myBetRef, {
+      betType: window.onlineBet.betType,
+      selections: [...window.onlineBet.selectedHorses],
+      amount: amount,
+      skipped: false,
+      submittedAt: Date.now()
+    });
+    enterOnlineBetWait();
+  } catch(e){
+    console.error(e);
+    showNotif('⚠️ 送信に失敗しました');
+  }
+};
+
+// 見送り確定
+window.onlineConfirmSkip = async function(){
+  try {
+    const myBetRef = ref(db, `rooms/${window.online.roomCode}/game/bets/${window.online.playerId}`);
+    await set(myBetRef, {
+      betType: 'tansho',
+      selections: [],
+      amount: 0,
+      skipped: true,
+      submittedAt: Date.now()
+    });
+    enterOnlineBetWait();
+  } catch(e){
+    console.error(e);
+    showNotif('⚠️ 送信に失敗しました');
+  }
+};
+
+// 親の順位確定
+window.onlineSubmitOyaResult = async function(){
+  if(window.onlineBet.oyaSelections.length < 3){ showNotif('⚠️ 1位・2位・3位を選んでください'); return; }
+  try {
+    const oyaResultRef = ref(db, `rooms/${window.online.roomCode}/game/oyaResult`);
+    await set(oyaResultRef, [...window.onlineBet.oyaSelections]);
+    enterOnlineBetWait();
+  } catch(e){
+    console.error(e);
+    showNotif('⚠️ 送信に失敗しました');
+  }
+};
+
+// 待機画面へ
+function enterOnlineBetWait(){
+  goTo('screen-online-bet-wait');
+  const game = window.online.game;
+  document.getElementById('obw-round-label').textContent = `ROUND ${game?.currentRound || 1}`;
+  // 自分の入力内容を表示
+  const players = getOnlinePlayersArray();
+  const oyaIdx = game?.oyaIndex || 0;
+  const isOya = players[oyaIdx]?.id === window.online.playerId;
+  const msgEl = document.getElementById('obw-message');
+  if(msgEl){
+    if(isOya){
+      const r = window.onlineBet.oyaSelections;
+      const topic = game?.selectedTopic;
+      if(r.length === 3 && topic){
+        msgEl.innerHTML = `👑 順位入力完了！<div style="font-size:0.85rem;color:#aef5a0;margin-top:8px">あなたが入力した順位：</div><div style="font-size:0.9rem;color:white;margin-top:4px">🥇${topic.horses[r[0]]} → 🥈${topic.horses[r[1]]} → 🥉${topic.horses[r[2]]}</div>`;
+      } else {
+        msgEl.textContent = '👑 順位入力完了！';
+      }
+    } else {
+      const amount = parseInt(window.onlineBet.betInputVal) || 0;
+      if(amount === 0){
+        msgEl.textContent = '🎯 見送りで確定しました';
+      } else {
+        const betNames = {tansho:'単勝', rentan:'連単狙い', sanrentan:'三連単狙い'};
+        msgEl.innerHTML = `🎯 賭け確定！<div style="font-size:0.85rem;color:#aef5a0;margin-top:8px">${betNames[window.onlineBet.betType] || '単勝'} に ${amount.toLocaleString()}点</div>`;
+      }
+    }
+  }
+  updateBetWaitProgress(game);
+}
+
+function updateBetWaitProgress(game){
+  if(!game) return;
+  const players = getOnlinePlayersArray();
+  const oyaIdx = game.oyaIndex || 0;
+  const oyaPlayer = players[oyaIdx];
+  const bets = game.bets || {};
+  const oyaResult = game.oyaResult;
+
+  // 進捗リスト
+  const progressList = document.getElementById('obw-progress-list');
+  if(progressList){
+    progressList.innerHTML = players.map((p, i) => {
+      const isOya = i === oyaIdx;
+      let status, color;
+      if(isOya){
+        if(oyaResult && oyaResult.length === 3){ status = '✅ 完了'; color = '#2ecc71'; }
+        else { status = '⏳ 入力中'; color = '#f5c842'; }
+      } else {
+        if(bets[p.id]){ status = '✅ 完了'; color = '#2ecc71'; }
+        else { status = '⏳ 入力中'; color = '#f5c842'; }
+      }
+      const meBadge = p.id === window.online.playerId ? '<span style="background:#1a7a1a;color:white;font-size:0.65rem;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:6px">あなた</span>' : '';
+      const roleBadge = isOya ? '<span class="oya-badge" style="margin-left:6px">親</span>' : '<span class="ko-badge" style="margin-left:6px">子</span>';
+      return `<div style="padding:8px 12px;border:1px solid #ddd;border-radius:8px;margin-bottom:6px;background:white;display:flex;align-items:center"><span style="flex:1;font-weight:700">${p.name}${roleBadge}${meBadge}</span><span style="color:${color};font-weight:700;font-size:0.85rem">${status}</span></div>`;
+    }).join('');
+  }
+
+  // 残り人数
+  let remaining = 0;
+  players.forEach((p, i) => {
+    if(i === oyaIdx){
+      if(!oyaResult || oyaResult.length < 3) remaining++;
+    } else {
+      if(!bets[p.id]) remaining++;
+    }
+  });
+  const rem = document.getElementById('obw-remaining');
+  if(rem){
+    rem.textContent = remaining > 0 ? `あと${remaining}人が入力中...` : '✅ 全員入力完了！';
+  }
+}
+
+// ホストが全員入力完了をチェック → reveal フェーズへ
+async function checkAllBetsSubmitted(){
+  if(!window.online.isHost) return;
+  try {
+    const game = window.online.game;
+    if(!game || game.phase !== 'betting') return;
+    const players = getOnlinePlayersArray();
+    const oyaIdx = game.oyaIndex || 0;
+    const bets = game.bets || {};
+    const oyaResult = game.oyaResult;
+
+    // 親の順位入力完了？
+    if(!oyaResult || oyaResult.length < 3) return;
+    // 子全員入力完了？
+    const koPlayers = players.filter((p, i) => i !== oyaIdx);
+    const allKoSubmitted = koPlayers.every(p => bets[p.id]);
+    if(!allKoSubmitted) return;
+
+    // reveal フェーズへ
+    const phaseRef = ref(db, `rooms/${window.online.roomCode}/game/phase`);
+    await set(phaseRef, 'reveal');
+  } catch(e){
+    console.error('checkAllBetsSubmitted error:', e);
+  }
+}
+
+// ============================================================
+// 一斉公開画面
+// ============================================================
+
+function enterOnlineReveal(game){
+  goTo('screen-online-reveal');
+  document.getElementById('orv-round-label').textContent = `ROUND ${game.currentRound || 1} REVEAL`;
+  const topic = game.selectedTopic;
+  if(topic){
+    document.getElementById('orv-topic-name').textContent = `${topic.icon || '🎯'} ${topic.title || ''}`;
+  }
+
+  const players = getOnlinePlayersArray();
+  const oyaIdx = game.oyaIndex || 0;
+  const bets = game.bets || {};
+  const betNames = {tansho:'単勝', rentan:'連単狙い', sanrentan:'三連単狙い'};
+  const posL = ['1位', '2位', '3位'];
+
+  const list = document.getElementById('orv-bets-list');
+  if(list){
+    list.innerHTML = players.map((p, i) => {
+      if(i === oyaIdx){
+        return `<div class="reveal-card" style="background:#f9eef9;border-color:#c060c0"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="oya-badge">親</span></span><span style="color:#a040a0;font-size:0.85rem;font-weight:700">順位入力済み（非公開）</span></div></div>`;
+      }
+      const bet = bets[p.id];
+      if(!bet || bet.skipped || bet.amount === 0){
+        return `<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;
+      }
+      const tags = (bet.selections || []).map((hi, si) => `<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700"><span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem">${hi+1}</span>${topic.horses[hi]}<span style="color:#aaa;font-size:0.65rem">(${posL[si]})</span></span>`).join('');
+      return `<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span class="reveal-bet-type">${betNames[bet.betType]}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${tags}</div><div style="font-size:0.85rem;color:#888;margin-top:6px">賭け金：<strong>${(bet.amount||0).toLocaleString()}点</strong></div></div>`;
+    }).join('');
+  }
+
+  // 自分の準備状況をリセット表示
+  const myReady = (game.revealReady || {})[window.online.playerId];
+  const btn = document.getElementById('orv-reveal-btn');
+  if(btn){
+    btn.disabled = !!myReady;
+    btn.textContent = myReady ? '✅ 準備完了済み — 他の人を待っています' : '🎊 結果発表の準備完了！';
+  }
+  updateRevealReadyStatus(game);
+}
+
+function updateRevealReadyStatus(game){
+  const players = getOnlinePlayersArray();
+  const ready = game.revealReady || {};
+  const readyCount = players.filter(p => ready[p.id]).length;
+  const el = document.getElementById('orv-ready-status');
+  if(el){
+    el.textContent = readyCount >= players.length ? '✅ 全員準備完了！' : `準備完了：${readyCount}/${players.length}人`;
+  }
+  // ボタン状態同期
+  const myReady = ready[window.online.playerId];
+  const btn = document.getElementById('orv-reveal-btn');
+  if(btn){
+    btn.disabled = !!myReady;
+    btn.textContent = myReady ? '✅ 準備完了済み — 他の人を待っています' : '🎊 結果発表の準備完了！';
+  }
+}
+
+// 自分が「準備完了」を押した
+window.onlineReadyForResult = async function(){
+  try {
+    const myReadyRef = ref(db, `rooms/${window.online.roomCode}/game/revealReady/${window.online.playerId}`);
+    await set(myReadyRef, true);
+  } catch(e){ console.error(e); }
+};
+
+// ホストが全員準備完了チェック → 計算 → result フェーズへ
+async function checkAllReadyForResult(){
+  if(!window.online.isHost) return;
+  try {
+    const game = window.online.game;
+    if(!game || game.phase !== 'reveal') return;
+    const players = getOnlinePlayersArray();
+    const ready = game.revealReady || {};
+    const allReady = players.every(p => ready[p.id]);
+    if(!allReady) return;
+
+    // 結果計算
+    const results = calculateOnlineResults(game, players);
+
+    // DB更新
+    const updates = {};
+    updates[`rooms/${window.online.roomCode}/game/results`] = results.roundLog;
+    updates[`rooms/${window.online.roomCode}/game/points`] = results.newPoints;
+    updates[`rooms/${window.online.roomCode}/game/phase`] = 'result';
+    // history に追記
+    const historyRef = ref(db, `rooms/${window.online.roomCode}/game/history`);
+    const histSnap = await get(historyRef);
+    const hist = histSnap.val() || [];
+    hist.push(results.roundLog);
+    updates[`rooms/${window.online.roomCode}/game/history`] = hist;
+    await update(ref(db), updates);
+  } catch(e){
+    console.error('checkAllReadyForResult error:', e);
+  }
+}
+
+// 結果計算（オフライン版のcalculateResultsをベースに）
+function calculateOnlineResults(game, players){
+  const odds = {tansho:2, renfuku:5, rentan:10, sanrenfuku:7, sanrentan:30};
+  const oyaBonusRate = window.online.settings?.oyaBonusRate || 0;
+  const oyaIdx = game.oyaIndex || 0;
+  const oya = players[oyaIdx];
+  const [r1, r2, r3] = game.oyaResult || [];
+  const topic = game.selectedTopic;
+  const bets = game.bets || {};
+  const currentPoints = game.points || {};
+  const newPoints = { ...currentPoints };
+
+  let oyaBonus = 0;
+  const playerResults = [];
+
+  players.forEach((p, i) => {
+    if(i === oyaIdx) return; // 親は後で計算
+    const bet = bets[p.id];
+    if(!bet || bet.skipped || bet.amount === 0){
+      playerResults.push({
+        playerId: p.id,
+        name: p.name,
+        hitType: '見送り',
+        change: 0,
+        amount: 0,
+        betType: bet?.betType || 'tansho',
+        multiplier: 0,
+        oyaBonusFromThis: 0,
+        skipped: true,
+        selections: []
+      });
+      return;
+    }
+    const s = bet.selections || [];
+    let multiplier = 0, hitType = '外れ';
+    if(bet.betType === 'tansho'){
+      if(s[0] === r1){ multiplier = odds.tansho; hitType = '単勝的中'; }
+    } else if(bet.betType === 'rentan'){
+      if(s[0] === r1 && s[1] === r2){ multiplier = odds.rentan; hitType = '連単的中'; }
+      else if(s[0] === r2 && s[1] === r1){ multiplier = odds.renfuku; hitType = '連複的中'; }
+    } else if(bet.betType === 'sanrentan'){
+      const a3 = s.every(idx => [r1, r2, r3].includes(idx));
+      if(s[0] === r1 && s[1] === r2 && s[2] === r3){ multiplier = odds.sanrentan; hitType = '三連単的中🎊'; }
+      else if(a3){ multiplier = odds.sanrenfuku; hitType = '3連複的中'; }
+    }
+    const change = multiplier > 0 ? bet.amount * multiplier : -bet.amount;
+    const before = newPoints[p.id] || 0;
+    let after = before + change;
+    if(after < 0) after = 0;
+    newPoints[p.id] = after;
+
+    let thisBonus = 0;
+    if(multiplier > 0){
+      thisBonus = Math.floor(bet.amount * multiplier * (oyaBonusRate / 100));
+      oyaBonus += thisBonus;
+    }
+    playerResults.push({
+      playerId: p.id,
+      name: p.name,
+      hitType,
+      change,
+      amount: bet.amount,
+      betType: bet.betType,
+      multiplier,
+      oyaBonusFromThis: thisBonus,
+      selections: [...s]
+    });
+  });
+
+  // 親に親ボーナスを加算
+  newPoints[oya.id] = (newPoints[oya.id] || 0) + oyaBonus;
+
+  const roundLog = {
+    round: game.currentRound || 1,
+    topic: topic?.title || '',
+    topicHorses: topic?.horses || [],
+    oyaName: oya?.name || '',
+    oyaId: oya?.id || '',
+    oyaResult: [r1, r2, r3],
+    playerResults,
+    oyaBonus
+  };
+
+  return { newPoints, roundLog };
+}
+
+// ============================================================
+// ラウンド結果画面
+// ============================================================
+
+function enterOnlineRoundResult(game){
+  goTo('screen-online-roundresult');
+  document.getElementById('orr-round-label').textContent = `ROUND ${game.currentRound || 1} RESULT`;
+
+  const log = game.results;
+  if(!log) return;
+  const topic = game.selectedTopic;
+  // ラウンドキーで演出の重複を防ぐ
+  const roundKey = `r${game.currentRound || 1}`;
+  const isFirstShow = window.online._lastResultRound !== roundKey;
+  window.online._lastResultRound = roundKey;
+
+  // 実際の順位
+  const actualEl = document.getElementById('orr-actual-result');
+  if(actualEl){
+    actualEl.innerHTML = (log.oyaResult || []).map((hi, i) => `<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700">${(log.topicHorses || topic?.horses || [])[hi] || ''}</div></div>`).join('');
+  }
+
+  // 子の結果
+  const playerEl = document.getElementById('orr-player-results');
+  const betNames = {tansho:'単勝', rentan:'連単狙い', sanrentan:'三連単狙い'};
+  if(playerEl){
+    playerEl.innerHTML = (log.playerResults || []).map(r => {
+      const hitClass = r.skipped ? 'skipped' : (r.multiplier > 0 ? 'hit' : 'miss');
+      const hitColor = r.skipped ? '#888' : (r.multiplier > 0 ? '#2ecc71' : '#e74c3c');
+      const changeStr = r.change >= 0 ? `+${r.change.toLocaleString()}` : r.change.toLocaleString();
+      const selections = (r.selections || []).map((hi, si) => `<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem;display:inline-block">${hi+1}</span>`).join(' ');
+      const actualCount = r.betType === 'tansho' ? 1 : r.betType === 'rentan' ? 2 : 3;
+      const actualBadges = (log.oyaResult || []).slice(0, actualCount).map(hi => `<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem;display:inline-block">${hi+1}</span>`).join(' ');
+      return `<div class="player-result ${hitClass}"><div class="player-result-header"><span class="player-result-name">${r.name} <span class="ko-badge">子</span></span><span class="player-result-change" style="color:${hitColor}">${r.skipped?'見送り':changeStr+'点'}</span></div>${r.skipped?'':`<div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:0.7rem">${betNames[r.betType]} (${r.amount.toLocaleString()}点) →</span><span>予想:${selections}</span><span style="color:#aaa">vs</span><span>実際:${actualBadges}</span><span style="font-weight:900;color:${hitColor}">${r.hitType}</span>${r.multiplier>0?`<span style="font-size:0.7rem;color:#888">×${r.multiplier}</span>`:''}</div>`}</div>`;
+    }).join('');
+  }
+
+  // 親ボーナス
+  const oyaPanel = document.getElementById('orr-oya-panel');
+  const oyaSum = document.getElementById('orr-oya-summary');
+  const oyaBonusRate = window.online.settings?.oyaBonusRate || 0;
+  if(oyaPanel && oyaSum){
+    if(oyaBonusRate === 0 || (log.oyaBonus || 0) === 0){
+      oyaPanel.style.display = (log.oyaBonus || 0) === 0 ? 'none' : '';
+      if((log.oyaBonus || 0) > 0){
+        oyaSum.innerHTML = `<div class="player-result oya-bonus"><div class="player-result-header"><span class="player-result-name">${log.oyaName} <span class="oya-badge">親</span></span><span class="player-result-change change-oya">+${log.oyaBonus.toLocaleString()}点</span></div><div class="player-result-detail">子の的中配当合計の${oyaBonusRate}%ボーナス</div></div>`;
+      }
+    } else {
+      oyaSum.innerHTML = `<div class="player-result oya-bonus"><div class="player-result-header"><span class="player-result-name">${log.oyaName} <span class="oya-badge">親</span></span><span class="player-result-change change-oya">+${(log.oyaBonus||0).toLocaleString()}点</span></div><div class="player-result-detail">子の的中配当合計の${oyaBonusRate}%ボーナス</div></div>`;
+    }
+  }
+
+  // 得点表
+  renderOnlineScoreTable('orr-score-table', game);
+
+  // 演出
+  if(isFirstShow){
+    const priority = {'三連単的中🎊':5, '3連複的中':4, '連単的中':3, '連複的中':2, '単勝的中':1};
+    let maxPriority = 0, maxHitType = null;
+    (log.playerResults || []).forEach(r => {
+      const pr = priority[r.hitType] || 0;
+      if(pr > maxPriority){ maxPriority = pr; maxHitType = r.hitType; }
+    });
+    if(maxPriority > 0){
+      triggerHitCelebration(maxHitType);
+    }
+  }
+
+  // 次へボタンの状態
+  const totalRounds = window.online.settings?.rounds || 5;
+  const isLast = (game.currentRound || 1) >= totalRounds;
+  const myReady = (game.nextReady || {})[window.online.playerId];
+  const btn = document.getElementById('orr-next-btn');
+  if(btn){
+    btn.disabled = !!myReady;
+    const labelDone = isLast ? '✅ 最終結果待ち — 他の人を待っています' : '✅ 準備完了済み — 他の人を待っています';
+    const labelTodo = isLast ? '🏆 最終結果を見る' : `次のラウンドへ (${(game.currentRound||1)+1}/${totalRounds}) →`;
+    btn.textContent = myReady ? labelDone : labelTodo;
+  }
+  updateNextReadyStatus(game);
+}
+
+// 既存の演出関数を活用（オフライン版と同じ）
+function triggerHitCelebration(hitType){
+  try {
+    const priority = {'三連単的中🎊':5, '3連複的中':4, '連単的中':3, '連複的中':2, '単勝的中':1};
+    const pr = priority[hitType] || 0;
+    setTimeout(() => {
+      if(pr === 5 && typeof launchFireworks === 'function') launchFireworks();
+      else if(pr === 4 && typeof launchColorBurst === 'function') launchColorBurst();
+      else if(pr === 3 && typeof launchGoldFlash === 'function') launchGoldFlash();
+      else if(pr === 2 && typeof launchConfetti === 'function') launchConfetti();
+      else if(pr === 1 && typeof launchStars === 'function') launchStars();
+    }, 400);
+  } catch(e){ console.error(e); }
+}
+
+function renderOnlineScoreTable(tableId, game){
+  const players = getOnlinePlayersArray();
+  const points = game.points || {};
+  const oyaIdx = game.oyaIndex || 0;
+  const arr = players.map((p, i) => ({ ...p, points: points[p.id] || 0, isOya: i === oyaIdx })).sort((a, b) => b.points - a.points);
+  // 同点処理
+  let rank = 1, lastPts = null, skip = 0;
+  arr.forEach((p, i) => {
+    if(lastPts !== null && p.points === lastPts){ p.rank = rank; skip++; }
+    else { rank = i + 1; p.rank = rank; lastPts = p.points; skip = 0; }
+    lastPts = p.points;
+  });
+  const t = document.getElementById(tableId);
+  if(!t) return;
+  let html = '<tr><th>順位</th><th>名前</th><th>得点</th></tr>';
+  arr.forEach(p => {
+    const cls = p.rank === 1 ? 'leader' : '';
+    const oyaBadge = p.isOya ? ' <span class="oya-badge" style="font-size:0.65rem">親</span>' : '';
+    const meMarker = p.id === window.online.playerId ? ' <span style="color:#1a7a1a;font-size:0.65rem;font-weight:700">(あなた)</span>' : '';
+    html += `<tr class="${cls}"><td>${p.rank}位</td><td>${p.name}${oyaBadge}${meMarker}</td><td><strong>${p.points.toLocaleString()}</strong>点</td></tr>`;
+  });
+  t.innerHTML = html;
+}
+
+function updateNextReadyStatus(game){
+  const players = getOnlinePlayersArray();
+  const ready = game.nextReady || {};
+  const readyCount = players.filter(p => ready[p.id]).length;
+  const el = document.getElementById('orr-ready-status');
+  if(el){
+    el.textContent = readyCount >= players.length ? '✅ 全員準備完了！' : `準備完了：${readyCount}/${players.length}人`;
+  }
+  const totalRounds = window.online.settings?.rounds || 5;
+  const isLast = (game.currentRound || 1) >= totalRounds;
+  const myReady = ready[window.online.playerId];
+  const btn = document.getElementById('orr-next-btn');
+  if(btn){
+    btn.disabled = !!myReady;
+    const labelDone = isLast ? '✅ 最終結果待ち — 他の人を待っています' : '✅ 準備完了済み — 他の人を待っています';
+    const labelTodo = isLast ? '🏆 最終結果を見る' : `次のラウンドへ (${(game.currentRound||1)+1}/${totalRounds}) →`;
+    btn.textContent = myReady ? labelDone : labelTodo;
+  }
+}
+
+window.onlineReadyForNext = async function(){
+  try {
+    const myReadyRef = ref(db, `rooms/${window.online.roomCode}/game/nextReady/${window.online.playerId}`);
+    await set(myReadyRef, true);
+  } catch(e){ console.error(e); }
+};
+
+async function checkAllReadyForNext(){
+  if(!window.online.isHost) return;
+  try {
+    const game = window.online.game;
+    if(!game || game.phase !== 'result') return;
+    const players = getOnlinePlayersArray();
+    const ready = game.nextReady || {};
+    const allReady = players.every(p => ready[p.id]);
+    if(!allReady) return;
+
+    const totalRounds = window.online.settings?.rounds || 5;
+    const currentRound = game.currentRound || 1;
+
+    if(currentRound >= totalRounds){
+      // 最終結果へ
+      const phaseRef = ref(db, `rooms/${window.online.roomCode}/game/phase`);
+      await set(phaseRef, 'final');
+      return;
+    }
+
+    // 次ラウンドへ：bets, oyaResult, revealReady, nextReady, results, lotteryResult, selectedTopic, topicSelections をクリア
+    const updates = {};
+    const baseRoom = `rooms/${window.online.roomCode}/game`;
+    updates[`${baseRoom}/currentRound`] = currentRound + 1;
+    updates[`${baseRoom}/oyaIndex`] = (game.oyaIndex + 1) % players.length;
+    updates[`${baseRoom}/phase`] = 'topic-select';
+    updates[`${baseRoom}/bets`] = null;
+    updates[`${baseRoom}/oyaResult`] = null;
+    updates[`${baseRoom}/revealReady`] = null;
+    updates[`${baseRoom}/nextReady`] = null;
+    updates[`${baseRoom}/results`] = null;
+    updates[`${baseRoom}/lotteryResult`] = null;
+    updates[`${baseRoom}/selectedTopic`] = null;
+    updates[`${baseRoom}/topicSelections`] = null;
+    await update(ref(db), updates);
+  } catch(e){
+    console.error('checkAllReadyForNext error:', e);
+  }
+}
+
+// ============================================================
+// 最終結果画面
+// ============================================================
+
+function enterOnlineFinal(game){
+  goTo('screen-online-final');
+  const players = getOnlinePlayersArray();
+  const points = game.points || {};
+  const arr = players.map(p => ({ ...p, points: points[p.id] || 0 })).sort((a, b) => b.points - a.points);
+
+  // 同率1位処理
+  const topPts = arr[0]?.points || 0;
+  const winners = arr.filter(p => p.points === topPts);
+  const winnerNames = winners.map(p => p.name).join(' / ');
+  document.getElementById('ofn-winner').textContent = winnerNames;
+  document.getElementById('ofn-winner-pts').textContent = topPts.toLocaleString() + ' 点';
+
+  // 同点処理付き得点表
+  let rank = 1, lastPts = null;
+  arr.forEach((p, i) => {
+    if(lastPts !== null && p.points === lastPts){ p.rank = rank; }
+    else { rank = i + 1; p.rank = rank; }
+    lastPts = p.points;
+  });
+
+  const t = document.getElementById('ofn-score-table');
+  if(t){
+    let html = '<tr><th>順位</th><th>名前</th><th>得点</th></tr>';
+    arr.forEach(p => {
+      const cls = p.rank === 1 ? 'leader' : '';
+      const meMarker = p.id === window.online.playerId ? ' <span style="color:#1a7a1a;font-size:0.65rem;font-weight:700">(あなた)</span>' : '';
+      html += `<tr class="${cls}"><td>${p.rank}位</td><td>${p.name}${meMarker}</td><td><strong>${p.points.toLocaleString()}</strong>点</td></tr>`;
+    });
+    t.innerHTML = html;
+  }
+
+  // ホスト/ゲスト表示切り替え
+  document.getElementById('ofn-host-controls').style.display = window.online.isHost ? 'block' : 'none';
+  document.getElementById('ofn-guest-info').style.display = window.online.isHost ? 'none' : 'block';
+}
+
+// 同じメンバーで再戦（ホスト用）
+window.onlineRestartGame = async function(){
+  if(!window.online.isHost) return;
+  if(!confirm('同じメンバーでもう一度プレイしますか？\n（点数とラウンド履歴はリセットされます）')) return;
+  try {
+    const players = getOnlinePlayersArray();
+    const initial = window.online.settings?.initialPoints || 5000;
+    const pointsObj = {};
+    players.forEach(p => { pointsObj[p.id] = initial; });
+
+    const updates = {};
+    const baseRoom = `rooms/${window.online.roomCode}/game`;
+    updates[`${baseRoom}/currentRound`] = 1;
+    updates[`${baseRoom}/oyaIndex`] = 0;
+    updates[`${baseRoom}/phase`] = 'topic-select';
+    updates[`${baseRoom}/points`] = pointsObj;
+    updates[`${baseRoom}/history`] = null;
+    updates[`${baseRoom}/bets`] = null;
+    updates[`${baseRoom}/oyaResult`] = null;
+    updates[`${baseRoom}/revealReady`] = null;
+    updates[`${baseRoom}/nextReady`] = null;
+    updates[`${baseRoom}/results`] = null;
+    updates[`${baseRoom}/lotteryResult`] = null;
+    updates[`${baseRoom}/selectedTopic`] = null;
+    updates[`${baseRoom}/topicSelections`] = null;
+    updates[`${baseRoom}/startedAt`] = Date.now();
+    await update(ref(db), updates);
+    // 演出用キャッシュもクリア
+    window.online._lastResultRound = null;
+  } catch(e){
+    console.error(e);
+    showNotif('⚠️ 再戦の開始に失敗しました');
+  }
+};
+
 // 部屋を出る
-window.leaveRoom = async function(){
-  if(!confirm('部屋を出ますか？')) return;
+window.leaveRoom = async function(skipConfirm){
+  if(!skipConfirm && !confirm('部屋を出ますか？')) return;
 
   try {
     if(window.online.unsubscribe){
