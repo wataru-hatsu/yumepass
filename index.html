@@ -172,7 +172,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
    ============================================================ */
 #hit-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9997;pointer-events:none;overflow:hidden;}
 #hit-overlay.hidden{display:none;}
-#hit-overlay-bg{position:absolute;inset:0;opacity:0;}
+#hit-overlay-bg{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;opacity:0;}
 #hit-overlay-content{position:relative;width:100%;height:100%;}
 
 /* 単勝：弓矢 */
@@ -2164,15 +2164,14 @@ function launchStars(){
 function nextRound(){
   if(state.currentRound>=state.rounds){
     renderFinalScreen();
-    // 豪華フィナーレを先に出してから画面遷移
+    goTo('screen-final');
+    // 豪華フィナーレを上にかぶせる
     const sorted=[...state.players].sort((a,b)=>b.points-a.points);
     const winners=sorted.filter(p=>p.points===sorted[0].points);
     const winnerNames=winners.map(p=>p.name).join(' & ');
     const winnerPts=sorted[0].points.toLocaleString()+' 点';
     if(typeof showFinalCurtain === 'function'){
-      showFinalCurtain(winnerNames, winnerPts, ()=>goTo('screen-final'));
-    } else {
-      goTo('screen-final');
+      setTimeout(()=>showFinalCurtain(winnerNames, winnerPts), 100);
     }
   } else {
     goToRoundStart();
@@ -3755,15 +3754,26 @@ function enterOnlineRoundResult(game){
   const isFirstShow = window.online._lastResultRound !== roundKey;
   window.online._lastResultRound = roundKey;
 
-  // 初回表示時はガチャ風演出を先に出してから画面遷移
+  // まず画面遷移（これで多重呼び出しを防ぐ）
+  goTo('screen-online-roundresult');
+  _renderRoundResultBody(game, log, topic, isFirstShow);
+
+  // 初回表示時は演出を順番に発動：ガチャ → 的中演出
   if(isFirstShow){
-    showGachaRoundIntro(log, () => {
-      goTo('screen-online-roundresult');
-      _renderRoundResultBody(game, log, topic, true);
+    // 的中タイプを判定
+    const priority = {'三連単的中🎊':5, '3連複的中':4, '連単的中':3, '連複的中':2, '単勝的中':1};
+    let maxPriority = 0, maxHitType = null;
+    (log.playerResults || []).forEach(r => {
+      const pr = priority[r.hitType] || 0;
+      if(pr > maxPriority){ maxPriority = pr; maxHitType = r.hitType; }
     });
-  } else {
-    goTo('screen-online-roundresult');
-    _renderRoundResultBody(game, log, topic, false);
+
+    // ガチャ演出 → 的中演出 の順に表示
+    showGachaRoundIntro(log, () => {
+      if(maxHitType){
+        showHitEffect(maxHitType);
+      }
+    });
   }
 }
 
@@ -3820,18 +3830,8 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
   // 得点表
   renderOnlineScoreTable('orr-score-table', game);
 
-  // 演出
-  if(isFirstShow){
-    const priority = {'三連単的中🎊':5, '3連複的中':4, '連単的中':3, '連複的中':2, '単勝的中':1};
-    let maxPriority = 0, maxHitType = null;
-    (log.playerResults || []).forEach(r => {
-      const pr = priority[r.hitType] || 0;
-      if(pr > maxPriority){ maxPriority = pr; maxHitType = r.hitType; }
-    });
-    if(maxPriority > 0){
-      triggerHitCelebration(maxHitType);
-    }
-  }
+  // 演出は enterOnlineRoundResult で順番制御するためここでは何もしない
+  // (isFirstShow フラグは引き渡しているが、実演出は親関数側で発動済み)
 
   // 次へボタンの状態
   const totalRounds = window.online.settings?.rounds || 5;
@@ -4024,16 +4024,17 @@ function enterOnlineFinal(game){
     document.getElementById('ofn-guest-info').style.display = window.online.isHost ? 'none' : 'block';
   };
 
+  // まず画面遷移と内容描画（多重呼び出しを防ぐ）
+  renderFinalBody();
+
   if(isFirstShow){
-    // 先にフィナーレ演出を出す → タップ or 4秒後に画面遷移
+    // フィナーレ演出を上にかぶせる
     const players = getOnlinePlayersArray();
     const points = game.points || {};
     const arr = players.map(p => ({ ...p, points: points[p.id] || 0 })).sort((a, b) => b.points - a.points);
     const topPts = arr[0]?.points || 0;
     const winnerNames = arr.filter(p => p.points === topPts).map(p => p.name).join(' / ');
-    showFinalCurtain(winnerNames, topPts.toLocaleString() + ' 点', renderFinalBody);
-  } else {
-    renderFinalBody();
+    showFinalCurtain(winnerNames, topPts.toLocaleString() + ' 点');
   }
 }
 
