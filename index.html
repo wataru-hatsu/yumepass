@@ -1401,40 +1401,59 @@ window.SFX = (function(){
   }
 
   // 連単：ウイイレ・アイコニック風 — 重厚感ある衝撃的な音
+  // 連単：重厚感ある鳥肌音（ピンクの波と一体化）
   function hitRentan(){
     const c = getCtx(); if(!c){ return; }
-    // 重厚な大ドン（低音）
-    tone({type:'sine', freq:55, freqEnd:25, dur:0.7, gain:0.5});
-    noise({freq:200, freqEnd:50, dur:0.4, gain:0.4, filterType:'lowpass'});
-    // ステージのスポットライト オーケストラ風和音（重厚なメジャー）
+    // [0ms] 衝撃の重低音ドン（鳥肌が立つ深い低音）
+    tone({type:'sine', freq:45, freqEnd:20, dur:0.9, gain:0.55});
+    noise({freq:180, freqEnd:40, dur:0.5, gain:0.45, filterType:'lowpass'});
+    // [50ms] サブベース追加（より腹に響く）
     setTimeout(() => {
-      [196, 247, 294, 392].forEach((f, i) => {
-        setTimeout(() => tone({type:'triangle', freq:f, dur:1.5, gain:0.13}), i * 30);
+      tone({type:'sine', freq:30, dur:1.2, gain:0.4});
+    }, 50);
+    // [120ms] マイナーな重厚和音（鳥肌・緊張感）
+    setTimeout(() => {
+      // Cm (C, Eb, G) のような不穏で重い和音
+      [131, 156, 196, 262, 311].forEach((f, i) => {
+        setTimeout(() => tone({type:'sawtooth', freq:f, dur:1.8, gain:0.07}), i * 25);
       });
-    }, 150);
-    // 高域のシンバル風（風 + キラキラ）
+    }, 120);
+    // [250ms] パッド（厚みを加える）
     setTimeout(() => {
-      noise({freq:8000, freqEnd:3000, dur:0.6, gain:0.12, filterType:'highpass'});
-      [1568, 1976, 2349, 2637, 3136].forEach((f, i) => {
-        setTimeout(() => tone({type:'sine', freq:f, dur:0.4, gain:0.1}), i * 60);
+      [262, 311, 392, 466].forEach((f, i) => {
+        setTimeout(() => tone({type:'triangle', freq:f, dur:1.5, gain:0.11}), i * 30);
       });
     }, 250);
-    // 風が抜ける音（波が流れる感じ）
+    // [350ms] 風が抜ける音（波1）— 鳥肌
     setTimeout(() => {
-      noise({freq:5000, freqEnd:8000, dur:0.9, gain:0.1, filterType:'bandpass', Q:4});
-    }, 600);
-    // 2回目のドン（迫力アップ）
+      noise({freq:6000, freqEnd:2000, dur:0.8, gain:0.13, filterType:'bandpass', Q:5});
+    }, 350);
+    // [700ms] 2回目の衝撃ドン
     setTimeout(() => {
-      tone({type:'sine', freq:70, freqEnd:30, dur:0.5, gain:0.35});
-      noise({freq:300, freqEnd:60, dur:0.35, gain:0.3, filterType:'lowpass'});
+      tone({type:'sine', freq:60, freqEnd:25, dur:0.7, gain:0.45});
+      noise({freq:250, freqEnd:50, dur:0.4, gain:0.35, filterType:'lowpass'});
+    }, 700);
+    // [800ms] 風が抜ける音（波2）— もう一度
+    setTimeout(() => {
+      noise({freq:4000, freqEnd:8000, dur:0.8, gain:0.1, filterType:'bandpass', Q:6});
     }, 800);
-    // 上昇する勝利音
+    // [1100ms] 上昇する勝利音（メジャーに転調 — 鳥肌のクライマックス）
     setTimeout(() => {
-      tone({type:'triangle', freq:523, dur:0.4, gain:0.15});
-      setTimeout(() => tone({type:'triangle', freq:659, dur:0.4, gain:0.15}), 100);
-      setTimeout(() => tone({type:'triangle', freq:784, dur:0.5, gain:0.18}), 200);
-      setTimeout(() => tone({type:'triangle', freq:1047, dur:0.6, gain:0.2}), 300);
-    }, 1000);
+      tone({type:'triangle', freq:523, dur:0.5, gain:0.18});
+      setTimeout(() => tone({type:'triangle', freq:659, dur:0.5, gain:0.18}), 120);
+      setTimeout(() => tone({type:'triangle', freq:784, dur:0.6, gain:0.2}), 240);
+      setTimeout(() => tone({type:'triangle', freq:1047, dur:0.8, gain:0.22}), 360);
+      // 高音のキラキラを少し（うるさくない程度に）
+      setTimeout(() => {
+        [1568, 1976, 2349].forEach((f, i) => {
+          setTimeout(() => tone({type:'sine', freq:f, dur:0.4, gain:0.09}), i * 80);
+        });
+      }, 400);
+    }, 1100);
+    // [1800ms] 最後の余韻
+    setTimeout(() => {
+      tone({type:'sine', freq:1047, dur:0.8, gain:0.12});
+    }, 1800);
   }
 
   // 三連複：ティファニーブルー — 上品でセンスある
@@ -4425,7 +4444,7 @@ window.showHitEffect = function(hitType, onDone){
       content.innerHTML += `<div class="hit-title" style="color:#f5c842;text-shadow:0 0 20px rgba(245,200,66,1),0 0 40px rgba(245,200,66,0.6),0 4px 14px #000;font-size:2.2rem;letter-spacing:3px;font-weight:900"><span>🥷</span><span>連複的中</span><span>🥷</span></div>`;
     }, 250);
     duration = 2200;
-  } else if(pr === 3){ // 連単：ウイイレ・アイコニック風 濃い重厚感ピンクの波
+  } else if(pr === 3){ // 連単：濃い重厚感あるピンクの波のみ + 銀色の文字
     bg.className = 'rentan-bg';
     setTimeout(() => window.SFX.hitRentan(), 0);
     content.innerHTML = `<div class="rentan-wave"></div><div class="rentan-wave-2"></div><div class="rentan-wave-3"></div>`;
@@ -4435,17 +4454,9 @@ window.showHitEffect = function(hitType, onDone){
       burst.className = 'rentan-radial-burst';
       content.appendChild(burst);
     }, 250);
-    // スパークル粒子多数
+    // 銀色のタイトル（星なし、スパークルなし）
     setTimeout(() => {
-      for(let i = 0; i < 50; i++){
-        const sp = document.createElement('div');
-        sp.className = 'rentan-sparkle';
-        sp.style.left = (Math.random()*100) + '%';
-        sp.style.top = (Math.random()*100) + '%';
-        sp.style.animationDelay = (Math.random()*1.2) + 's';
-        content.appendChild(sp);
-      }
-      content.innerHTML += `<div class="hit-title" style="font-size:2.2rem;letter-spacing:3px;font-weight:900"><span style="-webkit-text-fill-color:initial;color:#fff;text-shadow:0 0 20px rgba(255,255,255,1),0 0 40px rgba(255,100,180,0.8)">⭐</span><span style="background:linear-gradient(90deg,#ffffff,#ffb3d9,#ff44aa,#ffb3d9,#ffffff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 30px rgba(255,100,180,0.7)">連単的中</span><span style="-webkit-text-fill-color:initial;color:#fff;text-shadow:0 0 20px rgba(255,255,255,1),0 0 40px rgba(255,100,180,0.8)">⭐</span></div>`;
+      content.innerHTML += `<div class="hit-title" style="font-size:2.6rem;letter-spacing:5px;font-weight:900;background:linear-gradient(180deg,#ffffff 0%,#e8e8e8 30%,#b8b8b8 55%,#808080 75%,#d0d0d0 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 30px rgba(255,255,255,0.7),0 0 60px rgba(200,200,200,0.4),0 4px 14px rgba(0,0,0,0.6);filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))">連単的中</div>`;
     }, 500);
     duration = 2500;
   } else if(pr === 4){ // 三連複：ティファニーブルー
@@ -4559,7 +4570,7 @@ window.showGachaRoundIntro = function(log, onDone){
   let bg = 'linear-gradient(135deg,#ff1493 0%,#c2185b 35%,#7b1fa2 70%,#311b92 100%)';
   if(maxPriority === 5){ emoji = '💎'; title = 'TRIFECTA！'; sub = '三連単的中🎊'; bg = 'linear-gradient(135deg,#ff007f 0%,#ff1493 25%,#9b00ff 60%,#3300ff 100%)'; }
   else if(maxPriority === 4){ emoji = '💎'; title = '3連複的中！'; bg = 'linear-gradient(135deg,#0abab5 0%,#06908e 50%,#024a4a 100%)'; }
-  else if(maxPriority === 3){ emoji = '⭐'; title = '連単的中！'; bg = 'linear-gradient(135deg,#ff44aa 0%,#e91e63 30%,#ad1457 70%,#560027 100%)'; }
+  else if(maxPriority === 3){ emoji = '🎀'; title = '連単的中！'; bg = 'linear-gradient(135deg,#ff44aa 0%,#e91e63 30%,#ad1457 70%,#560027 100%)'; }
   else if(maxPriority === 2){ emoji = '🥷'; title = '連複的中！'; bg = 'linear-gradient(135deg,#1a1a1a 0%,#2d1a4d 60%,#0a0520 100%)'; }
   else if(maxPriority === 1){ emoji = '🎯'; title = '単勝的中！'; bg = 'linear-gradient(135deg,#ffaa33 0%,#cc6600 60%,#552200 100%)'; }
 
