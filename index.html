@@ -34,7 +34,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Racing+Sans+One&display=swap');
 :root{--green:#1a6b2a;--green-light:#2d9e44;--gold:#f5c842;--gold-dark:#c9960a;--red:#c0392b;--white:#f9f5e8;--dark:#1a1a1a;--panel:#fdf8ed;--border:#c9960a;--oya:#8b1a8b;--oya-light:#c060c0;}
 *{box-sizing:border-box;margin:0;padding:0;}
+html{background:var(--green);min-height:100vh;}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--green);color:var(--dark);min-height:100vh;overflow-x:hidden;}
+/* 演出中はbody背景もダークに */
+body.fx-active{background:#000;}
+html.fx-active{background:#000;}
 .screen{display:none;min-height:100vh;flex-direction:column;background:#0a0a0a;}.screen.active{display:flex;}
 .header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:12px 16px;text-align:center;border-bottom:3px solid var(--gold);}
 .header h1{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:1.8rem;letter-spacing:2px;}
@@ -196,21 +200,27 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .thunder-particle{position:absolute;width:6px;height:6px;background:#88f;border-radius:50%;box-shadow:0 0 12px #44f;animation:thunderParticle 1s ease-out forwards;}
 @keyframes thunderParticle{0%{transform:translate(0,0) scale(1);opacity:1;}100%{transform:translate(var(--tx,0),var(--ty,0)) scale(0);opacity:0;}}
 
-/* 連単：おしゃれ水色 */
-.rentan-bg{background:linear-gradient(135deg,#001f4d 0%,#003366 30%,#0066aa 70%,#00bfff 100%);animation:hitBgFade 2.2s ease-out forwards;}
-.rentan-orb{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:300px;height:300px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,1) 0%,#7df5ff 20%,#00bfff 50%,#0066cc 80%,#001f4d 100%);box-shadow:0 0 80px rgba(125,245,255,0.9),0 0 160px rgba(0,191,255,0.6);animation:rentanOrbAppear 1.5s ease-out forwards;}
+/* 連単：オーロラ風（黄緑×黄色×黄緑） */
+.rentan-bg{background:linear-gradient(135deg,#0a3a1a 0%,#1a5a2a 30%,#3a7a3a 60%,#6aaa1a 100%);animation:hitBgFade 2.2s ease-out forwards;}
+.rentan-aurora{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(120deg,transparent 10%,rgba(212,255,0,0.5) 25%,rgba(144,255,92,0.6) 40%,rgba(255,235,59,0.55) 55%,rgba(144,255,92,0.45) 70%,transparent 90%);background-size:200% 200%;mix-blend-mode:screen;animation:rentanAuroraMove 2.5s ease-in-out forwards;}
+@keyframes rentanAuroraMove{0%{background-position:-100% 0%;opacity:0;}30%{opacity:1;}70%{opacity:1;}100%{background-position:100% 100%;opacity:0;}}
+.rentan-aurora-2{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(60deg,transparent,rgba(212,255,0,0.4),rgba(144,255,92,0.5),rgba(255,235,59,0.45),transparent);background-size:300% 100%;mix-blend-mode:screen;animation:rentanAuroraMove2 2.3s ease-in-out 0.2s forwards;}
+@keyframes rentanAuroraMove2{0%{background-position:100% 0;opacity:0;}30%{opacity:0.8;}80%{opacity:0.6;}100%{background-position:-100% 0;opacity:0;}}
+.rentan-orb{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:300px;height:300px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,1) 0%,#fffacd 15%,#d4ff00 35%,#90ff5c 60%,#3a8a1a 85%,#1a3a0a 100%);box-shadow:0 0 80px rgba(212,255,0,0.9),0 0 160px rgba(144,255,92,0.6);animation:rentanOrbAppear 1.5s ease-out forwards;}
 @keyframes rentanOrbAppear{0%{transform:translate(-50%,-50%) scale(0);opacity:0;}40%{transform:translate(-50%,-50%) scale(1.1);opacity:1;}70%{transform:translate(-50%,-50%) scale(0.95);opacity:1;}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
-.rentan-shimmer{position:absolute;width:8px;height:8px;background:radial-gradient(circle,#fff 0%,transparent 70%);box-shadow:0 0 12px #7df5ff;border-radius:50%;animation:rentanShimmer 1.6s ease-out forwards;}
-@keyframes rentanShimmer{0%{transform:scale(0) rotate(0);opacity:0;}50%{transform:scale(1.2) rotate(180deg);opacity:1;}100%{transform:scale(0) rotate(360deg);opacity:0;}}
+.rentan-shimmer{position:absolute;width:8px;height:8px;background:radial-gradient(circle,#fff 0%,#d4ff00 50%,transparent 70%);box-shadow:0 0 12px #d4ff00;border-radius:50%;animation:rentanShimmer 1.6s ease-out forwards;}
+@keyframes rentanShimmer{0%{transform:scale(0) rotate(0);opacity:0;}50%{transform:scale(1.4) rotate(180deg);opacity:1;}100%{transform:scale(0) rotate(360deg);opacity:0;}}
 
-/* 三連複：アイコニックピンク */
-.iconic-bg{background:radial-gradient(circle at 50% 40%,#ff66cc 0%,#ff1493 25%,#c2185b 55%,#7b1fa2 80%,#1a0033 100%);animation:hitBgFade 2.5s ease-out forwards;}
-.iconic-burst{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:0;height:0;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(255,180,230,0.95) 25%,rgba(255,20,147,0.7) 60%,transparent 100%);animation:iconicBurst 0.8s cubic-bezier(.22,1.4,.4,1) forwards;}
+/* 三連複：ティファニーブルー（センスよく） */
+.iconic-bg{background:radial-gradient(circle at 50% 40%,#7ad9d4 0%,#0abab5 25%,#06908e 55%,#024a4a 80%,#001a1a 100%);animation:hitBgFade 2.5s ease-out forwards;}
+.iconic-burst{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:0;height:0;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(180,240,238,0.95) 25%,rgba(10,186,181,0.7) 60%,transparent 100%);animation:iconicBurst 0.8s cubic-bezier(.22,1.4,.4,1) forwards;}
 @keyframes iconicBurst{0%{width:0;height:0;opacity:0;}30%{width:200px;height:200px;opacity:1;}70%{width:1200px;height:1200px;opacity:0.5;}100%{width:2000px;height:2000px;opacity:0;}}
-.iconic-wind{position:absolute;height:3px;background:linear-gradient(to right,transparent,rgba(255,200,230,0.95),transparent);animation:iconicWind 1.2s ease-out forwards;border-radius:2px;}
+.iconic-wind{position:absolute;height:2px;background:linear-gradient(to right,transparent,rgba(180,240,238,0.95),rgba(255,255,255,1),rgba(180,240,238,0.95),transparent);animation:iconicWind 1.4s ease-out forwards;border-radius:2px;box-shadow:0 0 8px rgba(180,240,238,0.6);}
 @keyframes iconicWind{0%{transform:translateX(-100vw);opacity:0;}30%{opacity:1;}100%{transform:translateX(100vw);opacity:0;}}
-.iconic-sparkle{position:absolute;width:12px;height:12px;background:radial-gradient(circle,#fff 0%,#ffb3d9 60%,transparent 100%);box-shadow:0 0 20px #ff66cc;border-radius:50%;animation:iconicSparkle 1.4s ease-out forwards;}
+.iconic-sparkle{position:absolute;width:10px;height:10px;background:radial-gradient(circle,#fff 0%,#b4f0ee 50%,transparent 100%);box-shadow:0 0 20px #0abab5;border-radius:50%;animation:iconicSparkle 1.4s ease-out forwards;}
 @keyframes iconicSparkle{0%{transform:scale(0);opacity:0;}30%{transform:scale(1.5);opacity:1;}100%{transform:scale(0);opacity:0;}}
+.iconic-diamond{position:absolute;font-size:2.5rem;animation:iconicDiamond 2s ease-out forwards;text-shadow:0 0 20px rgba(180,240,238,1);}
+@keyframes iconicDiamond{0%{transform:translateY(0) rotate(0);opacity:0;}30%{opacity:1;}100%{transform:translateY(-200px) rotate(360deg);opacity:0;}}
 
 /* 三連単：超豪快な虹色花火 */
 .rainbow-bg{background:radial-gradient(circle at 50% 50%,#000 0%,#1a0033 30%,#000 80%);animation:hitBgFade 3s ease-out forwards;}
@@ -698,7 +708,10 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div style="text-align:center;color:var(--gold);font-size:1.3rem;font-weight:900" id="orv-topic-name">—</div>
       <div id="orv-topic-horses" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
     </div>
-    <div class="panel"><div class="panel-title">🎰 みんなの賭け内容</div><div id="orv-bets-list"></div></div>
+    <!-- 親パネル（上） -->
+    <div class="panel" style="background:linear-gradient(135deg,#f9eef9,#f5e0f5);border:2px solid #c060c0"><div class="panel-title" style="color:#a040a0">👑 親の順位入力</div><div id="orv-oya-block"></div></div>
+    <!-- 子パネル（下） -->
+    <div class="panel"><div class="panel-title">🎯 子の賭け内容</div><div id="orv-bets-list"></div></div>
     <div style="color:#fdf8ed;text-align:center;padding:12px;font-size:0.85rem">みんなで確認したら結果発表！</div>
     <div style="margin:10px">
       <button class="btn btn-primary" id="orv-reveal-btn" onclick="onlineReadyForResult()">🎊 結果発表の準備完了！</button>
@@ -1363,39 +1376,60 @@ window.SFX = (function(){
     }, 700);
   }
 
-  // 連単：おしゃれで耳に残る水色音
+  // 連単：オーロラ風 黄緑×黄色 — 華やかで耳に残る
   function hitRentan(){
-    // クリスタルベル
-    [880, 1320, 1760, 2200].forEach((f, i) => {
-      setTimeout(() => tone({type:'sine', freq:f, dur:0.5, gain:0.15}), i * 60);
-    });
-    // パッドのような厚み
+    // オーロラのスウィープ音（高域から低域へ）
+    const c = getCtx(); if(c){
+      const t = c.currentTime;
+      // パッド和音（メジャーな響き）
+      [523, 659, 784, 988].forEach((f, i) => {
+        setTimeout(() => tone({type:'triangle', freq:f, dur:1.2, gain:0.13}), i * 40);
+      });
+      // 高音のキラキラ上昇
+      [880, 1100, 1320, 1760, 2200, 2640].forEach((f, i) => {
+        setTimeout(() => tone({type:'sine', freq:f, dur:0.5, gain:0.16}), 100 + i * 70);
+      });
+      // ベルのアクセント
+      setTimeout(() => {
+        [1760, 2349, 2637].forEach((f, i) => {
+          setTimeout(() => tone({type:'sine', freq:f, dur:0.6, gain:0.14}), i * 100);
+        });
+      }, 300);
+    }
+    // オーロラのスウィープノイズ
     setTimeout(() => {
-      tone({type:'triangle', freq:440, dur:0.8, gain:0.1});
-      tone({type:'triangle', freq:660, dur:0.8, gain:0.08});
-    }, 100);
-    // シマー
-    setTimeout(() => {
-      noise({freq:6000, freqEnd:4000, dur:0.6, gain:0.06, filterType:'bandpass', Q:8});
+      noise({freq:8000, freqEnd:3000, dur:0.8, gain:0.08, filterType:'bandpass', Q:6});
     }, 200);
+    setTimeout(() => {
+      noise({freq:5000, freqEnd:8000, dur:0.6, gain:0.07, filterType:'bandpass', Q:8});
+    }, 800);
   }
 
-  // 三連複：ウイイレアイコニック風 ドンッ+ピンク
+  // 三連複：ティファニーブルー — 上品でセンスある
   function hitSanrenfuku(){
-    // 大きなドンッ
-    tone({type:'sine', freq:80, freqEnd:40, dur:0.4, gain:0.45});
-    noise({freq:200, freqEnd:60, dur:0.3, gain:0.35, filterType:'lowpass'});
-    // キラキラ（風が流れる）
+    // 高級感ある低音ドンッ
+    tone({type:'sine', freq:60, freqEnd:30, dur:0.5, gain:0.4});
+    noise({freq:150, freqEnd:50, dur:0.3, gain:0.3, filterType:'lowpass'});
+    // クリスタルベル（高音の煌めき）
     setTimeout(() => {
-      [1500, 2000, 2500, 3000, 3500].forEach((f, i) => {
-        setTimeout(() => tone({type:'sine', freq:f, dur:0.4, gain:0.1}), i * 80);
+      [1568, 1976, 2349, 2637, 3136].forEach((f, i) => {
+        setTimeout(() => tone({type:'sine', freq:f, dur:0.8, gain:0.13}), i * 90);
       });
-      noise({freq:4000, freqEnd:1000, dur:1.0, gain:0.1, filterType:'bandpass', Q:4});
-    }, 250);
+    }, 150);
+    // パッドの厚み（ジュエリー感）
+    setTimeout(() => {
+      tone({type:'triangle', freq:392, dur:1.5, gain:0.1});
+      tone({type:'triangle', freq:494, dur:1.5, gain:0.09});
+      tone({type:'triangle', freq:587, dur:1.5, gain:0.08});
+    }, 300);
+    // シマーノイズ（風の音）
+    setTimeout(() => {
+      noise({freq:6000, freqEnd:4000, dur:1.2, gain:0.06, filterType:'bandpass', Q:5});
+    }, 200);
     // 上昇音
     setTimeout(() => {
-      tone({type:'triangle', freq:440, freqEnd:1760, dur:0.8, gain:0.15});
-    }, 350);
+      tone({type:'sine', freq:880, freqEnd:2640, dur:0.6, gain:0.12});
+    }, 600);
   }
 
   // 三連単：超豪快な打ち上げ花火
@@ -1551,11 +1585,6 @@ function showNotif(msg){
   const n=document.getElementById('notif');
   n.textContent=msg;
   n.classList.add('show');
-  // 警告/エラーは警告音、それ以外は通知音
-  try {
-    if(/⚠️|❌|×/.test(msg)) window.SFX.warn();
-    else window.SFX.notify();
-  } catch(e){}
   setTimeout(()=>n.classList.remove('show'),2500);
 }
 
@@ -1979,7 +2008,7 @@ function showOyaResultScreen(){
 function selectHorseForResult(idx){const p=resultSelections.indexOf(idx);if(p>=0)resultSelections.splice(p,1);else{if(resultSelections.length>=3)return;resultSelections.push(idx);}renderHorseGrid('result-horse-grid',resultSelections,selectHorseForResult);updateResultPreview();}
 function updateResultPreview(){const c=document.getElementById('result-preview-content');const btn=document.getElementById('result-confirm-btn');const t=state.selectedTopic;if(!resultSelections.length){c.innerHTML='<div class="empty">馬を選んでください</div>';btn.disabled=true;return;}c.innerHTML=resultSelections.map((hi,i)=>`<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]||''}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700">${t.horses[hi]}</div></div>`).join('');btn.disabled=resultSelections.length<3;}
 
-function goToReveal(){try{window.SFX.reveal();}catch(e){}state.actualResult=[...resultSelections];document.getElementById('rv-round-label').textContent=`ROUND ${state.currentRound} REVEAL`;document.getElementById('rv-topic-name').textContent=`${state.selectedTopic.icon} ${state.selectedTopic.title}`;const t=state.selectedTopic;const betNames={tansho:'単勝',rentan:'連単狙い',sanrentan:'三連単狙い'};const posL=['1位','2位','3位'];document.getElementById('rv-bets-list').innerHTML=state.currentBets.map(bet=>{const p=state.players[bet.playerIndex];if(bet.skipped||bet.amount===0){return`<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;}const tags=(bet.selections||[]).map((hi,si)=>`<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700"><span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem">${hi+1}</span>${t.horses[hi]}<span style="color:#aaa;font-size:0.65rem">(${posL[si]})</span></span>`).join('');return`<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span class="reveal-bet-type">${betNames[bet.betType]}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${tags}</div><div style="font-size:0.85rem;color:#888;margin-top:6px">賭け金：<strong>${bet.amount.toLocaleString()}点</strong></div></div>`;}).join('');goTo('screen-reveal');}
+function goToReveal(){state.actualResult=[...resultSelections];document.getElementById('rv-round-label').textContent=`ROUND ${state.currentRound} REVEAL`;document.getElementById('rv-topic-name').textContent=`${state.selectedTopic.icon} ${state.selectedTopic.title}`;const t=state.selectedTopic;const betNames={tansho:'単勝',rentan:'連単狙い',sanrentan:'三連単狙い'};const posL=['1位','2位','3位'];document.getElementById('rv-bets-list').innerHTML=state.currentBets.map(bet=>{const p=state.players[bet.playerIndex];if(bet.skipped||bet.amount===0){return`<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;}const tags=(bet.selections||[]).map((hi,si)=>`<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700"><span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem">${hi+1}</span>${t.horses[hi]}<span style="color:#aaa;font-size:0.65rem">(${posL[si]})</span></span>`).join('');return`<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span class="reveal-bet-type">${betNames[bet.betType]}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${tags}</div><div style="font-size:0.85rem;color:#888;margin-top:6px">賭け金：<strong>${bet.amount.toLocaleString()}点</strong></div></div>`;}).join('');goTo('screen-reveal');}
 
 function calculateResults(){const [r1,r2,r3]=state.actualResult;const oya=state.players[state.oyaIndex];let oyaBonus=0;const roundLog={round:state.currentRound,topic:state.selectedTopic.title,oyaName:oya.name,result:state.actualResult.map(i=>state.selectedTopic.horses[i]),playerResults:[],oyaBonus:0};state.currentBets.forEach(bet=>{const p=state.players[bet.playerIndex];if(bet.skipped||bet.amount===0){p.history.push({round:state.currentRound,change:0,hitType:'見送り'});roundLog.playerResults.push({name:p.name,hitType:'見送り',change:0,amount:0,betType:bet.betType,multiplier:0,oyaBonusFromThis:0,skipped:true});return;}const s=bet.selections;let multiplier=0,hitType='外れ';if(bet.betType==='tansho'){if(s[0]===r1){multiplier=state.odds.tansho;hitType='単勝的中';}}else if(bet.betType==='rentan'){if(s[0]===r1&&s[1]===r2){multiplier=state.odds.rentan;hitType='連単的中';}else if(s[0]===r2&&s[1]===r1){multiplier=state.odds.renfuku;hitType='連複的中';}}else if(bet.betType==='sanrentan'){const a3=s.every(i=>[r1,r2,r3].includes(i));if(s[0]===r1&&s[1]===r2&&s[2]===r3){multiplier=state.odds.sanrentan;hitType='三連単的中🎊';}else if(a3){multiplier=state.odds.sanrenfuku;hitType='3連複的中';}}const change=multiplier>0?bet.amount*multiplier:-bet.amount;p.points+=change;if(p.points<0)p.points=0;let thisBonus=0;if(multiplier>0){thisBonus=Math.floor(bet.amount*multiplier*(state.oyaBonusRate/100));oyaBonus+=thisBonus;}p.history.push({round:state.currentRound,change,hitType});roundLog.playerResults.push({name:p.name,hitType,change,amount:bet.amount,betType:bet.betType,multiplier,oyaBonusFromThis:thisBonus,selections:[...s]});});oya.points+=oyaBonus;roundLog.oyaBonus=oyaBonus;oya.history.push({round:state.currentRound,change:oyaBonus,hitType:'親ボーナス'});state.history.push(roundLog);renderRoundResult();goTo('screen-roundresult');}
 
@@ -2076,9 +2105,12 @@ function renderRoundResult(){
   let topPriority=0;
   let topHitType=null;
   log.playerResults.forEach(r=>{if(priority[r.hitType]>topPriority){topPriority=priority[r.hitType];topHitType=r.hitType;}});
-  setTimeout(()=>{
-    if(topHitType && typeof showHitEffect === 'function') showHitEffect(topHitType);
-  },400);
+  // 的中ありなら：ガチャ風 → 的中演出
+  if(topHitType && typeof showGachaRoundIntro === 'function' && typeof showHitEffect === 'function'){
+    showGachaRoundIntro(log, () => {
+      showHitEffect(topHitType);
+    });
+  }
 }
 
 // 演出関数群
@@ -2604,6 +2636,7 @@ function onGameStateUpdate(game){
     const onBettingScreen = document.getElementById('screen-online-betting').classList.contains('active')
                           || document.getElementById('screen-online-bet-confirm').classList.contains('active')
                           || document.getElementById('screen-online-skip-confirm').classList.contains('active')
+                          || document.getElementById('screen-online-oya-confirm').classList.contains('active')
                           || document.getElementById('screen-online-bet-wait').classList.contains('active');
     if(!onBettingScreen){
       enterOnlineBetting(game);
@@ -3048,6 +3081,28 @@ function renderTopicWithHorses(iconElId, titleElId, horsesElId, topic, opts){
 }
 
 function enterOnlineBetting(game){
+  // 既に自分の入力が完了していたら、入力画面ではなく待機画面へ
+  const players = getOnlinePlayersArray();
+  const oyaIdx = game.oyaIndex || 0;
+  const oyaPlayer = players[oyaIdx];
+  const isOya = oyaPlayer && oyaPlayer.id === window.online.playerId;
+  const bets = game.bets || {};
+  const myBet = bets[window.online.playerId];
+  const oyaResult = game.oyaResult;
+  if(isOya){
+    if(oyaResult && oyaResult.length === 3){
+      // 既に親が順位を入力済み → 待機へ
+      enterOnlineBetWait();
+      return;
+    }
+  } else {
+    if(myBet){
+      // 既に子が賭けを入力済み → 待機へ
+      enterOnlineBetWait();
+      return;
+    }
+  }
+
   goTo('screen-online-betting');
 
   // 状態リセット
@@ -3056,10 +3111,6 @@ function enterOnlineBetting(game){
   window.onlineBet.betInputVal = '';
   window.onlineBet.oyaSelections = [];
 
-  const players = getOnlinePlayersArray();
-  const oyaIdx = game.oyaIndex || 0;
-  const oyaPlayer = players[oyaIdx];
-  const isOya = oyaPlayer && oyaPlayer.id === window.online.playerId;
   const myPlayer = players.find(p => p.id === window.online.playerId);
   const myPoints = (game.points && game.points[window.online.playerId]) || (window.online.settings?.initialPoints || 5000);
 
@@ -3573,18 +3624,24 @@ function enterOnlineReveal(game){
   const betNames = {tansho:'単勝', rentan:'連単狙い', sanrentan:'三連単狙い'};
   const posL = ['1位', '2位', '3位'];
 
+  // 親パネル：順位入力済の状態（結果発表まで非開示は正しいが、文言を変える）
+  const oyaPlayer = players[oyaIdx];
+  const oyaBlock = document.getElementById('orv-oya-block');
+  if(oyaBlock && oyaPlayer){
+    oyaBlock.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:white;border-radius:8px;border:1px solid #c060c0"><span style="font-size:1.5rem">👑</span><div style="flex:1"><div style="color:#a040a0;font-weight:900;font-size:1.05rem">${escapeHtml(oyaPlayer.name)} <span class="oya-badge">親</span></div><div style="color:#888;font-size:0.75rem;margin-top:2px">⏳ 順位入力完了 — 結果発表まで内容は非表示</div></div></div>`;
+  }
+
+  // 子リスト
   const list = document.getElementById('orv-bets-list');
   if(list){
-    list.innerHTML = players.map((p, i) => {
-      if(i === oyaIdx){
-        return `<div class="reveal-card" style="background:#f9eef9;border-color:#c060c0"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="oya-badge">親</span></span><span style="color:#a040a0;font-size:0.85rem;font-weight:700">順位入力済み（非公開）</span></div></div>`;
-      }
+    const koPlayers = players.filter((p, i) => i !== oyaIdx);
+    list.innerHTML = koPlayers.map(p => {
       const bet = bets[p.id];
       if(!bet || bet.skipped || bet.amount === 0){
-        return `<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;
+        return `<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;
       }
-      const tags = (bet.selections || []).map((hi, si) => `<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700"><span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem">${hi+1}</span>${topic.horses[hi]}<span style="color:#aaa;font-size:0.65rem">(${posL[si]})</span></span>`).join('');
-      return `<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span class="reveal-bet-type">${betNames[bet.betType]}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${tags}</div><div style="font-size:0.85rem;color:#888;margin-top:6px">賭け金：<strong>${(bet.amount||0).toLocaleString()}点</strong></div></div>`;
+      const tags = (bet.selections || []).map((hi, si) => `<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700"><span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem">${hi+1}</span>${escapeHtml(topic.horses[hi])}<span style="color:#aaa;font-size:0.65rem">(${posL[si]})</span></span>`).join('');
+      return `<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span></span><span class="reveal-bet-type">${betNames[bet.betType]}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${tags}</div><div style="font-size:0.85rem;color:#888;margin-top:6px">賭け金：<strong>${(bet.amount||0).toLocaleString()}点</strong></div></div>`;
     }).join('');
   }
 
@@ -4097,6 +4154,18 @@ window.toggleSound = function(){
 })();
 
 // ============================================================
+// 演出ヘルパー（背景色を全画面ダークに）
+// ============================================================
+function fxStart(){
+  document.body.classList.add('fx-active');
+  document.documentElement.classList.add('fx-active');
+}
+function fxEnd(){
+  document.body.classList.remove('fx-active');
+  document.documentElement.classList.remove('fx-active');
+}
+
+// ============================================================
 // 的中演出ビジュアル（5段階）
 // ============================================================
 function showHitEffect(hitType, onDone){
@@ -4111,6 +4180,7 @@ function showHitEffect(hitType, onDone){
   content.innerHTML = '';
   bg.className = '';
   overlay.classList.remove('hidden');
+  fxStart();
   let duration = 1500;
   if(pr === 1){ // 単勝：弓矢
     bg.className = 'arrow-flash-bg';
@@ -4151,47 +4221,59 @@ function showHitEffect(hitType, onDone){
       content.innerHTML += `<div class="hit-title" style="color:#88ccff;text-shadow:0 0 20px #44f">⚡ 連複的中 ⚡</div>`;
     }, 400);
     duration = 2000;
-  } else if(pr === 3){ // 連単：水色
+  } else if(pr === 3){ // 連単：オーロラ風 黄緑×黄色
     bg.className = 'rentan-bg';
     setTimeout(() => window.SFX.hitRentan(), 0);
-    content.innerHTML = `<div class="rentan-orb"></div>`;
+    content.innerHTML = `<div class="rentan-aurora"></div><div class="rentan-aurora-2"></div><div class="rentan-orb"></div>`;
     // シマー粒子多数
     setTimeout(() => {
-      for(let i = 0; i < 30; i++){
+      for(let i = 0; i < 40; i++){
         const sh = document.createElement('div');
         sh.className = 'rentan-shimmer';
         sh.style.left = (Math.random()*100) + '%';
         sh.style.top = (Math.random()*100) + '%';
-        sh.style.animationDelay = (Math.random()*0.8) + 's';
+        sh.style.animationDelay = (Math.random()*1) + 's';
         content.appendChild(sh);
       }
-      content.innerHTML += `<div class="hit-title" style="color:#7df5ff;text-shadow:0 0 20px #00bfff,0 0 40px #0066cc">✦ 連単的中 ✦</div>`;
+      content.innerHTML += `<div class="hit-title" style="background:linear-gradient(90deg,#d4ff00,#90ff5c,#ffeb3b,#d4ff00);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:2.6rem;text-shadow:0 0 30px rgba(212,255,0,0.5);letter-spacing:5px;font-weight:900">🌈 連単的中 🌈</div>`;
     }, 600);
-    duration = 2200;
-  } else if(pr === 4){ // 三連複：アイコニックピンク
+    duration = 2400;
+  } else if(pr === 4){ // 三連複：ティファニーブルー
     bg.className = 'iconic-bg';
     setTimeout(() => window.SFX.hitSanrenfuku(), 0);
     content.innerHTML = `<div class="iconic-burst"></div>`;
-    // ピンクの風ライン
-    for(let i = 0; i < 8; i++){
+    // ティファニーブルーの風ライン
+    for(let i = 0; i < 10; i++){
       const w = document.createElement('div');
       w.className = 'iconic-wind';
       w.style.top = (10 + Math.random() * 80) + '%';
-      w.style.width = (200 + Math.random() * 400) + 'px';
-      w.style.animationDelay = (Math.random() * 0.6) + 's';
+      w.style.width = (200 + Math.random() * 500) + 'px';
+      w.style.animationDelay = (Math.random() * 0.8) + 's';
       content.appendChild(w);
     }
+    // ダイヤモンドが上昇
+    setTimeout(() => {
+      for(let i = 0; i < 8; i++){
+        const d = document.createElement('div');
+        d.className = 'iconic-diamond';
+        d.textContent = '💎';
+        d.style.left = (10 + Math.random() * 80) + '%';
+        d.style.top = (60 + Math.random() * 30) + '%';
+        d.style.animationDelay = (Math.random() * 0.6) + 's';
+        content.appendChild(d);
+      }
+    }, 200);
     // スパークル
     setTimeout(() => {
-      for(let i = 0; i < 40; i++){
+      for(let i = 0; i < 50; i++){
         const sp = document.createElement('div');
         sp.className = 'iconic-sparkle';
         sp.style.left = (Math.random()*100) + '%';
         sp.style.top = (Math.random()*100) + '%';
-        sp.style.animationDelay = (Math.random()*1) + 's';
+        sp.style.animationDelay = (Math.random()*1.2) + 's';
         content.appendChild(sp);
       }
-      content.innerHTML += `<div class="hit-title" style="background:linear-gradient(90deg,#fff,#ffb3d9,#ff66cc,#fff);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:2.6rem;text-shadow:none;letter-spacing:5px">🌹 3連複的中 🌹</div>`;
+      content.innerHTML += `<div class="hit-title" style="background:linear-gradient(90deg,#ffffff,#b4f0ee,#0abab5,#b4f0ee,#ffffff);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:2.6rem;text-shadow:0 0 30px rgba(180,240,238,0.7);letter-spacing:5px;font-weight:900">💎 3連複的中 💎</div>`;
     }, 400);
     duration = 2500;
   } else if(pr === 5){ // 三連単：虹色花火
@@ -4230,6 +4312,7 @@ function showHitEffect(hitType, onDone){
       overlay.style.transition = '';
       content.innerHTML = '';
       bg.className = '';
+      fxEnd();
       if(onDone) onDone();
     }, 400);
   }, duration);
@@ -4251,17 +4334,23 @@ function showGachaRoundIntro(log, onDone){
     const pr = priority[r.hitType] || 0;
     if(pr > maxPriority){ maxPriority = pr; maxHit = r.hitType; }
   });
+
+  // 的中なしの場合は演出を完全にスキップ
+  if(maxPriority === 0){
+    if(onDone) onDone();
+    return;
+  }
+
   let label = 'ROUND ' + (log.round || 1) + ' RESULT';
   let emoji = '🎊';
   let title = '結果発表';
   let sub = '';
   let bg = 'linear-gradient(135deg,#ff1493 0%,#c2185b 35%,#7b1fa2 70%,#311b92 100%)';
   if(maxPriority === 5){ emoji = '💎'; title = 'TRIFECTA！'; sub = '三連単的中🎊'; bg = 'linear-gradient(135deg,#ff007f 0%,#ff1493 25%,#9b00ff 60%,#3300ff 100%)'; }
-  else if(maxPriority === 4){ emoji = '🌟'; title = '3連複的中！'; bg = 'linear-gradient(135deg,#ff1493 0%,#c2185b 50%,#7b1fa2 100%)'; }
-  else if(maxPriority === 3){ emoji = '✨'; title = '連単的中！'; bg = 'linear-gradient(135deg,#ff6b9d 0%,#c2185b 60%,#4a1565 100%)'; }
-  else if(maxPriority === 2){ emoji = '🎉'; title = '連複的中！'; bg = 'linear-gradient(135deg,#ff8da1 0%,#d63384 60%,#5a1a4a 100%)'; }
-  else if(maxPriority === 1){ emoji = '🎯'; title = '単勝的中！'; bg = 'linear-gradient(135deg,#ffa0c0 0%,#e91e63 60%,#7a2055 100%)'; }
-  else { emoji = '🎲'; title = '結果発表'; sub = '今回は的中なし'; }
+  else if(maxPriority === 4){ emoji = '💎'; title = '3連複的中！'; bg = 'linear-gradient(135deg,#0abab5 0%,#06908e 50%,#024a4a 100%)'; }
+  else if(maxPriority === 3){ emoji = '🌈'; title = '連単的中！'; bg = 'linear-gradient(135deg,#d4ff00 0%,#ffeb3b 40%,#90ff5c 70%,#00bcd4 100%)'; }
+  else if(maxPriority === 2){ emoji = '⚡'; title = '連複的中！'; bg = 'linear-gradient(135deg,#3a4a8a 0%,#1a2050 60%,#0a0a30 100%)'; }
+  else if(maxPriority === 1){ emoji = '🎯'; title = '単勝的中！'; bg = 'linear-gradient(135deg,#ffaa33 0%,#cc6600 60%,#552200 100%)'; }
 
   overlay.style.background = bg;
   document.getElementById('gacha-label').textContent = label;
@@ -4269,6 +4358,7 @@ function showGachaRoundIntro(log, onDone){
   document.getElementById('gacha-title').textContent = title;
   document.getElementById('gacha-sub').textContent = sub;
   overlay.classList.remove('hidden');
+  fxStart();
   try { window.SFX.roundIntro(); } catch(e){}
 
   // 1.8秒後にフェードアウトしてコールバック
@@ -4279,6 +4369,7 @@ function showGachaRoundIntro(log, onDone){
       overlay.classList.add('hidden');
       overlay.style.opacity = '';
       overlay.style.transition = '';
+      // 注：的中演出が続けて始まるのでfxEndはそちらに任せる
       if(onDone) onDone();
     }, 400);
   }, 1800);
@@ -4292,6 +4383,7 @@ function showFinalCurtain(winnerName, winnerPts, onDismiss){
   document.getElementById('final-curtain-winner').textContent = winnerName;
   document.getElementById('final-curtain-points').textContent = winnerPts;
   curtain.classList.remove('hidden');
+  fxStart();
 
   // 紙吹雪/星をふんだんに撒く
   spawnFinalConfetti(curtain);
@@ -4321,6 +4413,7 @@ function showFinalCurtain(winnerName, winnerPts, onDismiss){
       curtain.style.transition = '';
       // 紙吹雪クリーンアップ
       curtain.querySelectorAll('.final-confetti').forEach(n => n.remove());
+      fxEnd();
       if(onDismiss) onDismiss();
     }, 500);
   };
