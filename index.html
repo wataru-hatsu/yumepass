@@ -206,16 +206,18 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .shuriken-slash{position:absolute;left:50%;top:50%;width:0;height:4px;background:linear-gradient(to right,transparent,rgba(255,255,255,1),transparent);transform:translate(-50%,-50%) rotate(var(--ang,0deg));box-shadow:0 0 12px rgba(255,255,255,0.9);animation:shurikenSlash 0.4s ease-out forwards;}
 @keyframes shurikenSlash{0%{width:0;opacity:0;}30%{width:120vw;opacity:1;}100%{width:120vw;opacity:0;}}
 
-/* 連単：オーロラ風（黄緑×黄色×黄緑） */
-.rentan-bg{background:linear-gradient(135deg,#0a3a1a 0%,#1a5a2a 30%,#3a7a3a 60%,#6aaa1a 100%);animation:hitBgFade 2.2s ease-out forwards;}
-.rentan-aurora{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(120deg,transparent 10%,rgba(212,255,0,0.5) 25%,rgba(144,255,92,0.6) 40%,rgba(255,235,59,0.55) 55%,rgba(144,255,92,0.45) 70%,transparent 90%);background-size:200% 200%;mix-blend-mode:screen;animation:rentanAuroraMove 2.5s ease-in-out forwards;}
-@keyframes rentanAuroraMove{0%{background-position:-100% 0%;opacity:0;}30%{opacity:1;}70%{opacity:1;}100%{background-position:100% 100%;opacity:0;}}
-.rentan-aurora-2{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(60deg,transparent,rgba(212,255,0,0.4),rgba(144,255,92,0.5),rgba(255,235,59,0.45),transparent);background-size:300% 100%;mix-blend-mode:screen;animation:rentanAuroraMove2 2.3s ease-in-out 0.2s forwards;}
-@keyframes rentanAuroraMove2{0%{background-position:100% 0;opacity:0;}30%{opacity:0.8;}80%{opacity:0.6;}100%{background-position:-100% 0;opacity:0;}}
-.rentan-orb{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:300px;height:300px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,1) 0%,#fffacd 15%,#d4ff00 35%,#90ff5c 60%,#3a8a1a 85%,#1a3a0a 100%);box-shadow:0 0 80px rgba(212,255,0,0.9),0 0 160px rgba(144,255,92,0.6);animation:rentanOrbAppear 1.5s ease-out forwards;}
-@keyframes rentanOrbAppear{0%{transform:translate(-50%,-50%) scale(0);opacity:0;}40%{transform:translate(-50%,-50%) scale(1.1);opacity:1;}70%{transform:translate(-50%,-50%) scale(0.95);opacity:1;}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
-.rentan-shimmer{position:absolute;width:8px;height:8px;background:radial-gradient(circle,#fff 0%,#d4ff00 50%,transparent 70%);box-shadow:0 0 12px #d4ff00;border-radius:50%;animation:rentanShimmer 1.6s ease-out forwards;}
-@keyframes rentanShimmer{0%{transform:scale(0) rotate(0);opacity:0;}50%{transform:scale(1.4) rotate(180deg);opacity:1;}100%{transform:scale(0) rotate(360deg);opacity:0;}}
+/* 連単：ウイイレ・アイコニック風 — 濃い重厚感あるピンクの波 */
+.rentan-bg{background:radial-gradient(ellipse at 50% 50%,#ff44aa 0%,#e91e63 25%,#ad1457 55%,#560027 85%,#1a0010 100%);animation:hitBgFade 2.5s ease-out forwards;}
+.rentan-wave{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(120deg,transparent 0%,rgba(255,100,180,0.7) 30%,rgba(255,255,255,0.9) 50%,rgba(255,100,180,0.7) 70%,transparent 100%);background-size:200% 100%;mix-blend-mode:screen;animation:rentanWaveSweep 2.3s ease-in-out forwards;}
+@keyframes rentanWaveSweep{0%{background-position:-100% 0;opacity:0;}20%{opacity:1;}80%{opacity:0.9;}100%{background-position:100% 0;opacity:0;}}
+.rentan-wave-2{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(70deg,transparent 0%,rgba(255,20,147,0.6) 25%,rgba(255,180,220,0.8) 50%,rgba(255,20,147,0.6) 75%,transparent 100%);background-size:200% 100%;mix-blend-mode:screen;animation:rentanWaveSweep2 2.2s ease-in-out 0.15s forwards;}
+@keyframes rentanWaveSweep2{0%{background-position:100% 0;opacity:0;}25%{opacity:0.95;}100%{background-position:-100% 0;opacity:0;}}
+.rentan-wave-3{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);background-size:50% 100%;mix-blend-mode:screen;animation:rentanWaveSweep3 0.9s ease-out 0.1s forwards;}
+@keyframes rentanWaveSweep3{0%{background-position:-50% 0;opacity:0;}30%{opacity:1;}100%{background-position:150% 0;opacity:0;}}
+.rentan-radial-burst{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:0;height:0;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(255,180,220,0.95) 25%,rgba(233,30,99,0.7) 60%,transparent 100%);animation:rentanRadialBurst 1s cubic-bezier(.22,1.4,.4,1) forwards;}
+@keyframes rentanRadialBurst{0%{width:0;height:0;opacity:0;}30%{width:300px;height:300px;opacity:1;}70%{width:1400px;height:1400px;opacity:0.5;}100%{width:2200px;height:2200px;opacity:0;}}
+.rentan-sparkle{position:absolute;width:10px;height:10px;background:radial-gradient(circle,#fff 0%,#ffb3d9 60%,transparent 100%);box-shadow:0 0 20px #ff44aa;border-radius:50%;animation:rentanSparkle 1.4s ease-out forwards;}
+@keyframes rentanSparkle{0%{transform:scale(0);opacity:0;}30%{transform:scale(1.5);opacity:1;}100%{transform:scale(0);opacity:0;}}
 
 /* 三連複：ティファニーブルー（センスよく） */
 .iconic-bg{background:radial-gradient(circle at 50% 40%,#7ad9d4 0%,#0abab5 25%,#06908e 55%,#024a4a 80%,#001a1a 100%);animation:hitBgFade 2.5s ease-out forwards;}
@@ -1398,33 +1400,41 @@ window.SFX = (function(){
     }, 900);
   }
 
-  // 連単：オーロラ風 黄緑×黄色 — 華やかで耳に残る
+  // 連単：ウイイレ・アイコニック風 — 重厚感ある衝撃的な音
   function hitRentan(){
-    // オーロラのスウィープ音（高域から低域へ）
-    const c = getCtx(); if(c){
-      const t = c.currentTime;
-      // パッド和音（メジャーな響き）
-      [523, 659, 784, 988].forEach((f, i) => {
-        setTimeout(() => tone({type:'triangle', freq:f, dur:1.2, gain:0.13}), i * 40);
-      });
-      // 高音のキラキラ上昇
-      [880, 1100, 1320, 1760, 2200, 2640].forEach((f, i) => {
-        setTimeout(() => tone({type:'sine', freq:f, dur:0.5, gain:0.16}), 100 + i * 70);
-      });
-      // ベルのアクセント
-      setTimeout(() => {
-        [1760, 2349, 2637].forEach((f, i) => {
-          setTimeout(() => tone({type:'sine', freq:f, dur:0.6, gain:0.14}), i * 100);
-        });
-      }, 300);
-    }
-    // オーロラのスウィープノイズ
+    const c = getCtx(); if(!c){ return; }
+    // 重厚な大ドン（低音）
+    tone({type:'sine', freq:55, freqEnd:25, dur:0.7, gain:0.5});
+    noise({freq:200, freqEnd:50, dur:0.4, gain:0.4, filterType:'lowpass'});
+    // ステージのスポットライト オーケストラ風和音（重厚なメジャー）
     setTimeout(() => {
-      noise({freq:8000, freqEnd:3000, dur:0.8, gain:0.08, filterType:'bandpass', Q:6});
-    }, 200);
+      [196, 247, 294, 392].forEach((f, i) => {
+        setTimeout(() => tone({type:'triangle', freq:f, dur:1.5, gain:0.13}), i * 30);
+      });
+    }, 150);
+    // 高域のシンバル風（風 + キラキラ）
     setTimeout(() => {
-      noise({freq:5000, freqEnd:8000, dur:0.6, gain:0.07, filterType:'bandpass', Q:8});
+      noise({freq:8000, freqEnd:3000, dur:0.6, gain:0.12, filterType:'highpass'});
+      [1568, 1976, 2349, 2637, 3136].forEach((f, i) => {
+        setTimeout(() => tone({type:'sine', freq:f, dur:0.4, gain:0.1}), i * 60);
+      });
+    }, 250);
+    // 風が抜ける音（波が流れる感じ）
+    setTimeout(() => {
+      noise({freq:5000, freqEnd:8000, dur:0.9, gain:0.1, filterType:'bandpass', Q:4});
+    }, 600);
+    // 2回目のドン（迫力アップ）
+    setTimeout(() => {
+      tone({type:'sine', freq:70, freqEnd:30, dur:0.5, gain:0.35});
+      noise({freq:300, freqEnd:60, dur:0.35, gain:0.3, filterType:'lowpass'});
     }, 800);
+    // 上昇する勝利音
+    setTimeout(() => {
+      tone({type:'triangle', freq:523, dur:0.4, gain:0.15});
+      setTimeout(() => tone({type:'triangle', freq:659, dur:0.4, gain:0.15}), 100);
+      setTimeout(() => tone({type:'triangle', freq:784, dur:0.5, gain:0.18}), 200);
+      setTimeout(() => tone({type:'triangle', freq:1047, dur:0.6, gain:0.2}), 300);
+    }, 1000);
   }
 
   // 三連複：ティファニーブルー — 上品でセンスある
@@ -4389,23 +4399,29 @@ function showHitEffect(hitType, onDone){
       content.innerHTML += `<div class="hit-title" style="color:#f5c842;text-shadow:0 0 20px rgba(245,200,66,1),0 0 40px rgba(245,200,66,0.6),0 4px 14px #000;font-size:2.2rem;letter-spacing:3px;font-weight:900"><span>🥷</span><span>連複的中</span><span>🥷</span></div>`;
     }, 250);
     duration = 2200;
-  } else if(pr === 3){ // 連単：オーロラ風 黄緑×黄色
+  } else if(pr === 3){ // 連単：ウイイレ・アイコニック風 濃い重厚感ピンクの波
     bg.className = 'rentan-bg';
     setTimeout(() => window.SFX.hitRentan(), 0);
-    content.innerHTML = `<div class="rentan-aurora"></div><div class="rentan-aurora-2"></div><div class="rentan-orb"></div>`;
-    // シマー粒子多数
+    content.innerHTML = `<div class="rentan-wave"></div><div class="rentan-wave-2"></div><div class="rentan-wave-3"></div>`;
+    // 中央バースト
     setTimeout(() => {
-      for(let i = 0; i < 40; i++){
-        const sh = document.createElement('div');
-        sh.className = 'rentan-shimmer';
-        sh.style.left = (Math.random()*100) + '%';
-        sh.style.top = (Math.random()*100) + '%';
-        sh.style.animationDelay = (Math.random()*1) + 's';
-        content.appendChild(sh);
+      const burst = document.createElement('div');
+      burst.className = 'rentan-radial-burst';
+      content.appendChild(burst);
+    }, 250);
+    // スパークル粒子多数
+    setTimeout(() => {
+      for(let i = 0; i < 50; i++){
+        const sp = document.createElement('div');
+        sp.className = 'rentan-sparkle';
+        sp.style.left = (Math.random()*100) + '%';
+        sp.style.top = (Math.random()*100) + '%';
+        sp.style.animationDelay = (Math.random()*1.2) + 's';
+        content.appendChild(sp);
       }
-      content.innerHTML += `<div class="hit-title" style="color:#ff8c00;text-shadow:0 0 20px rgba(255,140,0,1),0 0 40px rgba(255,107,0,0.8),0 4px 14px rgba(0,0,0,0.8);font-size:2.2rem;letter-spacing:3px;font-weight:900"><span>🌈</span><span>連単的中</span><span>🌈</span></div>`;
-    }, 600);
-    duration = 2400;
+      content.innerHTML += `<div class="hit-title" style="font-size:2.2rem;letter-spacing:3px;font-weight:900"><span style="-webkit-text-fill-color:initial;color:#fff;text-shadow:0 0 20px rgba(255,255,255,1),0 0 40px rgba(255,100,180,0.8)">⭐</span><span style="background:linear-gradient(90deg,#ffffff,#ffb3d9,#ff44aa,#ffb3d9,#ffffff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 30px rgba(255,100,180,0.7)">連単的中</span><span style="-webkit-text-fill-color:initial;color:#fff;text-shadow:0 0 20px rgba(255,255,255,1),0 0 40px rgba(255,100,180,0.8)">⭐</span></div>`;
+    }, 500);
+    duration = 2500;
   } else if(pr === 4){ // 三連複：ティファニーブルー
     bg.className = 'iconic-bg';
     setTimeout(() => window.SFX.hitSanrenfuku(), 0);
@@ -4516,7 +4532,7 @@ function showGachaRoundIntro(log, onDone){
   let bg = 'linear-gradient(135deg,#ff1493 0%,#c2185b 35%,#7b1fa2 70%,#311b92 100%)';
   if(maxPriority === 5){ emoji = '💎'; title = 'TRIFECTA！'; sub = '三連単的中🎊'; bg = 'linear-gradient(135deg,#ff007f 0%,#ff1493 25%,#9b00ff 60%,#3300ff 100%)'; }
   else if(maxPriority === 4){ emoji = '💎'; title = '3連複的中！'; bg = 'linear-gradient(135deg,#0abab5 0%,#06908e 50%,#024a4a 100%)'; }
-  else if(maxPriority === 3){ emoji = '🌈'; title = '連単的中！'; bg = 'linear-gradient(135deg,#d4ff00 0%,#ffeb3b 40%,#90ff5c 70%,#00bcd4 100%)'; }
+  else if(maxPriority === 3){ emoji = '⭐'; title = '連単的中！'; bg = 'linear-gradient(135deg,#ff44aa 0%,#e91e63 30%,#ad1457 70%,#560027 100%)'; }
   else if(maxPriority === 2){ emoji = '🥷'; title = '連複的中！'; bg = 'linear-gradient(135deg,#1a1a1a 0%,#2d1a4d 60%,#0a0520 100%)'; }
   else if(maxPriority === 1){ emoji = '🎯'; title = '単勝的中！'; bg = 'linear-gradient(135deg,#ffaa33 0%,#cc6600 60%,#552200 100%)'; }
 
