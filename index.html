@@ -2151,25 +2151,22 @@ function triggerOfflineEffects(log){
   log.playerResults.forEach(r=>{if(priority[r.hitType]>topPriority){topPriority=priority[r.hitType];topHitType=r.hitType;}});
   // 的中なしなら何もしない
   if(!topHitType) return;
-  // デバッグ表示（ユーザーに見える形で確認）
-  showNotif('🎬 ' + topHitType + ' 演出を発動！');
   // 画面遷移が完全に完了してから演出開始（300ms待つ）
   setTimeout(() => {
     try {
-      if(typeof showGachaRoundIntro !== 'function'){
-        showNotif('❌ showGachaRoundIntro 関数が見つかりません');
+      if(typeof window.showGachaRoundIntro !== 'function'){
+        console.error('showGachaRoundIntro not defined');
         return;
       }
-      if(typeof showHitEffect !== 'function'){
-        showNotif('❌ showHitEffect 関数が見つかりません');
+      if(typeof window.showHitEffect !== 'function'){
+        console.error('showHitEffect not defined');
         return;
       }
-      showGachaRoundIntro(log, () => {
-        showHitEffect(topHitType);
+      window.showGachaRoundIntro(log, () => {
+        window.showHitEffect(topHitType);
       });
     } catch(e){
       console.error('triggerOfflineEffects error:', e);
-      showNotif('❌ 演出エラー: ' + e.message);
     }
   }, 300);
 }
@@ -2263,8 +2260,8 @@ function nextRound(){
     const winners=sorted.filter(p=>p.points===sorted[0].points);
     const winnerNames=winners.map(p=>p.name).join(' & ');
     const winnerPts=sorted[0].points.toLocaleString()+' 点';
-    if(typeof showFinalCurtain === 'function'){
-      setTimeout(()=>showFinalCurtain(winnerNames, winnerPts), 100);
+    if(typeof window.showFinalCurtain === 'function'){
+      setTimeout(()=>window.showFinalCurtain(winnerNames, winnerPts), 100);
     }
   } else {
     goToRoundStart();
@@ -4321,19 +4318,21 @@ window.toggleSound = function(){
 // ============================================================
 // 演出ヘルパー（背景色を全画面ダークに）
 // ============================================================
-function fxStart(){
+window.fxStart = function(){
   document.body.classList.add('fx-active');
   document.documentElement.classList.add('fx-active');
-}
-function fxEnd(){
+};
+window.fxEnd = function(){
   document.body.classList.remove('fx-active');
   document.documentElement.classList.remove('fx-active');
-}
+};
+const fxStart = window.fxStart;
+const fxEnd = window.fxEnd;
 
 // ============================================================
 // 的中演出ビジュアル（5段階）
 // ============================================================
-function showHitEffect(hitType, onDone){
+window.showHitEffect = function(hitType, onDone){
   const priority = {'三連単的中🎊':5, '3連複的中':4, '連単的中':3, '連複的中':2, '単勝的中':1};
   const pr = priority[hitType] || 0;
   if(pr === 0){ if(onDone) onDone(); return; }
@@ -4527,14 +4526,15 @@ function showHitEffect(hitType, onDone){
       if(onDone) onDone();
     }, 400);
   }, duration);
-}
+};
+const showHitEffect = window.showHitEffect;
 
 // ============================================================
 // ガチャ風ラウンド演出
 // ============================================================
 
 // ラウンド結果直前のガチャ風オーバーレイ
-function showGachaRoundIntro(log, onDone){
+window.showGachaRoundIntro = function(log, onDone){
   const overlay = document.getElementById('gacha-overlay');
   if(!overlay){ if(onDone) onDone(); return; }
 
@@ -4584,10 +4584,11 @@ function showGachaRoundIntro(log, onDone){
       if(onDone) onDone();
     }, 400);
   }, 1800);
-}
+};
+const showGachaRoundIntro = window.showGachaRoundIntro;
 
 // 最終フィナーレ演出
-function showFinalCurtain(winnerName, winnerPts, onDismiss){
+window.showFinalCurtain = function(winnerName, winnerPts, onDismiss){
   const curtain = document.getElementById('final-curtain');
   if(!curtain){ if(onDismiss) onDismiss(); return; }
 
@@ -4631,7 +4632,8 @@ function showFinalCurtain(winnerName, winnerPts, onDismiss){
   curtain.onclick = dismiss;
   // 自動で5秒後にも閉じる（盛大に楽しめるよう少し長く）
   setTimeout(dismiss, 5000);
-}
+};
+const showFinalCurtain = window.showFinalCurtain;
 
 function spawnFinalConfetti(curtain){
   const container = document.createElement('div');
