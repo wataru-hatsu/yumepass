@@ -2151,22 +2151,27 @@ function triggerOfflineEffects(log){
   log.playerResults.forEach(r=>{if(priority[r.hitType]>topPriority){topPriority=priority[r.hitType];topHitType=r.hitType;}});
   // 的中なしなら何もしない
   if(!topHitType) return;
-  // ガチャ演出 → 的中演出
-  // 画面遷移が完了してから演出開始（requestAnimationFrame でフレームを待つ）
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      if(typeof showGachaRoundIntro === 'function'){
-        showGachaRoundIntro(log, () => {
-          if(typeof showHitEffect === 'function'){
-            showHitEffect(topHitType);
-          }
-        });
-      } else if(typeof showHitEffect === 'function'){
-        // フォールバック
-        showHitEffect(topHitType);
+  // デバッグ表示（ユーザーに見える形で確認）
+  showNotif('🎬 ' + topHitType + ' 演出を発動！');
+  // 画面遷移が完全に完了してから演出開始（300ms待つ）
+  setTimeout(() => {
+    try {
+      if(typeof showGachaRoundIntro !== 'function'){
+        showNotif('❌ showGachaRoundIntro 関数が見つかりません');
+        return;
       }
-    });
-  });
+      if(typeof showHitEffect !== 'function'){
+        showNotif('❌ showHitEffect 関数が見つかりません');
+        return;
+      }
+      showGachaRoundIntro(log, () => {
+        showHitEffect(topHitType);
+      });
+    } catch(e){
+      console.error('triggerOfflineEffects error:', e);
+      showNotif('❌ 演出エラー: ' + e.message);
+    }
+  }, 300);
 }
 
 // 演出関数群
