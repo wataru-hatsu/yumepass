@@ -134,11 +134,69 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 @keyframes gf-pulse{0%{opacity:0;transform:scale(0.8);}25%{opacity:1;}100%{opacity:0;transform:scale(1.3);}}
 .star-p{position:absolute;font-size:1.4rem;animation:st-pop 1s ease-out forwards;}
 @keyframes st-pop{0%{transform:translate(0,0) scale(0) rotate(0deg);opacity:1;}60%{opacity:1;}100%{transform:translate(var(--tx),var(--ty)) scale(0.3) rotate(var(--rot,180deg));opacity:0;}}
+
+/* ガチャ風ラウンド結果オーバーレイ */
+#gacha-overlay{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#ff1493 0%,#c2185b 35%,#7b1fa2 70%,#311b92 100%);}
+#gacha-overlay.hidden{display:none;}
+.gacha-rays{position:absolute;inset:-50%;background:conic-gradient(from 0deg,rgba(255,255,255,0.15) 0deg 8deg,transparent 8deg 30deg,rgba(255,255,255,0.18) 30deg 38deg,transparent 38deg 60deg,rgba(255,255,255,0.12) 60deg 68deg,transparent 68deg 90deg);animation:gachaRays 6s linear infinite;}
+@keyframes gachaRays{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+.gacha-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.65) 0%,rgba(255,200,230,0.35) 30%,transparent 60%);animation:gachaFlash 1.6s ease-out forwards;}
+@keyframes gachaFlash{0%{opacity:0;transform:scale(0.2);}30%{opacity:1;}70%{opacity:0.7;}100%{opacity:0.4;transform:scale(1.6);}}
+.gacha-content{position:relative;z-index:2;text-align:center;color:white;animation:gachaPop 0.7s cubic-bezier(.18,1.2,.5,1.1) forwards;padding:20px;}
+@keyframes gachaPop{0%{transform:scale(0.4) rotate(-8deg);opacity:0;}60%{transform:scale(1.1) rotate(2deg);opacity:1;}100%{transform:scale(1) rotate(0);opacity:1;}}
+.gacha-label{font-size:0.85rem;letter-spacing:8px;font-weight:900;color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,200,230,0.7);margin-bottom:18px;}
+.gacha-emoji{font-size:5rem;line-height:1;margin-bottom:14px;animation:gachaEmoji 1.2s ease-in-out infinite;text-shadow:0 0 30px rgba(255,255,255,0.8);}
+@keyframes gachaEmoji{0%,100%{transform:scale(1) rotate(-3deg);}50%{transform:scale(1.15) rotate(3deg);}}
+.gacha-title{font-size:2.2rem;font-weight:900;color:#fff;text-shadow:0 0 18px rgba(255,255,255,0.9),0 4px 12px rgba(0,0,0,0.3);letter-spacing:2px;margin-bottom:8px;line-height:1.2;}
+.gacha-sub{font-size:1rem;color:rgba(255,255,255,0.95);font-weight:700;text-shadow:0 2px 6px rgba(0,0,0,0.4);margin-top:6px;}
+/* 最終フィナーレ */
+#final-curtain{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;}
+#final-curtain.hidden{display:none;}
+.final-bg{position:absolute;inset:0;background:radial-gradient(ellipse at center,#3a1f6a 0%,#1a0a2a 60%,#000 100%);}
+.final-rays{position:absolute;inset:-30%;background:conic-gradient(from 0deg,rgba(245,200,66,0.25) 0deg 6deg,transparent 6deg 24deg,rgba(245,200,66,0.18) 24deg 30deg,transparent 30deg 48deg,rgba(255,215,100,0.22) 48deg 54deg,transparent 54deg 72deg);animation:finalRays 10s linear infinite;}
+@keyframes finalRays{0%{transform:rotate(0);}100%{transform:rotate(360deg);}}
+.final-content{position:relative;z-index:2;text-align:center;color:white;padding:30px 20px;animation:finalAppear 1.2s ease-out forwards;}
+@keyframes finalAppear{0%{transform:scale(0.3);opacity:0;}50%{transform:scale(1.08);opacity:1;}100%{transform:scale(1);opacity:1;}}
+.final-label{font-size:0.85rem;letter-spacing:8px;color:#f5c842;text-shadow:0 0 10px rgba(245,200,66,0.8);font-weight:900;margin-bottom:20px;}
+.final-trophy{font-size:7rem;line-height:1;margin-bottom:10px;text-shadow:0 0 40px rgba(245,200,66,1),0 0 80px rgba(245,200,66,0.5);animation:trophyBounce 1.5s ease-in-out infinite;}
+@keyframes trophyBounce{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-12px) scale(1.06);}}
+.final-title{font-size:0.85rem;letter-spacing:6px;color:#fff;text-shadow:0 0 10px rgba(255,255,255,0.6);font-weight:900;margin-bottom:14px;}
+.final-winner{font-size:2.6rem;font-weight:900;color:white;text-shadow:0 0 24px rgba(245,200,66,1),0 0 48px rgba(255,255,255,0.6);margin-bottom:8px;letter-spacing:1px;}
+.final-points{font-size:1.6rem;color:#f5c842;font-weight:900;text-shadow:0 0 14px rgba(245,200,66,0.8);margin-bottom:30px;}
+.final-sub{font-size:0.9rem;color:rgba(255,255,255,0.6);font-weight:700;letter-spacing:2px;margin-top:20px;animation:finalSubPulse 1.6s ease-in-out infinite;}
+@keyframes finalSubPulse{0%,100%{opacity:0.5;}50%{opacity:1;}}
+.final-confetti{position:absolute;inset:0;pointer-events:none;z-index:1;}
 </style>
 </head>
 <body>
 <div class="notif" id="notif"></div>
 <div id="celebration-overlay" class="hidden"></div>
+
+<!-- ガチャ風フルスクリーン演出オーバーレイ -->
+<div id="gacha-overlay" class="hidden">
+  <div class="gacha-rays"></div>
+  <div class="gacha-flash"></div>
+  <div class="gacha-content">
+    <div class="gacha-label" id="gacha-label">ROUND RESULT</div>
+    <div class="gacha-emoji" id="gacha-emoji">🎊</div>
+    <div class="gacha-title" id="gacha-title">結果発表</div>
+    <div class="gacha-sub" id="gacha-sub"></div>
+  </div>
+</div>
+
+<!-- 最終フィナーレ用フルスクリーン演出 -->
+<div id="final-curtain" class="hidden">
+  <div class="final-bg"></div>
+  <div class="final-rays"></div>
+  <div class="final-content">
+    <div class="final-label">★ ★ ★ GAME OVER ★ ★ ★</div>
+    <div class="final-trophy">🏆</div>
+    <div class="final-title" id="final-curtain-title">WINNER</div>
+    <div class="final-winner" id="final-curtain-winner">—</div>
+    <div class="final-points" id="final-curtain-points">—</div>
+    <div class="final-sub">タップで結果を見る</div>
+  </div>
+</div>
 <div class="topic-popup-overlay hidden" id="topicPopupOverlay" onclick="closeTopicPopup()">
   <div class="topic-popup" onclick="event.stopPropagation()">
     <div class="topic-popup-header"><div class="topic-popup-icon" id="popupIcon">🎯</div><div class="topic-popup-title" id="popupTitle">お題</div></div>
@@ -401,6 +459,11 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 
     <!-- 親用 順位入力エリア -->
     <div id="ob-oya-area" style="display:none">
+      <!-- 全員の持ち点（親も見れる） -->
+      <div class="panel" style="padding:10px 12px">
+        <div class="panel-title">📊 現在の得点</div>
+        <table class="score-table" id="ob-oya-score-table"></table>
+      </div>
       <div class="panel" style="background:linear-gradient(135deg,#1a3d2a,#0d2a1a);border:2px solid #7dff7d">
         <div style="color:#aef5a0;font-size:0.85rem;line-height:1.5">👑 <strong>あなた自身</strong>の順位（1位→2位→3位）を入力してください</div>
         <div style="color:#5dcc5d;font-size:0.75rem;margin-top:4px">他のプレイヤーには見えません</div>
@@ -420,6 +483,15 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-online-bet-confirm">
   <div class="round-header" id="obc-round-header">ROUND 1 — 確認</div>
   <div class="scroll-content">
+    <!-- お題パネル（長押しで選択肢） -->
+    <div id="obc-topic-panel" style="margin:10px;background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:12px;cursor:pointer;user-select:none">
+      <div style="color:rgba(245,200,66,0.6);font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TODAY'S TOPIC（長押し/右クリックで選択肢を確認）</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:1.4rem" id="obc-topic-icon">🎯</div>
+        <div style="color:var(--gold);font-size:1rem;font-weight:900" id="obc-topic-title">—</div>
+      </div>
+      <div id="obc-topic-horses" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
+    </div>
     <div style="background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);margin:10px;border-radius:12px;border:2px solid var(--gold);overflow:hidden;box-shadow:0 0 20px rgba(245,200,66,0.3)">
       <div style="background:var(--gold);padding:8px 16px;text-align:center">
         <div style="font-family:'Racing Sans One',cursive;color:#1a1a1a;font-size:1rem;letter-spacing:3px">🏇 TICKET CONFIRMATION 🏇</div>
@@ -458,6 +530,15 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-online-skip-confirm">
   <div class="round-header" id="osc-round-header">ROUND 1 — 見送り確認</div>
   <div class="scroll-content">
+    <!-- お題パネル -->
+    <div id="osc-topic-panel" style="margin:10px;background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:12px">
+      <div style="color:rgba(245,200,66,0.6);font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TODAY'S TOPIC</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:1.4rem" id="osc-topic-icon">🎯</div>
+        <div style="color:var(--gold);font-size:1rem;font-weight:900" id="osc-topic-title">—</div>
+      </div>
+      <div id="osc-topic-horses" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
+    </div>
     <div style="background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);margin:10px;border-radius:12px;border:2px solid #555;overflow:hidden;opacity:0.9">
       <div style="background:#555;padding:8px 16px;text-align:center">
         <div style="font-family:'Racing Sans One',cursive;color:#ddd;font-size:1rem;letter-spacing:3px">🎫 PASS — 見送り 🎫</div>
@@ -480,6 +561,15 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-online-bet-wait">
   <div class="header"><div class="subtitle" id="obw-round-label">ROUND 1</div><h1>⏳ 待機中</h1></div>
   <div class="scroll-content">
+    <!-- お題パネル -->
+    <div id="obw-topic-panel" style="margin:10px;background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:12px;cursor:pointer;user-select:none">
+      <div style="color:rgba(245,200,66,0.6);font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TODAY'S TOPIC（長押し/右クリックで選択肢を確認）</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:1.4rem" id="obw-topic-icon">🎯</div>
+        <div style="color:var(--gold);font-size:1rem;font-weight:900" id="obw-topic-title">—</div>
+      </div>
+      <div id="obw-topic-horses" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
+    </div>
     <div class="panel" style="background:linear-gradient(135deg,#0d3d7a,#1a5fcc);border:2px solid #4a8fff;text-align:center;padding:30px">
       <div style="color:white;font-size:1.2rem;font-weight:700" id="obw-message">✅ 入力完了しました</div>
       <div style="color:#aef5a0;font-size:0.9rem;margin-top:10px">他のプレイヤーを待っています...</div>
@@ -489,6 +579,11 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div class="panel-title">📊 進捗</div>
       <div id="obw-progress-list"></div>
     </div>
+    <!-- 全員の持ち点 -->
+    <div class="panel">
+      <div class="panel-title">💰 全員の持ち点</div>
+      <table class="score-table" id="obw-score-table"></table>
+    </div>
   </div>
 </div>
 
@@ -496,9 +591,10 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-online-reveal">
   <div class="header"><div class="subtitle" id="orv-round-label">ROUND 1 REVEAL</div><h1>📢 賭け公開！</h1></div>
   <div class="scroll-content">
-    <div class="panel" style="background:#1a1a1a;border-color:#333;text-align:center">
-      <div style="color:#aaa;font-size:0.75rem;letter-spacing:2px;margin-bottom:6px">TODAY'S TOPIC</div>
-      <div style="color:var(--gold);font-size:1.3rem;font-weight:900" id="orv-topic-name">—</div>
+    <div class="panel" style="background:#1a1a1a;border-color:#333">
+      <div style="text-align:center;color:#aaa;font-size:0.75rem;letter-spacing:2px;margin-bottom:6px">TODAY'S TOPIC</div>
+      <div style="text-align:center;color:var(--gold);font-size:1.3rem;font-weight:900" id="orv-topic-name">—</div>
+      <div id="orv-topic-horses" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
     </div>
     <div class="panel"><div class="panel-title">🎰 みんなの賭け内容</div><div id="orv-bets-list"></div></div>
     <div style="color:#fdf8ed;text-align:center;padding:12px;font-size:0.85rem">みんなで確認したら結果発表！</div>
@@ -511,8 +607,17 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 
 <!-- ONLINE: ラウンド結果 -->
 <div class="screen" id="screen-online-roundresult">
-  <div class="header"><div class="subtitle" id="orr-round-label">ROUND 1 RESULT</div><h1>🎊 ラウンド結果</h1></div>
+  <div class="round-header" id="orr-round-label">ROUND 1 RESULT</div>
   <div class="scroll-content">
+    <!-- お題パネル -->
+    <div class="panel" style="background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark)">
+      <div style="text-align:center;color:rgba(245,200,66,0.6);font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TOPIC</div>
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center">
+        <div style="font-size:1.4rem" id="orr-topic-icon">🎯</div>
+        <div style="color:var(--gold);font-size:1.1rem;font-weight:900" id="orr-topic-title">—</div>
+      </div>
+      <div id="orr-topic-horses" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
+    </div>
     <div class="panel"><div class="panel-title">🏆 親の実際の順位</div><div id="orr-actual-result"></div></div>
     <div class="panel"><div class="panel-title">💰 子の結果</div><div id="orr-player-results"></div></div>
     <div class="panel" id="orr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="orr-oya-summary"></div></div>
@@ -528,13 +633,19 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-online-final">
   <div class="header"><div class="subtitle">GAME OVER</div><h1>🏆 最終結果</h1></div>
   <div class="scroll-content">
-    <div class="panel" style="text-align:center;padding:20px">
-      <div style="font-size:3rem;margin-bottom:8px">🥇</div>
-      <div style="font-size:0.75rem;letter-spacing:3px;color:var(--gold-dark);margin-bottom:4px">WINNER</div>
-      <div style="font-size:2rem;font-weight:900" id="ofn-winner"></div>
-      <div style="font-size:1.2rem;color:var(--gold-dark);font-weight:700;margin-top:4px" id="ofn-winner-pts"></div>
+    <!-- 王冠グランドフィナーレパネル -->
+    <div class="panel ofn-grand-panel" style="text-align:center;padding:30px 20px;background:linear-gradient(135deg,#1a0a2a 0%,#2a1a4a 50%,#1a0a2a 100%);border:3px solid var(--gold);box-shadow:0 0 40px rgba(245,200,66,0.5);position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(245,200,66,0.25) 0%,transparent 60%);pointer-events:none"></div>
+      <div style="position:relative;z-index:1">
+        <div style="font-size:0.7rem;letter-spacing:6px;color:var(--gold);margin-bottom:10px">★ ★ ★ CHAMPION ★ ★ ★</div>
+        <div style="font-size:4rem;margin-bottom:8px;animation:trophyBounce 1.5s ease-in-out infinite">🏆</div>
+        <div style="font-size:0.7rem;letter-spacing:4px;color:#f5c842;margin-bottom:8px">WINNER</div>
+        <div style="font-size:2.2rem;font-weight:900;color:white;text-shadow:0 0 20px rgba(245,200,66,0.8);margin-bottom:6px" id="ofn-winner">—</div>
+        <div style="font-size:1.4rem;color:var(--gold);font-weight:900;text-shadow:0 0 12px rgba(245,200,66,0.6)" id="ofn-winner-pts">—</div>
+      </div>
     </div>
     <div class="panel"><div class="panel-title">📊 最終得点表</div><table class="score-table" id="ofn-score-table"></table></div>
+    <div class="panel"><div class="panel-title">📜 ラウンド履歴（親が何を選んだか）</div><div id="ofn-history"></div></div>
     <!-- ホスト用：もう一度ボタン -->
     <div id="ofn-host-controls" style="display:none;margin:10px">
       <button class="btn btn-primary" onclick="onlineRestartGame()" style="background:linear-gradient(135deg,#c0392b,#922b21)">🔄 同じメンバーでもう一度</button>
@@ -2521,6 +2632,33 @@ window.onlineBet = {
 };
 
 // 賭けフェーズに入る
+// お題＋選択肢を任意のパネルに描画する共通関数
+function renderTopicWithHorses(iconElId, titleElId, horsesElId, topic, opts){
+  if(!topic) return;
+  const iconEl = document.getElementById(iconElId);
+  const titleEl = document.getElementById(titleElId);
+  const horsesEl = document.getElementById(horsesElId);
+  if(iconEl) iconEl.textContent = topic.icon || '🎯';
+  if(titleEl) titleEl.textContent = topic.title || '—';
+  if(horsesEl){
+    const horses = topic.horses || [];
+    horsesEl.innerHTML = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.35);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+  }
+  // 長押し対応（任意）
+  if(opts?.longPressTargetId){
+    const tp = document.getElementById(opts.longPressTargetId);
+    if(tp){
+      let pt = null;
+      tp.oncontextmenu = (e) => { e.preventDefault(); openOnlineTopicPopup(topic); };
+      tp.ontouchstart = () => { pt = setTimeout(() => openOnlineTopicPopup(topic), 400); };
+      tp.ontouchend = () => clearTimeout(pt);
+      tp.ontouchmove = () => clearTimeout(pt);
+      tp.onmousedown = (e) => { if(e.button === 0) pt = setTimeout(() => openOnlineTopicPopup(topic), 600); };
+      tp.onmouseup = () => clearTimeout(pt);
+    }
+  }
+}
+
 function enterOnlineBetting(game){
   goTo('screen-online-betting');
 
@@ -2571,6 +2709,8 @@ function enterOnlineBetting(game){
     document.getElementById('ob-ko-area').style.display = 'none';
     document.getElementById('ob-oya-area').style.display = '';
     document.getElementById('ob-my-label').textContent = '👑 親 — YOUR TURN';
+    // 親も全員の得点を見れる
+    renderOnlineScoreTable('ob-oya-score-table', game);
     renderOyaHorseGrid();
   } else {
     bannerWrap.innerHTML = `
@@ -2801,6 +2941,8 @@ window.onlineSubmitKoBet = function(){
     document.getElementById('osc-round-header').textContent = `ROUND ${game.currentRound || 1} — 見送り確認`;
     document.getElementById('osc-name').textContent = myName;
     document.getElementById('osc-points').textContent = myPoints.toLocaleString();
+    // お題情報を見送り画面にも表示
+    renderTopicWithHorses('osc-topic-icon', 'osc-topic-title', 'osc-topic-horses', game.selectedTopic);
     goTo('screen-online-skip-confirm');
     return;
   }
@@ -2829,6 +2971,8 @@ window.onlineSubmitKoBet = function(){
   document.getElementById('obc-amount').textContent = amount.toLocaleString() + ' 点';
   document.getElementById('obc-payout-info').textContent = multInfo[window.onlineBet.betType];
   document.getElementById('obc-horses').innerHTML = window.onlineBet.selectedHorses.map((hi, i) => `<div style="display:flex;align-items:center;gap:8px;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);border-radius:8px;padding:8px 12px"><div style="color:var(--gold);font-size:0.8rem;font-weight:900;min-width:50px">${posLabels[i] || ''}</div><div class="ibadge ${HC[hi]}" style="width:24px;height:24px;font-size:0.8rem">${hi+1}</div><div style="color:white;font-weight:700">${topic.horses[hi]}</div></div>`).join('');
+  // お題情報を馬券確認画面に表示
+  renderTopicWithHorses('obc-topic-icon', 'obc-topic-title', 'obc-topic-horses', topic, {longPressTargetId:'obc-topic-panel'});
   goTo('screen-online-bet-confirm');
 };
 
@@ -2887,6 +3031,10 @@ function enterOnlineBetWait(){
   goTo('screen-online-bet-wait');
   const game = window.online.game;
   document.getElementById('obw-round-label').textContent = `ROUND ${game?.currentRound || 1}`;
+  // お題情報表示
+  renderTopicWithHorses('obw-topic-icon', 'obw-topic-title', 'obw-topic-horses', game?.selectedTopic, {longPressTargetId:'obw-topic-panel'});
+  // 全員の持ち点
+  if(game) renderOnlineScoreTable('obw-score-table', game);
   // 自分の入力内容を表示
   const players = getOnlinePlayersArray();
   const oyaIdx = game?.oyaIndex || 0;
@@ -2992,6 +3140,11 @@ function enterOnlineReveal(game){
   const topic = game.selectedTopic;
   if(topic){
     document.getElementById('orv-topic-name').textContent = `${topic.icon || '🎯'} ${topic.title || ''}`;
+    // 選択肢を表示
+    const horsesEl = document.getElementById('orv-topic-horses');
+    if(horsesEl){
+      horsesEl.innerHTML = (topic.horses || []).map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.35);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+    }
   }
 
   const players = getOnlinePlayersArray();
@@ -3156,6 +3309,7 @@ function calculateOnlineResults(game, players){
   const roundLog = {
     round: game.currentRound || 1,
     topic: topic?.title || '',
+    topicIcon: topic?.icon || '🎯',
     topicHorses: topic?.horses || [],
     oyaName: oya?.name || '',
     oyaId: oya?.id || '',
@@ -3172,9 +3326,6 @@ function calculateOnlineResults(game, players){
 // ============================================================
 
 function enterOnlineRoundResult(game){
-  goTo('screen-online-roundresult');
-  document.getElementById('orr-round-label').textContent = `ROUND ${game.currentRound || 1} RESULT`;
-
   const log = game.results;
   if(!log) return;
   const topic = game.selectedTopic;
@@ -3182,6 +3333,32 @@ function enterOnlineRoundResult(game){
   const roundKey = `r${game.currentRound || 1}`;
   const isFirstShow = window.online._lastResultRound !== roundKey;
   window.online._lastResultRound = roundKey;
+
+  // 初回表示時はガチャ風演出を先に出してから画面遷移
+  if(isFirstShow){
+    showGachaRoundIntro(log, () => {
+      goTo('screen-online-roundresult');
+      _renderRoundResultBody(game, log, topic, true);
+    });
+  } else {
+    goTo('screen-online-roundresult');
+    _renderRoundResultBody(game, log, topic, false);
+  }
+}
+
+function _renderRoundResultBody(game, log, topic, isFirstShow){
+  document.getElementById('orr-round-label').textContent = `ROUND ${game.currentRound || 1} RESULT`;
+
+  // お題＋選択肢を描画
+  const topicIcon = log.topicIcon || topic?.icon || '🎯';
+  const topicTitle = log.topic || topic?.title || '';
+  const horses = log.topicHorses && log.topicHorses.length ? log.topicHorses : (topic?.horses || []);
+  document.getElementById('orr-topic-icon').textContent = topicIcon;
+  document.getElementById('orr-topic-title').textContent = topicTitle;
+  const horsesEl = document.getElementById('orr-topic-horses');
+  if(horsesEl){
+    horsesEl.innerHTML = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.35);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+  }
 
   // 実際の順位
   const actualEl = document.getElementById('orr-actual-result');
@@ -3360,40 +3537,88 @@ async function checkAllReadyForNext(){
 // ============================================================
 
 function enterOnlineFinal(game){
-  goTo('screen-online-final');
-  const players = getOnlinePlayersArray();
-  const points = game.points || {};
-  const arr = players.map(p => ({ ...p, points: points[p.id] || 0 })).sort((a, b) => b.points - a.points);
+  // 初回のみ豪華フィナーレ演出
+  const isFirstShow = window.online._lastFinalShown !== game.startedAt;
+  window.online._lastFinalShown = game.startedAt;
 
-  // 同率1位処理
-  const topPts = arr[0]?.points || 0;
-  const winners = arr.filter(p => p.points === topPts);
-  const winnerNames = winners.map(p => p.name).join(' / ');
-  document.getElementById('ofn-winner').textContent = winnerNames;
-  document.getElementById('ofn-winner-pts').textContent = topPts.toLocaleString() + ' 点';
+  const renderFinalBody = () => {
+    goTo('screen-online-final');
+    const players = getOnlinePlayersArray();
+    const points = game.points || {};
+    const arr = players.map(p => ({ ...p, points: points[p.id] || 0 })).sort((a, b) => b.points - a.points);
 
-  // 同点処理付き得点表
-  let rank = 1, lastPts = null;
-  arr.forEach((p, i) => {
-    if(lastPts !== null && p.points === lastPts){ p.rank = rank; }
-    else { rank = i + 1; p.rank = rank; }
-    lastPts = p.points;
-  });
+    // 同率1位処理
+    const topPts = arr[0]?.points || 0;
+    const winners = arr.filter(p => p.points === topPts);
+    const winnerNames = winners.map(p => p.name).join(' / ');
+    document.getElementById('ofn-winner').textContent = winnerNames;
+    document.getElementById('ofn-winner-pts').textContent = topPts.toLocaleString() + ' 点';
 
-  const t = document.getElementById('ofn-score-table');
-  if(t){
-    let html = '<tr><th>順位</th><th>名前</th><th>得点</th></tr>';
-    arr.forEach(p => {
-      const cls = p.rank === 1 ? 'leader' : '';
-      const meMarker = p.id === window.online.playerId ? ' <span style="color:#1a7a1a;font-size:0.65rem;font-weight:700">(あなた)</span>' : '';
-      html += `<tr class="${cls}"><td>${p.rank}位</td><td>${p.name}${meMarker}</td><td><strong>${p.points.toLocaleString()}</strong>点</td></tr>`;
+    // 同点処理付き得点表
+    let rank = 1, lastPts = null;
+    arr.forEach((p, i) => {
+      if(lastPts !== null && p.points === lastPts){ p.rank = rank; }
+      else { rank = i + 1; p.rank = rank; }
+      lastPts = p.points;
     });
-    t.innerHTML = html;
-  }
 
-  // ホスト/ゲスト表示切り替え
-  document.getElementById('ofn-host-controls').style.display = window.online.isHost ? 'block' : 'none';
-  document.getElementById('ofn-guest-info').style.display = window.online.isHost ? 'none' : 'block';
+    const t = document.getElementById('ofn-score-table');
+    if(t){
+      let html = '<tr><th>順位</th><th>名前</th><th>得点</th></tr>';
+      arr.forEach(p => {
+        const cls = p.rank === 1 ? 'leader' : '';
+        const meMarker = p.id === window.online.playerId ? ' <span style="color:#1a7a1a;font-size:0.65rem;font-weight:700">(あなた)</span>' : '';
+        html += `<tr class="${cls}"><td>${p.rank}位</td><td>${p.name}${meMarker}</td><td><strong>${p.points.toLocaleString()}</strong>点</td></tr>`;
+      });
+      t.innerHTML = html;
+    }
+
+    // ラウンド履歴（親が選んだ順位を表示）
+    const histEl = document.getElementById('ofn-history');
+    if(histEl){
+      const history = game.history || [];
+      if(!history.length){
+        histEl.innerHTML = '<div style="text-align:center;color:#aaa;padding:14px;font-size:0.85rem">履歴がありません</div>';
+      } else {
+        histEl.innerHTML = history.map(h => {
+          const topicIcon = h.topicIcon || '🎯';
+          const horses = h.topicHorses || [];
+          // 選択肢タグ
+          const horseTags = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:2px 7px;border-radius:10px;font-size:0.7rem;color:#aaa"><span class="ibadge ${HC[i]}" style="width:16px;height:16px;font-size:0.6rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+          // 親の順位（1位→2位→3位）
+          const oyaRanking = (h.oyaResult || []).map((hi, i) => `<div style="display:flex;align-items:center;gap:6px;padding:4px 0"><span style="font-size:0.95rem;width:24px">${['🥇','🥈','🥉'][i]}</span><span class="ibadge ${HC[hi]}" style="width:22px;height:22px;font-size:0.75rem">${hi+1}</span><span style="color:white;font-weight:700;font-size:0.85rem">${escapeHtml(horses[hi] || '')}</span></div>`).join('');
+          return `<div style="margin-bottom:12px;padding:10px;background:#1f1f1f;border:1px solid #444;border-radius:8px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+              <div style="color:var(--gold);font-weight:900;font-size:0.85rem">ROUND ${h.round}</div>
+              <div style="color:#aaa;font-size:0.7rem">親：<strong style="color:white">${escapeHtml(h.oyaName || '')}</strong></div>
+            </div>
+            <div style="color:white;font-weight:700;font-size:0.95rem;margin-bottom:4px">${topicIcon} ${escapeHtml(h.topic || '')}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${horseTags}</div>
+            <div style="background:#0f0f0f;border-radius:6px;padding:6px 10px">
+              <div style="color:#aaa;font-size:0.7rem;margin-bottom:2px">親が選んだ順位</div>
+              ${oyaRanking}
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }
+
+    // ホスト/ゲスト表示切り替え
+    document.getElementById('ofn-host-controls').style.display = window.online.isHost ? 'block' : 'none';
+    document.getElementById('ofn-guest-info').style.display = window.online.isHost ? 'none' : 'block';
+  };
+
+  if(isFirstShow){
+    // 先にフィナーレ演出を出す → タップ or 4秒後に画面遷移
+    const players = getOnlinePlayersArray();
+    const points = game.points || {};
+    const arr = players.map(p => ({ ...p, points: points[p.id] || 0 })).sort((a, b) => b.points - a.points);
+    const topPts = arr[0]?.points || 0;
+    const winnerNames = arr.filter(p => p.points === topPts).map(p => p.name).join(' / ');
+    showFinalCurtain(winnerNames, topPts.toLocaleString() + ' 点', renderFinalBody);
+  } else {
+    renderFinalBody();
+  }
 }
 
 // 同じメンバーで再戦（ホスト用）
@@ -3430,6 +3655,105 @@ window.onlineRestartGame = async function(){
     showNotif('⚠️ 再戦の開始に失敗しました');
   }
 };
+
+// ============================================================
+// ガチャ風ラウンド演出
+// ============================================================
+
+// ラウンド結果直前のガチャ風オーバーレイ
+function showGachaRoundIntro(log, onDone){
+  const overlay = document.getElementById('gacha-overlay');
+  if(!overlay){ if(onDone) onDone(); return; }
+
+  // ヒット度合いで色/絵文字/タイトル変える
+  const priority = {'三連単的中🎊':5, '3連複的中':4, '連単的中':3, '連複的中':2, '単勝的中':1};
+  let maxPriority = 0, maxHit = null;
+  (log.playerResults || []).forEach(r => {
+    const pr = priority[r.hitType] || 0;
+    if(pr > maxPriority){ maxPriority = pr; maxHit = r.hitType; }
+  });
+  let label = 'ROUND ' + (log.round || 1) + ' RESULT';
+  let emoji = '🎊';
+  let title = '結果発表';
+  let sub = '';
+  let bg = 'linear-gradient(135deg,#ff1493 0%,#c2185b 35%,#7b1fa2 70%,#311b92 100%)';
+  if(maxPriority === 5){ emoji = '💎'; title = 'TRIFECTA！'; sub = '三連単的中🎊'; bg = 'linear-gradient(135deg,#ff007f 0%,#ff1493 25%,#9b00ff 60%,#3300ff 100%)'; }
+  else if(maxPriority === 4){ emoji = '🌟'; title = '3連複的中！'; bg = 'linear-gradient(135deg,#ff1493 0%,#c2185b 50%,#7b1fa2 100%)'; }
+  else if(maxPriority === 3){ emoji = '✨'; title = '連単的中！'; bg = 'linear-gradient(135deg,#ff6b9d 0%,#c2185b 60%,#4a1565 100%)'; }
+  else if(maxPriority === 2){ emoji = '🎉'; title = '連複的中！'; bg = 'linear-gradient(135deg,#ff8da1 0%,#d63384 60%,#5a1a4a 100%)'; }
+  else if(maxPriority === 1){ emoji = '🎯'; title = '単勝的中！'; bg = 'linear-gradient(135deg,#ffa0c0 0%,#e91e63 60%,#7a2055 100%)'; }
+  else { emoji = '🎲'; title = '結果発表'; sub = '今回は的中なし'; }
+
+  overlay.style.background = bg;
+  document.getElementById('gacha-label').textContent = label;
+  document.getElementById('gacha-emoji').textContent = emoji;
+  document.getElementById('gacha-title').textContent = title;
+  document.getElementById('gacha-sub').textContent = sub;
+  overlay.classList.remove('hidden');
+
+  // 1.8秒後にフェードアウトしてコールバック
+  setTimeout(() => {
+    overlay.style.transition = 'opacity 0.4s ease-out';
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+      overlay.style.opacity = '';
+      overlay.style.transition = '';
+      if(onDone) onDone();
+    }, 400);
+  }, 1800);
+}
+
+// 最終フィナーレ演出
+function showFinalCurtain(winnerName, winnerPts, onDismiss){
+  const curtain = document.getElementById('final-curtain');
+  if(!curtain){ if(onDismiss) onDismiss(); return; }
+
+  document.getElementById('final-curtain-winner').textContent = winnerName;
+  document.getElementById('final-curtain-points').textContent = winnerPts;
+  curtain.classList.remove('hidden');
+
+  // 紙吹雪/星をふんだんに撒く
+  spawnFinalConfetti(curtain);
+
+  // 既存の花火演出も発動
+  try { if(typeof launchFireworks === 'function') setTimeout(launchFireworks, 600); } catch(e){}
+
+  // タップで閉じる
+  let dismissed = false;
+  const dismiss = () => {
+    if(dismissed) return;
+    dismissed = true;
+    curtain.style.transition = 'opacity 0.5s ease-out';
+    curtain.style.opacity = '0';
+    setTimeout(() => {
+      curtain.classList.add('hidden');
+      curtain.style.opacity = '';
+      curtain.style.transition = '';
+      // 紙吹雪クリーンアップ
+      curtain.querySelectorAll('.final-confetti').forEach(n => n.remove());
+      if(onDismiss) onDismiss();
+    }, 500);
+  };
+  curtain.onclick = dismiss;
+  // 自動で4秒後にも閉じる
+  setTimeout(dismiss, 4000);
+}
+
+function spawnFinalConfetti(curtain){
+  const container = document.createElement('div');
+  container.className = 'final-confetti';
+  const colors = ['#f5c842','#ff4488','#44ff88','#4488ff','#ff44ff','#ffaa00','#ffffff','#ff7755'];
+  for(let i = 0; i < 80; i++){
+    const p = document.createElement('div');
+    p.className = 'confetti-p';
+    const size = 6 + Math.random()*8;
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    p.style.cssText = `left:${Math.random()*100}%;top:-${Math.random()*20+10}%;width:${size}px;height:${size*0.4}px;background:${color};--sx:${(Math.random()-0.5)*200}px;--rot:${Math.random()*720+360}deg;--dur:${2+Math.random()*1.5}s;animation-delay:${Math.random()*0.8}s;`;
+    container.appendChild(p);
+  }
+  curtain.appendChild(container);
+}
 
 // 部屋を出る
 window.leaveRoom = async function(skipConfirm){
