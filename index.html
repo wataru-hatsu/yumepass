@@ -4437,7 +4437,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
     // 実際の順位エリアに「ノーゲーム」表示
     const actualEl = document.getElementById('orr-actual-result');
     if(actualEl){
-      actualEl.innerHTML = `<div style="text-align:center;padding:20px;color:#f5c842;font-size:1.1rem;font-weight:700">⚠️ ノーゲーム<br><span style="font-size:0.85rem;color:#aaa;font-weight:400;line-height:1.6">親（${escapeHtml(log.oyaName || '?')}）がオフラインとなったため<br>このラウンドは無効です</span></div>`;
+      actualEl.innerHTML = `<div style="text-align:center;padding:20px;color:#f5c842;font-size:1.1rem;font-weight:700">⚠️ ノーゲーム<br><span style="font-size:0.85rem;color:#aaa;font-weight:400;line-height:1.6">親（${escapeHtml(log.oyaName || '?')}）がオフラインとなったため<br>このラウンドは無効です<br><span style="color:#aef5a0;font-weight:700">親を交代して同じラウンドをやり直します</span></span></div>`;
     }
     // 子の結果（ノーゲームなので全員返金）
     const playerEl = document.getElementById('orr-player-results');
@@ -4451,14 +4451,12 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
     // 得点表
     renderOnlineScoreTable('orr-score-table', game);
 
-    // 次へボタン
-    const totalRounds = window.online.settings?.rounds || 5;
-    const isLast = (game.currentRound || 1) >= totalRounds;
+    // 次へボタン（ノーゲーム時は「やり直し」表記）
     const myReady = (game.nextReady || {})[window.online.playerId];
     const btn = document.getElementById('orr-next-btn');
     if(btn){
       btn.disabled = !!myReady;
-      btn.textContent = myReady ? '✅ 準備完了 — 他の人を待っています' : (isLast ? '🏆 最終結果へ' : '次のラウンドへ →');
+      btn.textContent = myReady ? '✅ 準備完了 — 他の人を待っています' : '🔁 親を交代してやり直す';
     }
     updateNextReadyStatus(game);
     return;
@@ -4614,10 +4612,59 @@ async function checkAllReadyForNext(){
     const totalRounds = window.online.settings?.rounds || 5;
     const currentRound = game.currentRound || 1;
 
-    // 多重トリガー防止
-    if(window.online._nextTriggered === currentRound) return;
-    window.online._nextTriggered = currentRound;
+    // ノーゲームだったか判定（履歴の最新ログから）
+    const wasNoGame = !!(game.results && game.results.noGame);
 
+    // 多重トリガー防止（ノーゲーム時は別キーで管理）
+    const triggerKey = wasNoGame ? `nogame-${currentRound}-${game.oyaIndex}` : `${currentRound}`;
+    if(window.online._nextTriggered === triggerKey) return;
+    window.online._nextTriggered = triggerKey;
+
+    // === ノーゲームだった場合：同ラウンドを親だけ変えてリプレイ ===
+    if(wasNoGame){
+      // 次の親を決める（オフラインプレイヤーをスキップ）
+      let nextOyaIdx = (game.oyaIndex + 1) % players.length;
+      let attempts = 0;
+      while(attempts < players.length && players[nextOyaIdx] && players[nextOyaIdx].online === false){
+        nextOyaIdx = (nextOyaIdx + 1) % players.length;
+        attempts++;
+      }
+      if(attempts >= players.length){
+        // 全員オフライン → これ以上進めない（とりあえず次に進む）
+        nextOyaIdx = (game.oyaIndex + 1) % players.length;
+      }
+
+      const updates = {};
+      const baseRoom = `rooms/${window.online.roomCode}/game`;
+      // currentRound は変えない！
+      updates[`${baseRoom}/oyaIndex`] = nextOyaIdx;
+      updates[`${baseRoom}/phase`] = 'topic-select';
+      updates[`${baseRoom}/bets`] = null;
+      updates[`${baseRoom}/oyaResult`] = null;
+      updates[`${baseRoom}/waitReady`] = null;
+      updates[`${baseRoom}/revealReady`] = null;
+      updates[`${baseRoom}/nextReady`] = null;
+      updates[`${baseRoom}/results`] = null;
+      updates[`${baseRoom}/lotteryResult`] = null;
+      updates[`${baseRoom}/selectedTopic`] = null;
+      updates[`${baseRoom}/topicSelections`] = null;
+      // ノーゲームトリガーフラグもリセット（次に親オフラインがあった場合のため）
+      // → 親が変わるので、 _noGameTriggered は currentRound のままだと再発火しない問題が起こる
+      //   よって、currentRound が変わらないノーゲームでは別キーで判定する必要がある
+      // 一旦リセット：
+      delete window.online._noGameTriggered;
+      delete window.online._revealTriggered;
+      delete window.online._resultTriggered;
+
+      // 復帰中フラグは「このラウンドで観戦」だったのを継続させる（同じラウンドなので）
+      // → rejoinedRound はそのまま、もう一度観戦になる
+
+      await update(ref(db), updates);
+      showNotif('🔁 親を交代して同じラウンドをやり直します');
+      return;
+    }
+
+    // === 通常の次ラウンド処理 ===
     if(currentRound >= totalRounds){
       // 最終結果へ
       const phaseRef = ref(db, `rooms/${window.online.roomCode}/game/phase`);
