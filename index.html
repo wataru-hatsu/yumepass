@@ -244,12 +244,30 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 /* サウンドON/OFFボタン */
 .sound-toggle{position:fixed;top:12px;right:12px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
 .sound-toggle:active{transform:scale(0.92);}
+.menu-toggle{position:fixed;top:12px;right:58px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;line-height:1;padding:0;}
+.menu-toggle:active{transform:scale(0.92);}
+.game-menu-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.game-menu-modal.hidden{display:none;}
+.game-menu-content{background:linear-gradient(135deg,#1a1a1a,#2d2d2d);border:2px solid var(--gold);border-radius:14px;padding:20px;max-width:340px;width:100%;box-shadow:0 0 40px rgba(245,200,66,0.4);}
+.game-menu-title{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:1.3rem;letter-spacing:3px;text-align:center;margin-bottom:14px;border-bottom:1px solid rgba(245,200,66,0.3);padding-bottom:8px;}
 </style>
 </head>
 <body>
 <button id="sound-toggle" class="sound-toggle" onclick="toggleSound()" title="サウンド切り替え">🔊</button>
+<button id="menu-toggle" class="menu-toggle" onclick="toggleGameMenu()" title="メニュー" style="display:none">⋮</button>
 <div class="notif" id="notif"></div>
 <div id="celebration-overlay" class="hidden"></div>
+
+<!-- ゲーム中メニューモーダル -->
+<div id="game-menu-modal" class="game-menu-modal hidden" onclick="if(event.target===this)toggleGameMenu()">
+  <div class="game-menu-content">
+    <div class="game-menu-title">⋮ メニュー</div>
+    <button class="btn btn-secondary" onclick="toggleGameMenu()" style="margin-bottom:10px">← 閉じる</button>
+    <button class="btn btn-secondary" onclick="toggleSound();" style="margin-bottom:10px">🔊 サウンド切替</button>
+    <button class="btn btn-danger" onclick="toggleGameMenu();confirmLeaveDuringGame()">🚪 ゲームから退室する</button>
+    <div style="color:#aaa;font-size:0.7rem;margin-top:14px;line-height:1.5;text-align:center">退室すると戸籍と点数は完全に消えます。<br>残りのプレイヤーでゲームは続行します。</div>
+  </div>
+</div>
 
 <!-- ガチャ風フルスクリーン演出オーバーレイ -->
 <div id="gacha-overlay" class="hidden">
@@ -336,7 +354,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
   </div>
   <div class="home-btns">
     <button class="btn btn-primary" onclick="goTo('screen-setup')">🐎 1台で遊ぶ（端末回す）</button>
-    <button class="btn btn-primary" onclick="goTo('screen-online-menu')" style="background:linear-gradient(135deg,#1a5fcc,#0d3d7a)">🌐 オンライン対戦</button>
+    <button class="btn btn-primary" onclick="goTo('screen-online-menu');checkRejoinAvailable();" style="background:linear-gradient(135deg,#1a5fcc,#0d3d7a)">🌐 オンライン対戦</button>
     <button class="btn btn-secondary" onclick="goTo('screen-topics')">📝 お題を管理する</button>
     <button class="btn btn-secondary" onclick="goTo('screen-rules')">📖 ルール確認</button>
   </div>
@@ -346,6 +364,20 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-online-menu">
   <div class="header"><div class="subtitle">ONLINE PLAY</div><h1>🌐 オンライン対戦</h1></div>
   <div class="scroll-content">
+    <!-- 復帰パネル（前回の部屋がある場合のみ表示） -->
+    <div id="rejoin-panel" style="display:none;margin:10px">
+      <div class="panel" style="background:linear-gradient(135deg,#1a3d2a 0%,#0d2a1a 100%);border:2px solid #5ace5a">
+        <div style="color:#aef5a0;font-size:0.7rem;letter-spacing:3px;margin-bottom:6px;font-weight:900">🔄 RECONNECT</div>
+        <div style="color:white;font-size:1rem;font-weight:700;margin-bottom:4px">前回の部屋に復帰できます</div>
+        <div style="color:#aef5a0;font-size:0.85rem;margin-bottom:10px">
+          ルーム: <span id="rejoin-room-code" style="font-family:'Racing Sans One',cursive;color:var(--gold);font-size:1.1rem">—</span><br>
+          名前: <span id="rejoin-name" style="font-weight:700">—</span>
+        </div>
+        <button class="btn btn-success" onclick="rejoinRoom()" style="margin-top:4px">↩️ 復帰する</button>
+        <button class="btn btn-secondary" onclick="clearRejoinData()" style="margin-top:6px;font-size:0.85rem">✕ 復帰せずに新規入室</button>
+      </div>
+    </div>
+
     <div class="panel">
       <div class="panel-title">📱 プレイ方法</div>
       <p style="font-size:0.85rem;line-height:1.8">各自の端末で参加する対戦モードです。<br>1人が部屋を作り、6桁のコードを他のメンバーに共有してください。</p>
@@ -754,6 +786,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div style="margin:10px">
       <button class="btn btn-primary" id="orr-next-btn" onclick="onlineReadyForNext()">次のラウンドへ →</button>
       <div id="orr-ready-status" style="text-align:center;color:#aaa;font-size:0.85rem;margin-top:8px"></div>
+      <button class="btn btn-secondary" onclick="confirmLeaveDuringGame()" style="margin-top:14px;font-size:0.85rem;opacity:0.7">🚪 ここで退室する</button>
     </div>
   </div>
 </div>
@@ -2485,7 +2518,8 @@ window.createRoom = async function(){
         [playerId]: {
           name: name,
           isHost: true,
-          joinedAt: Date.now()
+          joinedAt: Date.now(),
+          online: true
         }
       }
     });
@@ -2495,9 +2529,15 @@ window.createRoom = async function(){
     window.online.playerName = name;
     window.online.isHost = true;
 
-    // 切断時に自動で部屋から退出
-    const playerRef = ref(db, `rooms/${code}/players/${playerId}`);
-    onDisconnect(playerRef).remove();
+    // 切断時：プレイヤーを削除せず online: false に設定（復帰用）
+    const playerOnlineRef = ref(db, `rooms/${code}/players/${playerId}/online`);
+    onDisconnect(playerOnlineRef).set(false);
+
+    // 復帰用に localStorage に記録
+    try {
+      localStorage.setItem('yumepass_active_room', code);
+      localStorage.setItem('yumepass_active_name', name);
+    } catch(e){}
 
     enterLobby();
     showNotif('🎉 部屋を作りました！コード: ' + code);
@@ -2553,21 +2593,150 @@ window.joinRoom = async function(){
     await set(playerRef, {
       name: name,
       isHost: false,
-      joinedAt: Date.now()
+      joinedAt: Date.now(),
+      online: true
     });
 
-    onDisconnect(playerRef).remove();
+    // 切断時：online: false にする（プレイヤー情報は残す）
+    const playerOnlineRef = ref(db, `rooms/${code}/players/${playerId}/online`);
+    onDisconnect(playerOnlineRef).set(false);
 
     window.online.roomCode = code;
     window.online.playerId = playerId;
     window.online.playerName = name;
     window.online.isHost = false;
 
+    // 復帰用に localStorage に記録
+    try {
+      localStorage.setItem('yumepass_active_room', code);
+      localStorage.setItem('yumepass_active_name', name);
+    } catch(e){}
+
     enterLobby();
     showNotif('🎉 部屋に入りました！');
   } catch(e) {
     console.error(e);
     showNotif('⚠️ 部屋への参加に失敗しました');
+  }
+};
+
+// ============================================================
+// 復帰機能
+// ============================================================
+
+// online-menu表示時に呼ばれて、復帰可能か確認
+window.checkRejoinAvailable = async function(){
+  const code = localStorage.getItem('yumepass_active_room');
+  const name = localStorage.getItem('yumepass_active_name');
+  const panel = document.getElementById('rejoin-panel');
+  if(!code || !name || !panel){
+    if(panel) panel.style.display = 'none';
+    return;
+  }
+  // 既に同じ部屋に接続中なら復帰不要
+  if(window.online.roomCode === code){
+    panel.style.display = 'none';
+    return;
+  }
+  try {
+    const roomRef = ref(db, `rooms/${code}`);
+    const snap = await get(roomRef);
+    if(!snap.exists()){
+      // 部屋が消えてた → localStorageもクリア
+      localStorage.removeItem('yumepass_active_room');
+      localStorage.removeItem('yumepass_active_name');
+      panel.style.display = 'none';
+      return;
+    }
+    const roomData = snap.val();
+    const playerId = getOrCreatePlayerId();
+    // 自分のplayer情報が部屋にあるか確認
+    const myPlayer = (roomData.players || {})[playerId];
+    if(!myPlayer){
+      // 既に退室済み（誰かに完全削除された）
+      localStorage.removeItem('yumepass_active_room');
+      localStorage.removeItem('yumepass_active_name');
+      panel.style.display = 'none';
+      return;
+    }
+    // 復帰可能！パネルを表示
+    document.getElementById('rejoin-room-code').textContent = code;
+    document.getElementById('rejoin-name').textContent = myPlayer.name || name;
+    panel.style.display = '';
+  } catch(e){
+    console.error('checkRejoinAvailable error:', e);
+    panel.style.display = 'none';
+  }
+};
+
+// 復帰しないと選択
+window.clearRejoinData = function(){
+  if(!confirm('前回の部屋への復帰情報を消去します。\nよろしいですか？')) return;
+  localStorage.removeItem('yumepass_active_room');
+  localStorage.removeItem('yumepass_active_name');
+  const panel = document.getElementById('rejoin-panel');
+  if(panel) panel.style.display = 'none';
+  showNotif('復帰情報を消去しました');
+};
+
+// 復帰する
+window.rejoinRoom = async function(){
+  const code = localStorage.getItem('yumepass_active_room');
+  const savedName = localStorage.getItem('yumepass_active_name');
+  if(!code || !savedName){
+    showNotif('⚠️ 復帰情報が見つかりません');
+    return;
+  }
+  try {
+    const roomRef = ref(db, `rooms/${code}`);
+    const snap = await get(roomRef);
+    if(!snap.exists()){
+      showNotif('⚠️ 部屋が見つかりません');
+      localStorage.removeItem('yumepass_active_room');
+      localStorage.removeItem('yumepass_active_name');
+      const panel = document.getElementById('rejoin-panel');
+      if(panel) panel.style.display = 'none';
+      return;
+    }
+    const roomData = snap.val();
+    const playerId = getOrCreatePlayerId();
+    const myPlayer = (roomData.players || {})[playerId];
+    if(!myPlayer){
+      showNotif('⚠️ あなたの参加情報がありません');
+      localStorage.removeItem('yumepass_active_room');
+      localStorage.removeItem('yumepass_active_name');
+      const panel = document.getElementById('rejoin-panel');
+      if(panel) panel.style.display = 'none';
+      return;
+    }
+
+    // online: true に戻す
+    const playerOnlineRef = ref(db, `rooms/${code}/players/${playerId}/online`);
+    await set(playerOnlineRef, true);
+    onDisconnect(playerOnlineRef).set(false);
+
+    // 復帰フラグを立てる（このラウンドは観戦のみ）
+    const rejoinFlagRef = ref(db, `rooms/${code}/players/${playerId}/rejoinedRound`);
+    await set(rejoinFlagRef, roomData.game?.currentRound || 0);
+
+    window.online.roomCode = code;
+    window.online.playerId = playerId;
+    window.online.playerName = myPlayer.name;
+    window.online.isHost = !!myPlayer.isHost;
+    // ホスト不在ならホストになるかチェック（onValueで自動処理されるはず）
+
+    showNotif('🎉 部屋に復帰しました！');
+
+    // ゲーム中ならゲーム画面へ、待機中ならロビーへ
+    if(roomData.status === 'playing'){
+      // ゲーム中の復帰 — currentPhaseに応じた画面に遷移するロジックは onGameStateUpdate で処理
+      enterLobby(); // まずロビーへ。その後 onGameStateUpdate で適切に遷移
+    } else {
+      enterLobby();
+    }
+  } catch(e){
+    console.error('rejoinRoom error:', e);
+    showNotif('⚠️ 復帰に失敗しました');
   }
 };
 
@@ -2795,6 +2964,32 @@ function enterOnlineTopicSelect(){
   const oyaPlayer = players[oyaIdx];
   const isOya = oyaPlayer && oyaPlayer.id === window.online.playerId;
   const topicMode = window.online.settings?.topicMode || 'all';
+  const currentRound = window.online.game?.currentRound || 1;
+  const myPlayer = players.find(p => p.id === window.online.playerId);
+
+  // 復帰中（rejoinedRound === currentRound）なら自動でランダム選択して待機
+  if(myPlayer && myPlayer.rejoinedRound != null && myPlayer.rejoinedRound === currentRound){
+    // 親じゃない、または topicMode === 'all' なら自動選択
+    if(!(topicMode === 'children' && isOya)){
+      const mySel = window.online.game?.topicSelections?.[window.online.playerId];
+      if(!mySel){
+        const topics = getOnlineTopics();
+        if(topics && topics.length > 0){
+          const rand = topics[Math.floor(Math.random() * topics.length)];
+          (async () => {
+            try {
+              const selRef = ref(db, `rooms/${window.online.roomCode}/game/topicSelections/${window.online.playerId}`);
+              await set(selRef, rand.id);
+              showTopicSubmitted(rand.id);
+              goTo('screen-online-topic-select');
+            } catch(e){ console.error(e); }
+          })();
+          showNotif('🔄 復帰直後 — このラウンドは観戦のみ');
+          return;
+        }
+      }
+    }
+  }
 
   // お題選択方式が「子だけ」で自分が親 → 待機画面
   if(topicMode === 'children' && isOya){
@@ -2986,7 +3181,28 @@ async function checkAllTopicsSelected(){
       targetPlayers = players.filter((p, idx) => idx !== oyaIdx);
     }
 
-    const selections = game.topicSelections || {};
+    // オフラインプレイヤーには自動でランダムお題を選択（ホストが代理）
+    const topics = getOnlineTopics();
+    if(topics && topics.length > 0){
+      for(const p of targetPlayers){
+        if(p.online === false){
+          const selectionsNow = game.topicSelections || {};
+          if(!selectionsNow[p.id]){
+            // ランダムにお題を1つ選ぶ
+            const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+            try {
+              const selRef = ref(db, `rooms/${window.online.roomCode}/game/topicSelections/${p.id}`);
+              await set(selRef, randomTopic.id);
+            } catch(e){ console.error('オフライン代理お題選択失敗:', e); }
+          }
+        }
+      }
+    }
+
+    // 再取得（代理選択を反映）
+    const snap2 = await get(gameRef);
+    const game2 = snap2.val();
+    const selections = (game2 && game2.topicSelections) || {};
     const selectedIds = Object.keys(selections);
     const allSubmitted = targetPlayers.every(p => selectedIds.includes(p.id));
 
@@ -3094,14 +3310,22 @@ function renderLobbyPlayers(players){
 
   document.getElementById('lobby-player-count').textContent = `(${arr.length})`;
 
-  // ホスト移譲：ホストがいない場合、最古参を新ホストに（ホスト権限を持つプレイヤーが指定）
-  const hasHost = arr.some(p => p.isHost);
-  if(!hasHost && arr.length > 0){
-    const newHostId = arr[0].id;
-    if(newHostId === window.online.playerId){
+  // ホスト移譲：ホストがいないか、ホストがオフライン → オンラインの最古参を新ホストに
+  const currentHost = arr.find(p => p.isHost);
+  const needHostTransfer = !currentHost || currentHost.online === false;
+  if(needHostTransfer && arr.length > 0){
+    // オンラインプレイヤー優先で最古参を選ぶ（誰もオンラインじゃなければ最古参）
+    const onlineArr = arr.filter(p => p.online !== false);
+    const candidates = onlineArr.length > 0 ? onlineArr : arr;
+    const newHostId = candidates[0].id;
+    if(newHostId === window.online.playerId && !window.online.isHost){
       // 自分が新ホスト：DB更新
       try {
         const updates = {};
+        // 旧ホストの isHost フラグを解除
+        if(currentHost && currentHost.id !== newHostId){
+          updates[`rooms/${window.online.roomCode}/players/${currentHost.id}/isHost`] = false;
+        }
         updates[`rooms/${window.online.roomCode}/players/${newHostId}/isHost`] = true;
         updates[`rooms/${window.online.roomCode}/hostId`] = newHostId;
         import("https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js").then(({update, ref}) => {
@@ -3128,10 +3352,27 @@ function renderLobbyPlayers(players){
 
   list.innerHTML = arr.map(p => {
     const isMe = p.id === window.online.playerId;
+    const isOffline = p.online === false;
     const hostBadge = p.isHost ? '<span style="background:#f5c842;color:#000;font-size:0.65rem;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:6px">👑 ホスト</span>' : '';
     const meBadge = isMe ? '<span style="background:#1a7a1a;color:white;font-size:0.65rem;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:6px">あなた</span>' : '';
-    return `<div style="padding:10px 12px;border:1px solid #ddd;border-radius:8px;margin-bottom:6px;background:${isMe?'#fffdf0':'white'};display:flex;align-items:center"><span style="flex:1;font-weight:700">${p.name}</span>${hostBadge}${meBadge}</div>`;
+    const offlineBadge = isOffline ? '<span style="background:#aa2222;color:white;font-size:0.65rem;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:6px">🔴 オフライン</span>' : '';
+    const opacity = isOffline ? '0.6' : '1';
+    return `<div style="padding:10px 12px;border:1px solid #ddd;border-radius:8px;margin-bottom:6px;background:${isMe?'#fffdf0':'white'};display:flex;align-items:center;opacity:${opacity}"><span style="flex:1;font-weight:700">${escapeHtml(p.name)}</span>${hostBadge}${meBadge}${offlineBadge}</div>`;
   }).join('');
+
+  // プレイヤーのオンライン状態が変わった時、ホストなら現在のフェーズの自動チェックを発火
+  if(window.online.isHost && window.online.game){
+    setTimeout(() => {
+      try {
+        const game = window.online.game;
+        if(!game) return;
+        if(game.phase === 'topic-select') checkAllTopicsSelected();
+        else if(game.phase === 'betting') checkAllBetsSubmitted();
+        else if(game.phase === 'reveal') checkAllReadyForResult();
+        else if(game.phase === 'result') checkAllReadyForNext();
+      } catch(e){ console.error(e); }
+    }, 300);
+  }
 }
 
 // ============================================================
@@ -3183,6 +3424,41 @@ function enterOnlineBetting(game){
   const bets = game.bets || {};
   const myBet = bets[window.online.playerId];
   const oyaResult = game.oyaResult;
+
+  // 復帰中（rejoinedRound === currentRound）なら自動でベットして待機へ
+  const myPlayer = players.find(p => p.id === window.online.playerId);
+  if(myPlayer && myPlayer.rejoinedRound != null && myPlayer.rejoinedRound === (game.currentRound || 1)){
+    // このラウンドは観戦のみ
+    if(isOya){
+      // 親で復帰中の場合：3つ未選択なら、ノーゲーム判定にお任せ
+      if(!oyaResult || oyaResult.length < 3){
+        enterOnlineBetWait();
+        showNotif('🔄 復帰直後 — このラウンドは観戦のみ');
+        return;
+      }
+    } else {
+      // 子で復帰中の場合：自動でオフラインベット記録
+      if(!myBet){
+        const minBet = window.online.settings?.minBet || 0;
+        (async () => {
+          try {
+            const betRef = ref(db, `rooms/${window.online.roomCode}/game/bets/${window.online.playerId}`);
+            await set(betRef, {
+              betType: 'tansho',
+              selections: [],
+              amount: 0,
+              skipped: true,
+              offlinePenalty: minBet
+            });
+          } catch(e){ console.error(e); }
+        })();
+      }
+      enterOnlineBetWait();
+      showNotif('🔄 復帰直後 — このラウンドは観戦のみ');
+      return;
+    }
+  }
+
   if(isOya){
     if(oyaResult && oyaResult.length === 3){
       // 既に親が順位を入力済み → 待機へ
@@ -3205,7 +3481,6 @@ function enterOnlineBetting(game){
   window.onlineBet.betInputVal = '';
   window.onlineBet.oyaSelections = [];
 
-  const myPlayer = players.find(p => p.id === window.online.playerId);
   const myPoints = (game.points && game.points[window.online.playerId]) || (window.online.settings?.initialPoints || 5000);
 
   document.getElementById('ob-round-header').textContent = `ROUND ${game.currentRound || 1} — 賭けフェーズ`;
@@ -3635,8 +3910,12 @@ function updateBetWaitProgress(game){
   if(progressList){
     progressList.innerHTML = players.map((p, i) => {
       const isOya = i === oyaIdx;
+      const isOffline = p.online === false;
       let status, color;
-      if(isOya){
+      if(isOffline){
+        status = '🔴 オフライン';
+        color = '#aa2222';
+      } else if(isOya){
         if(oyaResult && oyaResult.length === 3){ status = '✅ 完了'; color = '#2ecc71'; }
         else { status = '⏳ 入力中'; color = '#f5c842'; }
       } else {
@@ -3645,13 +3924,15 @@ function updateBetWaitProgress(game){
       }
       const meBadge = p.id === window.online.playerId ? '<span style="background:#1a7a1a;color:white;font-size:0.65rem;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:6px">あなた</span>' : '';
       const roleBadge = isOya ? '<span class="oya-badge" style="margin-left:6px">親</span>' : '<span class="ko-badge" style="margin-left:6px">子</span>';
-      return `<div style="padding:8px 12px;border:1px solid #ddd;border-radius:8px;margin-bottom:6px;background:white;display:flex;align-items:center"><span style="flex:1;font-weight:700">${p.name}${roleBadge}${meBadge}</span><span style="color:${color};font-weight:700;font-size:0.85rem">${status}</span></div>`;
+      const opacity = isOffline ? '0.6' : '1';
+      return `<div style="padding:8px 12px;border:1px solid #ddd;border-radius:8px;margin-bottom:6px;background:white;display:flex;align-items:center;opacity:${opacity}"><span style="flex:1;font-weight:700">${escapeHtml(p.name)}${roleBadge}${meBadge}</span><span style="color:${color};font-weight:700;font-size:0.85rem">${status}</span></div>`;
     }).join('');
   }
 
-  // 残り人数
+  // 残り人数（オフラインは含まない — 自動処理されるので）
   let remaining = 0;
   players.forEach((p, i) => {
+    if(p.online === false) return; // オフラインは集計外
     if(i === oyaIdx){
       if(!oyaResult || oyaResult.length < 3) remaining++;
     } else {
@@ -3678,8 +3959,42 @@ async function checkAllBetsSubmitted(){
     const players = getOnlinePlayersArray();
     if(!players.length) return;
     const oyaIdx = game.oyaIndex || 0;
+    const oyaPlayer = players[oyaIdx];
     const bets = game.bets || {};
     const oyaResult = game.oyaResult;
+
+    // === オフライン代理処理（ホストが代理実行）===
+    if(window.online.isHost){
+      // 子のオフライン代理：未入力なら「オフラインベット」として記録（最低額減算）
+      const koPlayers = players.filter((p, i) => i !== oyaIdx);
+      for(const p of koPlayers){
+        if(p.online === false && !bets[p.id]){
+          const minBet = window.online.settings?.minBet || 0;
+          try {
+            const betRef = ref(db, `rooms/${window.online.roomCode}/game/bets/${p.id}`);
+            await set(betRef, {
+              betType: 'tansho',
+              selections: [],
+              amount: 0,
+              skipped: true,
+              offlinePenalty: minBet // 結果計算時に減算するための情報
+            });
+          } catch(e){ console.error('子オフライン代理失敗:', e); }
+        }
+      }
+      // 親のオフライン代理：3つ未選択ならノーゲーム判定
+      if(oyaPlayer && oyaPlayer.online === false && (!oyaResult || oyaResult.length < 3)){
+        // 既にノーゲーム処理済みでないか確認
+        if(window.online._noGameTriggered !== game.currentRound){
+          window.online._noGameTriggered = game.currentRound;
+          // 全員の賭け金を返金してこのラウンドをスキップ
+          await handleNoGameRound(game, players, oyaPlayer);
+          return; // ノーゲーム処理に流れたのでここで終了
+        }
+      }
+      // 親のオフライン代理：3つ選択済みならそのまま進行（既に oyaResult あり）
+      // → 通常フローに任せる
+    }
 
     // 親の順位入力完了？
     if(!oyaResult || oyaResult.length < 3) return;
@@ -3690,6 +4005,18 @@ async function checkAllBetsSubmitted(){
 
     // 全員入力完了 → bet-wait画面の公開ボタンを表示
     updateBetWaitRevealButton(game);
+
+    // オフラインプレイヤーの waitReady は自動で立てる（ホストが代理）
+    if(window.online.isHost){
+      const waitReadyNow = game.waitReady || {};
+      for(const p of players){
+        if(p.online === false && !waitReadyNow[p.id]){
+          try {
+            await set(ref(db, `rooms/${window.online.roomCode}/game/waitReady/${p.id}`), true);
+          } catch(e){ console.error(e); }
+        }
+      }
+    }
 
     // 全員が「公開準備OK」ボタンを押したか？
     const waitReady = game.waitReady || {};
@@ -3712,6 +4039,59 @@ async function checkAllBetsSubmitted(){
     }, 500);
   } catch(e){
     console.error('checkAllBetsSubmitted error:', e);
+  }
+}
+
+// 親オフラインによるノーゲーム処理
+async function handleNoGameRound(game, players, oyaPlayer){
+  try {
+    const oyaIdx = game.oyaIndex || 0;
+    const totalRounds = window.online.settings?.rounds || 5;
+    const currentRound = game.currentRound || 1;
+
+    // ノーゲームのログを作成
+    const topic = game.selectedTopic || {};
+    const noGameLog = {
+      round: currentRound,
+      topic: topic.title || '',
+      topicIcon: topic.icon || '🎯',
+      topicHorses: topic.horses || [],
+      oyaName: oyaPlayer.name,
+      oyaOffline: true,
+      noGame: true,
+      result: [],
+      playerResults: players.filter((p, i) => i !== oyaIdx).map(p => ({
+        name: p.name,
+        playerId: p.id,
+        hitType: '見送り',
+        change: 0,
+        amount: 0,
+        betType: 'tansho',
+        multiplier: 0,
+        oyaBonusFromThis: 0,
+        skipped: true,
+        noGame: true
+      })),
+      oyaBonus: 0
+    };
+
+    // 履歴に追加
+    const historyRef = ref(db, `rooms/${window.online.roomCode}/game/history`);
+    const histSnap = await get(historyRef);
+    const hist = histSnap.val() || [];
+    hist.push(noGameLog);
+
+    // 通知用にresultsにもセット
+    const updates = {};
+    const baseRoom = `rooms/${window.online.roomCode}/game`;
+    updates[`${baseRoom}/results`] = noGameLog;
+    updates[`${baseRoom}/history`] = hist;
+    updates[`${baseRoom}/phase`] = 'result';
+    await update(ref(db), updates);
+
+    showNotif('⚠️ 親がオフラインのためノーゲーム — 賭け金は返金');
+  } catch(e){
+    console.error('handleNoGameRound error:', e);
   }
 }
 
@@ -3851,6 +4231,17 @@ async function checkAllReadyForResult(){
     if(!game || game.phase !== 'reveal') return;
     const players = getOnlinePlayersArray();
     if(!players.length) return;
+
+    // オフラインプレイヤーの revealReady は自動で立てる
+    const readyNow = game.revealReady || {};
+    for(const p of players){
+      if(p.online === false && !readyNow[p.id]){
+        try {
+          await set(ref(db, `rooms/${window.online.roomCode}/game/revealReady/${p.id}`), true);
+        } catch(e){ console.error(e); }
+      }
+    }
+
     const ready = game.revealReady || {};
     const allReady = players.every(p => ready[p.id]);
     if(!allReady) return;
@@ -3898,18 +4289,40 @@ function calculateOnlineResults(game, players){
     if(i === oyaIdx) return; // 親は後で計算
     const bet = bets[p.id];
     if(!bet || bet.skipped || bet.amount === 0){
-      playerResults.push({
-        playerId: p.id,
-        name: p.name,
-        hitType: '見送り',
-        change: 0,
-        amount: 0,
-        betType: bet?.betType || 'tansho',
-        multiplier: 0,
-        oyaBonusFromThis: 0,
-        skipped: true,
-        selections: []
-      });
+      // オフラインペナルティ判定（賭けではないが点数だけ減らす）
+      const penalty = (bet && bet.offlinePenalty) ? bet.offlinePenalty : 0;
+      if(penalty > 0){
+        const before = newPoints[p.id] || 0;
+        let after = before - penalty;
+        if(after < 0) after = 0;
+        newPoints[p.id] = after;
+        playerResults.push({
+          playerId: p.id,
+          name: p.name,
+          hitType: '🔴 オフライン',
+          change: -(before - after), // 実際に減った分
+          amount: 0,
+          betType: bet?.betType || 'tansho',
+          multiplier: 0,
+          oyaBonusFromThis: 0,
+          skipped: true,
+          selections: [],
+          offlinePenalty: penalty
+        });
+      } else {
+        playerResults.push({
+          playerId: p.id,
+          name: p.name,
+          hitType: '見送り',
+          change: 0,
+          amount: 0,
+          betType: bet?.betType || 'tansho',
+          multiplier: 0,
+          oyaBonusFromThis: 0,
+          skipped: true,
+          selections: []
+        });
+      }
       return;
     }
     const s = bet.selections || [];
@@ -3983,6 +4396,9 @@ function enterOnlineRoundResult(game){
   goTo('screen-online-roundresult');
   _renderRoundResultBody(game, log, topic, isFirstShow);
 
+  // ノーゲームの場合は演出を完全スキップ
+  if(log.noGame) return;
+
   // 初回表示時は演出を順番に発動：ガチャ → 的中演出
   if(isFirstShow){
     // 的中タイプを判定
@@ -4016,6 +4432,40 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
     horsesEl.innerHTML = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.35);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
   }
 
+  // === ノーゲーム判定（親オフラインによる返金） ===
+  if(log.noGame){
+    // 実際の順位エリアに「ノーゲーム」表示
+    const actualEl = document.getElementById('orr-actual-result');
+    if(actualEl){
+      actualEl.innerHTML = `<div style="text-align:center;padding:20px;color:#f5c842;font-size:1.1rem;font-weight:700">⚠️ ノーゲーム<br><span style="font-size:0.85rem;color:#aaa;font-weight:400;line-height:1.6">親（${escapeHtml(log.oyaName || '?')}）がオフラインとなったため<br>このラウンドは無効です</span></div>`;
+    }
+    // 子の結果（ノーゲームなので全員返金）
+    const playerEl = document.getElementById('orr-player-results');
+    if(playerEl){
+      playerEl.innerHTML = (log.playerResults || []).map(r => `<div class="player-result skipped"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span></span><span class="player-result-change" style="color:#aaa">±0点（返金）</span></div><div class="player-result-detail" style="font-size:0.75rem;color:#aaa">ノーゲームのため賭け金は変動なし</div></div>`).join('');
+    }
+    // 親ボーナス非表示
+    const oyaPanel = document.getElementById('orr-oya-panel');
+    if(oyaPanel) oyaPanel.style.display = 'none';
+
+    // 得点表
+    renderOnlineScoreTable('orr-score-table', game);
+
+    // 次へボタン
+    const totalRounds = window.online.settings?.rounds || 5;
+    const isLast = (game.currentRound || 1) >= totalRounds;
+    const myReady = (game.nextReady || {})[window.online.playerId];
+    const btn = document.getElementById('orr-next-btn');
+    if(btn){
+      btn.disabled = !!myReady;
+      btn.textContent = myReady ? '✅ 準備完了 — 他の人を待っています' : (isLast ? '🏆 最終結果へ' : '次のラウンドへ →');
+    }
+    updateNextReadyStatus(game);
+    return;
+  }
+
+  // === 通常表示 ===
+
   // 実際の順位
   const actualEl = document.getElementById('orr-actual-result');
   if(actualEl){
@@ -4027,13 +4477,19 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
   const betNames = {tansho:'単勝', rentan:'連単狙い', sanrentan:'三連単狙い'};
   if(playerEl){
     playerEl.innerHTML = (log.playerResults || []).map(r => {
+      // オフラインプレイヤー表示
+      if(r.hitType === '🔴 オフライン'){
+        const penalty = r.offlinePenalty || 0;
+        const changeStr = r.change >= 0 ? `±0` : r.change.toLocaleString();
+        return `<div class="player-result skipped" style="opacity:0.7"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:#aa2222;color:white;font-size:0.6rem;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:4px">🔴 オフライン</span></span><span class="player-result-change" style="color:#e74c3c">${changeStr}点</span></div>${penalty > 0 ? `<div class="player-result-detail" style="font-size:0.7rem;color:#aaa">オフラインのため最低額(${penalty.toLocaleString()}点)が引かれました</div>` : ''}</div>`;
+      }
       const hitClass = r.skipped ? 'skipped' : (r.multiplier > 0 ? 'hit' : 'miss');
       const hitColor = r.skipped ? '#888' : (r.multiplier > 0 ? '#2ecc71' : '#e74c3c');
       const changeStr = r.change >= 0 ? `+${r.change.toLocaleString()}` : r.change.toLocaleString();
       const selections = (r.selections || []).map((hi, si) => `<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem;display:inline-block">${hi+1}</span>`).join(' ');
       const actualCount = r.betType === 'tansho' ? 1 : r.betType === 'rentan' ? 2 : 3;
       const actualBadges = (log.oyaResult || []).slice(0, actualCount).map(hi => `<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem;display:inline-block">${hi+1}</span>`).join(' ');
-      return `<div class="player-result ${hitClass}"><div class="player-result-header"><span class="player-result-name">${r.name} <span class="ko-badge">子</span></span><span class="player-result-change" style="color:${hitColor}">${r.skipped?'見送り':changeStr+'点'}</span></div>${r.skipped?'':`<div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:0.7rem">${betNames[r.betType]} (${r.amount.toLocaleString()}点) →</span><span>予想:${selections}</span><span style="color:#aaa">vs</span><span>実際:${actualBadges}</span><span style="font-weight:900;color:${hitColor}">${r.hitType}</span>${r.multiplier>0?`<span style="font-size:0.7rem;color:#888">×${r.multiplier}</span>`:''}</div>`}</div>`;
+      return `<div class="player-result ${hitClass}"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span></span><span class="player-result-change" style="color:${hitColor}">${r.skipped?'見送り':changeStr+'点'}</span></div>${r.skipped?'':`<div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:0.7rem">${betNames[r.betType]} (${r.amount.toLocaleString()}点) →</span><span>予想:${selections}</span><span style="color:#aaa">vs</span><span>実際:${actualBadges}</span><span style="font-weight:900;color:${hitColor}">${r.hitType}</span>${r.multiplier>0?`<span style="font-size:0.7rem;color:#888">×${r.multiplier}</span>`:''}</div>`}</div>`;
     }).join('');
   }
 
@@ -4140,6 +4596,17 @@ async function checkAllReadyForNext(){
     if(!game || game.phase !== 'result') return;
     const players = getOnlinePlayersArray();
     if(!players.length) return;
+
+    // オフラインプレイヤーの nextReady は自動で立てる
+    const nextReadyNow = game.nextReady || {};
+    for(const p of players){
+      if(p.online === false && !nextReadyNow[p.id]){
+        try {
+          await set(ref(db, `rooms/${window.online.roomCode}/game/nextReady/${p.id}`), true);
+        } catch(e){ console.error(e); }
+      }
+    }
+
     const ready = game.nextReady || {};
     const allReady = players.every(p => ready[p.id]);
     if(!allReady) return;
@@ -4158,11 +4625,21 @@ async function checkAllReadyForNext(){
       return;
     }
 
+    // 次の親を決める（オフラインプレイヤーをスキップ）
+    let nextOyaIdx = (game.oyaIndex + 1) % players.length;
+    let attempts = 0;
+    while(attempts < players.length && players[nextOyaIdx] && players[nextOyaIdx].online === false){
+      nextOyaIdx = (nextOyaIdx + 1) % players.length;
+      attempts++;
+    }
+    // 全員オフラインだったら無理にカウント（その場合は元のローテーション）
+    if(attempts >= players.length) nextOyaIdx = (game.oyaIndex + 1) % players.length;
+
     // 次ラウンドへ：bets, oyaResult, revealReady, nextReady, results, lotteryResult, selectedTopic, topicSelections をクリア
     const updates = {};
     const baseRoom = `rooms/${window.online.roomCode}/game`;
     updates[`${baseRoom}/currentRound`] = currentRound + 1;
-    updates[`${baseRoom}/oyaIndex`] = (game.oyaIndex + 1) % players.length;
+    updates[`${baseRoom}/oyaIndex`] = nextOyaIdx;
     updates[`${baseRoom}/phase`] = 'topic-select';
     updates[`${baseRoom}/bets`] = null;
     updates[`${baseRoom}/oyaResult`] = null;
@@ -4173,6 +4650,12 @@ async function checkAllReadyForNext(){
     updates[`${baseRoom}/lotteryResult`] = null;
     updates[`${baseRoom}/selectedTopic`] = null;
     updates[`${baseRoom}/topicSelections`] = null;
+    // 復帰中の人がいたら、このラウンドが終わったので rejoinedRound をクリア
+    for(const p of players){
+      if(p.rejoinedRound != null && p.rejoinedRound === currentRound){
+        updates[`rooms/${window.online.roomCode}/players/${p.id}/rejoinedRound`] = null;
+      }
+    }
     await update(ref(db), updates);
   } catch(e){
     console.error('checkAllReadyForNext error:', e);
@@ -4232,6 +4715,20 @@ function enterOnlineFinal(game){
           const horses = h.topicHorses || [];
           // 選択肢タグ
           const horseTags = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:2px 7px;border-radius:10px;font-size:0.7rem;color:#aaa"><span class="ibadge ${HC[i]}" style="width:16px;height:16px;font-size:0.6rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+          // ノーゲームの場合
+          if(h.noGame){
+            return `<div style="margin-bottom:12px;padding:10px;background:#1f1f1f;border:1px solid #555;border-radius:8px;opacity:0.7">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+                <div style="color:var(--gold);font-weight:900;font-size:0.85rem">ROUND ${h.round}</div>
+                <div style="color:#aaa;font-size:0.7rem">親：<strong style="color:white">${escapeHtml(h.oyaName || '')}</strong></div>
+              </div>
+              <div style="color:white;font-weight:700;font-size:0.95rem;margin-bottom:4px">${topicIcon} ${escapeHtml(h.topic || '')}</div>
+              ${horseTags ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${horseTags}</div>` : ''}
+              <div style="background:#3a1010;border:1px solid #aa2222;border-radius:6px;padding:8px 10px;text-align:center;color:#ff8888;font-size:0.85rem;font-weight:700">
+                ⚠️ ノーゲーム（親のオフラインにより返金）
+              </div>
+            </div>`;
+          }
           // 親の順位（1位→2位→3位）
           const oyaRanking = (h.oyaResult || []).map((hi, i) => `<div style="display:flex;align-items:center;gap:6px;padding:4px 0"><span style="font-size:0.95rem;width:24px">${['🥇','🥈','🥉'][i]}</span><span class="ibadge ${HC[hi]}" style="width:22px;height:22px;font-size:0.75rem">${hi+1}</span><span style="color:white;font-weight:700;font-size:0.85rem">${escapeHtml(horses[hi] || '')}</span></div>`).join('');
           return `<div style="margin-bottom:12px;padding:10px;background:#1f1f1f;border:1px solid #444;border-radius:8px">
@@ -4326,11 +4823,54 @@ window.toggleSound = function(){
     showNotif('🔇 サウンドOFF');
   }
 };
+
+// ゲーム中メニュー切替
+window.toggleGameMenu = function(){
+  const modal = document.getElementById('game-menu-modal');
+  if(!modal) return;
+  modal.classList.toggle('hidden');
+};
+
+// ゲーム中画面に居る時のみメニューボタンを表示
+function updateMenuButtonVisibility(){
+  const btn = document.getElementById('menu-toggle');
+  if(!btn) return;
+  const gameScreens = [
+    'screen-online-topic-select',
+    'screen-online-topic-lottery',
+    'screen-online-betting',
+    'screen-online-bet-confirm',
+    'screen-online-skip-confirm',
+    'screen-online-oya-confirm',
+    'screen-online-bet-wait',
+    'screen-online-reveal',
+    'screen-online-roundresult',
+    'screen-online-final'
+  ];
+  const onGameScreen = gameScreens.some(id => {
+    const el = document.getElementById(id);
+    return el && el.classList.contains('active');
+  });
+  btn.style.display = onGameScreen ? 'flex' : 'none';
+}
+
+// goToを上書きしてメニューボタン表示制御
+(function(){
+  const originalGoTo = window.goTo;
+  if(typeof originalGoTo === 'function'){
+    window.goTo = function(id){
+      originalGoTo(id);
+      setTimeout(updateMenuButtonVisibility, 10);
+    };
+  }
+})();
+
 // 初期化
 (function(){
   setTimeout(() => {
     const btn = document.getElementById('sound-toggle');
     if(btn) btn.textContent = window.SFX.isEnabled() ? '🔊' : '🔇';
+    updateMenuButtonVisibility();
   }, 100);
 })();
 
@@ -4662,6 +5202,21 @@ function spawnFinalConfetti(curtain){
 }
 
 // 部屋を出る
+// ============================================================
+// ゲーム中の自主退室（完全退場 — プレイヤー記録を消去）
+// ============================================================
+window.confirmLeaveDuringGame = function(){
+  if(!confirm('⚠️ このゲームから退室しますか？\n\n・あなたの戸籍と点数は完全に消えます\n・残りのプレイヤーでゲームは続行します\n・復帰はできません\n\n本当に退室しますか？')) return;
+  // 完全退室を実行
+  leaveRoom(true).then(() => {
+    // localStorageからも復帰情報を消去
+    try {
+      localStorage.removeItem('yumepass_active_room');
+      localStorage.removeItem('yumepass_active_name');
+    } catch(e){}
+  });
+};
+
 window.leaveRoom = async function(skipConfirm){
   if(!skipConfirm && !confirm('部屋を出ますか？')) return;
 
@@ -4684,8 +5239,30 @@ window.leaveRoom = async function(skipConfirm){
     }
     window.online.gameStarted = false;
 
+    // 退室時：自分のプレイヤー情報を完全削除
     const playerRef = ref(db, `rooms/${window.online.roomCode}/players/${window.online.playerId}`);
     await remove(playerRef);
+
+    // onDisconnect の登録を解除（オフラインフラグ立てが残らないように）
+    try {
+      const playerOnlineRef = ref(db, `rooms/${window.online.roomCode}/players/${window.online.playerId}/online`);
+      await onDisconnect(playerOnlineRef).cancel();
+    } catch(e){}
+
+    // ゲーム中の関連データもクリア（点数、ベット、お題選択、準備フラグ）
+    try {
+      const baseRoom = `rooms/${window.online.roomCode}/game`;
+      const updates = {};
+      updates[`${baseRoom}/points/${window.online.playerId}`] = null;
+      updates[`${baseRoom}/bets/${window.online.playerId}`] = null;
+      updates[`${baseRoom}/topicSelections/${window.online.playerId}`] = null;
+      updates[`${baseRoom}/waitReady/${window.online.playerId}`] = null;
+      updates[`${baseRoom}/revealReady/${window.online.playerId}`] = null;
+      updates[`${baseRoom}/nextReady/${window.online.playerId}`] = null;
+      await update(ref(db), updates);
+    } catch(e){
+      console.error('leaveRoom cleanup error:', e);
+    }
 
     // 残りプレイヤーをチェック：誰もいなければ部屋ごと削除
     const roomRef = ref(db, `rooms/${window.online.roomCode}`);
@@ -4695,8 +5272,23 @@ window.leaveRoom = async function(skipConfirm){
       const remaining = data.players ? Object.keys(data.players).length : 0;
       if(remaining === 0){
         await remove(roomRef);
+      } else {
+        // ホストが退室した場合、誰か別の人に hostId を移譲
+        if(data.hostId === window.online.playerId){
+          const remainingIds = Object.keys(data.players);
+          if(remainingIds.length > 0){
+            await set(ref(db, `rooms/${window.online.roomCode}/hostId`), remainingIds[0]);
+            await set(ref(db, `rooms/${window.online.roomCode}/players/${remainingIds[0]}/isHost`), true);
+          }
+        }
       }
     }
+
+    // localStorageからも復帰情報を消去
+    try {
+      localStorage.removeItem('yumepass_active_room');
+      localStorage.removeItem('yumepass_active_name');
+    } catch(e){}
 
     window.online.roomCode = null;
     window.online.playerId = null;
