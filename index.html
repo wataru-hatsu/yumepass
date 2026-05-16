@@ -2750,6 +2750,16 @@ window.rejoinRoom = async function(){
     await set(playerOnlineRef, true);
     onDisconnect(playerOnlineRef).set(false);
 
+    // 復帰時に演出系のローカルキャッシュをクリア（of 再発火させるため）
+    window.online._lastResultRound = null;
+    window.online._lastFinalShown = null;
+    delete window.online._revealTriggered;
+    delete window.online._resultTriggered;
+    delete window.online._nextTriggered;
+    delete window.online._noGameTriggered;
+    window.online._lastSeenRound = null;
+    window.online._lastRevealKey = null;
+
     // 復帰フラグを立てる（このラウンドは観戦のみ）
     // ただし、お題選択フェーズ・抽選フェーズなら通常参加できる
     const currentPhase = roomData.game?.phase;
@@ -2920,15 +2930,26 @@ function onGameStateUpdate(game){
   if(lastRound !== game.currentRound){
     window.online._lastSeenRound = game.currentRound;
     // ラウンドが変わったらガードフラグもクリア（過去のラウンドでセットされたまま残らないように）
-    if(window.online._revealTriggered != null && window.online._revealTriggered !== game.currentRound){
-      delete window.online._revealTriggered;
-    }
-    if(window.online._resultTriggered != null && window.online._resultTriggered !== game.currentRound){
-      delete window.online._resultTriggered;
-    }
-    if(window.online._nextTriggered != null && window.online._nextTriggered !== game.currentRound){
-      delete window.online._nextTriggered;
-    }
+    delete window.online._revealTriggered;
+    delete window.online._resultTriggered;
+    delete window.online._nextTriggered;
+    delete window.online._noGameTriggered;
+    // 演出キャッシュもクリア（次ラウンドの結果で演出が出るように）
+    window.online._lastResultRound = null;
+    window.online._lastRevealKey = null;
+  }
+
+  // 同ラウンド内のフェーズ変化（やり直しラウンドの場合など）
+  // result → topic-select に戻ったら（やり直しの可能性）演出キャッシュクリア
+  const lastPhase = window.online._lastSeenPhase;
+  window.online._lastSeenPhase = game.phase;
+  if(lastPhase === 'result' && game.phase === 'topic-select'){
+    // 同ラウンドのやり直し or 次ラウンド開始 → 演出キャッシュをクリア
+    window.online._lastResultRound = null;
+    delete window.online._revealTriggered;
+    delete window.online._resultTriggered;
+    delete window.online._nextTriggered;
+    delete window.online._noGameTriggered;
   }
 
   // フェーズに応じて画面遷移
@@ -4550,7 +4571,8 @@ function enterOnlineRoundResult(game){
   if(!log) return;
   const topic = game.selectedTopic;
   // ラウンドキーで演出の重複を防ぐ
-  const roundKey = `r${game.currentRound || 1}`;
+  // oyaIndex も含めることで、ノーゲームやり直し後の本ラウンドでも演出が出る
+  const roundKey = `r${game.currentRound || 1}-oya${game.oyaIndex || 0}`;
   const isFirstShow = window.online._lastResultRound !== roundKey;
   window.online._lastResultRound = roundKey;
 
@@ -4572,10 +4594,18 @@ function enterOnlineRoundResult(game){
     });
 
     // ガチャ演出 → 的中演出 の順に表示
-    showGachaRoundIntro(log, () => {
-      if(maxHitType){
-        showHitEffect(maxHitType);
-      }
+    // requestAnimationFrame + setTimeout で画面遷移完了を待ってから発動
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        try {
+          if(typeof window.showGachaRoundIntro !== 'function') return;
+          window.showGachaRoundIntro(log, () => {
+            if(maxHitType && typeof window.showHitEffect === 'function'){
+              window.showHitEffect(maxHitType);
+            }
+          });
+        } catch(e){ console.error('online effect error:', e); }
+      }, 300);
     });
   }
 }
@@ -4618,7 +4648,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
     const btn = document.getElementById('orr-next-btn');
     if(btn){
       btn.disabled = !!myReady;
-      btn.textContent = myReady ? '✅ 準備完了 — 他の人を待っています' : '🔁 親を交代してやり直す';
+      btn.textContent = myReady ? '✅ 準備完了 — 他の人を待っています' : '🔁 このラウンドをもう一度行う';
     }
     updateNextReadyStatus(game);
     return;
