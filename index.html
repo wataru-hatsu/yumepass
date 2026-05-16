@@ -2906,8 +2906,55 @@ function onGameStarted(){
     window.online.settings = s;
     // ゲーム状態の監視を開始
     startGameStateWatch();
-    // お題選択画面へ
-    enterOnlineTopicSelect();
+    // ゲーム状態を取得して、現在のフェーズに応じた画面に遷移
+    const gameRef = ref(db, `rooms/${window.online.roomCode}/game`);
+    get(gameRef).then(gameSnap => {
+      const game = gameSnap.val();
+      if(!game){
+        enterOnlineTopicSelect();
+        return;
+      }
+      window.online.game = game;
+      const phase = game.phase;
+      if(phase === 'topic-select'){
+        enterOnlineTopicSelect();
+      } else if(phase === 'topic-lottery'){
+        enterOnlineTopicLottery(game);
+      } else if(phase === 'betting'){
+        // 復帰者は通常、観戦のみなので直接待機画面へ
+        const players = getOnlinePlayersArray();
+        const myPlayer = players.find(p => p.id === window.online.playerId);
+        const isRejoined = myPlayer && myPlayer.rejoinedRound != null && myPlayer.rejoinedRound === (game.currentRound || 1);
+        if(isRejoined){
+          // 子の場合はオフラインペナルティを記録
+          const oyaIdx = game.oyaIndex || 0;
+          const isOya = players[oyaIdx]?.id === window.online.playerId;
+          const myBet = game.bets?.[window.online.playerId];
+          if(!isOya && !myBet){
+            const minBet = window.online.settings?.minBet || 0;
+            const betRef = ref(db, `rooms/${window.online.roomCode}/game/bets/${window.online.playerId}`);
+            set(betRef, {
+              betType: 'tansho',
+              selections: [],
+              amount: 0,
+              skipped: true,
+              offlinePenalty: minBet
+            });
+          }
+          enterOnlineBetWait();
+        } else {
+          enterOnlineBetting(game);
+        }
+      } else if(phase === 'reveal'){
+        enterOnlineReveal(game);
+      } else if(phase === 'result'){
+        enterOnlineRoundResult(game);
+      } else if(phase === 'final'){
+        enterOnlineFinal(game);
+      } else {
+        enterOnlineTopicSelect();
+      }
+    });
   });
 }
 
@@ -3037,7 +3084,34 @@ function enterOnlineTopicSelect(){
 
   // 復帰中（rejoinedRound === currentRound）なら自動でランダム選択して待機
   if(myPlayer && myPlayer.rejoinedRound != null && myPlayer.rejoinedRound === currentRound){
-    // 親じゃない、または topicMode === 'all' なら自動選択
+    const currentPhase = window.online.game?.phase;
+    // 既にフェーズが betting/reveal/result まで進んでいる → 直接賭け待機画面へ
+    if(currentPhase === 'betting' || currentPhase === 'reveal' || currentPhase === 'result'){
+      // 自分の bet が未登録ならオフラインベット記録
+      const myBet = window.online.game?.bets?.[window.online.playerId];
+      if(!myBet && !isOya){
+        const minBet = window.online.settings?.minBet || 0;
+        (async () => {
+          try {
+            const betRef = ref(db, `rooms/${window.online.roomCode}/game/bets/${window.online.playerId}`);
+            await set(betRef, {
+              betType: 'tansho',
+              selections: [],
+              amount: 0,
+              skipped: true,
+              offlinePenalty: minBet
+            });
+          } catch(e){ console.error(e); }
+        })();
+      }
+      // フェーズに応じた画面に遷移（賭け待機 / reveal はそのまま onGameStateUpdate で）
+      if(currentPhase === 'betting'){
+        enterOnlineBetWait();
+      }
+      // reveal/result の場合は onGameStateUpdate がうまく処理する
+      return;
+    }
+    // フェーズが topic-select/topic-lottery → 自動でランダム選択して待機
     if(!(topicMode === 'children' && isOya)){
       const mySel = window.online.game?.topicSelections?.[window.online.playerId];
       if(!mySel){
@@ -3092,8 +3166,16 @@ function enterOnlineTopicSelect(){
   }
 
   // カテゴリ選択ステップを表示
-  const roleLabel = isOya ? '👑 あなたは<strong>親</strong>です' : '🎯 あなたは<strong>子</strong>です';
-  document.getElementById('online-topic-instruction').innerHTML = roleLabel + '<br>まずカテゴリーを選んでください';
+  const oyaName = oyaPlayer ? escapeHtml(oyaPlayer.name) : '親';
+  let roleLabel, subLabel;
+  if(isOya){
+    roleLabel = '👑 あなたは<strong>親</strong>です';
+    subLabel = 'あなた自身に向けたお題を選びましょう';
+  } else {
+    roleLabel = '🎯 あなたは<strong>子</strong>です';
+    subLabel = `<strong style="color:#ffd700">${oyaName}</strong> さんに向けたお題を選びましょう`;
+  }
+  document.getElementById('online-topic-instruction').innerHTML = roleLabel + '<br>' + subLabel + '<br><span style="font-size:0.75rem;color:#aaa;font-weight:normal">まずカテゴリーを選んでください</span>';
 
   goTo('screen-online-topic-select');
 }
@@ -3110,8 +3192,17 @@ window.onlinePickCategory = function(category){
     g2: '🥈 G2（中得点・中）',
     g3: '🥉 G3（低得点・易）'
   };
+  // 親の名前を取得
+  const players = getOnlinePlayersArray();
+  const oyaIdx = window.online.game?.oyaIndex || 0;
+  const oyaPlayer = players[oyaIdx];
+  const isOya = oyaPlayer && oyaPlayer.id === window.online.playerId;
+  const oyaName = oyaPlayer ? oyaPlayer.name : '親';
   const titleEl = document.getElementById('online-topic-list-title');
-  if(titleEl) titleEl.textContent = '② お題を選ぼう — ' + (categoryNames[category] || category);
+  if(titleEl){
+    const targetText = isOya ? 'あなた自身に向けたお題' : `${oyaName} さんに向けたお題`;
+    titleEl.innerHTML = `② ${targetText}を選ぼう <span style="font-size:0.75rem;color:#aaa;font-weight:normal">— ${categoryNames[category] || category}</span>`;
+  }
 
   renderOnlineTopicListByCategory(category);
 };
