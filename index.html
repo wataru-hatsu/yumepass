@@ -486,17 +486,37 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div style="text-align:center;color:#888;font-size:0.75rem;margin-top:6px" id="online-topic-waiting"></div>
     </div>
 
-    <div class="panel">
-      <div class="panel-title">🏆 G1（高得点・難）</div>
-      <div id="online-g1-list"></div>
+    <!-- カテゴリ選択ステップ（子用：最初に表示される） -->
+    <div id="online-category-step">
+      <div class="panel">
+        <div class="panel-title">① カテゴリーを選ぼう</div>
+        <div style="font-size:0.75rem;color:#aaa;margin-bottom:10px">どのレベルのお題を選びますか？</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn btn-category" onclick="onlinePickCategory('g1')" style="background:linear-gradient(135deg,#4a3a0a,#5a4a0a);border:2px solid var(--gold);color:var(--gold);padding:18px 14px;text-align:left">
+            <div style="font-size:1.05rem;font-weight:900">🏆 G1（高得点・難）</div>
+            <div style="font-size:0.75rem;color:#ccc;margin-top:4px;font-weight:400">人生・価値観など、難しいけど高得点が狙えるお題</div>
+          </button>
+          <button class="btn btn-category" onclick="onlinePickCategory('g2')" style="background:linear-gradient(135deg,#2a2a3a,#3a3a4a);border:2px solid #aaaaaa;color:white;padding:18px 14px;text-align:left">
+            <div style="font-size:1.05rem;font-weight:900">🥈 G2（中得点・中）</div>
+            <div style="font-size:0.75rem;color:#ccc;margin-top:4px;font-weight:400">バランスの取れた、ほどよい難易度のお題</div>
+          </button>
+          <button class="btn btn-category" onclick="onlinePickCategory('g3')" style="background:linear-gradient(135deg,#3a2010,#4a3010);border:2px solid #cc8855;color:#ffcc99;padding:18px 14px;text-align:left">
+            <div style="font-size:1.05rem;font-weight:900">🥉 G3（低得点・易）</div>
+            <div style="font-size:0.75rem;color:#ccc;margin-top:4px;font-weight:400">話しやすい身近なお題</div>
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="panel">
-      <div class="panel-title">🥈 G2（中得点・中）</div>
-      <div id="online-g2-list"></div>
-    </div>
-    <div class="panel">
-      <div class="panel-title">🥉 G3（低得点・易）</div>
-      <div id="online-g3-list"></div>
+
+    <!-- お題選択ステップ（カテゴリ選択後に表示） -->
+    <div id="online-topic-list-step" style="display:none">
+      <div style="margin:6px 10px">
+        <button class="btn btn-secondary" onclick="onlineBackToCategory()" style="font-size:0.85rem;padding:8px 14px">← カテゴリ選択に戻る</button>
+      </div>
+      <div class="panel">
+        <div class="panel-title" id="online-topic-list-title">② お題を選ぼう</div>
+        <div id="online-topic-list"></div>
+      </div>
     </div>
 
     <!-- 待機ステータス（選んだ後） -->
@@ -2977,11 +2997,13 @@ function getOnlinePlayersArray(){
 // お題選択画面に入る
 function enterOnlineTopicSelect(){
   document.getElementById('online-topic-submitted').style.display = 'none';
-  // お題リストパネルの表示を復活
-  document.querySelectorAll('#screen-online-topic-select .panel').forEach((p) => {
-    p.style.display = '';
-  });
   document.getElementById('online-round-info').textContent = `ROUND ${window.online.game?.currentRound || 1}`;
+
+  // パネルとステップを初期化
+  const categoryStep = document.getElementById('online-category-step');
+  const listStep = document.getElementById('online-topic-list-step');
+  if(categoryStep) categoryStep.style.display = '';
+  if(listStep) listStep.style.display = 'none';
 
   // 役割判定（親かどうか）
   const players = getOnlinePlayersArray();
@@ -3005,6 +3027,8 @@ function enterOnlineTopicSelect(){
             try {
               const selRef = ref(db, `rooms/${window.online.roomCode}/game/topicSelections/${window.online.playerId}`);
               await set(selRef, rand.id);
+              if(categoryStep) categoryStep.style.display = 'none';
+              if(listStep) listStep.style.display = 'none';
               showTopicSubmitted(rand.id);
               goTo('screen-online-topic-select');
             } catch(e){ console.error(e); }
@@ -3020,9 +3044,9 @@ function enterOnlineTopicSelect(){
   if(topicMode === 'children' && isOya){
     const oyaName = oyaPlayer ? escapeHtml(oyaPlayer.name) : 'あなた';
     document.getElementById('online-topic-instruction').innerHTML = `👑 あなたは<strong>親</strong>です<br><span style="color:#aef5a0;font-size:0.85rem;font-weight:normal">他の皆さんが <strong>${oyaName}</strong> さんに向けたお題を選んでいます<br>全員が選択し終わるまでお待ちください</span>`;
-    document.getElementById('online-g1-list').innerHTML = '<div style="text-align:center;color:#888;padding:30px">親は待機中</div>';
-    document.getElementById('online-g2-list').innerHTML = '';
-    document.getElementById('online-g3-list').innerHTML = '';
+    // カテゴリとリストを両方非表示
+    if(categoryStep) categoryStep.style.display = 'none';
+    if(listStep) listStep.style.display = 'none';
     // 進捗パネル表示
     const oyaWait = document.getElementById('online-topic-oya-wait');
     if(oyaWait) oyaWait.style.display = '';
@@ -3039,18 +3063,45 @@ function enterOnlineTopicSelect(){
   // 既に選んでたら待機画面
   const myTopicId = window.online.game?.topicSelections?.[window.online.playerId];
   if(myTopicId){
+    if(categoryStep) categoryStep.style.display = 'none';
+    if(listStep) listStep.style.display = 'none';
     showTopicSubmitted(myTopicId);
     goTo('screen-online-topic-select');
     return;
   }
 
-  // お題リストを表示
+  // カテゴリ選択ステップを表示
   const roleLabel = isOya ? '👑 あなたは<strong>親</strong>です' : '🎯 あなたは<strong>子</strong>です';
-  document.getElementById('online-topic-instruction').innerHTML = roleLabel + '<br>好きなお題を1つ選んでください';
+  document.getElementById('online-topic-instruction').innerHTML = roleLabel + '<br>まずカテゴリーを選んでください';
 
-  renderOnlineTopicList();
   goTo('screen-online-topic-select');
 }
+
+// カテゴリを選択 → お題リストを表示
+window.onlinePickCategory = function(category){
+  const categoryStep = document.getElementById('online-category-step');
+  const listStep = document.getElementById('online-topic-list-step');
+  if(categoryStep) categoryStep.style.display = 'none';
+  if(listStep) listStep.style.display = '';
+
+  const categoryNames = {
+    g1: '🏆 G1（高得点・難）',
+    g2: '🥈 G2（中得点・中）',
+    g3: '🥉 G3（低得点・易）'
+  };
+  const titleEl = document.getElementById('online-topic-list-title');
+  if(titleEl) titleEl.textContent = '② お題を選ぼう — ' + (categoryNames[category] || category);
+
+  renderOnlineTopicListByCategory(category);
+};
+
+// カテゴリ選択に戻る
+window.onlineBackToCategory = function(){
+  const categoryStep = document.getElementById('online-category-step');
+  const listStep = document.getElementById('online-topic-list-step');
+  if(categoryStep) categoryStep.style.display = '';
+  if(listStep) listStep.style.display = 'none';
+};
 
 // お題選択の進捗リストを更新（誰が選び終わったか）
 function updateTopicProgressList(selections){
@@ -3090,12 +3141,18 @@ function updateTopicProgressList(selections){
   if(list2) list2.innerHTML = summary;
 }
 
-// お題リストを描画
-function renderOnlineTopicList(){
+// カテゴリ別のお題リストを描画
+function renderOnlineTopicListByCategory(category){
   const topics = getOnlineTopics();
-  const g1 = topics.filter(t => (t.category||'g3') === 'g1');
-  const g2 = topics.filter(t => (t.category||'g3') === 'g2');
-  const g3 = topics.filter(t => (t.category||'g3') === 'g3');
+  const filtered = topics.filter(t => (t.category || 'g3') === category);
+  const listEl = document.getElementById('online-topic-list');
+  if(!listEl) return;
+  listEl.innerHTML = '';
+
+  if(filtered.length === 0){
+    listEl.innerHTML = '<div style="color:#888;font-size:0.85rem;padding:14px;text-align:center">このカテゴリーにはお題がありません</div>';
+    return;
+  }
 
   function makeCard(t, parent){
     const d = document.createElement('div');
@@ -3131,7 +3188,7 @@ function renderOnlineTopicList(){
     // 右クリック
     d.addEventListener('contextmenu', (e) => {
       e.preventDefault();
-      longPressed = true; // 右クリック直後のclickは無視
+      longPressed = true;
       openTopicPopup(t);
     });
 
@@ -3144,19 +3201,12 @@ function renderOnlineTopicList(){
     parent.appendChild(d);
   }
 
-  function fill(elId, list){
-    const el = document.getElementById(elId);
-    el.innerHTML = '';
-    if(list.length === 0){
-      el.innerHTML = '<div style="color:#888;font-size:0.85rem;padding:10px">お題がありません</div>';
-      return;
-    }
-    list.forEach(t => makeCard(t, el));
-  }
+  filtered.forEach(t => makeCard(t, listEl));
+}
 
-  fill('online-g1-list', g1);
-  fill('online-g2-list', g2);
-  fill('online-g3-list', g3);
+// 旧 renderOnlineTopicList の後方互換ラッパー（呼ばれてもエラーにならないように）
+function renderOnlineTopicList(){
+  // 何もしない（カテゴリ選択経由になったため）
 }
 
 // HTMLエスケープ
@@ -3198,10 +3248,14 @@ function showTopicSubmitted(topicId){
     horsesEl.innerHTML = (topic.horses || []).map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
   }
   document.getElementById('online-topic-submitted').style.display = 'block';
-  // お題リストを隠す
-  document.querySelectorAll('#screen-online-topic-select .panel').forEach((p, i) => {
-    if(i > 0) p.style.display = 'none'; // 最初のpanel（説明）以外
-  });
+  // カテゴリ選択ステップとお題リストステップを隠す
+  const categoryStep = document.getElementById('online-category-step');
+  const listStep = document.getElementById('online-topic-list-step');
+  if(categoryStep) categoryStep.style.display = 'none';
+  if(listStep) listStep.style.display = 'none';
+  // 親の待機画面も非表示（自分は子なので）
+  const oyaWait = document.getElementById('online-topic-oya-wait');
+  if(oyaWait) oyaWait.style.display = 'none';
 }
 
 // 待機中の残り人数表示を更新
