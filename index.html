@@ -4943,15 +4943,25 @@ async function checkAllReadyForNext(){
 
     // オフラインプレイヤーの nextReady は自動で立てる
     const nextReadyNow = game.nextReady || {};
+    let didUpdate = false;
     for(const p of players){
       if(p.online === false && !nextReadyNow[p.id]){
         try {
           await set(ref(db, `rooms/${window.online.roomCode}/game/nextReady/${p.id}`), true);
+          didUpdate = true;
         } catch(e){ console.error(e); }
       }
     }
 
-    const ready = game.nextReady || {};
+    // 自動セットした場合は最新データを再取得して判定
+    let ready = game.nextReady || {};
+    if(didUpdate){
+      try {
+        const readyRef = ref(db, `rooms/${window.online.roomCode}/game/nextReady`);
+        const snap = await get(readyRef);
+        ready = snap.val() || {};
+      } catch(e){ console.error(e); }
+    }
     const allReady = players.every(p => ready[p.id]);
     if(!allReady) return;
 
@@ -5063,6 +5073,7 @@ async function checkAllReadyForNext(){
 
 function enterOnlineFinal(game){
   // 初回のみ豪華フィナーレ演出
+  // _lastFinalShown が null/undefined（復帰直後など）の場合も初回扱い
   const isFirstShow = window.online._lastFinalShown !== game.startedAt;
   window.online._lastFinalShown = game.startedAt;
 
