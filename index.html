@@ -4629,7 +4629,23 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
     // 実際の順位エリアに「ノーゲーム」表示
     const actualEl = document.getElementById('orr-actual-result');
     if(actualEl){
-      actualEl.innerHTML = `<div style="text-align:center;padding:20px;color:#f5c842;font-size:1.1rem;font-weight:700">⚠️ ノーゲーム<br><span style="font-size:0.85rem;color:#aaa;font-weight:400;line-height:1.6">親（${escapeHtml(log.oyaName || '?')}）がオフラインとなったため<br>このラウンドは無効です<br><span style="color:#aef5a0;font-weight:700">親を交代して同じラウンドをやり直します</span></span></div>`;
+      actualEl.innerHTML = `
+        <div style="background:linear-gradient(135deg,#4a1a4a,#2a0d2a);border:3px solid #ff8c8c;border-radius:14px;padding:24px 20px;text-align:center;box-shadow:0 0 30px rgba(255,140,140,0.4);position:relative;overflow:hidden">
+          <div style="position:absolute;top:-20px;left:-20px;width:80px;height:80px;background:radial-gradient(circle,rgba(255,140,140,0.3),transparent);border-radius:50%"></div>
+          <div style="position:absolute;bottom:-20px;right:-20px;width:80px;height:80px;background:radial-gradient(circle,rgba(255,140,140,0.3),transparent);border-radius:50%"></div>
+          <div style="color:#ff8c8c;font-size:0.85rem;letter-spacing:5px;font-weight:900;margin-bottom:8px">NO GAME</div>
+          <div style="color:white;font-size:1.8rem;font-weight:900;letter-spacing:3px;margin-bottom:14px">⚠️ ノーゲーム</div>
+          <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:14px 12px;margin-bottom:14px">
+            <div style="color:#ffcccc;font-size:0.95rem;line-height:1.6">
+              親（<strong style="color:#fff">${escapeHtml(log.oyaName || '?')}</strong>）が<br>オフラインとなったため<br>このラウンドは無効です
+            </div>
+          </div>
+          <div style="background:linear-gradient(135deg,#0d5a2a,#1a8a4a);border:2px solid #5ace5a;border-radius:12px;padding:18px 14px;box-shadow:0 0 20px rgba(90,206,90,0.4)">
+            <div style="color:#aef5a0;font-size:0.75rem;letter-spacing:3px;font-weight:900;margin-bottom:6px">RETRY</div>
+            <div style="color:#ffffff;font-size:1.3rem;font-weight:900;line-height:1.5">🔁 親を交代して<br>同じラウンドをやり直します</div>
+            <div style="color:#aef5a0;font-size:0.8rem;margin-top:10px;line-height:1.4">子の賭け金は全額返金されます</div>
+          </div>
+        </div>`;
     }
     // 子の結果（ノーゲームなので全員返金）
     const playerEl = document.getElementById('orr-player-results');
