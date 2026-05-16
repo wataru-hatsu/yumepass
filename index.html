@@ -3126,10 +3126,17 @@ function enterOnlineTopicSelect(){
         const topics = getOnlineTopics();
         if(topics && topics.length > 0){
           const rand = topics[Math.floor(Math.random() * topics.length)];
+          const snapshot = {
+            id: rand.id,
+            title: rand.title,
+            icon: rand.icon || '🎯',
+            horses: rand.horses || [],
+            category: rand.category || 'g3'
+          };
           (async () => {
             try {
               const selRef = ref(db, `rooms/${window.online.roomCode}/game/topicSelections/${window.online.playerId}`);
-              await set(selRef, rand.id);
+              await set(selRef, snapshot);
               if(categoryStep) categoryStep.style.display = 'none';
               if(listStep) listStep.style.display = 'none';
               showTopicSubmitted(rand.id);
@@ -3164,10 +3171,12 @@ function enterOnlineTopicSelect(){
   if(oyaWait) oyaWait.style.display = 'none';
 
   // 既に選んでたら待機画面
-  const myTopicId = window.online.game?.topicSelections?.[window.online.playerId];
-  if(myTopicId){
+  const mySelection = window.online.game?.topicSelections?.[window.online.playerId];
+  if(mySelection){
     if(categoryStep) categoryStep.style.display = 'none';
     if(listStep) listStep.style.display = 'none';
+    // 旧形式（文字列ID）と新形式（オブジェクト）の両方に対応
+    const myTopicId = typeof mySelection === 'string' ? mySelection : mySelection.id;
     showTopicSubmitted(myTopicId);
     goTo('screen-online-topic-select');
     return;
@@ -3339,8 +3348,22 @@ function escapeHtml(s){
 window.selectOnlineTopic = async function(topicId){
   if(!confirm('このお題で決定しますか？')) return;
   try {
+    // お題のスナップショットを取得（horses, title, icon を含む完全な情報）
+    const topic = getOnlineTopics().find(t => t.id === topicId);
+    if(!topic){
+      showNotif('⚠️ お題情報が見つかりません');
+      return;
+    }
+    const snapshot = {
+      id: topic.id,
+      title: topic.title,
+      icon: topic.icon || '🎯',
+      horses: topic.horses || [],
+      category: topic.category || 'g3'
+    };
     const myRef = ref(db, `rooms/${window.online.roomCode}/game/topicSelections/${window.online.playerId}`);
-    await set(myRef, topicId);
+    // ID と完全なスナップショットの両方を保存（後で誰でも正しく取り出せるように）
+    await set(myRef, snapshot);
     // 待機画面を表示
     showTopicSubmitted(topicId);
     showNotif('✅ お題を選びました');
@@ -3357,7 +3380,15 @@ window.selectOnlineTopic = async function(topicId){
 
 // 自分の選択結果画面を表示
 function showTopicSubmitted(topicId){
-  const topic = getOnlineTopics().find(t => t.id === topicId);
+  // まずDBに保存されている自分のスナップショットを優先（horsesがズレないように）
+  const mySel = window.online.game?.topicSelections?.[window.online.playerId];
+  let topic = null;
+  if(mySel && typeof mySel === 'object'){
+    topic = mySel; // 新形式：スナップショット
+  }
+  if(!topic){
+    topic = getOnlineTopics().find(t => t.id === topicId);
+  }
   document.getElementById('my-selected-topic').textContent = topic ? topic.title : '(不明)';
   // アイコン
   const iconEl = document.getElementById('my-selected-topic-icon');
@@ -3440,9 +3471,16 @@ async function checkAllTopicsSelected(){
           if(!selectionsNow[p.id]){
             // ランダムにお題を1つ選ぶ
             const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+            const snapshot = {
+              id: randomTopic.id,
+              title: randomTopic.title,
+              icon: randomTopic.icon || '🎯',
+              horses: randomTopic.horses || [],
+              category: randomTopic.category || 'g3'
+            };
             try {
               const selRef = ref(db, `rooms/${window.online.roomCode}/game/topicSelections/${p.id}`);
-              await set(selRef, randomTopic.id);
+              await set(selRef, snapshot);
             } catch(e){ console.error('オフライン代理お題選択失敗:', e); }
           }
         }
@@ -3458,16 +3496,42 @@ async function checkAllTopicsSelected(){
 
     if(allSubmitted && targetPlayers.length > 0){
       // 抽選開始：ランダムに1つ選ぶ
+      // selections[playerId] は {id, title, icon, horses, category} のオブジェクト形式（旧形式: 文字列ID）
       const selectionEntries = Object.entries(selections);
       const winnerIdx = Math.floor(Math.random() * selectionEntries.length);
-      const [winnerPlayerId, winnerTopicId] = selectionEntries[winnerIdx];
+      const [winnerPlayerId, winnerSel] = selectionEntries[winnerIdx];
+      // 新形式（オブジェクト）と旧形式（文字列）の両方に対応
+      const winnerTopicId = typeof winnerSel === 'string' ? winnerSel : winnerSel.id;
+      const winnerSnapshot = typeof winnerSel === 'string' ? null : winnerSel;
+
+      // 各 candidate にお題スナップショットを含める（他クライアントの localStorage に依存しないように）
+      const topicsForLottery = getOnlineTopics();
+      const candidatesWithSnap = selectionEntries.map(([pid, sel]) => {
+        const tid = typeof sel === 'string' ? sel : sel.id;
+        let snapshot;
+        if(typeof sel === 'object' && sel !== null){
+          // 新形式：保存されているスナップショットをそのまま使う
+          snapshot = sel;
+        } else {
+          // 旧形式：ホストのlocalStorageから検索
+          const t = topicsForLottery.find(tp => tp.id === tid);
+          snapshot = t ? {
+            id: t.id,
+            title: t.title,
+            icon: t.icon || '🎯',
+            horses: t.horses || [],
+            category: t.category || 'g3'
+          } : null;
+        }
+        return {playerId: pid, topicId: tid, topicSnapshot: snapshot};
+      });
 
       // DBに抽選結果を書き込み、フェーズを変更
       const lotteryRef = ref(db, `rooms/${window.online.roomCode}/game/lotteryResult`);
       await set(lotteryRef, {
         chosenTopicId: winnerTopicId,
         chosenByPlayerId: winnerPlayerId,
-        candidates: selectionEntries.map(([pid, tid]) => ({playerId: pid, topicId: tid})),
+        candidates: candidatesWithSnap,
         startedAt: Date.now()
       });
       const phaseRef = ref(db, `rooms/${window.online.roomCode}/game/phase`);
@@ -3494,16 +3558,23 @@ function enterOnlineTopicLottery(game){
   const displayEl = document.getElementById('lottery-display');
   let count = 0;
   const totalSteps = 25;
+  // candidates から表示用のお題情報を取得するヘルパー
+  function getTopicForCandidate(c){
+    if(!c) return null;
+    if(c.topicSnapshot) return c.topicSnapshot;
+    return topics.find(t => t.id === c.topicId);
+  }
   const stepInterval = setInterval(() => {
     const rand = candidates[Math.floor(Math.random() * candidates.length)];
-    const topic = topics.find(t => t.id === rand.topicId);
+    const topic = getTopicForCandidate(rand);
     if(topic) displayEl.textContent = topic.title;
     try { window.SFX.lottery(); } catch(e){}
     count++;
     if(count >= totalSteps){
       clearInterval(stepInterval);
       // 当選表示
-      const winTopic = topics.find(t => t.id === lottery.chosenTopicId);
+      const winCandidate2 = candidates.find(c => c.topicId === lottery.chosenTopicId);
+      const winTopic = getTopicForCandidate(winCandidate2) || topics.find(t => t.id === lottery.chosenTopicId);
       const winPlayer = players.find(p => p.id === lottery.chosenByPlayerId);
       displayEl.textContent = winTopic ? winTopic.title : '(不明)';
       displayEl.style.transform = 'scale(1.1)';
@@ -3516,16 +3587,42 @@ function enterOnlineTopicLottery(game){
         setTimeout(async () => {
           try {
             // 選ばれたお題の情報をDBに保存（全員が同じデータを使えるように）
-            const winTopicFull = topics.find(t => t.id === lottery.chosenTopicId);
-            if(winTopicFull){
+            // まず lottery.candidates から chosenTopicId に対応するお題情報を探す（最も信頼できる）
+            let topicData = null;
+            const winCandidate = (candidates || []).find(c => c.topicId === lottery.chosenTopicId);
+            if(winCandidate && winCandidate.topicSnapshot){
+              // candidatesに完全なお題スナップショットがあれば使う
+              topicData = winCandidate.topicSnapshot;
+            } else {
+              // フォールバック：ホストの localStorage から検索
+              const winTopicFull = topics.find(t => t.id === lottery.chosenTopicId);
+              if(winTopicFull){
+                topicData = {
+                  id: winTopicFull.id,
+                  title: winTopicFull.title,
+                  icon: winTopicFull.icon || '🎯',
+                  horses: winTopicFull.horses || [],
+                  category: winTopicFull.category || 'g3'
+                };
+              }
+            }
+
+            if(topicData && topicData.horses && topicData.horses.length > 0){
+              // selectedTopicを先に null にクリアしてから上書き（古い horses が残らないように）
               const topicRef = ref(db, `rooms/${window.online.roomCode}/game/selectedTopic`);
+              await set(topicRef, null);
               await set(topicRef, {
-                id: winTopicFull.id,
-                title: winTopicFull.title,
-                icon: winTopicFull.icon || '🎯',
-                horses: winTopicFull.horses || [],
-                category: winTopicFull.category || 'g3'
+                id: topicData.id,
+                title: topicData.title,
+                icon: topicData.icon || '🎯',
+                horses: topicData.horses || [],
+                category: topicData.category || 'g3'
               });
+            } else {
+              // お題情報が取得できない → エラー警告
+              console.error('⚠️ selectedTopic書き込み失敗：topicId=' + lottery.chosenTopicId + ' が見つからない');
+              showNotif('⚠️ お題情報の同期に失敗しました');
+              return;
             }
             // 初期持ち点をまだ設定していなければ設定
             const pointsRef = ref(db, `rooms/${window.online.roomCode}/game/points`);
