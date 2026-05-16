@@ -4048,9 +4048,33 @@ function enterOnlineBetWait(){
   const players = getOnlinePlayersArray();
   const oyaIdx = game?.oyaIndex || 0;
   const isOya = players[oyaIdx]?.id === window.online.playerId;
+  const currentRound = game?.currentRound || 1;
+  const myPlayer = players.find(p => p.id === window.online.playerId);
+  const isRejoinedThisRound = !!(myPlayer && myPlayer.rejoinedRound != null && myPlayer.rejoinedRound === currentRound);
+  const myBet = game?.bets?.[window.online.playerId];
+  const minBet = window.online.settings?.minBet || 0;
+
   const msgEl = document.getElementById('obw-message');
   if(msgEl){
-    if(isOya){
+    // 復帰直後でCPUが代行中の場合
+    if(isRejoinedThisRound){
+      const penaltyInfo = (myBet && myBet.offlinePenalty > 0)
+        ? `<div style="background:rgba(170,34,34,0.25);border:1px solid #ff8c8c;border-radius:8px;padding:10px 12px;margin-top:14px;text-align:left">
+            <div style="color:#ff8c8c;font-weight:900;font-size:0.85rem;margin-bottom:4px">💸 オフラインペナルティ</div>
+            <div style="color:#ffcccc;font-size:0.8rem;line-height:1.5">このラウンドの賭けに参加できなかったため、<br>最低ベット額 <strong style="color:#fff">${myBet.offlinePenalty.toLocaleString()}点</strong> が引かれます</div>
+          </div>`
+        : '';
+      msgEl.innerHTML = `
+        <div style="background:linear-gradient(135deg,#1a3d2a,#0d2a1a);border:3px solid #5ace5a;border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 0 24px rgba(90,206,90,0.3)">
+          <div style="color:#aef5a0;font-size:0.75rem;letter-spacing:4px;font-weight:900;margin-bottom:6px">RECONNECTED</div>
+          <div style="color:white;font-size:1.4rem;font-weight:900;margin-bottom:10px">🔄 復帰しました！</div>
+          <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:12px;color:#ffffff;font-size:0.95rem;line-height:1.6;font-weight:700">
+            このラウンドは<br><span style="color:#ffd700">CPUが代行中</span>です<br>
+            <span style="color:#aef5a0;font-size:0.85rem;font-weight:normal">次のラウンドから参加できます</span>
+          </div>
+          ${penaltyInfo}
+        </div>`;
+    } else if(isOya){
       const r = window.onlineBet.oyaSelections;
       const topic = game?.selectedTopic;
       if(r.length === 3 && topic){
@@ -4062,7 +4086,30 @@ function enterOnlineBetWait(){
     } else {
       const amount = parseInt(window.onlineBet.betInputVal) || 0;
       if(amount === 0){
-        msgEl.textContent = '🎯 見送りで確定しました';
+        // 見送り or オフラインペナルティ
+        if(myBet && myBet.offlinePenalty > 0){
+          // オフラインによる強制ペナルティ（通常はここには来ないが念のため）
+          msgEl.innerHTML = `
+            <div style="text-align:center">
+              <div style="font-size:1.1rem;font-weight:900;color:white;margin-bottom:10px">💸 オフライン中の見送り</div>
+              <div style="background:rgba(170,34,34,0.25);border:1px solid #ff8c8c;border-radius:8px;padding:10px 12px;text-align:left">
+                <div style="color:#ffcccc;font-size:0.85rem;line-height:1.6">オフラインだったため賭けに参加できませんでした。<br>最低ベット額 <strong style="color:#fff">${myBet.offlinePenalty.toLocaleString()}点</strong> が引かれます</div>
+              </div>
+            </div>`;
+        } else {
+          // 通常の見送り → 最低額がある場合、説明追加
+          const minBetInfo = minBet > 0
+            ? `<div style="background:rgba(170,34,34,0.18);border:1px solid #ff8c8c;border-radius:8px;padding:10px 12px;margin-top:12px;text-align:left">
+                <div style="color:#ff8c8c;font-weight:900;font-size:0.8rem;margin-bottom:4px">⚠️ 最低ベット額のペナルティ</div>
+                <div style="color:#ffcccc;font-size:0.78rem;line-height:1.5">見送りを選んだため、最低ベット額 <strong style="color:#fff">${minBet.toLocaleString()}点</strong> がペナルティとして引かれます</div>
+              </div>`
+            : `<div style="color:#aaa;font-size:0.8rem;margin-top:10px">このラウンドは賭けに参加しません</div>`;
+          msgEl.innerHTML = `
+            <div style="text-align:center">
+              <div style="font-size:1.2rem;font-weight:900;color:white">🎯 見送りで確定しました</div>
+              ${minBetInfo}
+            </div>`;
+        }
       } else {
         const betNames = {tansho:'単勝', rentan:'連単狙い', sanrentan:'三連単狙い'};
         const topic = game?.selectedTopic;
