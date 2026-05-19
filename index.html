@@ -479,6 +479,9 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
             <button type="button" class="bonus-preset-btn" onclick="onlineSetBonusPreset(100)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">100%</button>
           </div>
           <input type="tel" id="online-bonus" value="50" min="0" max="100" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'');onlineBonusManualChanged();onlineSettingChanged()" placeholder="任意の値も入力できます">
+          <div id="online-bonus-n2-notice" style="display:none;font-size:0.75rem;color:#666;margin-top:4px;padding:6px;background:#f0f4ff;border-left:3px solid #1a5fcc;border-radius:4px">
+            ℹ️ 2人プレイ時は親ボーナスが自動的に0%に固定されます（仕様）
+          </div>
         </div>
 
         <div style="margin-top:10px">
@@ -1985,7 +1988,10 @@ function initSetupScreen(){
   [3000,5000,10000].forEach((n,i)=>{const b=document.createElement('button');b.className='btn btn-sm '+(i===1?'btn-primary':'btn-secondary');b.textContent=n.toLocaleString()+'点';b.onclick=()=>{document.querySelectorAll('#initialPointBtns .btn').forEach(x=>x.className='btn btn-sm btn-secondary');b.className='btn btn-sm btn-primary';state.initialPoints=n;};ipb.appendChild(b);});
   state.initialPoints=5000;
 }
-function renderPlayerNameFields(count){const c=document.getElementById('playerNameFields');c.innerHTML='';for(let i=1;i<=count;i++){const d=document.createElement('div');d.style.marginBottom='8px';d.innerHTML=`<label>プレイヤー${i}</label><input type="text" id="pname-${i}" placeholder="プレイヤー${i}" value="プレイヤー${i}">`;c.appendChild(d);}}
+function renderPlayerNameFields(count){const c=document.getElementById('playerNameFields');c.innerHTML='';for(let i=1;i<=count;i++){const d=document.createElement('div');d.style.marginBottom='8px';d.innerHTML=`<label>プレイヤー${i}</label><input type="text" id="pname-${i}" placeholder="プレイヤー${i}" value="プレイヤー${i}">`;c.appendChild(d);}
+// N=2の場合は親ボーナスUIをロック
+if (typeof updateOfflineBonusLockState === 'function') updateOfflineBonusLockState(count);
+}
 function getSelectedPlayerCount(){
   const custom=parseInt(document.getElementById('custom-player-count')?.value)||0;
   if(custom>=9&&custom<=30)return custom;
@@ -3325,6 +3331,135 @@ window.offlineSetBonusPreset = function(value){
   if(input) input.value = value;
 };
 
+// ============================================================
+// オフライン版 N=2 親ボーナスUIロック
+// ============================================================
+window._lastSavedBonusValueOffline = null;
+window.updateOfflineBonusLockState = function(playerCount){
+  const lock = (playerCount === 2);
+  const input = document.getElementById('custom-oya-bonus');
+  if (!input) return;
+  // プリセットボタン群（オフライン版にはIDがないので、近接の親要素から探す）
+  const presetBtns = input.closest('.panel,.field,div')
+    ? input.parentElement.parentElement.querySelectorAll('button[onclick^="offlineSetBonusPreset"]')
+    : [];
+  let noticeEl = document.getElementById('offline-bonus-n2-notice');
+
+  if (lock) {
+    if (window._lastSavedBonusValueOffline === null) {
+      window._lastSavedBonusValueOffline = input.value;
+    }
+    input.value = '0';
+    input.disabled = true;
+    input.style.background = '#eee';
+    input.style.color = '#999';
+    input.style.cursor = 'not-allowed';
+    presetBtns.forEach(btn => {
+      btn.disabled = true;
+      btn.style.opacity = '0.4';
+      btn.style.cursor = 'not-allowed';
+    });
+    // 通知メッセージを動的に挿入
+    if (!noticeEl) {
+      noticeEl = document.createElement('div');
+      noticeEl.id = 'offline-bonus-n2-notice';
+      noticeEl.style.cssText = 'font-size:0.75rem;color:#666;margin-top:4px;padding:6px;background:#f0f4ff;border-left:3px solid #1a5fcc;border-radius:4px';
+      noticeEl.innerHTML = 'ℹ️ 2人プレイ時は親ボーナスが自動的に0%に固定されます（仕様）';
+      input.parentElement.appendChild(noticeEl);
+    }
+    noticeEl.style.display = 'block';
+  } else {
+    input.disabled = false;
+    input.style.background = '';
+    input.style.color = '';
+    input.style.cursor = '';
+    presetBtns.forEach(btn => {
+      btn.disabled = false;
+      btn.style.opacity = '';
+      btn.style.cursor = '';
+    });
+    if (window._lastSavedBonusValueOffline !== null) {
+      input.value = window._lastSavedBonusValueOffline;
+      window._lastSavedBonusValueOffline = null;
+    }
+    if (noticeEl) noticeEl.style.display = 'none';
+  }
+};
+
+// ============================================================
+// N=2 親ボーナスUIロック制御
+// プレイヤー数が2人のときはUI全体を無効化して、強制的に0%を表示
+// 3人以上に戻ったら解除して、保存されていた値を復元
+// ============================================================
+window._lastSavedBonusValue = null; // ロック前の値を保持
+window.updateBonusLockState = function(playerCount){
+  const lock = (playerCount === 2);
+  const input = document.getElementById('online-bonus');
+  const presetWrap = document.getElementById('online-bonus-presets');
+  const noticeEl = document.getElementById('online-bonus-n2-notice');
+
+  if (!input) return;
+
+  if (lock) {
+    // 現在の値を保存しておく（解除時に復元するため）
+    if (window._lastSavedBonusValue === null) {
+      window._lastSavedBonusValue = input.value;
+    }
+    // 0% に固定 + 無効化
+    input.value = '0';
+    input.disabled = true;
+    input.style.background = '#eee';
+    input.style.color = '#999';
+    input.style.cursor = 'not-allowed';
+    // プリセットボタン無効化
+    if (presetWrap) {
+      presetWrap.style.opacity = '0.4';
+      presetWrap.style.pointerEvents = 'none';
+      // active状態を 0% に
+      presetWrap.querySelectorAll('.bonus-preset-btn').forEach(btn => {
+        const isZero = btn.textContent.trim() === '0%';
+        btn.style.border = isZero ? '2px solid var(--oya)' : '1px solid #ddd';
+        btn.style.background = isZero ? '#f9eef9' : 'white';
+      });
+    }
+    // 通知メッセージ表示
+    if (noticeEl) {
+      noticeEl.style.display = 'block';
+    }
+    // DB保存も0で上書き
+    if (window.online && window.online.isHost) {
+      try {
+        const ref0 = window.firebase?.ref || null;
+      } catch(e){}
+      if (typeof onlineSettingChanged === 'function') onlineSettingChanged();
+    }
+  } else {
+    // ロック解除
+    input.disabled = false;
+    input.style.background = '';
+    input.style.color = '';
+    input.style.cursor = '';
+    if (presetWrap) {
+      presetWrap.style.opacity = '';
+      presetWrap.style.pointerEvents = '';
+    }
+    if (noticeEl) {
+      noticeEl.style.display = 'none';
+    }
+    // 値を復元
+    if (window._lastSavedBonusValue !== null) {
+      input.value = window._lastSavedBonusValue;
+      window._lastSavedBonusValue = null;
+      // プリセットボタンのactive更新
+      if (typeof onlineBonusManualChanged === 'function') onlineBonusManualChanged();
+      // DB保存も復元値で
+      if (window.online && window.online.isHost) {
+        if (typeof onlineSettingChanged === 'function') onlineSettingChanged();
+      }
+    }
+  }
+};
+
 // ゲーム開始（ホスト）
 window.startOnlineGame = async function(){
   if(!window.online.isHost) return;
@@ -3338,6 +3473,15 @@ window.startOnlineGame = async function(){
 
     if(playerCount < 2){
       showNotif('⚠️ 2人以上必要です');
+      return;
+    }
+
+    // 最低ベット額バリデーション（5%以上）
+    const initialPoints = parseInt(document.getElementById('online-initial')?.value) || 5000;
+    const minBet = parseInt(document.getElementById('online-minbet')?.value) || 0;
+    const minRequired = Math.ceil(initialPoints * 0.05);
+    if (minBet < minRequired) {
+      showNotif(`⚠️ 最低ベット額は初期持ち金の5%（${minRequired.toLocaleString()}点）以上に設定してください`);
       return;
     }
 
@@ -4119,6 +4263,11 @@ function renderLobbyPlayers(players){
   window.online.cachedPlayers = arr;
 
   document.getElementById('lobby-player-count').textContent = `(${arr.length})`;
+
+  // N=2の場合は親ボーナスUIをロック（仕様: N=2は親ボーナス強制0）
+  if (typeof updateBonusLockState === 'function') {
+    updateBonusLockState(arr.length);
+  }
 
   // ホスト移譲：ホストがいないか、ホストがオフライン → オンラインの最古参を新ホストに
   const currentHost = arr.find(p => p.isHost);
@@ -5196,22 +5345,9 @@ function calculateOnlineResults(game, players){
 
   // ★ コア計算: calculatePayouts に委譲（N=プレイヤー総数、親含む）
   const N = players.length;
-  
-  // 【デバッグログ】N=2問題の調査用（v2.0.1）
-  console.log('🎯 calculateOnlineResults DEBUG:');
-  console.log('  N (players.length):', N);
-  console.log('  players配列:', players.map((p,i) => `${i}: ${p.name} (online=${p.online}, isHost=${p.isHost})`));
-  console.log('  oyaIdx:', oyaIdx);
-  console.log('  oyaResult:', [r1, r2, r3]);
-  console.log('  betsForCalc:', Object.keys(betsForCalc).length + '人分の賭け');
-  console.log('  N === 2 判定:', N === 2);
-  
   const calc = (typeof calculatePayouts === 'function')
     ? calculatePayouts(betsForCalc, [r1, r2, r3], N)
     : { totalPool: 0, payouts: {}, groupBs: {}, N };
-  
-  console.log('  calc.totalPool:', calc.totalPool);
-  console.log('  calc.payouts:', calc.payouts);
 
   // N=2の場合は親ボーナスを強制0にする（仕様）
   const effectiveBonusRate = (N === 2) ? 0 : (oyaBonusRate || 0);
