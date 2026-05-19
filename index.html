@@ -5196,9 +5196,22 @@ function calculateOnlineResults(game, players){
 
   // ★ コア計算: calculatePayouts に委譲（N=プレイヤー総数、親含む）
   const N = players.length;
+  
+  // 【デバッグログ】N=2問題の調査用（v2.0.1）
+  console.log('🎯 calculateOnlineResults DEBUG:');
+  console.log('  N (players.length):', N);
+  console.log('  players配列:', players.map((p,i) => `${i}: ${p.name} (online=${p.online}, isHost=${p.isHost})`));
+  console.log('  oyaIdx:', oyaIdx);
+  console.log('  oyaResult:', [r1, r2, r3]);
+  console.log('  betsForCalc:', Object.keys(betsForCalc).length + '人分の賭け');
+  console.log('  N === 2 判定:', N === 2);
+  
   const calc = (typeof calculatePayouts === 'function')
     ? calculatePayouts(betsForCalc, [r1, r2, r3], N)
     : { totalPool: 0, payouts: {}, groupBs: {}, N };
+  
+  console.log('  calc.totalPool:', calc.totalPool);
+  console.log('  calc.payouts:', calc.payouts);
 
   // N=2の場合は親ボーナスを強制0にする（仕様）
   const effectiveBonusRate = (N === 2) ? 0 : (oyaBonusRate || 0);
