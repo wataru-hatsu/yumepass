@@ -1857,6 +1857,8 @@ function calculatePayouts(bets, result, weights = BET_WEIGHTS) {
 
   return { totalPool, payouts, groupBs };
 }
+
+let state={players:[],rounds:5,initialPoints:5000,minBet:500,oyaBonusRate:50,odds:{tansho:2,renfuku:5,rentan:10,sanrenfuku:7,sanrentan:30},currentRound:0,oyaIndex:0,currentBetPlayerIndex:0,koPlayers:[],selectedTopic:null,currentBets:[],actualResult:[],history:[],topics:[],usedTopicIds:[],prevScreen:'screen-home'};
 const CATEGORIES=[
   {id:'g1',label:'G1',sub:'最高峰｜本音と価値観に踏み込む重いお題',icon:'🏆',color:'#8b1a8b',textColor:'white'},
   {id:'g2',label:'G2',sub:'準重賞｜少し深くて考えさせられるお題',icon:'🥈',color:'#1a5fcc',textColor:'white'},
