@@ -465,6 +465,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         <div style="margin-top:10px">
           <label style="font-size:0.8rem;color:#666;display:block;margin-bottom:4px">📉 最低ベット額</label>
           <input type="tel" id="online-minbet" value="500" min="0" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'');onlineSettingChanged()">
+          <div id="online-minbet-warn" style="display:none;font-size:0.75rem;color:var(--red);margin-top:4px;padding:6px;background:#fff5f5;border-left:3px solid var(--red);border-radius:4px"></div>
+          <div style="font-size:0.7rem;color:#888;margin-top:3px">💡 初期持ち金の5%以上で設定してください</div>
         </div>
 
         <div style="margin-top:10px">
@@ -1650,17 +1652,31 @@ window.SFX = (function(){
 })();
 
 // ============================================================
-// 新ゲーム仕様（v2.0）: 7種類の賭け方とオッズ計算公式
+// 新ゲーム仕様（v2.0 - 6.5択モデル最終版）
+// オッズ計算: R(N) × W^β × P / (B + P × 0.01)、最低×1.1保証
+// N=2 は固定オッズ + 親ボーナス強制0
 // ============================================================
-// 賭け方の重みW（W = 1/確率、N=8）
-const BET_WEIGHTS = {
-  tansho:    8,      // 単勝（1位）
-  fukusho:   2.67,   // 複勝（1〜3位のどれか）
-  umaren:    28,     // 馬連（1位2位、順不同）
-  umatan:    56,     // 馬単（1位2位、順番通り）
-  wide:      9.33,   // ワイド（1〜3位のうち2つ、順不同）
-  sanrenfuku: 56,    // 3連複（1〜3位、順不同）
-  sanrentan: 336     // 3連単（1〜3位、順番通り）
+
+// 賭け方の設定（β、R_a、R_b、W）
+const BET_CONFIG = {
+  tansho:    { beta: 0.55, R_a: 0.70, R_b: 0.50, W: 6.5 },
+  fukusho:   { beta: 0.28, R_a: 0.60, R_b: 0.50, W: 2.17 },
+  umaren:    { beta: 0.50, R_a: 0.45, R_b: 0.40, W: 17.88 },
+  umatan:    { beta: 0.45, R_a: 0.45, R_b: 0.30, W: 35.75 },
+  wide:      { beta: 0.40, R_a: 0.45, R_b: 0.45, W: 5.96 },
+  sanrenfuku:{ beta: 0.45, R_a: 0.40, R_b: 0.30, W: 26.81 },
+  sanrentan: { beta: 0.28, R_a: 1.30, R_b: 0.25, W: 160.88 }
+};
+
+// N=2 固定オッズ表
+const N2_FIXED_ODDS = {
+  tansho:    3.2,
+  fukusho:   1.1,
+  umaren:    8.9,
+  umatan:    17.9,
+  wide:      3.0,
+  sanrenfuku:13.4,
+  sanrentan: 80.4
 };
 
 // 賭け方ごとの選択頭数
@@ -1689,8 +1705,8 @@ const BET_DESCS = {
 
 // 賭け方の旧キーから新キーへの変換マップ（既存データ互換性のため）
 const BET_TYPE_LEGACY_MAP = {
-  rentan: 'umatan',      // 旧「連単狙い」→ 馬単
-  renfuku: 'umaren'      // 旧「連複」→ 馬連
+  rentan: 'umatan',
+  renfuku: 'umaren'
 };
 
 // 賭けデータの正規化（旧キー対応）
@@ -1699,14 +1715,20 @@ function normalizeBetType(betType) {
 }
 
 // ============================================================
-// オッズ計算公式（パリミュチュエル風 + 最低保証）
-// オッズ = 0.08 × W × P / (B + P × 0.01)
-// 最終オッズ = max(計算値, 1.1)
-// 表示は小数第1位まで切り捨て
+// オッズ計算公式（6.5択モデル）
+// N=2は固定オッズ、N≥3は動的計算
 // ============================================================
-function calculateDynamicOdds(weight, totalPool, winningBetAmount) {
-  if (totalPool <= 0 || weight <= 0) return 1.1;
-  const raw = 0.08 * weight * totalPool / (winningBetAmount + totalPool * 0.01);
+function calculateOddsByConfig(N, betType, P, B) {
+  // N=2は固定オッズ
+  if (N === 2) {
+    return N2_FIXED_ODDS[betType] || 1.1;
+  }
+  // N≥3の動的計算
+  const config = BET_CONFIG[betType];
+  if (!config || P <= 0) return 1.1;
+  const R = config.R_a / Math.pow(N, config.R_b);
+  const Wbeta = Math.pow(config.W, config.beta);
+  const raw = R * Wbeta * P / (B + P * 0.01);
   return Math.max(raw, 1.1);
 }
 
@@ -1717,10 +1739,6 @@ function formatOdds(odds) {
 
 // ============================================================
 // 賭けの当選判定（純粋関数）
-// betType: 賭け種類のキー
-// selections: 賭けた馬のインデックス配列
-// result: [r1, r2, r3] 親が決めた1〜3位の馬インデックス
-// 返り値: true（当選） / false（落選）
 // ============================================================
 function isBetWinning(betType, selections, result) {
   const [r1, r2, r3] = result;
@@ -1761,38 +1779,28 @@ function betContainsFirstPlace(betType, selections, r1) {
   return (selections || []).includes(r1);
 }
 
-// 賭けの「合算キー」を生成（同じ賭け方×同じ選択肢を識別）
-// 1位を含む賭けは全部"FIRST_GROUP"でまとめる
+// 賭けの「合算キー」を生成
 function getBetGroupKey(betType, selections, r1) {
   if (betContainsFirstPlace(betType, selections, r1)) {
     return 'FIRST_GROUP';
   }
   // 順不同系（umaren, wide, sanrenfuku, fukusho）は選択をソート
   const unordered = ['umaren', 'wide', 'sanrenfuku', 'fukusho'];
-  const sels = unordered.includes(betType) 
-    ? [...selections].sort((a,b)=>a-b) 
+  const sels = unordered.includes(betType)
+    ? [...selections].sort((a,b)=>a-b)
     : [...selections];
   return `${betType}:${sels.join(',')}`;
 }
 
 // ============================================================
 // 配当計算メイン関数
-// 入力:
-//   bets: { playerId: {betType, selections, amount, skipped, ...}, ... }
-//   result: [r1, r2, r3]
-//   weights: BET_WEIGHTS (テスト時に差し替え可能)
-// 出力:
-//   { 
-//     totalPool, 
-//     payouts: {playerId: {betType, selections, amount, hit, odds, payout, change, hitType}},
-//     groupBs: {groupKey: B値}
-//   }
+// N: プレイヤー総数（親含む）
 // ============================================================
-function calculatePayouts(bets, result, weights = BET_WEIGHTS) {
+function calculatePayouts(bets, result, N) {
   const [r1] = result;
   const playerIds = Object.keys(bets || {});
 
-  // 1. 全プール P を計算（見送り・skipped以外、amount > 0 の賭けすべて）
+  // 1. 全プール P
   let totalPool = 0;
   playerIds.forEach(pid => {
     const b = bets[pid];
@@ -1801,7 +1809,7 @@ function calculatePayouts(bets, result, weights = BET_WEIGHTS) {
     if (amt > 0) totalPool += amt;
   });
 
-  // 2. 各賭けの当選判定 + 旧キーの正規化
+  // 2. 当選判定 + 旧キー正規化
   const normalized = {};
   playerIds.forEach(pid => {
     const b = bets[pid];
@@ -1814,22 +1822,15 @@ function calculatePayouts(bets, result, weights = BET_WEIGHTS) {
   });
 
   // 3. グループ別にB（合算）を計算
-  //    - 1位を含む当選賭けは "FIRST_GROUP" でまとめる
-  //    - 1位を含まない当選賭けは賭け方×選択肢ごとに別グループ
-  const groupBs = {};        // groupKey -> B
-  const groupSamples = {};   // groupKey -> {betType, selections} (オッズ計算用の代表)
-
+  const groupBs = {};
   playerIds.forEach(pid => {
     const b = normalized[pid];
     if (!b || b.skipped || !b.winning) return;
     const key = getBetGroupKey(b.betType, b.selections, r1);
     groupBs[key] = (groupBs[key] || 0) + b.amount;
-    if (!groupSamples[key]) {
-      groupSamples[key] = { betType: b.betType, selections: b.selections };
-    }
   });
 
-  // 4. 各プレイヤーの配当を計算
+  // 4. 配当計算
   const payouts = {};
   playerIds.forEach(pid => {
     const b = normalized[pid];
@@ -1853,12 +1854,11 @@ function calculatePayouts(bets, result, weights = BET_WEIGHTS) {
       };
       return;
     }
-    // 当選: オッズ計算
+    // 当選: オッズ計算（N依存）
     const key = getBetGroupKey(b.betType, b.selections, r1);
     const B = groupBs[key] || b.amount;
-    const W = weights[b.betType] || 1;
-    const odds = calculateDynamicOdds(W, totalPool, B);
-    const oddsDisplay = Math.floor(odds * 10) / 10; // 表示用に切り捨て
+    const odds = calculateOddsByConfig(N, b.betType, totalPool, B);
+    const oddsDisplay = Math.floor(odds * 10) / 10; // 切り捨て
     const payout = Math.floor(b.amount * oddsDisplay);
     const change = payout - b.amount;
     payouts[pid] = {
@@ -1873,7 +1873,7 @@ function calculatePayouts(bets, result, weights = BET_WEIGHTS) {
     };
   });
 
-  return { totalPool, payouts, groupBs };
+  return { totalPool, payouts, groupBs, N };
 }
 
 let state={players:[],rounds:5,initialPoints:5000,minBet:500,oyaBonusRate:50,odds:{tansho:2,renfuku:5,rentan:10,sanrenfuku:7,sanrentan:30},currentRound:0,oyaIndex:0,currentBetPlayerIndex:0,koPlayers:[],selectedTopic:null,currentBets:[],actualResult:[],history:[],topics:[],usedTopicIds:[],prevScreen:'screen-home'};
@@ -2044,6 +2044,12 @@ function startGame(){
   }
   if(customBet!==''&&customBet!==null&&customBet!==undefined&&!isNaN(parseInt(customBet))) state.minBet=Math.max(0,parseInt(customBet));
   else state.minBet=500;
+  // 最低ベット額バリデーション: 初期持ち金の5%以上であること
+  const minRequired = Math.ceil(state.initialPoints * 0.05);
+  if (state.minBet < minRequired) {
+    showNotif(`⚠️ 最低ベット額は初期持ち金の5%（${minRequired.toLocaleString()}点）以上に設定してください`);
+    return;
+  }
   const customOya=document.getElementById('custom-oya-bonus')?.value;
   if(customOya!==''&&customOya!==null&&customOya!==undefined&&!isNaN(parseInt(customOya))) state.oyaBonusRate=Math.max(0,parseInt(customOya));
   else state.oyaBonusRate=50;
@@ -2456,12 +2462,15 @@ function calculateResults(){
     };
   });
 
-  // ★ 新ロジックで配当計算
+  // ★ 新ロジックで配当計算（N=プレイヤー総数、親含む）
+  const N = state.players.length;
   const calc = (typeof calculatePayouts === 'function')
-    ? calculatePayouts(betsForCalc, [r1, r2, r3], BET_WEIGHTS)
-    : { totalPool: 0, payouts: {}, groupBs: {} };
+    ? calculatePayouts(betsForCalc, [r1, r2, r3], N)
+    : { totalPool: 0, payouts: {}, groupBs: {}, N };
 
   let oyaBonus = 0;
+  // N=2の場合は親ボーナスを強制0にする（仕様）
+  const effectiveBonusRate = (N === 2) ? 0 : (oyaBonusRate || 0);
   const roundLog = {
     round: state.currentRound,
     topic: state.selectedTopic.title,
@@ -2502,10 +2511,10 @@ function calculateResults(){
     p.points += change;
     if (p.points < 0) p.points = 0;
 
-    // 親ボーナス
+    // 親ボーナス（N=2なら強制0）
     let thisBonus = 0;
     if (out.hit) {
-      thisBonus = Math.floor(out.payout * (oyaBonusRate / 100));
+      thisBonus = Math.floor(out.payout * (effectiveBonusRate / 100));
       oyaBonus += thisBonus;
     }
 
@@ -3253,9 +3262,27 @@ window.onlineSettingChanged = async function(){
   if(!window.online.isHost) return;
   const rounds = parseInt(document.getElementById('online-rounds')?.value) || 5;
   const initialPoints = parseInt(document.getElementById('online-initial')?.value) || 5000;
-  const minBet = parseInt(document.getElementById('online-minbet')?.value) || 0;
+  let minBet = parseInt(document.getElementById('online-minbet')?.value) || 0;
   const oyaBonusRate = parseInt(document.getElementById('online-bonus')?.value) || 0;
   const topicMode = document.getElementById('online-topic-mode')?.value || 'all';
+
+  // 最低ベット額バリデーション: 初期持ち金の5%以上であること
+  const minRequired = Math.ceil(initialPoints * 0.05);
+  const minBetInput = document.getElementById('online-minbet');
+  const warnEl = document.getElementById('online-minbet-warn');
+  if (minBet < minRequired) {
+    // 警告表示（保存しない）
+    if (warnEl) {
+      warnEl.style.display = 'block';
+      warnEl.textContent = `⚠️ 最低ベット額は初期持ち金の5%（${minRequired.toLocaleString()}点）以上に設定してください`;
+    }
+    if (minBetInput) minBetInput.style.borderColor = 'var(--red)';
+    return; // DBに保存しない
+  } else {
+    if (warnEl) warnEl.style.display = 'none';
+    if (minBetInput) minBetInput.style.borderColor = '';
+  }
+
   try {
     const settingsRef = ref(db, `rooms/${window.online.roomCode}/settings`);
     await set(settingsRef, { rounds, initialPoints, minBet, oyaBonusRate, topicMode });
@@ -5143,8 +5170,9 @@ async function checkAllReadyForResult(){
 }
 
 // ============================================================
-// 結果計算（v2.0 パリミュチュエル方式）
-// 公式: オッズ = 0.08 × W × P / (B + P × 0.01)、最低×1.1保証
+// 結果計算（v2.0 - 6.5択モデル）
+// 公式: R(N) × W^β × P / (B + P × 0.01)、最低×1.1保証
+// N=2 は固定オッズ + 親ボーナス強制0
 // B計算: 1位含む当選は全合算、含まない当選は賭け方×選択肢ごとに合算
 // ============================================================
 function calculateOnlineResults(game, players){
@@ -5166,10 +5194,14 @@ function calculateOnlineResults(game, players){
     if(b) betsForCalc[p.id] = b;
   });
 
-  // ★ コア計算: calculatePayouts に委譲
+  // ★ コア計算: calculatePayouts に委譲（N=プレイヤー総数、親含む）
+  const N = players.length;
   const calc = (typeof calculatePayouts === 'function')
-    ? calculatePayouts(betsForCalc, [r1, r2, r3], BET_WEIGHTS)
-    : { totalPool: 0, payouts: {}, groupBs: {} };
+    ? calculatePayouts(betsForCalc, [r1, r2, r3], N)
+    : { totalPool: 0, payouts: {}, groupBs: {}, N };
+
+  // N=2の場合は親ボーナスを強制0にする（仕様）
+  const effectiveBonusRate = (N === 2) ? 0 : (oyaBonusRate || 0);
 
   let oyaBonus = 0;
   const playerResults = [];
@@ -5230,10 +5262,10 @@ function calculateOnlineResults(game, players){
     if(after < 0) after = 0;
     newPoints[p.id] = after;
 
-    // 親ボーナス: 配当（=賭け金×オッズ）× X / 100
+    // 親ボーナス: 配当（=賭け金×オッズ）× X / 100、N=2なら強制0
     let thisBonus = 0;
     if(out.hit){
-      thisBonus = Math.floor(out.payout * (oyaBonusRate / 100));
+      thisBonus = Math.floor(out.payout * (effectiveBonusRate / 100));
       oyaBonus += thisBonus;
     }
 
