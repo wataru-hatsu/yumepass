@@ -63,7 +63,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .score-table .leader td{background:#fff3c0!important;font-weight:700;}
 .rank-badge{display:inline-block;width:24px;height:24px;border-radius:50%;font-size:0.75rem;font-weight:700;line-height:24px;text-align:center;}
 .rank-1{background:var(--gold);color:#333;}.rank-2{background:#aaa;color:white;}.rank-3{background:#cd7f32;color:white;}.rank-other{background:#ddd;color:#555;}
-.horse-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+.horse-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px;}
+@media (min-width: 640px){.horse-grid{grid-template-columns:repeat(4,1fr);}}
 .horse-card{background:white;border:2px solid #ddd;border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;position:relative;}
 .horse-card.selected-1{border-color:var(--gold);background:#fffbe6;}
 .horse-card.selected-2{border-color:#888;background:#f0f0f0;}
@@ -73,13 +74,13 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .horse-card .sel-label{position:absolute;top:-6px;right:-6px;background:var(--gold);color:#333;font-size:0.6rem;font-weight:900;padding:2px 5px;border-radius:10px;}
 .sel-label.pos-2{background:#888;color:white;}.sel-label.pos-3{background:#cd7f32;color:white;}
 .c1{background:#eee;color:#333;border:1px solid #ccc}.c2{background:#222;color:white}.c3{background:var(--red);color:white}
-.c4{background:#1a5fcc;color:white}.c5{background:#e0b800;color:#333}.c6{background:#1a7a1a;color:white}.c7{background:#8b1a8b;color:white}
-.bet-types{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
-.bet-type-btn{flex:1;min-width:80px;padding:10px 4px;border:2px solid #ddd;border-radius:8px;background:white;cursor:pointer;text-align:center;}
-.bet-type-btn.active{border-color:var(--gold-dark);background:#fffbe6;}
+.c4{background:#1a5fcc;color:white}.c5{background:#e0b800;color:#333}.c6{background:#1a7a1a;color:white}.c7{background:#8b1a8b;color:white}.c8{background:#ff7f3f;color:white}
+.bet-types{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;}
+.bet-type-btn{padding:8px 4px;border:2px solid #ddd;border-radius:8px;background:white;cursor:pointer;text-align:center;min-width:0;}
+.bet-type-btn.active{border-color:var(--gold-dark);background:#fffbe6;box-shadow:0 0 0 2px rgba(201,150,10,0.2);}
 .bet-type-btn .bet-name{font-size:0.85rem;font-weight:700;}
-.bet-type-btn .bet-mult{font-size:0.7rem;color:var(--red);font-weight:700;}
-.bet-type-btn .bet-desc{font-size:0.65rem;color:#888;margin-top:2px;}
+.bet-type-btn .bet-mult{font-size:0.65rem;color:var(--red);font-weight:700;}
+.bet-type-btn .bet-desc{font-size:0.6rem;color:#888;margin-top:2px;line-height:1.2;}
 .point-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
 .point-btn{flex:1;min-width:60px;padding:8px 4px;border:1px solid #ccc;border-radius:6px;background:white;cursor:pointer;font-size:0.8rem;font-weight:700;text-align:center;}
 .result-horse{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;margin-bottom:6px;background:white;border:1px solid #ddd;}
@@ -450,7 +451,14 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 
         <div style="margin-top:10px">
           <label style="font-size:0.8rem;color:#666;display:block;margin-bottom:4px">👑 親ボーナス率（%）</label>
-          <input type="tel" id="online-bonus" value="50" min="0" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'');onlineSettingChanged()">
+          <div style="display:flex;gap:4px;margin-bottom:6px" id="online-bonus-presets">
+            <button type="button" class="bonus-preset-btn" onclick="onlineSetBonusPreset(0)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">0%</button>
+            <button type="button" class="bonus-preset-btn" onclick="onlineSetBonusPreset(25)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">25%</button>
+            <button type="button" class="bonus-preset-btn active" onclick="onlineSetBonusPreset(50)" style="flex:1;padding:8px 4px;border:2px solid var(--oya);background:#f9eef9;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">50%</button>
+            <button type="button" class="bonus-preset-btn" onclick="onlineSetBonusPreset(75)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">75%</button>
+            <button type="button" class="bonus-preset-btn" onclick="onlineSetBonusPreset(100)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">100%</button>
+          </div>
+          <input type="tel" id="online-bonus" value="50" min="0" max="100" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'');onlineBonusManualChanged();onlineSettingChanged()" placeholder="任意の値も入力できます">
         </div>
 
         <div style="margin-top:10px">
@@ -600,9 +608,13 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div class="panel">
         <div class="panel-title">🎰 賭けの種類</div>
         <div class="bet-types">
-          <div class="bet-type-btn active" onclick="onlineSelectBetType('tansho',this)"><div class="bet-name">単勝</div><div class="bet-mult">×2</div><div class="bet-desc">1位を当てる</div></div>
-          <div class="bet-type-btn" onclick="onlineSelectBetType('rentan',this)"><div class="bet-name">連単狙い</div><div class="bet-mult">×10/×5</div><div class="bet-desc">1・2位を予想</div></div>
-          <div class="bet-type-btn" onclick="onlineSelectBetType('sanrentan',this)"><div class="bet-name">三連単狙い</div><div class="bet-mult">×30/×7</div><div class="bet-desc">1・2・3位予想</div></div>
+          <div class="bet-type-btn active" onclick="onlineSelectBetType('tansho',this)"><div class="bet-name">単勝</div><div class="bet-desc">1位を当てる</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('fukusho',this)"><div class="bet-name">複勝</div><div class="bet-desc">1〜3位のどれか</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('umaren',this)"><div class="bet-name">馬連</div><div class="bet-desc">1・2位<br>順不同</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('umatan',this)"><div class="bet-name">馬単</div><div class="bet-desc">1・2位<br>順番通り</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('wide',this)"><div class="bet-name">ワイド</div><div class="bet-desc">1〜3位<br>のうち2つ</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('sanrenfuku',this)"><div class="bet-name">3連複</div><div class="bet-desc">1〜3位<br>順不同</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('sanrentan',this)"><div class="bet-name">3連単</div><div class="bet-desc">1〜3位<br>順番通り</div></div>
         </div>
       </div>
       <div class="panel"><div class="panel-title" id="ob-horse-title">🏇 馬を選ぶ（1頭）</div><div class="horse-grid" id="ob-horse-grid"></div></div>
@@ -897,7 +909,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       </div>
       <div id="advanced-panel" style="display:none;margin-top:12px">
         <div style="font-size:0.75rem;color:#aaa;margin-bottom:10px;background:#fff3cd;border-radius:6px;padding:8px;border:1px solid #ffc107">
-          💡 変更しなくてもゲームは楽しめます。<br>デフォルト：初期点数5000点 / 最低ベット500点 / 親ボーナス50%<br>倍率：単勝×2 / 連複×5 / 連単×10 / 3連複×7 / 三連単×30
+          💡 変更しなくてもゲームは楽しめます。<br>デフォルト：初期点数5000点 / 最低ベット500点 / 親ボーナス50%<br>オッズは締切後にパリミュチュエル方式で自動計算（最低×1.1保証）
         </div>
         <label style="display:block;margin-bottom:4px">初期点数（自由入力）</label>
         <div style="display:flex;align-items:center;gap:8px">
@@ -909,55 +921,39 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
           <input type="tel" id="custom-min-bet" placeholder="例：200" style="flex:1;margin-top:0" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
           <span style="font-size:0.85rem;color:#888;white-space:nowrap">点（0以上）</span>
         </div>
-        <label style="display:block;margin-top:12px;margin-bottom:4px">親ボーナス割合（自由入力）</label>
+        <label style="display:block;margin-top:12px;margin-bottom:4px">親ボーナス割合（プリセット + 自由入力）</label>
+        <div style="display:flex;gap:4px;margin-bottom:6px">
+          <button type="button" onclick="offlineSetBonusPreset(0)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">0%</button>
+          <button type="button" onclick="offlineSetBonusPreset(25)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">25%</button>
+          <button type="button" onclick="offlineSetBonusPreset(50)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">50%</button>
+          <button type="button" onclick="offlineSetBonusPreset(75)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">75%</button>
+          <button type="button" onclick="offlineSetBonusPreset(100)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">100%</button>
+        </div>
         <div style="display:flex;align-items:center;gap:8px">
           <input type="tel" id="custom-oya-bonus" placeholder="例：50" style="flex:1;margin-top:0" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
           <span style="font-size:0.85rem;color:#888;white-space:nowrap">%（0以上）</span>
         </div>
 
-        <!-- オッズ設定 -->
+        <!-- 賭け方説明（パリミュチュエル方式） -->
         <div style="margin-top:14px;padding-top:12px;border-top:1px solid #ddd">
-          <div style="font-size:0.8rem;font-weight:700;color:#666;margin-bottom:8px">🎰 倍率設定（自由入力）</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-            <div>
-              <label style="font-size:0.75rem;display:block;margin-bottom:2px">単勝（デフォルト×2）</label>
-              <div style="display:flex;align-items:center;gap:4px">
-                <span style="font-size:0.8rem;color:#888">×</span>
-                <input type="tel" id="odds-tansho" placeholder="2" style="flex:1;margin-top:0;padding:8px" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-              </div>
+          <div style="font-size:0.8rem;font-weight:700;color:#666;margin-bottom:8px">🎰 賭け方（7種類）</div>
+          <div style="background:#f9f5e8;border:1px solid var(--gold);border-radius:8px;padding:10px;font-size:0.75rem;line-height:1.6">
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px">
+              <strong>単勝</strong><span>1位を当てる</span>
+              <strong>複勝</strong><span>1〜3位のどれか</span>
+              <strong>馬連</strong><span>1位2位（順不同）</span>
+              <strong>馬単</strong><span>1位2位（順番通り）</span>
+              <strong>ワイド</strong><span>1〜3位のうち2つ</span>
+              <strong>3連複</strong><span>1〜3位（順不同）</span>
+              <strong>3連単</strong><span>1〜3位（順番通り）</span>
             </div>
-            <div>
-              <label style="font-size:0.75rem;display:block;margin-bottom:2px">連複（デフォルト×5）</label>
-              <div style="display:flex;align-items:center;gap:4px">
-                <span style="font-size:0.8rem;color:#888">×</span>
-                <input type="tel" id="odds-renfuku" placeholder="5" style="flex:1;margin-top:0;padding:8px" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-              </div>
-            </div>
-            <div>
-              <label style="font-size:0.75rem;display:block;margin-bottom:2px">連単（デフォルト×10）</label>
-              <div style="display:flex;align-items:center;gap:4px">
-                <span style="font-size:0.8rem;color:#888">×</span>
-                <input type="tel" id="odds-rentan" placeholder="10" style="flex:1;margin-top:0;padding:8px" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-              </div>
-            </div>
-            <div>
-              <label style="font-size:0.75rem;display:block;margin-bottom:2px">3連複（デフォルト×7）</label>
-              <div style="display:flex;align-items:center;gap:4px">
-                <span style="font-size:0.8rem;color:#888">×</span>
-                <input type="tel" id="odds-sanrenfuku" placeholder="7" style="flex:1;margin-top:0;padding:8px" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-              </div>
-            </div>
-            <div style="grid-column:1/-1">
-              <label style="font-size:0.75rem;display:block;margin-bottom:2px">三連単（デフォルト×30）</label>
-              <div style="display:flex;align-items:center;gap:4px">
-                <span style="font-size:0.8rem;color:#888">×</span>
-                <input type="tel" id="odds-sanrentan" placeholder="30" style="flex:1;margin-top:0;padding:8px" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-              </div>
+            <div style="margin-top:10px;padding-top:8px;border-top:1px dashed #ddd;color:#555">
+              <strong>📊 オッズはパリミュチュエル方式</strong><br>
+              締切後に全プレイヤーの賭けから自動で計算されます（本物の競馬と同じ仕組み）。<br>
+              最低オッズ ×1.1 を保証 — 当てれば必ず利益が出ます。
             </div>
           </div>
         </div>
-
-        <div style="font-size:0.75rem;color:#aaa;margin-top:8px">※ 入力した場合はそちらが優先されます</div>
       </div>
     </div>
     <div style="margin:10px">
@@ -1095,9 +1091,13 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div class="panel">
       <div class="panel-title">🎰 賭けの種類</div>
       <div class="bet-types">
-        <div class="bet-type-btn active" onclick="selectBetType('tansho',this)"><div class="bet-name">単勝</div><div class="bet-mult">×2</div><div class="bet-desc">1位を当てる</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('rentan',this)"><div class="bet-name">連単狙い</div><div class="bet-mult">×10/×5</div><div class="bet-desc">1・2位を予想</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('sanrentan',this)"><div class="bet-name">三連単狙い</div><div class="bet-mult">×30/×7</div><div class="bet-desc">1・2・3位予想</div></div>
+        <div class="bet-type-btn active" onclick="selectBetType('tansho',this)"><div class="bet-name">単勝</div><div class="bet-desc">1位を当てる</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('fukusho',this)"><div class="bet-name">複勝</div><div class="bet-desc">1〜3位のどれか</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('umaren',this)"><div class="bet-name">馬連</div><div class="bet-desc">1・2位<br>順不同</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('umatan',this)"><div class="bet-name">馬単</div><div class="bet-desc">1・2位<br>順番通り</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('wide',this)"><div class="bet-name">ワイド</div><div class="bet-desc">1〜3位<br>のうち2つ</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('sanrenfuku',this)"><div class="bet-name">3連複</div><div class="bet-desc">1〜3位<br>順不同</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('sanrentan',this)"><div class="bet-name">3連単</div><div class="bet-desc">1〜3位<br>順番通り</div></div>
       </div>
     </div>
     <div class="panel"><div class="panel-title" id="horse-panel-title">🏇 馬を選ぶ（1頭）</div><div class="horse-grid" id="horse-grid"></div></div>
@@ -1631,14 +1631,239 @@ window.SFX = (function(){
   document.addEventListener('touchstart', initOnce);
 })();
 
-let state={players:[],rounds:5,initialPoints:5000,minBet:500,oyaBonusRate:50,odds:{tansho:2,renfuku:5,rentan:10,sanrenfuku:7,sanrentan:30},currentRound:0,oyaIndex:0,currentBetPlayerIndex:0,koPlayers:[],selectedTopic:null,currentBets:[],actualResult:[],history:[],topics:[],usedTopicIds:[],prevScreen:'screen-home'};
+// ============================================================
+// 新ゲーム仕様（v2.0）: 7種類の賭け方とオッズ計算公式
+// ============================================================
+// 賭け方の重みW（W = 1/確率、N=8）
+const BET_WEIGHTS = {
+  tansho:    8,      // 単勝（1位）
+  fukusho:   2.67,   // 複勝（1〜3位のどれか）
+  umaren:    28,     // 馬連（1位2位、順不同）
+  umatan:    56,     // 馬単（1位2位、順番通り）
+  wide:      9.33,   // ワイド（1〜3位のうち2つ、順不同）
+  sanrenfuku: 56,    // 3連複（1〜3位、順不同）
+  sanrentan: 336     // 3連単（1〜3位、順番通り）
+};
+
+// 賭け方ごとの選択頭数
+const BET_HORSE_COUNT = {
+  tansho: 1, fukusho: 1, umaren: 2, umatan: 2, wide: 2, sanrenfuku: 3, sanrentan: 3
+};
+
+// 賭け方の表示名（旧キー互換のエイリアスも含む）
+const BET_NAMES = {
+  tansho: '単勝', fukusho: '複勝', umaren: '馬連', umatan: '馬単',
+  wide: 'ワイド', sanrenfuku: '3連複', sanrentan: '3連単',
+  // 旧キーのエイリアス（過去ラウンドの履歴表示用）
+  rentan: '馬単', renfuku: '馬連'
+};
+
+// 賭け方の説明
+const BET_DESCS = {
+  tansho: '1位を当てる',
+  fukusho: '1〜3位のどれか',
+  umaren: '1位2位（順不同）',
+  umatan: '1位2位（順番通り）',
+  wide: '1〜3位のうち2つ',
+  sanrenfuku: '1〜3位（順不同）',
+  sanrentan: '1〜3位（順番通り）'
+};
+
+// 賭け方の旧キーから新キーへの変換マップ（既存データ互換性のため）
+const BET_TYPE_LEGACY_MAP = {
+  rentan: 'umatan',      // 旧「連単狙い」→ 馬単
+  renfuku: 'umaren'      // 旧「連複」→ 馬連
+};
+
+// 賭けデータの正規化（旧キー対応）
+function normalizeBetType(betType) {
+  return BET_TYPE_LEGACY_MAP[betType] || betType;
+}
+
+// ============================================================
+// オッズ計算公式（パリミュチュエル風 + 最低保証）
+// オッズ = 0.08 × W × P / (B + P × 0.01)
+// 最終オッズ = max(計算値, 1.1)
+// 表示は小数第1位まで切り捨て
+// ============================================================
+function calculateDynamicOdds(weight, totalPool, winningBetAmount) {
+  if (totalPool <= 0 || weight <= 0) return 1.1;
+  const raw = 0.08 * weight * totalPool / (winningBetAmount + totalPool * 0.01);
+  return Math.max(raw, 1.1);
+}
+
+// オッズ表示用フォーマット（小数第1位まで切り捨て）
+function formatOdds(odds) {
+  return (Math.floor(odds * 10) / 10).toFixed(1);
+}
+
+// ============================================================
+// 賭けの当選判定（純粋関数）
+// betType: 賭け種類のキー
+// selections: 賭けた馬のインデックス配列
+// result: [r1, r2, r3] 親が決めた1〜3位の馬インデックス
+// 返り値: true（当選） / false（落選）
+// ============================================================
+function isBetWinning(betType, selections, result) {
+  const [r1, r2, r3] = result;
+  const top3 = [r1, r2, r3];
+  switch (betType) {
+    case 'tansho':
+      return selections[0] === r1;
+    case 'fukusho':
+      return top3.includes(selections[0]);
+    case 'umaren': {
+      const set = new Set([selections[0], selections[1]]);
+      return set.has(r1) && set.has(r2) && set.size === 2;
+    }
+    case 'umatan':
+      return selections[0] === r1 && selections[1] === r2;
+    case 'wide': {
+      const set = new Set([selections[0], selections[1]]);
+      if (set.size !== 2) return false;
+      let count = 0;
+      if (set.has(r1)) count++;
+      if (set.has(r2)) count++;
+      if (set.has(r3)) count++;
+      return count === 2;
+    }
+    case 'sanrenfuku': {
+      const set = new Set(selections);
+      return set.size === 3 && set.has(r1) && set.has(r2) && set.has(r3);
+    }
+    case 'sanrentan':
+      return selections[0] === r1 && selections[1] === r2 && selections[2] === r3;
+    default:
+      return false;
+  }
+}
+
+// 賭けが「1位の馬」を含むか判定（B合算ロジック用）
+function betContainsFirstPlace(betType, selections, r1) {
+  return (selections || []).includes(r1);
+}
+
+// 賭けの「合算キー」を生成（同じ賭け方×同じ選択肢を識別）
+// 1位を含む賭けは全部"FIRST_GROUP"でまとめる
+function getBetGroupKey(betType, selections, r1) {
+  if (betContainsFirstPlace(betType, selections, r1)) {
+    return 'FIRST_GROUP';
+  }
+  // 順不同系（umaren, wide, sanrenfuku, fukusho）は選択をソート
+  const unordered = ['umaren', 'wide', 'sanrenfuku', 'fukusho'];
+  const sels = unordered.includes(betType) 
+    ? [...selections].sort((a,b)=>a-b) 
+    : [...selections];
+  return `${betType}:${sels.join(',')}`;
+}
+
+// ============================================================
+// 配当計算メイン関数
+// 入力:
+//   bets: { playerId: {betType, selections, amount, skipped, ...}, ... }
+//   result: [r1, r2, r3]
+//   weights: BET_WEIGHTS (テスト時に差し替え可能)
+// 出力:
+//   { 
+//     totalPool, 
+//     payouts: {playerId: {betType, selections, amount, hit, odds, payout, change, hitType}},
+//     groupBs: {groupKey: B値}
+//   }
+// ============================================================
+function calculatePayouts(bets, result, weights = BET_WEIGHTS) {
+  const [r1] = result;
+  const playerIds = Object.keys(bets || {});
+
+  // 1. 全プール P を計算（見送り・skipped以外、amount > 0 の賭けすべて）
+  let totalPool = 0;
+  playerIds.forEach(pid => {
+    const b = bets[pid];
+    if (!b || b.skipped) return;
+    const amt = Number(b.amount) || 0;
+    if (amt > 0) totalPool += amt;
+  });
+
+  // 2. 各賭けの当選判定 + 旧キーの正規化
+  const normalized = {};
+  playerIds.forEach(pid => {
+    const b = bets[pid];
+    if (!b || b.skipped) { normalized[pid] = b; return; }
+    const betType = normalizeBetType(b.betType);
+    const selections = b.selections || [];
+    const amount = Number(b.amount) || 0;
+    const winning = amount > 0 && isBetWinning(betType, selections, result);
+    normalized[pid] = { ...b, betType, selections, amount, winning };
+  });
+
+  // 3. グループ別にB（合算）を計算
+  //    - 1位を含む当選賭けは "FIRST_GROUP" でまとめる
+  //    - 1位を含まない当選賭けは賭け方×選択肢ごとに別グループ
+  const groupBs = {};        // groupKey -> B
+  const groupSamples = {};   // groupKey -> {betType, selections} (オッズ計算用の代表)
+
+  playerIds.forEach(pid => {
+    const b = normalized[pid];
+    if (!b || b.skipped || !b.winning) return;
+    const key = getBetGroupKey(b.betType, b.selections, r1);
+    groupBs[key] = (groupBs[key] || 0) + b.amount;
+    if (!groupSamples[key]) {
+      groupSamples[key] = { betType: b.betType, selections: b.selections };
+    }
+  });
+
+  // 4. 各プレイヤーの配当を計算
+  const payouts = {};
+  playerIds.forEach(pid => {
+    const b = normalized[pid];
+    if (!b || b.skipped) {
+      payouts[pid] = {
+        betType: b?.betType || 'tansho',
+        selections: b?.selections || [],
+        amount: 0, hit: false, odds: 0, payout: 0, change: 0,
+        hitType: '見送り', skipped: true
+      };
+      return;
+    }
+    if (!b.winning) {
+      payouts[pid] = {
+        betType: b.betType,
+        selections: b.selections,
+        amount: b.amount,
+        hit: false, odds: 0, payout: 0,
+        change: -b.amount,
+        hitType: '外れ'
+      };
+      return;
+    }
+    // 当選: オッズ計算
+    const key = getBetGroupKey(b.betType, b.selections, r1);
+    const B = groupBs[key] || b.amount;
+    const W = weights[b.betType] || 1;
+    const odds = calculateDynamicOdds(W, totalPool, B);
+    const oddsDisplay = Math.floor(odds * 10) / 10; // 表示用に切り捨て
+    const payout = Math.floor(b.amount * oddsDisplay);
+    const change = payout - b.amount;
+    payouts[pid] = {
+      betType: b.betType,
+      selections: b.selections,
+      amount: b.amount,
+      hit: true,
+      odds: oddsDisplay,
+      payout,
+      change,
+      hitType: BET_NAMES[b.betType] + '的中'
+    };
+  });
+
+  return { totalPool, payouts, groupBs };
+}
 const CATEGORIES=[
   {id:'g1',label:'G1',sub:'最高峰｜本音と価値観に踏み込む重いお題',icon:'🏆',color:'#8b1a8b',textColor:'white'},
   {id:'g2',label:'G2',sub:'準重賞｜少し深くて考えさせられるお題',icon:'🥈',color:'#1a5fcc',textColor:'white'},
   {id:'g3',label:'G3',sub:'重賞｜気軽に楽しめる盛り上がり系のお題',icon:'🎯',color:'#1a7a1a',textColor:'white'},
   {id:'all',label:'大穴',sub:'全カテゴリーから完全ランダム',icon:'🎲',color:'#c9960a',textColor:'#333'},
 ];
-const HC=['c1','c2','c3','c4','c5','c6','c7'];
+const HC=['c1','c2','c3','c4','c5','c6','c7','c8'];
 const BASE_TOPICS = [
   {id:'base1',category:'g1',title:"人生で最も失いたくないもの",icon:"💎",horses:["自分で選択できる自由", "心から信頼できる人間関係", "誇れる過去や記憶", "安心して生きられる環境", "将来への希望", "誰かに必要とされている実感", "新しいことに挑戦する意欲"]},
   {id:'base2',category:'g1',title:"恋人に一番求めるもの",icon:"❤️",horses:["嘘をつかない誠実さ", "感情を受け止める、共感力と安心感", "自立していて、依存しすぎないこと", "楽しい時間を共有でき、辛い時は支えてくれること", "改善点を指摘し、成長させてくれること", "親族や友人とも、良好な関係を築いてくれること", "困難でも逃げない責任感"]},
@@ -1703,7 +1928,23 @@ const BASE_TOPICS = [
 ];
 window.onload=()=>{const s=localStorage.getItem('sanrentan_topics');state.topics=s?JSON.parse(s):[];initSetupScreen();renderTopicsScreen();initNewTopicOptions();initCategoryBtns();};
 function saveTopics(){localStorage.setItem('sanrentan_topics',JSON.stringify(state.topics));}
-function getAllTopics(){return[...BASE_TOPICS,...state.topics];}
+
+// 8択化対応: 7択のお題は8つ目をプレースホルダーで自動補完
+// 作者が8つ目を埋めるまでの暫定処理。埋まれば自動的にそれが使われる。
+function ensureEightChoices(topic){
+  if(!topic || !topic.horses) return topic;
+  if(topic.horses.length >= 8) return topic;
+  // 8未満なら、'（未設定）' で埋める
+  const padded = [...topic.horses];
+  while(padded.length < 8){
+    padded.push(`（選択肢${padded.length + 1}：未設定）`);
+  }
+  return { ...topic, horses: padded };
+}
+function getAllTopics(){
+  const all = [...BASE_TOPICS, ...state.topics];
+  return all.map(ensureEightChoices);
+}
 function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='screen-rules')renderRulesScreen();}
 function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
 function showNotif(msg){
@@ -1749,22 +1990,28 @@ function handleCustomPlayerCount(val){
 }
 
 function renderRulesScreen(){
-  const o=state.odds;const r=state.oyaBonusRate;
+  const r=state.oyaBonusRate;
   const bp=document.getElementById('rules-bonus-content');
   if(bp){
     if(r===0){
       bp.innerHTML=`<p style="font-size:0.85rem;line-height:1.8">現在の設定では<strong>親ボーナスなし（0%）</strong>です。</p><div style="font-size:0.75rem;color:#aaa;margin-top:6px">💡 詳細設定でボーナス割合を変更できます（デフォルト：50%）</div>`;
     } else {
-      const ex=Math.floor(1000*o.sanrentan*(r/100));
-      bp.innerHTML=`<p style="font-size:0.85rem;line-height:1.8">子が的中した場合、その配当金の<strong>${r}%が親にボーナス</strong>として入ります。子は配当金を全額受け取ります。</p><div style="background:#f9eef9;border:1px solid var(--oya-light);border-radius:8px;padding:10px;margin-top:8px;font-size:0.8rem">例）子が1000点で三連単（×${o.sanrentan}）的中<br>→ 子：+${(1000*o.sanrentan).toLocaleString()}点　親：+${ex.toLocaleString()}点ボーナス</div><div style="font-size:0.75rem;color:#aaa;margin-top:6px">💡 詳細設定でボーナス割合・倍率を変更できます</div>`;
+      bp.innerHTML=`<p style="font-size:0.85rem;line-height:1.8">子が的中した場合、その配当金の<strong>${r}%が親にボーナス</strong>として入ります。子は配当金を全額受け取ります。</p><div style="background:#f9eef9;border:1px solid var(--oya-light);border-radius:8px;padding:10px;margin-top:8px;font-size:0.8rem">例）子が1000点でオッズ×5的中なら、子：+5,000点 / 親：+${Math.floor(1000*5*(r/100)).toLocaleString()}点ボーナス</div><div style="font-size:0.75rem;color:#aaa;margin-top:6px">💡 詳細設定でボーナス割合を変更できます</div>`;
     }
   }
   const ot=document.getElementById('rules-odds-table');
   if(ot){
-    ot.innerHTML=`<tr><th>種類</th><th>条件</th><th>倍率</th></tr><tr><td>単勝</td><td>1位だけ当てる</td><td style="color:var(--red);font-weight:700">×${o.tansho}</td></tr><tr><td>連単</td><td>1・2位を順番通り</td><td style="color:var(--red);font-weight:700">×${o.rentan}</td></tr><tr><td>連複</td><td>1・2位（順不同）</td><td style="color:var(--red);font-weight:700">×${o.renfuku}</td></tr><tr><td>三連単</td><td>1・2・3位を順番通り</td><td style="color:var(--red);font-weight:700">×${o.sanrentan}</td></tr><tr><td>3連複</td><td>1・2・3位（順不同）</td><td style="color:var(--red);font-weight:700">×${o.sanrenfuku}</td></tr>`;
+    ot.innerHTML=`<tr><th>種類</th><th>条件</th></tr>
+      <tr><td>単勝</td><td>1位を当てる</td></tr>
+      <tr><td>複勝</td><td>1〜3位のどれか</td></tr>
+      <tr><td>馬連</td><td>1位2位（順不同）</td></tr>
+      <tr><td>馬単</td><td>1位2位（順番通り）</td></tr>
+      <tr><td>ワイド</td><td>1〜3位のうち2つ</td></tr>
+      <tr><td>3連複</td><td>1〜3位（順不同）</td></tr>
+      <tr><td>3連単</td><td>1〜3位（順番通り）</td></tr>`;
   }
   const on=document.getElementById('rules-odds-note');
-  if(on)on.textContent='💡 倍率は詳細設定で変更できます（現在の設定値を表示中）';
+  if(on)on.textContent='💡 オッズは締切後にパリミュチュエル方式で自動計算（最低×1.1保証）';
 }
 function startGame(){
   const count=getSelectedPlayerCount();state.players=[];
@@ -1783,9 +2030,8 @@ function startGame(){
   // ラウンド数（自由入力優先）
   const customRounds=parseInt(document.getElementById('custom-rounds')?.value)||0;
   if(customRounds>=1) state.rounds=customRounds;
-  // オッズ読み取り
-  const readOdds=(id,def)=>{const v=document.getElementById(id)?.value;return(v&&!isNaN(parseInt(v))&&parseInt(v)>=1)?parseInt(v):def;};
-  state.odds={tansho:readOdds('odds-tansho',2),renfuku:readOdds('odds-renfuku',5),rentan:readOdds('odds-rentan',10),sanrenfuku:readOdds('odds-sanrenfuku',7),sanrentan:readOdds('odds-sanrentan',30)};
+  // オッズ（v2.0 パリミュチュエル方式では未使用、後方互換のためのみ保持）
+  state.odds = {tansho:2, fukusho:1.5, umaren:5, umatan:10, wide:3, sanrenfuku:7, sanrentan:30, rentan:10, renfuku:5};
   for(let i=1;i<=count;i++){const name=document.getElementById('pname-'+i)?.value.trim()||('プレイヤー'+i);state.players.push({name,points:state.initialPoints,history:[]});}
   state.currentRound=0;state.history=[];state.oyaIndex=0;state.usedTopicIds=[];goToRoundStart();
 }
@@ -1994,10 +2240,43 @@ function renderBetScreen(){
   else document.getElementById('bet-flip-msg').textContent=`📱 入力後、親の ${state.players[state.oyaIndex].name} さんに渡してください`;
 }
 function selectBetType(type,el){currentBetType=type;selectedHorses=[];document.querySelectorAll('.bet-type-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');updateHorsePanelTitle();renderHorseGrid('horse-grid',selectedHorses,selectHorseForBet);}
-function updateHorsePanelTitle(){const t={tansho:'🏇 馬を選ぶ（1頭：1位予想）',rentan:'🏇 馬を選ぶ（2頭：1位→2位の順に）',sanrentan:'🏇 馬を選ぶ（3頭：1位→2位→3位の順に）'};document.getElementById('horse-panel-title').textContent=t[currentBetType];}
-function getMaxSel(){return{tansho:1,rentan:2,sanrentan:3}[currentBetType];}
+function updateHorsePanelTitle(){
+  const t = {
+    tansho:'🏇 馬を選ぶ（1頭：1位予想）',
+    fukusho:'🏇 馬を選ぶ（1頭：1〜3位に入る馬）',
+    umaren:'🏇 馬を選ぶ（2頭：1位と2位、順不同）',
+    umatan:'🏇 馬を選ぶ（2頭：1位→2位の順に）',
+    wide:'🏇 馬を選ぶ（2頭：1〜3位に入る馬2頭、順不同）',
+    sanrenfuku:'🏇 馬を選ぶ（3頭：1〜3位、順不同）',
+    sanrentan:'🏇 馬を選ぶ（3頭：1位→2位→3位の順に）'
+  };
+  document.getElementById('horse-panel-title').textContent = t[currentBetType] || t.tansho;
+}
+function getMaxSel(){ return (BET_HORSE_COUNT && BET_HORSE_COUNT[currentBetType]) || 1; }
 function selectHorseForBet(idx){const p=selectedHorses.indexOf(idx);if(p>=0)selectedHorses.splice(p,1);else{if(selectedHorses.length>=getMaxSel())selectedHorses.shift();selectedHorses.push(idx);}renderHorseGrid('horse-grid',selectedHorses,selectHorseForBet);}
-function renderHorseGrid(cid,sel,onSel){const t=state.selectedTopic;const c=document.getElementById(cid);c.innerHTML='';t.horses.forEach((name,i)=>{const pi=sel.indexOf(i);const d=document.createElement('div');d.className='horse-card'+(pi===0?' selected-1':pi===1?' selected-2':pi===2?' selected-3':'');let badge='';if(pi>=0){const cls=pi===0?'':(pi===1?' pos-2':' pos-3');badge=`<div class="sel-label${cls}">${['1位','2位','3位'][pi]}</div>`;}d.innerHTML=`${badge}<div class="num-badge ${HC[i]}">${i+1}</div><div class="horse-name">${name}</div>`;d.onclick=()=>onSel(i);c.appendChild(d);});}
+// 順序が重要な賭け方（1位/2位/3位ラベル）と、順不同（チェックマーク）を区別
+function isOrderedBetType(bt){ return bt === 'tansho' || bt === 'umatan' || bt === 'sanrentan'; }
+function renderHorseGrid(cid,sel,onSel){
+  const t=state.selectedTopic;
+  const c=document.getElementById(cid);
+  c.innerHTML='';
+  const bt = (typeof currentBetType !== 'undefined') ? currentBetType : 'tansho';
+  const ordered = isOrderedBetType(bt);
+  t.horses.forEach((name,i)=>{
+    const pi=sel.indexOf(i);
+    const d=document.createElement('div');
+    d.className='horse-card'+(pi===0?' selected-1':pi===1?' selected-2':pi===2?' selected-3':'');
+    let badge='';
+    if(pi>=0){
+      const cls=pi===0?'':(pi===1?' pos-2':' pos-3');
+      const label = ordered ? ['1位','2位','3位'][pi] : '✓';
+      badge=`<div class="sel-label${cls}">${label}</div>`;
+    }
+    d.innerHTML=`${badge}<div class="num-badge ${HC[i]}">${i+1}</div><div class="horse-name">${name}</div>`;
+    d.onclick=()=>onSel(i);
+    c.appendChild(d);
+  });
+}
 function setBetInputVal(v){betInputVal=v;const display=document.getElementById('bet-display');if(!display)return;const num=parseInt(v)||0;display.textContent=num>0?num.toLocaleString()+' 点':'0';try{const p=state.players[state.koPlayers[state.currentBetPlayerIndex]];if(!p)return;const minBet=p.points<=state.minBet?p.points:state.minBet;display.style.color=num>p.points?'#e74c3c':num>=minBet?'#2ecc71':'var(--gold)';}catch(e){}}
 function renderKeypad(max){
   const minBet=state.minBet;
@@ -2044,13 +2323,15 @@ function showBetConfirm(){
   if(amount>p.points){showNotif('⚠️ 持ち点が足りません');return;}
   if(selectedHorses.length<needed){showNotif(`⚠️ 馬を${needed}頭選んでください`);return;}
 
-  const betNames={tansho:'単勝',rentan:'連単狙い',sanrentan:'三連単狙い'};
+  const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {tansho:'単勝',rentan:'馬単',sanrentan:'3連単'};
   const posLabels=['🥇 1位','🥈 2位','🥉 3位'];
-  const multInfo={
-    tansho:`的中で ×${state.odds.tansho}（${Math.floor(amount*state.odds.tansho).toLocaleString()}点獲得）`,
-    rentan:`連単的中で ×${state.odds.rentan}（${Math.floor(amount*state.odds.rentan).toLocaleString()}点）/ 連複で ×${state.odds.renfuku}（${Math.floor(amount*state.odds.renfuku).toLocaleString()}点）`,
-    sanrentan:`三連単で ×${state.odds.sanrentan}（${Math.floor(amount*state.odds.sanrentan).toLocaleString()}点）/ 3連複で ×${state.odds.sanrenfuku}（${Math.floor(amount*state.odds.sanrenfuku).toLocaleString()}点）`,
-  };
+  // パリミュチュエル方式: オッズは締切後に確定するので、賭けの説明のみ表示
+  const betDescs = (typeof BET_DESCS !== 'undefined') ? BET_DESCS : {};
+  const multInfo = {};
+  Object.keys(betNames).forEach(k => {
+    const desc = betDescs[k] || '';
+    multInfo[k] = `${desc} — オッズは締切後に確定します（最低×1.1保証）`;
+  });
 
   document.getElementById('bc-round-header').textContent=`ROUND ${state.currentRound} — 馬券確認`;
   document.getElementById('bc-player-name').textContent=p.name;
@@ -2135,9 +2416,103 @@ function showOyaResultScreen(){
 function selectHorseForResult(idx){const p=resultSelections.indexOf(idx);if(p>=0)resultSelections.splice(p,1);else{if(resultSelections.length>=3)return;resultSelections.push(idx);}renderHorseGrid('result-horse-grid',resultSelections,selectHorseForResult);updateResultPreview();}
 function updateResultPreview(){const c=document.getElementById('result-preview-content');const btn=document.getElementById('result-confirm-btn');const t=state.selectedTopic;if(!resultSelections.length){c.innerHTML='<div class="empty">1位・2位・3位の3つを選んでください</div>';btn.disabled=true;btn.textContent='📢 上位3つを選んでください';return;}c.innerHTML=resultSelections.map((hi,i)=>`<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]||''}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700">${t.horses[hi]}</div></div>`).join('');if(resultSelections.length<3){btn.disabled=true;const remaining=3-resultSelections.length;const positions=['1位','2位','3位'];const needed=positions.slice(resultSelections.length).join('・');btn.textContent=`📢 あと${remaining}つ選んでください（${needed}）`;}else{btn.disabled=false;btn.textContent='📢 賭けを公開して結果へ';}}
 
-function goToReveal(){state.actualResult=[...resultSelections];document.getElementById('rv-round-label').textContent=`ROUND ${state.currentRound} REVEAL`;document.getElementById('rv-topic-name').textContent=`${state.selectedTopic.icon} ${state.selectedTopic.title}`;const t=state.selectedTopic;const betNames={tansho:'単勝',rentan:'連単狙い',sanrentan:'三連単狙い'};const posL=['1位','2位','3位'];document.getElementById('rv-bets-list').innerHTML=state.currentBets.map(bet=>{const p=state.players[bet.playerIndex];if(bet.skipped||bet.amount===0){return`<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;}const tags=(bet.selections||[]).map((hi,si)=>`<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700"><span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem">${hi+1}</span>${t.horses[hi]}<span style="color:#aaa;font-size:0.65rem">(${posL[si]})</span></span>`).join('');return`<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span class="reveal-bet-type">${betNames[bet.betType]}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${tags}</div><div style="font-size:0.85rem;color:#888;margin-top:6px">賭け金：<strong>${bet.amount.toLocaleString()}点</strong></div></div>`;}).join('');goTo('screen-reveal');}
+function goToReveal(){state.actualResult=[...resultSelections];document.getElementById('rv-round-label').textContent=`ROUND ${state.currentRound} REVEAL`;document.getElementById('rv-topic-name').textContent=`${state.selectedTopic.icon} ${state.selectedTopic.title}`;const t=state.selectedTopic;const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {tansho:'単勝',rentan:'馬単',sanrentan:'3連単'};const posL=['1位','2位','3位'];document.getElementById('rv-bets-list').innerHTML=state.currentBets.map(bet=>{const p=state.players[bet.playerIndex];if(bet.skipped||bet.amount===0){return`<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;}const tags=(bet.selections||[]).map((hi,si)=>`<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700"><span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem">${hi+1}</span>${t.horses[hi]}<span style="color:#aaa;font-size:0.65rem">(${posL[si]})</span></span>`).join('');return`<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span class="reveal-bet-type">${betNames[bet.betType]}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${tags}</div><div style="font-size:0.85rem;color:#888;margin-top:6px">賭け金：<strong>${bet.amount.toLocaleString()}点</strong></div></div>`;}).join('');goTo('screen-reveal');}
 
-function calculateResults(){const [r1,r2,r3]=state.actualResult;const oya=state.players[state.oyaIndex];let oyaBonus=0;const roundLog={round:state.currentRound,topic:state.selectedTopic.title,oyaName:oya.name,result:state.actualResult.map(i=>state.selectedTopic.horses[i]),playerResults:[],oyaBonus:0};state.currentBets.forEach(bet=>{const p=state.players[bet.playerIndex];if(bet.skipped||bet.amount===0){p.history.push({round:state.currentRound,change:0,hitType:'見送り'});roundLog.playerResults.push({name:p.name,hitType:'見送り',change:0,amount:0,betType:bet.betType,multiplier:0,oyaBonusFromThis:0,skipped:true});return;}const s=bet.selections;let multiplier=0,hitType='外れ';if(bet.betType==='tansho'){if(s[0]===r1){multiplier=state.odds.tansho;hitType='単勝的中';}}else if(bet.betType==='rentan'){if(s[0]===r1&&s[1]===r2){multiplier=state.odds.rentan;hitType='連単的中';}else if(s[0]===r2&&s[1]===r1){multiplier=state.odds.renfuku;hitType='連複的中';}}else if(bet.betType==='sanrentan'){const a3=s.every(i=>[r1,r2,r3].includes(i));if(s[0]===r1&&s[1]===r2&&s[2]===r3){multiplier=state.odds.sanrentan;hitType='三連単的中🎊';}else if(a3){multiplier=state.odds.sanrenfuku;hitType='3連複的中';}}const change=multiplier>0?bet.amount*multiplier:-bet.amount;p.points+=change;if(p.points<0)p.points=0;let thisBonus=0;if(multiplier>0){thisBonus=Math.floor(bet.amount*multiplier*(state.oyaBonusRate/100));oyaBonus+=thisBonus;}p.history.push({round:state.currentRound,change,hitType});roundLog.playerResults.push({name:p.name,hitType,change,amount:bet.amount,betType:bet.betType,multiplier,oyaBonusFromThis:thisBonus,selections:[...s]});});oya.points+=oyaBonus;roundLog.oyaBonus=oyaBonus;oya.history.push({round:state.currentRound,change:oyaBonus,hitType:'親ボーナス'});state.history.push(roundLog);renderRoundResultBody();goTo('screen-roundresult');triggerOfflineEffects(roundLog);}
+function calculateResults(){
+  const [r1,r2,r3] = state.actualResult;
+  const oya = state.players[state.oyaIndex];
+  const oyaBonusRate = state.oyaBonusRate || 0;
+
+  // currentBets（配列）を calculatePayouts 用に変換（key: playerIndex）
+  const betsForCalc = {};
+  state.currentBets.forEach(bet => {
+    // 親の賭けは除外（親は賭けない仕様）
+    if (bet.playerIndex === state.oyaIndex) return;
+    betsForCalc[bet.playerIndex] = {
+      betType: bet.betType,
+      selections: bet.selections,
+      amount: bet.amount,
+      skipped: bet.skipped
+    };
+  });
+
+  // ★ 新ロジックで配当計算
+  const calc = (typeof calculatePayouts === 'function')
+    ? calculatePayouts(betsForCalc, [r1, r2, r3], BET_WEIGHTS)
+    : { totalPool: 0, payouts: {}, groupBs: {} };
+
+  let oyaBonus = 0;
+  const roundLog = {
+    round: state.currentRound,
+    topic: state.selectedTopic.title,
+    oyaName: oya.name,
+    result: state.actualResult.map(i => state.selectedTopic.horses[i]),
+    playerResults: [],
+    oyaBonus: 0,
+    totalPool: calc.totalPool || 0,
+    groupBs: calc.groupBs || {}
+  };
+
+  state.currentBets.forEach(bet => {
+    const p = state.players[bet.playerIndex];
+    // 見送り
+    if (bet.skipped || bet.amount === 0) {
+      p.history.push({ round: state.currentRound, change: 0, hitType: '見送り' });
+      roundLog.playerResults.push({
+        name: p.name, hitType: '見送り', change: 0, amount: 0,
+        betType: bet.betType, multiplier: 0, odds: 0,
+        oyaBonusFromThis: 0, skipped: true
+      });
+      return;
+    }
+    // 親は賭けに参加しない
+    if (bet.playerIndex === state.oyaIndex) {
+      roundLog.playerResults.push({
+        name: p.name, hitType: '親', change: 0, amount: 0,
+        betType: bet.betType, multiplier: 0, odds: 0,
+        oyaBonusFromThis: 0, skipped: true
+      });
+      return;
+    }
+
+    const out = calc.payouts[bet.playerIndex] || { hit: false, odds: 0, payout: 0, change: -bet.amount };
+    const betType = normalizeBetType(bet.betType);
+    const change = out.change;
+
+    p.points += change;
+    if (p.points < 0) p.points = 0;
+
+    // 親ボーナス
+    let thisBonus = 0;
+    if (out.hit) {
+      thisBonus = Math.floor(out.payout * (oyaBonusRate / 100));
+      oyaBonus += thisBonus;
+    }
+
+    let hitType = '外れ';
+    if (out.hit) {
+      const name = (BET_NAMES && BET_NAMES[betType]) || betType;
+      hitType = `${name}的中${betType === 'sanrentan' ? '🎊' : ''}`;
+    }
+
+    p.history.push({ round: state.currentRound, change, hitType });
+    roundLog.playerResults.push({
+      name: p.name, hitType, change, amount: bet.amount,
+      betType, multiplier: out.odds || 0, odds: out.odds || 0,
+      payout: out.payout || 0,
+      oyaBonusFromThis: thisBonus,
+      selections: [...(bet.selections || [])]
+    });
+  });
+
+  oya.points += oyaBonus;
+  roundLog.oyaBonus = oyaBonus;
+  oya.history.push({ round: state.currentRound, change: oyaBonus, hitType: '親ボーナス' });
+  state.history.push(roundLog);
+  renderRoundResultBody();
+  goTo('screen-roundresult');
+  triggerOfflineEffects(roundLog);
+}
 
 function renderRoundResult(){
   // 後方互換のためのラッパー
@@ -2181,22 +2556,25 @@ function renderRoundResultBody(){
       </div>`;
     }).join('')}
   </div>`;
-  const betNames={tansho:'単勝',rentan:'連単狙い',sanrentan:'三連単狙い'};
+  const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {tansho:'単勝',rentan:'馬単',sanrentan:'3連単'};
   const posLabels=['1位','2位','3位'];
   document.getElementById('rr-player-results').innerHTML=log.playerResults.map(r=>{
     if(r.skipped)return`<div class="player-result"><div class="player-result-header"><span class="player-result-name">${r.name} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;
     const isWin=r.change>0;
 
-    // 予想馬の表示（色付きバッジ）
+    // 予想馬の表示（色付きバッジ）— 順序が重要な賭け方かで表示を切り替え
+    const orderedBetTypes = ['tansho','umatan','sanrentan','rentan'];
+    const isOrdered = orderedBetTypes.includes(r.betType);
     const selBadges=(r.selections||[]).map((hi,si)=>`
       <span style="display:inline-flex;align-items:center;gap:3px;margin-right:2px">
         <span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.7rem">${hi+1}</span>
-        <span style="font-size:0.7rem;color:#666">${posLabels[si]}</span>
+        ${isOrdered ? `<span style="font-size:0.7rem;color:#666">${posLabels[si]}</span>` : ''}
       </span>
-    `).join('<span style="color:#bbb;font-size:0.8rem;margin:0 2px">→</span>');
+    `).join(isOrdered ? '<span style="color:#bbb;font-size:0.8rem;margin:0 2px">→</span>' : '<span style="color:#bbb;font-size:0.8rem;margin:0 4px">・</span>');
 
-    // 実際の結果馬（色付きバッジ）
-    const actualCount=r.betType==='tansho'?1:r.betType==='rentan'?2:3;
+    // 実際の結果馬（色付きバッジ）— 賭け方ごとに表示する位を決定
+    const actualCountMap = {tansho:1, fukusho:3, umaren:2, umatan:2, wide:3, sanrenfuku:3, sanrentan:3, rentan:2, renfuku:2};
+    const actualCount = actualCountMap[r.betType] || 3;
     const actualBadges=state.actualResult.slice(0,actualCount).map((hi,si)=>`
       <span style="display:inline-flex;align-items:center;gap:3px;margin-right:2px">
         <span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.7rem">${hi+1}</span>
@@ -2209,7 +2587,7 @@ function renderRoundResultBody(){
         <span class="player-result-name">${r.name} <span class="ko-badge">子</span></span>
         <span class="player-result-change ${isWin?'change-pos':'change-neg'}">${isWin?'+':''}${r.change.toLocaleString()}点</span>
       </div>
-      <div class="player-result-detail">${betNames[r.betType]} / ${r.amount.toLocaleString()}点賭け → <span style="font-weight:700;color:${isWin?'var(--green-light)':'var(--red)'}">${r.hitType}</span>${r.multiplier>0?` (×${r.multiplier})`:''}</div>
+      <div class="player-result-detail">${betNames[r.betType]} / ${r.amount.toLocaleString()}点賭け → <span style="font-weight:700;color:${isWin?'var(--green-light)':'var(--red)'}">${r.hitType}</span>${(r.odds||r.multiplier)>0?` <span style="background:#fff4cc;border:1px solid var(--gold-dark);border-radius:4px;padding:1px 6px;font-weight:900;color:var(--red);font-size:0.85rem">×${(r.odds||r.multiplier).toFixed(1)}</span>`:''}${isWin&&r.payout?` <span style="font-size:0.75rem;color:#888">配当:${r.payout.toLocaleString()}点</span>`:''}</div>
       <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;padding:6px 8px;background:${isWin?'rgba(245,200,66,0.08)':'rgba(0,0,0,0.03)'};border-radius:6px;border:1px solid ${isWin?'rgba(245,200,66,0.2)':'#eee'}">
         <div style="display:flex;align-items:center;gap:2px;flex-wrap:wrap">
           <span style="font-size:0.65rem;color:#aaa;margin-right:4px">予想</span>
@@ -2240,7 +2618,7 @@ function renderRoundResultBody(){
 function triggerOfflineEffects(log){
   if(!log || !log.playerResults) return;
   // 演出の優先度判定（一番高い的中のみ演出）
-  const priority={'三連単的中🎊':5,'3連複的中':4,'連単的中':3,'連複的中':2,'単勝的中':1};
+  const priority={'3連単的中🎊':7,'三連単的中🎊':7,'3連複的中':6,'馬単的中':5,'連単的中':5,'馬連的中':4,'連複的中':4,'ワイド的中':3,'単勝的中':2,'複勝的中':1};
   let topPriority=0;
   let topHitType=null;
   log.playerResults.forEach(r=>{if(priority[r.hitType]>topPriority){topPriority=priority[r.hitType];topHitType=r.hitType;}});
@@ -2413,10 +2791,8 @@ function renderFinalScreen(){
   });
 }
 function updateBetTypeLabels(){
-  const btns=document.querySelectorAll('.bet-type-btn');
-  if(btns[0])btns[0].querySelector('.bet-mult').textContent=`×${state.odds.tansho}`;
-  if(btns[1])btns[1].querySelector('.bet-mult').textContent=`×${state.odds.rentan}/×${state.odds.renfuku}`;
-  if(btns[2])btns[2].querySelector('.bet-mult').textContent=`×${state.odds.sanrentan}/×${state.odds.sanrenfuku}`;
+  // v2.0: 賭けボタンに固定倍率を表示しなくなったため、no-op
+  // パリミュチュエル方式ではオッズは締切後に動的に確定する
 }
 function toggleRoundEdit(){
   const p=document.getElementById('round-edit-panel');
@@ -2864,6 +3240,42 @@ window.onlineSettingChanged = async function(){
     const settingsRef = ref(db, `rooms/${window.online.roomCode}/settings`);
     await set(settingsRef, { rounds, initialPoints, minBet, oyaBonusRate, topicMode });
   } catch(e) { console.error(e); }
+};
+
+// 親ボーナス率プリセットボタン（オンライン）
+window.onlineSetBonusPreset = function(value){
+  const input = document.getElementById('online-bonus');
+  if(input){
+    input.value = value;
+    // ボタンのactive状態を更新
+    document.querySelectorAll('#online-bonus-presets .bonus-preset-btn').forEach(btn => {
+      const isActive = btn.textContent.trim() === `${value}%`;
+      btn.style.border = isActive ? '2px solid var(--oya)' : '1px solid #ddd';
+      btn.style.background = isActive ? '#f9eef9' : 'white';
+      btn.classList.toggle('active', isActive);
+    });
+    if(typeof onlineSettingChanged === 'function') onlineSettingChanged();
+  }
+};
+
+// 手入力で値が変わったら、プリセットボタンの選択を解除
+window.onlineBonusManualChanged = function(){
+  const input = document.getElementById('online-bonus');
+  if(!input) return;
+  const val = parseInt(input.value);
+  document.querySelectorAll('#online-bonus-presets .bonus-preset-btn').forEach(btn => {
+    const presetVal = parseInt(btn.textContent);
+    const isActive = !isNaN(val) && presetVal === val;
+    btn.style.border = isActive ? '2px solid var(--oya)' : '1px solid #ddd';
+    btn.style.background = isActive ? '#f9eef9' : 'white';
+    btn.classList.toggle('active', isActive);
+  });
+};
+
+// 親ボーナス率プリセットボタン（オフライン）
+window.offlineSetBonusPreset = function(value){
+  const input = document.getElementById('custom-oya-bonus');
+  if(input) input.value = value;
 };
 
 // ゲーム開始（ホスト）
@@ -3608,15 +4020,19 @@ function enterOnlineTopicLottery(game){
             }
 
             if(topicData && topicData.horses && topicData.horses.length > 0){
+              // 8択対応: 7択しかないお題は8つ目を自動補完
+              const eightTopic = (typeof ensureEightChoices === 'function')
+                ? ensureEightChoices(topicData)
+                : topicData;
               // selectedTopicを先に null にクリアしてから上書き（古い horses が残らないように）
               const topicRef = ref(db, `rooms/${window.online.roomCode}/game/selectedTopic`);
               await set(topicRef, null);
               await set(topicRef, {
-                id: topicData.id,
-                title: topicData.title,
-                icon: topicData.icon || '🎯',
-                horses: topicData.horses || [],
-                category: topicData.category || 'g3'
+                id: eightTopic.id,
+                title: eightTopic.title,
+                icon: eightTopic.icon || '🎯',
+                horses: eightTopic.horses || [],
+                category: eightTopic.category || 'g3'
               });
             } else {
               // お題情報が取得できない → エラー警告
@@ -3903,11 +4319,7 @@ function openOnlineTopicPopup(topic){
 
 // 倍率ラベル更新
 function updateOnlineBetTypeLabels(){
-  // オフライン版と同じデフォルト倍率（settings.oddsは未実装なのでデフォルト固定）
-  const btns = document.querySelectorAll('#screen-online-betting .bet-type-btn .bet-mult');
-  if(btns[0]) btns[0].textContent = '×2';
-  if(btns[1]) btns[1].textContent = '×10/×5';
-  if(btns[2]) btns[2].textContent = '×30/×7';
+  // v2.0: 固定倍率表示を廃止。パリミュチュエル方式のため何もしない
 }
 
 // 賭けタイプ選択
@@ -3921,11 +4333,22 @@ window.onlineSelectBetType = function(type, el){
 };
 
 function updateOnlineHorseTitle(){
-  const t = {tansho:'🏇 馬を選ぶ（1頭：1位予想）', rentan:'🏇 馬を選ぶ（2頭：1位→2位の順に）', sanrentan:'🏇 馬を選ぶ（3頭：1位→2位→3位の順に）'};
-  document.getElementById('ob-horse-title').textContent = t[window.onlineBet.betType];
+  const t = {
+    tansho:'🏇 馬を選ぶ（1頭：1位予想）',
+    fukusho:'🏇 馬を選ぶ（1頭：1〜3位に入る馬）',
+    umaren:'🏇 馬を選ぶ（2頭：1位と2位、順不同）',
+    umatan:'🏇 馬を選ぶ（2頭：1位→2位の順に）',
+    wide:'🏇 馬を選ぶ（2頭：1〜3位に入る馬2頭、順不同）',
+    sanrenfuku:'🏇 馬を選ぶ（3頭：1〜3位、順不同）',
+    sanrentan:'🏇 馬を選ぶ（3頭：1位→2位→3位の順に）'
+  };
+  document.getElementById('ob-horse-title').textContent = t[window.onlineBet.betType] || t.tansho;
 }
 
-function getOnlineMaxSel(){ return {tansho:1, rentan:2, sanrentan:3}[window.onlineBet.betType]; }
+function getOnlineMaxSel(){ return (BET_HORSE_COUNT && BET_HORSE_COUNT[window.onlineBet.betType]) || 1; }
+
+// 順序が重要な賭け方かどうか
+function isOnlineOrderedBet(){ const bt = window.onlineBet.betType; return bt === 'tansho' || bt === 'umatan' || bt === 'sanrentan'; }
 
 function renderOnlineHorseGrid(){
   const game = window.online.game;
@@ -3934,6 +4357,7 @@ function renderOnlineHorseGrid(){
   if(!c || !topic) return;
   c.innerHTML = '';
   const sel = window.onlineBet.selectedHorses;
+  const ordered = isOnlineOrderedBet();
   (topic.horses || []).forEach((name, i) => {
     const pi = sel.indexOf(i);
     const d = document.createElement('div');
@@ -3941,7 +4365,8 @@ function renderOnlineHorseGrid(){
     let badge = '';
     if(pi >= 0){
       const cls = pi===0?'':(pi===1?' pos-2':' pos-3');
-      badge = `<div class="sel-label${cls}">${['1位','2位','3位'][pi]}</div>`;
+      const label = ordered ? ['1位','2位','3位'][pi] : '✓';
+      badge = `<div class="sel-label${cls}">${label}</div>`;
     }
     d.innerHTML = `${badge}<div class="num-badge ${HC[i]}">${i+1}</div><div class="horse-name">${name}</div>`;
     d.onclick = () => onlineSelectHorseForBet(i);
@@ -4129,13 +4554,14 @@ window.onlineSubmitKoBet = function(){
   // 確認画面へ
   const myName = getOnlinePlayersArray().find(p => p.id === window.online.playerId)?.name || '';
   const topic = game.selectedTopic;
-  const betNames = {tansho:'単勝', rentan:'連単狙い', sanrentan:'三連単狙い'};
-  const odds = {tansho:2, renfuku:5, rentan:10, sanrenfuku:7, sanrentan:30}; // デフォルト固定
-  const multInfo = {
-    tansho: `的中で ×${odds.tansho}（${Math.floor(amount*odds.tansho).toLocaleString()}点獲得）`,
-    rentan: `連単的中で ×${odds.rentan}（${Math.floor(amount*odds.rentan).toLocaleString()}点）/ 連複で ×${odds.renfuku}（${Math.floor(amount*odds.renfuku).toLocaleString()}点）`,
-    sanrentan: `三連単で ×${odds.sanrentan}（${Math.floor(amount*odds.sanrentan).toLocaleString()}点）/ 3連複で ×${odds.sanrenfuku}（${Math.floor(amount*odds.sanrenfuku).toLocaleString()}点）`
-  };
+  const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {tansho:'単勝',rentan:'馬単',sanrentan:'3連単'};
+  // パリミュチュエル方式: オッズは締切後に確定する
+  const betDescs = (typeof BET_DESCS !== 'undefined') ? BET_DESCS : {};
+  const multInfo = {};
+  Object.keys(betNames).forEach(k => {
+    const desc = betDescs[k] || '';
+    multInfo[k] = `${desc} — オッズは締切後に確定します（最低×1.1保証）`;
+  });
   const posLabels = ['🥇 1位', '🥈 2位', '🥉 3位'];
   document.getElementById('obc-round-header').textContent = `ROUND ${game.currentRound || 1} — 馬券確認`;
   document.getElementById('obc-name').textContent = myName;
@@ -4307,7 +4733,7 @@ function enterOnlineBetWait(){
             </div>`;
         }
       } else {
-        const betNames = {tansho:'単勝', rentan:'連単狙い', sanrentan:'三連単狙い'};
+        const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {tansho:'単勝',rentan:'馬単',sanrentan:'3連単'};
         const topic = game?.selectedTopic;
         const sel = window.onlineBet.selectedHorses || [];
         const posL = ['1位', '2位', '3位'];
@@ -4582,7 +5008,7 @@ function enterOnlineReveal(game){
   const players = getOnlinePlayersArray();
   const oyaIdx = game.oyaIndex || 0;
   const bets = game.bets || {};
-  const betNames = {tansho:'単勝', rentan:'連単狙い', sanrentan:'三連単狙い'};
+  const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {tansho:'単勝',rentan:'馬単',sanrentan:'3連単'};
   const posL = ['1位', '2位', '3位'];
 
   // 親パネル：順位入力済の状態（結果発表まで非開示は正しいが、文言を変える）
@@ -4696,26 +5122,44 @@ async function checkAllReadyForResult(){
   }
 }
 
-// 結果計算（オフライン版のcalculateResultsをベースに）
+// ============================================================
+// 結果計算（v2.0 パリミュチュエル方式）
+// 公式: オッズ = 0.08 × W × P / (B + P × 0.01)、最低×1.1保証
+// B計算: 1位含む当選は全合算、含まない当選は賭け方×選択肢ごとに合算
+// ============================================================
 function calculateOnlineResults(game, players){
-  const odds = {tansho:2, renfuku:5, rentan:10, sanrenfuku:7, sanrentan:30};
   const oyaBonusRate = window.online.settings?.oyaBonusRate || 0;
   const oyaIdx = game.oyaIndex || 0;
   const oya = players[oyaIdx];
   const [r1, r2, r3] = game.oyaResult || [];
   const topic = game.selectedTopic;
-  const bets = game.bets || {};
+  const rawBets = game.bets || {};
   const currentPoints = game.points || {};
   const newPoints = { ...currentPoints };
+
+  // 親と賭けなしを除外してから calculatePayouts に渡す
+  // （子のみ集計、見送り/skippedは0で計上され除外される）
+  const betsForCalc = {};
+  players.forEach((p, i) => {
+    if(i === oyaIdx) return;
+    const b = rawBets[p.id];
+    if(b) betsForCalc[p.id] = b;
+  });
+
+  // ★ コア計算: calculatePayouts に委譲
+  const calc = (typeof calculatePayouts === 'function')
+    ? calculatePayouts(betsForCalc, [r1, r2, r3], BET_WEIGHTS)
+    : { totalPool: 0, payouts: {}, groupBs: {} };
 
   let oyaBonus = 0;
   const playerResults = [];
 
   players.forEach((p, i) => {
     if(i === oyaIdx) return; // 親は後で計算
-    const bet = bets[p.id];
-    if(!bet || bet.skipped || bet.amount === 0){
-      // オフラインペナルティ判定（賭けではないが点数だけ減らす）
+    const bet = rawBets[p.id];
+
+    // オフラインペナルティ（賭けてない人専用、既存ロジック踏襲）
+    if(!bet || bet.skipped || (Number(bet.amount) || 0) === 0){
       const penalty = (bet && bet.offlinePenalty) ? bet.offlinePenalty : 0;
       if(penalty > 0){
         const before = newPoints[p.id] || 0;
@@ -4726,10 +5170,11 @@ function calculateOnlineResults(game, players){
           playerId: p.id,
           name: p.name,
           hitType: '🔴 オフライン',
-          change: -(before - after), // 実際に減った分
+          change: -(before - after),
           amount: 0,
           betType: bet?.betType || 'tansho',
           multiplier: 0,
+          odds: 0,
           oyaBonusFromThis: 0,
           skipped: true,
           selections: [],
@@ -4744,6 +5189,7 @@ function calculateOnlineResults(game, players){
           amount: 0,
           betType: bet?.betType || 'tansho',
           multiplier: 0,
+          odds: 0,
           oyaBonusFromThis: 0,
           skipped: true,
           selections: []
@@ -4751,44 +5197,52 @@ function calculateOnlineResults(game, players){
       }
       return;
     }
-    const s = bet.selections || [];
-    let multiplier = 0, hitType = '外れ';
-    if(bet.betType === 'tansho'){
-      if(s[0] === r1){ multiplier = odds.tansho; hitType = '単勝的中'; }
-    } else if(bet.betType === 'rentan'){
-      if(s[0] === r1 && s[1] === r2){ multiplier = odds.rentan; hitType = '連単的中'; }
-      else if(s[0] === r2 && s[1] === r1){ multiplier = odds.renfuku; hitType = '連複的中'; }
-    } else if(bet.betType === 'sanrentan'){
-      const a3 = s.every(idx => [r1, r2, r3].includes(idx));
-      if(s[0] === r1 && s[1] === r2 && s[2] === r3){ multiplier = odds.sanrentan; hitType = '三連単的中🎊'; }
-      else if(a3){ multiplier = odds.sanrenfuku; hitType = '3連複的中'; }
-    }
-    const change = multiplier > 0 ? bet.amount * multiplier : -bet.amount;
+
+    // ★ 配当反映
+    const out = calc.payouts[p.id] || { hit: false, odds: 0, payout: 0, change: -(Number(bet.amount) || 0) };
+    const betType = normalizeBetType(bet.betType); // 旧キー互換
+    const selections = bet.selections || [];
+    const amount = Number(bet.amount) || 0;
+
+    // 点数更新
     const before = newPoints[p.id] || 0;
-    let after = before + change;
+    let after = before + out.change;
     if(after < 0) after = 0;
     newPoints[p.id] = after;
 
+    // 親ボーナス: 配当（=賭け金×オッズ）× X / 100
     let thisBonus = 0;
-    if(multiplier > 0){
-      thisBonus = Math.floor(bet.amount * multiplier * (oyaBonusRate / 100));
+    if(out.hit){
+      thisBonus = Math.floor(out.payout * (oyaBonusRate / 100));
       oyaBonus += thisBonus;
     }
+
+    // hitType を新仕様の賭け方名で表示
+    let hitType = '外れ';
+    if(out.hit){
+      const name = (BET_NAMES && BET_NAMES[betType]) || betType;
+      hitType = `${name}的中${betType === 'sanrentan' ? '🎊' : ''}`;
+    }
+
     playerResults.push({
       playerId: p.id,
       name: p.name,
       hitType,
-      change,
-      amount: bet.amount,
-      betType: bet.betType,
-      multiplier,
+      change: out.change,
+      amount,
+      betType,
+      multiplier: out.odds || 0, // 既存UIとの互換: multiplier プロパティに変動オッズを格納
+      odds: out.odds || 0,        // 新仕様の正式プロパティ
+      payout: out.payout || 0,    // 配当金（賭け金 × オッズ）
       oyaBonusFromThis: thisBonus,
-      selections: [...s]
+      selections: [...selections]
     });
   });
 
   // 親に親ボーナスを加算
-  newPoints[oya.id] = (newPoints[oya.id] || 0) + oyaBonus;
+  if(oya){
+    newPoints[oya.id] = (newPoints[oya.id] || 0) + oyaBonus;
+  }
 
   const roundLog = {
     round: game.currentRound || 1,
@@ -4799,7 +5253,9 @@ function calculateOnlineResults(game, players){
     oyaId: oya?.id || '',
     oyaResult: [r1, r2, r3],
     playerResults,
-    oyaBonus
+    oyaBonus,
+    totalPool: calc.totalPool || 0,
+    groupBs: calc.groupBs || {}
   };
 
   return { newPoints, roundLog };
@@ -4829,7 +5285,7 @@ function enterOnlineRoundResult(game){
   // 初回表示時は演出を順番に発動：ガチャ → 的中演出
   if(isFirstShow){
     // 的中タイプを判定
-    const priority = {'三連単的中🎊':5, '3連複的中':4, '連単的中':3, '連複的中':2, '単勝的中':1};
+    const priority = {'3連単的中🎊':7, '三連単的中🎊':7, '3連複的中':6, '馬単的中':5, '連単的中':5, '馬連的中':4, '連複的中':4, 'ワイド的中':3, '単勝的中':2, '複勝的中':1};
     let maxPriority = 0, maxHitType = null;
     (log.playerResults || []).forEach(r => {
       const pr = priority[r.hitType] || 0;
@@ -4923,7 +5379,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
 
   // 子の結果
   const playerEl = document.getElementById('orr-player-results');
-  const betNames = {tansho:'単勝', rentan:'連単狙い', sanrentan:'三連単狙い'};
+  const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {tansho:'単勝',rentan:'馬単',sanrentan:'3連単'};
   if(playerEl){
     playerEl.innerHTML = (log.playerResults || []).map(r => {
       // オフラインプレイヤー表示
@@ -4936,9 +5392,10 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
       const hitColor = r.skipped ? '#888' : (r.multiplier > 0 ? '#2ecc71' : '#e74c3c');
       const changeStr = r.change >= 0 ? `+${r.change.toLocaleString()}` : r.change.toLocaleString();
       const selections = (r.selections || []).map((hi, si) => `<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem;display:inline-block">${hi+1}</span>`).join(' ');
-      const actualCount = r.betType === 'tansho' ? 1 : r.betType === 'rentan' ? 2 : 3;
+      const actualCountMap = {tansho:1, fukusho:3, umaren:2, umatan:2, wide:3, sanrenfuku:3, sanrentan:3, rentan:2, renfuku:2};
+      const actualCount = actualCountMap[r.betType] || 3;
       const actualBadges = (log.oyaResult || []).slice(0, actualCount).map(hi => `<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem;display:inline-block">${hi+1}</span>`).join(' ');
-      return `<div class="player-result ${hitClass}"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span></span><span class="player-result-change" style="color:${hitColor}">${r.skipped?'見送り':changeStr+'点'}</span></div>${r.skipped?'':`<div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:0.7rem">${betNames[r.betType]} (${r.amount.toLocaleString()}点) →</span><span>予想:${selections}</span><span style="color:#aaa">vs</span><span>実際:${actualBadges}</span><span style="font-weight:900;color:${hitColor}">${r.hitType}</span>${r.multiplier>0?`<span style="font-size:0.7rem;color:#888">×${r.multiplier}</span>`:''}</div>`}</div>`;
+      return `<div class="player-result ${hitClass}"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span></span><span class="player-result-change" style="color:${hitColor}">${r.skipped?'見送り':changeStr+'点'}</span></div>${r.skipped?'':`<div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:0.7rem">${betNames[r.betType]} (${r.amount.toLocaleString()}点) →</span><span>予想:${selections}</span><span style="color:#aaa">vs</span><span>実際:${actualBadges}</span><span style="font-weight:900;color:${hitColor}">${r.hitType}</span>${(r.odds||r.multiplier)>0?`<span style="background:#fff4cc;border:1px solid var(--gold-dark);border-radius:4px;padding:1px 6px;font-weight:900;color:var(--red);font-size:0.8rem">×${((r.odds||r.multiplier)).toFixed(1)}</span>${r.payout?`<span style="font-size:0.7rem;color:#888">配当:${r.payout.toLocaleString()}</span>`:''}`:''}</div>`}</div>`;
     }).join('');
   }
 
@@ -5403,7 +5860,7 @@ const fxEnd = window.fxEnd;
 // 的中演出ビジュアル（5段階）
 // ============================================================
 window.showHitEffect = function(hitType, onDone){
-  const priority = {'三連単的中🎊':5, '3連複的中':4, '連単的中':3, '連複的中':2, '単勝的中':1};
+  const priority = {'3連単的中🎊':7, '三連単的中🎊':7, '3連複的中':6, '馬単的中':5, '連単的中':5, '馬連的中':4, '連複的中':4, 'ワイド的中':3, '単勝的中':2, '複勝的中':1};
   const pr = priority[hitType] || 0;
   if(pr === 0){ if(onDone) onDone(); return; }
   const overlay = document.getElementById('hit-overlay');
@@ -5601,7 +6058,7 @@ window.showGachaRoundIntro = function(log, onDone){
   if(!overlay){ if(onDone) onDone(); return; }
 
   // ヒット度合いで色/絵文字/タイトル変える
-  const priority = {'三連単的中🎊':5, '3連複的中':4, '連単的中':3, '連複的中':2, '単勝的中':1};
+  const priority = {'3連単的中🎊':7, '三連単的中🎊':7, '3連複的中':6, '馬単的中':5, '連単的中':5, '馬連的中':4, '連複的中':4, 'ワイド的中':3, '単勝的中':2, '複勝的中':1};
   let maxPriority = 0, maxHit = null;
   (log.playerResults || []).forEach(r => {
     const pr = priority[r.hitType] || 0;
@@ -5619,11 +6076,13 @@ window.showGachaRoundIntro = function(log, onDone){
   let title = '結果発表';
   let sub = '';
   let bg = 'linear-gradient(135deg,#ff1493 0%,#c2185b 35%,#7b1fa2 70%,#311b92 100%)';
-  if(maxPriority === 5){ emoji = '💎'; title = 'TRIFECTA！'; sub = '三連単的中🎊'; bg = 'linear-gradient(135deg,#ff007f 0%,#ff1493 25%,#9b00ff 60%,#3300ff 100%)'; }
-  else if(maxPriority === 4){ emoji = '💎'; title = '3連複的中！'; bg = 'linear-gradient(135deg,#0abab5 0%,#06908e 50%,#024a4a 100%)'; }
-  else if(maxPriority === 3){ emoji = '🎀'; title = '連単的中！'; bg = 'linear-gradient(135deg,#ff44aa 0%,#e91e63 30%,#ad1457 70%,#560027 100%)'; }
-  else if(maxPriority === 2){ emoji = '🥷'; title = '連複的中！'; bg = 'linear-gradient(135deg,#1a1a1a 0%,#2d1a4d 60%,#0a0520 100%)'; }
-  else if(maxPriority === 1){ emoji = '🎯'; title = '単勝的中！'; bg = 'linear-gradient(135deg,#ffaa33 0%,#cc6600 60%,#552200 100%)'; }
+  if(maxPriority === 7){ emoji = '💎'; title = 'TRIFECTA！'; sub = '3連単的中🎊'; bg = 'linear-gradient(135deg,#ff007f 0%,#ff1493 25%,#9b00ff 60%,#3300ff 100%)'; }
+  else if(maxPriority === 6){ emoji = '💎'; title = '3連複的中！'; bg = 'linear-gradient(135deg,#0abab5 0%,#06908e 50%,#024a4a 100%)'; }
+  else if(maxPriority === 5){ emoji = '🎀'; title = '馬単的中！'; bg = 'linear-gradient(135deg,#ff44aa 0%,#e91e63 30%,#ad1457 70%,#560027 100%)'; }
+  else if(maxPriority === 4){ emoji = '🥷'; title = '馬連的中！'; bg = 'linear-gradient(135deg,#1a1a1a 0%,#2d1a4d 60%,#0a0520 100%)'; }
+  else if(maxPriority === 3){ emoji = '🌈'; title = 'ワイド的中！'; bg = 'linear-gradient(135deg,#ff8c00 0%,#ff5500 40%,#cc2200 100%)'; }
+  else if(maxPriority === 2){ emoji = '🎯'; title = '単勝的中！'; bg = 'linear-gradient(135deg,#ffaa33 0%,#cc6600 60%,#552200 100%)'; }
+  else if(maxPriority === 1){ emoji = '✨'; title = '複勝的中！'; bg = 'linear-gradient(135deg,#7fb069 0%,#3a6b30 60%,#1a3318 100%)'; }
 
   overlay.style.background = bg;
   document.getElementById('gacha-label').textContent = label;
