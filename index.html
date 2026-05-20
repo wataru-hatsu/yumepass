@@ -7675,7 +7675,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
           const brWin=br.change>0;
           const sels=(br.selections||[]);
           const selBadges=sels.map(hi=>`<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.62rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(ordered?'<span style="color:#aaa;font-size:0.7rem;margin:0 1px">→</span>':'<span style="color:#aaa;font-size:0.7rem;margin:0 2px">・</span>');
-          const oddsTag=(br.hit&&br.odds>0)?oddsChipHtml(br.odds):'';
+          const oddsTag=(br.hit&&br.odds>0)?window.oddsChipHtml(br.odds):'';
           const mInfo=mName?`<span style="font-size:0.62rem;color:#888">${mName} ${br.hitCount||0}/${br.totalCount||0}</span>`:'';
           return `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:${brWin?'rgba(46,204,113,0.1)':'rgba(0,0,0,0.04)'};border:1px solid ${brWin?'rgba(46,204,113,0.3)':'rgba(255,255,255,0.08)'};border-radius:6px;flex-wrap:wrap">
             <span style="background:var(--gold);color:#1a1a1a;font-size:0.65rem;font-weight:900;padding:1px 7px;border-radius:9px;white-space:nowrap">${betNames[br.betType]||br.betType}</span>
@@ -7720,11 +7720,11 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
         const joiner = isOrd ? '→' : '-';
         const rows = wsubs.map(s => {
           const combo = (s.selection || []).map(hi => `<span class="ibadge ${HC[hi]}" style="width:16px;height:16px;font-size:0.6rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#aaa;font-size:0.6rem;margin:0 1px">${joiner}</span>`);
-          return `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(46,204,113,0.08);border-radius:5px;margin-top:3px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center">${combo}</span>${oddsChipHtml(s.odds, '', '0.7rem')}<span style="font-size:0.65rem;color:#777;font-weight:700">配当${(s.payout||0).toLocaleString()}</span></div>`;
+          return `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(46,204,113,0.08);border-radius:5px;margin-top:3px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center">${combo}</span>${window.oddsChipHtml(s.odds, "", "0.7rem")}<span style="font-size:0.65rem;color:#777;font-weight:700">配当${(s.payout||0).toLocaleString()}</span></div>`;
         }).join('');
         subDetailHtml = `<div style="margin-top:6px;padding:6px 8px;background:rgba(0,0,0,0.03);border-radius:6px"><div style="font-size:0.65rem;color:#888;margin-bottom:2px">当たった${wsubs.length}点の明細:</div>${rows}</div>`;
       }
-      return `<div class="player-result ${hitClass}"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span></span><span class="player-result-change" style="color:${hitColor}">${r.skipped?'見送り':changeStr+'点'}</span></div>${r.skipped?'':`<div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${betInfo}<span style="font-weight:900;color:${hitColor}">${r.hitType}</span>${(r.odds||r.multiplier)>0?`${oddsChipHtml(r.odds||r.multiplier, (buyMethod!=='simple'&&wsubs.length>1?'最高':''))}${r.payout?`<span style="font-size:0.7rem;color:#777;font-weight:700">配当:${r.payout.toLocaleString()}</span>`:''}`:''}</div>${subDetailHtml}`}</div>`;
+      return `<div class="player-result ${hitClass}"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span></span><span class="player-result-change" style="color:${hitColor}">${r.skipped?'見送り':changeStr+'点'}</span></div>${r.skipped?'':`<div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${betInfo}<span style="font-weight:900;color:${hitColor}">${r.hitType}</span>${(r.odds||r.multiplier)>0?`${window.oddsChipHtml(r.odds||r.multiplier, (buyMethod!=='simple'&&wsubs.length>1?'最高':''))}${r.payout?`<span style="font-size:0.7rem;color:#777;font-weight:700">配当:${r.payout.toLocaleString()}</span>`:''}`:''}</div>${subDetailHtml}`}</div>`;
     }).join('');
   }
 
