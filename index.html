@@ -3571,7 +3571,8 @@ function calculateResults(){
     }
 
     const out = calc.payouts[bet.playerIndex] || { hit: false, odds: 0, payout: 0, change: -bet.amount };
-    const betType = normalizeBetType(bet.betType);
+    // 複数券種では bet.betType が無いので out.betType（代表）にフォールバック
+    const betType = normalizeBetType(bet.betType || out.betType || 'tansho');
     const change = out.change;
 
     p.points += change;
@@ -7135,6 +7136,25 @@ window.onlineReadyForResult = async function(){
 };
 
 // ホストが全員準備完了チェック → 計算 → result フェーズへ
+// Firebase は undefined を許容しないため、オブジェクト/配列から再帰的に undefined を除去する
+// - オブジェクト: undefined のキーを削除
+// - 配列: undefined 要素を null に置換（配列の穴を防ぐ）
+function stripUndefined(value){
+  if(Array.isArray(value)){
+    return value.map(v => (v === undefined ? null : stripUndefined(v)));
+  }
+  if(value && typeof value === 'object'){
+    const out = {};
+    for(const k of Object.keys(value)){
+      const v = value[k];
+      if(v === undefined) continue; // undefined のキーは丸ごと省く
+      out[k] = stripUndefined(v);
+    }
+    return out;
+  }
+  return value;
+}
+
 async function checkAllReadyForResult(){
   if(!window.online.isHost) return;
   try {
@@ -7164,16 +7184,19 @@ async function checkAllReadyForResult(){
     // 結果計算
     const results = calculateOnlineResults(game, players);
 
+    // Firebaseは undefined を許容しないため、書き込み前に再帰的に除去（複数券種の入れ子対策）
+    const cleanRoundLog = stripUndefined(results.roundLog);
+
     // DB更新
     const updates = {};
-    updates[`rooms/${window.online.roomCode}/game/results`] = results.roundLog;
+    updates[`rooms/${window.online.roomCode}/game/results`] = cleanRoundLog;
     updates[`rooms/${window.online.roomCode}/game/points`] = results.newPoints;
     updates[`rooms/${window.online.roomCode}/game/phase`] = 'result';
     // history に追記
     const historyRef = ref(db, `rooms/${window.online.roomCode}/game/history`);
     const histSnap = await get(historyRef);
     const hist = histSnap.val() || [];
-    hist.push(results.roundLog);
+    hist.push(cleanRoundLog);
     updates[`rooms/${window.online.roomCode}/game/history`] = hist;
     await update(ref(db), updates);
   } catch(e){
@@ -7264,8 +7287,9 @@ function calculateOnlineResults(game, players){
 
     // ★ 配当反映
     const out = calc.payouts[p.id] || { hit: false, odds: 0, payout: 0, change: -(Number(bet.amount) || 0) };
-    const betType = normalizeBetType(bet.betType); // 旧キー互換
-    const selections = bet.selections || [];
+    // 複数券種では bet.betType が無いので out.betType（代表）にフォールバック（undefined防止）
+    const betType = normalizeBetType(bet.betType || out.betType || 'tansho'); // 旧キー互換
+    const selections = bet.selections || out.selections || [];
     const amount = Number(bet.amount) || 0;
 
     // 点数更新
