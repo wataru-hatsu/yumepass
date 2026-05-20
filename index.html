@@ -640,7 +640,33 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
           <div class="bet-type-btn" onclick="onlineSelectBetType('sanrentan',this)"><div class="bet-name">3連単</div><div class="bet-desc">1〜3位<br>順番通り</div></div>
         </div>
       </div>
+      <!-- 買い方タブ（シンプル/ボックス/フォーメ/流し）- 該当賭け方の時のみ表示 -->
+      <div class="panel" id="ob-buymethod-panel" style="display:none">
+        <div class="panel-title">🎯 買い方</div>
+        <div id="ob-buymethod-tabs" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <div style="font-size:0.75rem;color:#888;margin-top:6px" id="ob-buymethod-hint"></div>
+      </div>
       <div class="panel"><div class="panel-title" id="ob-horse-title">🏇 馬を選ぶ（1頭）</div><div class="horse-grid" id="ob-horse-grid"></div></div>
+      <!-- フォーメーション用UI: 各位ごとに馬を選ぶ -->
+      <div class="panel" id="ob-formation-panel" style="display:none">
+        <div class="panel-title">🎯 フォーメーション設定</div>
+        <div id="ob-formation-positions"></div>
+        <div style="font-size:0.75rem;color:#888;margin-top:6px">各位に馬を選んでください（複数可）</div>
+      </div>
+      <!-- 流し用UI: 軸馬1頭 + 相手馬 -->
+      <div class="panel" id="ob-nagashi-panel" style="display:none">
+        <div class="panel-title">🎯 流し設定</div>
+        <div style="font-size:0.8rem;font-weight:700;margin-top:6px;margin-bottom:4px">軸馬（1頭）</div>
+        <div id="ob-nagashi-axis-grid" class="horse-grid"></div>
+        <div id="ob-nagashi-position-row" style="display:none;margin-top:8px">
+          <div style="font-size:0.8rem;font-weight:700;margin-bottom:4px">軸の位置</div>
+          <div id="ob-nagashi-position-btns" style="display:flex;gap:6px"></div>
+        </div>
+        <div style="font-size:0.8rem;font-weight:700;margin-top:8px;margin-bottom:4px">相手馬</div>
+        <div id="ob-nagashi-opp-grid" class="horse-grid"></div>
+      </div>
+      <!-- 点数表示 -->
+      <div id="ob-combo-info" style="display:none;font-size:0.85rem;color:#fff;background:rgba(245,200,66,0.15);border:1px solid var(--gold);border-radius:8px;padding:8px 12px;margin:8px 10px;text-align:center"></div>
       <div class="panel">
         <div class="panel-title">💴 ベット額</div>
         <div id="ob-bet-hint" style="font-size:0.75rem;color:#888;margin-bottom:8px">最低500点 / 1点単位でOK</div>
@@ -1742,6 +1768,179 @@ function formatOdds(odds) {
 }
 
 // ============================================================
+// 組み合わせ展開関数（ボックス・フォーメーション・流し用）
+// ============================================================
+
+// n個の配列の全順列を生成
+function generatePermutations(arr) {
+  if (arr.length <= 1) return [arr.slice()];
+  const result = [];
+  for (let i = 0; i < arr.length; i++) {
+    const rest = arr.slice(0, i).concat(arr.slice(i + 1));
+    const restPerms = generatePermutations(rest);
+    for (const p of restPerms) {
+      result.push([arr[i]].concat(p));
+    }
+  }
+  return result;
+}
+
+// n個の配列から k個取る組み合わせを生成（順不同）
+function generateCombinations(arr, k) {
+  if (k === 0) return [[]];
+  if (k > arr.length) return [];
+  if (k === arr.length) return [arr.slice()];
+  const result = [];
+  for (let i = 0; i <= arr.length - k; i++) {
+    const rest = arr.slice(i + 1);
+    const subCombs = generateCombinations(rest, k - 1);
+    for (const sub of subCombs) {
+      result.push([arr[i]].concat(sub));
+    }
+  }
+  return result;
+}
+
+// 直積（デカルト積）: 各軸から1つずつ取って全パターン
+// 例: cartesianProduct([[1,2],[3,4]]) = [[1,3],[1,4],[2,3],[2,4]]
+function cartesianProduct(arrays) {
+  return arrays.reduce((acc, curr) => {
+    const result = [];
+    for (const a of acc) {
+      for (const c of curr) {
+        result.push(a.concat([c]));
+      }
+    }
+    return result;
+  }, [[]]);
+}
+
+// ボックス展開: 選択頭数 → 賭け方ごとの全組み合わせ
+// 馬連・ワイド・3連複: 順不同（C(n,k)）
+// 馬単・3連単: 順序あり（P(n,k)）
+function expandBox(betType, selections) {
+  const horses = [...new Set(selections)]; // 重複排除
+  if (betType === 'umaren' || betType === 'wide') {
+    // 2頭の組み合わせ（順不同）
+    if (horses.length < 2) return [];
+    return generateCombinations(horses, 2);
+  } else if (betType === 'umatan') {
+    // 2頭の順列
+    if (horses.length < 2) return [];
+    const combs = generateCombinations(horses, 2);
+    const result = [];
+    for (const c of combs) {
+      result.push([c[0], c[1]]);
+      result.push([c[1], c[0]]);
+    }
+    return result;
+  } else if (betType === 'sanrenfuku') {
+    // 3頭の組み合わせ（順不同）
+    if (horses.length < 3) return [];
+    return generateCombinations(horses, 3);
+  } else if (betType === 'sanrentan') {
+    // 3頭の順列
+    if (horses.length < 3) return [];
+    const combs = generateCombinations(horses, 3);
+    const result = [];
+    for (const c of combs) {
+      // 3要素の全順列（6通り）
+      const perms = generatePermutations(c);
+      for (const p of perms) result.push(p);
+    }
+    return result;
+  }
+  return [];
+}
+
+// フォーメーション展開: 各位の候補 → 全組み合わせ
+// 馬単: [1着候補, 2着候補]
+// 3連単: [1着候補, 2着候補, 3着候補]
+function expandFormation(betType, positionGroups) {
+  // positionGroups: [[1着候補], [2着候補], [3着候補]]
+  if (!positionGroups || positionGroups.length === 0) return [];
+  // 全部が空でないこと
+  for (const g of positionGroups) {
+    if (!g || g.length === 0) return [];
+  }
+  if (betType === 'umatan') {
+    if (positionGroups.length !== 2) return [];
+    const allPerms = cartesianProduct(positionGroups);
+    // 同じ馬の重複を除外
+    return allPerms.filter(p => p[0] !== p[1]);
+  } else if (betType === 'sanrentan') {
+    if (positionGroups.length !== 3) return [];
+    const allPerms = cartesianProduct(positionGroups);
+    // 同じ馬の重複を除外
+    return allPerms.filter(p => p[0] !== p[1] && p[0] !== p[2] && p[1] !== p[2]);
+  }
+  return [];
+}
+
+// 流し展開: 軸馬 + 相手馬たち
+// nagashiOptions: { axis: number, axisPosition: 1|2|3, opponents: [number,...] }
+//   axis: 軸馬のindex
+//   axisPosition: 軸を何位に固定するか（1=1着、2=2着、3=3着）
+//     - 馬連・ワイド・3連複は axisPosition 不要（順不同なので軸の位置は意味ない）
+//   opponents: 相手馬のindex配列
+function expandNagashi(betType, nagashiOptions) {
+  const { axis, axisPosition, opponents } = nagashiOptions;
+  if (axis === undefined || axis === null) return [];
+  if (!opponents || opponents.length === 0) return [];
+  // 相手から軸を除外
+  const opp = opponents.filter(h => h !== axis);
+  if (opp.length === 0) return [];
+
+  if (betType === 'umaren') {
+    // 軸と相手の2頭組（順不同）
+    return opp.map(o => {
+      // 順不同なので小さい方を先頭に
+      return axis < o ? [axis, o] : [o, axis];
+    });
+  } else if (betType === 'wide') {
+    // 軸と相手の2頭組（順不同）
+    return opp.map(o => {
+      return axis < o ? [axis, o] : [o, axis];
+    });
+  } else if (betType === 'umatan') {
+    // 軸の位置（1着/2着）に応じて生成
+    if (axisPosition === 1) {
+      return opp.map(o => [axis, o]);
+    } else if (axisPosition === 2) {
+      return opp.map(o => [o, axis]);
+    } else {
+      return [];
+    }
+  } else if (betType === 'sanrenfuku') {
+    // 軸 + 相手2頭の組み合わせ（順不同）
+    if (opp.length < 2) return [];
+    const pairs = generateCombinations(opp, 2);
+    return pairs.map(p => {
+      const trio = [axis, p[0], p[1]].sort((a,b) => a-b);
+      return trio;
+    });
+  } else if (betType === 'sanrentan') {
+    // 軸の位置に応じて、残り2位を相手の順列で
+    if (opp.length < 2) return [];
+    const opPerms = [];
+    for (let i = 0; i < opp.length; i++) {
+      for (let j = 0; j < opp.length; j++) {
+        if (i !== j) opPerms.push([opp[i], opp[j]]);
+      }
+    }
+    if (axisPosition === 1) {
+      return opPerms.map(p => [axis, p[0], p[1]]);
+    } else if (axisPosition === 2) {
+      return opPerms.map(p => [p[0], axis, p[1]]);
+    } else if (axisPosition === 3) {
+      return opPerms.map(p => [p[0], p[1], axis]);
+    }
+    return [];
+  }
+  return [];
+}
+
+// ============================================================
 // 賭けの当選判定（純粋関数）
 // ============================================================
 function isBetWinning(betType, selections, result) {
@@ -1800,11 +1999,23 @@ function getBetGroupKey(betType, selections, r1) {
 // 配当計算メイン関数
 // N: プレイヤー総数（親含む）
 // ============================================================
+// 配当計算メイン関数（複数賭け対応版）
+// N: プレイヤー総数（親含む）
+// 
+// 入力 bets の各エントリは以下のいずれか：
+// シンプル賭け:
+//   { betType, selections, amount, skipped }
+// 複数賭け（ボックス・フォーメ・流し）:
+//   { betType, amount, skipped, buyMethod: 'box'|'formation'|'nagashi',
+//     unitAmount: 1点あたりの金額, combinations: [[...], [...], ...] }
+//   ※ amount = unitAmount × combinations.length が成り立つこと
+//   ※ selections は表示用（全選択肢の集合）として保持してもよい
+// ============================================================
 function calculatePayouts(bets, result, N) {
   const [r1] = result;
   const playerIds = Object.keys(bets || {});
 
-  // 1. 全プール P
+  // 1. 全プール P を計算
   let totalPool = 0;
   playerIds.forEach(pid => {
     const b = bets[pid];
@@ -1813,34 +2024,75 @@ function calculatePayouts(bets, result, N) {
     if (amt > 0) totalPool += amt;
   });
 
-  // 2. 当選判定 + 旧キー正規化
-  const normalized = {};
+  // 2. 賭けを「サブ賭け」単位に展開
+  // 各サブ賭けは { playerId, betType, selection, amount, buyMethod, subIndex } を持つ
+  // シンプル賭けは1つのサブ賭けに、複数賭けは N個のサブ賭けに展開
+  const subBets = [];
+  const playerMeta = {}; // playerId -> { betType, buyMethod, unitAmount, totalAmount, combinations, originalSelections, skipped }
   playerIds.forEach(pid => {
     const b = bets[pid];
-    if (!b || b.skipped) { normalized[pid] = b; return; }
+    if (!b || b.skipped) {
+      playerMeta[pid] = { skipped: true, betType: b?.betType || 'tansho' };
+      return;
+    }
     const betType = normalizeBetType(b.betType);
-    const selections = b.selections || [];
+    const buyMethod = b.buyMethod || 'simple';
     const amount = Number(b.amount) || 0;
-    const winning = amount > 0 && isBetWinning(betType, selections, result);
-    normalized[pid] = { ...b, betType, selections, amount, winning };
+    if (amount <= 0) {
+      playerMeta[pid] = { skipped: true, betType };
+      return;
+    }
+    if (buyMethod === 'simple') {
+      // シンプル賭け: 1つのサブ賭け
+      const sel = b.selections || [];
+      subBets.push({
+        playerId: pid,
+        betType,
+        selection: sel,
+        amount,
+        subIndex: 0,
+        buyMethod: 'simple'
+      });
+      playerMeta[pid] = {
+        skipped: false,
+        betType,
+        buyMethod: 'simple',
+        unitAmount: amount,
+        totalAmount: amount,
+        combinations: [sel],
+        originalSelections: sel
+      };
+    } else {
+      // 複数賭け: 各 combination を独立したサブ賭けに
+      const combos = b.combinations || [];
+      const unit = Number(b.unitAmount) || 0;
+      if (combos.length === 0 || unit <= 0) {
+        playerMeta[pid] = { skipped: true, betType };
+        return;
+      }
+      combos.forEach((combo, idx) => {
+        subBets.push({
+          playerId: pid,
+          betType,
+          selection: combo,
+          amount: unit,
+          subIndex: idx,
+          buyMethod
+        });
+      });
+      playerMeta[pid] = {
+        skipped: false,
+        betType,
+        buyMethod,
+        unitAmount: unit,
+        totalAmount: unit * combos.length,
+        combinations: combos,
+        originalSelections: b.selections || []
+      };
+    }
   });
 
-  // 3. B（合算）を計算 - Phase 2 仕様
-  // 賭けごとに個別に B を計算する（同じ betType+selection の人は同じ B になる）
-  // allBetsList: 全プレイヤーの正規化済み賭けデータ（当選/外れ問わず）
-  const allBetsList = [];
-  playerIds.forEach(pid => {
-    const b = normalized[pid];
-    if (!b || b.skipped) return;
-    if (b.amount <= 0) return;
-    allBetsList.push({
-      playerId: pid,
-      betType: b.betType,
-      selection: b.selections,
-      amount: b.amount
-    });
-  });
-
+  // 3. B計算用ヘルパー
   // 順位の重み: 1位=1.0、2位=0.5、3位=0.25
   const getPositionWeight = (horseIdx, result) => {
     if (horseIdx === result[0]) return 1.0;
@@ -1851,7 +2103,7 @@ function calculatePayouts(bets, result, N) {
 
   // 特定の馬を含む賭けの合計（除外馬を指定可能）
   const sumContainingHorse = (horse, excludeHorse) => {
-    return allBetsList
+    return subBets
       .filter(bet => {
         if (!bet.selection.includes(horse)) return false;
         if (excludeHorse !== undefined && excludeHorse !== null && bet.selection.includes(excludeHorse)) return false;
@@ -1862,7 +2114,7 @@ function calculatePayouts(bets, result, N) {
 
   // 特定の馬を含む賭けの合計（複数の除外馬リスト）
   const sumContainingExcludeMany = (horse, excludeList) => {
-    return allBetsList
+    return subBets
       .filter(bet => {
         if (!bet.selection.includes(horse)) return false;
         for (const ex of excludeList) {
@@ -1881,16 +2133,13 @@ function calculatePayouts(bets, result, N) {
     let B = 0;
     const [r1, r2, r3] = result;
     if (betType === 'tansho') {
-      // 1位の馬を含む全ての賭け × 1.0
       B = sumContainingHorse(r1);
     } else if (betType === 'fukusho') {
-      // 対象馬の順位に応じた重み
       const target = selections[0];
       const w = getPositionWeight(target, result);
       B = sumContainingHorse(target) * w;
     } else if (betType === 'umaren' || betType === 'umatan' || betType === 'wide') {
-      // 賭けた2頭 → 重みが高い方を a、低い方を b にして計算
-      // B = sumContaining(a) × weightA + sumContaining(b, [a]) × weightB
+      // 重みが高い方を a に並び替え
       const horse1 = selections[0];
       const horse2 = selections[1];
       const w1 = getPositionWeight(horse1, result);
@@ -1903,7 +2152,6 @@ function calculatePayouts(bets, result, N) {
       }
       B = sumContainingHorse(a) * wa + sumContainingHorse(b, a) * wb;
     } else if (betType === 'sanrentan' || betType === 'sanrenfuku') {
-      // (1位含む) × 1.0 + (1位含まず2位含む) × 0.5 + (1位2位含まず3位含む) × 0.25
       const containsFirst = sumContainingHorse(r1);
       const containsSecondNotFirst = sumContainingHorse(r2, r1);
       const containsThirdNotFirstSecond = sumContainingExcludeMany(r3, [r1, r2]);
@@ -1913,55 +2161,109 @@ function calculatePayouts(bets, result, N) {
     return B;
   };
 
-  // 旧形式互換のため groupBs も作る（デバッグ・表示用）
+  // groupBs は表示用（簡易）
   const groupBs = {};
 
-  // 4. 配当計算
-  const payouts = {};
-  playerIds.forEach(pid => {
-    const b = normalized[pid];
-    if (!b || b.skipped) {
-      payouts[pid] = {
-        betType: b?.betType || 'tansho',
-        selections: b?.selections || [],
-        amount: 0, hit: false, odds: 0, payout: 0, change: 0,
-        hitType: '見送り', skipped: true
-      };
+  // 4. 各サブ賭けの当選判定 + 配当計算
+  // プレイヤーごとに集計するため、まずプレイヤー別に空配列を用意
+  const playerSubResults = {};
+  playerIds.forEach(pid => { playerSubResults[pid] = []; });
+
+  subBets.forEach(sub => {
+    const winning = isBetWinning(sub.betType, sub.selection, result);
+    if (!winning) {
+      playerSubResults[sub.playerId].push({
+        selection: sub.selection,
+        amount: sub.amount,
+        hit: false,
+        odds: 0,
+        payout: 0,
+        change: -sub.amount
+      });
       return;
     }
-    if (!b.winning) {
-      payouts[pid] = {
-        betType: b.betType,
-        selections: b.selections,
-        amount: b.amount,
-        hit: false, odds: 0, payout: 0,
-        change: -b.amount,
-        hitType: '外れ'
-      };
-      return;
-    }
-    // 当選: オッズ計算（N依存）- Phase 2 新B計算
-    const B = calculateBForBet(b.betType, b.selections);
-    const groupKey = getBetGroupKey(b.betType, b.selections, r1);
-    groupBs[groupKey] = B; // 表示用
-    const odds = calculateOddsByConfig(N, b.betType, totalPool, B);
-    const oddsDisplay = Math.floor(odds * 10) / 10; // 切り捨て
-    const payout = Math.floor(b.amount * oddsDisplay);
-    const change = payout - b.amount;
-    payouts[pid] = {
-      betType: b.betType,
-      selections: b.selections,
-      amount: b.amount,
+    // 当選: B計算 → オッズ → 配当
+    const B = calculateBForBet(sub.betType, sub.selection);
+    const groupKey = getBetGroupKey(sub.betType, sub.selection, r1);
+    groupBs[groupKey] = B;
+    const odds = calculateOddsByConfig(N, sub.betType, totalPool, B);
+    const oddsDisplay = Math.floor(odds * 10) / 10;
+    const payout = Math.floor(sub.amount * oddsDisplay);
+    const change = payout - sub.amount;
+    playerSubResults[sub.playerId].push({
+      selection: sub.selection,
+      amount: sub.amount,
       hit: true,
       odds: oddsDisplay,
       payout,
-      change,
-      hitType: BET_NAMES[b.betType] + '的中'
+      change
+    });
+  });
+
+  // 5. プレイヤーごとに集計して payouts を構築
+  const payouts = {};
+  playerIds.forEach(pid => {
+    const meta = playerMeta[pid];
+    if (!meta || meta.skipped) {
+      payouts[pid] = {
+        betType: meta?.betType || 'tansho',
+        selections: bets[pid]?.selections || [],
+        amount: 0,
+        hit: false,
+        odds: 0,
+        payout: 0,
+        change: 0,
+        hitType: '見送り',
+        skipped: true,
+        buyMethod: 'simple',
+        subResults: []
+      };
+      return;
+    }
+    const subs = playerSubResults[pid] || [];
+    const hitCount = subs.filter(s => s.hit).length;
+    const totalCount = subs.length;
+    const totalPayout = subs.reduce((s, x) => s + (x.payout || 0), 0);
+    const totalChange = totalPayout - meta.totalAmount;
+    const anyHit = hitCount > 0;
+
+    // 代表オッズ（当選中の最大オッズ、表示用）
+    const winningSubs = subs.filter(s => s.hit);
+    const repOdds = winningSubs.length > 0 ? Math.max(...winningSubs.map(s => s.odds)) : 0;
+
+    // hitType 文字列
+    let hitType = '外れ';
+    if (anyHit) {
+      const betName = BET_NAMES[meta.betType] || meta.betType;
+      if (meta.buyMethod === 'simple') {
+        hitType = betName + '的中';
+      } else {
+        const methodLabel = { box: 'ボックス', formation: 'フォーメ', nagashi: '流し' }[meta.buyMethod] || meta.buyMethod;
+        hitType = `${betName}${methodLabel} ${hitCount}/${totalCount}的中`;
+      }
+    }
+
+    payouts[pid] = {
+      betType: meta.betType,
+      selections: meta.originalSelections,
+      amount: meta.totalAmount,
+      hit: anyHit,
+      odds: repOdds,
+      payout: totalPayout,
+      change: totalChange,
+      hitType,
+      buyMethod: meta.buyMethod,
+      unitAmount: meta.unitAmount,
+      combinations: meta.combinations,
+      subResults: subs,
+      hitCount,
+      totalCount
     };
   });
 
   return { totalPool, payouts, groupBs, N };
 }
+
 
 let state={players:[],rounds:5,initialPoints:5000,minBet:500,oyaBonusRate:50,odds:{tansho:2,renfuku:5,rentan:10,sanrenfuku:7,sanrentan:30},currentRound:0,oyaIndex:0,currentBetPlayerIndex:0,koPlayers:[],selectedTopic:null,currentBets:[],actualResult:[],history:[],topics:[],usedTopicIds:[],prevScreen:'screen-home'};
 const CATEGORIES=[
@@ -2620,7 +2922,13 @@ function calculateResults(){
       betType, multiplier: out.odds || 0, odds: out.odds || 0,
       payout: out.payout || 0,
       oyaBonusFromThis: thisBonus,
-      selections: [...(bet.selections || [])]
+      selections: [...(bet.selections || [])],
+      // Phase 2: 複数賭けの情報
+      buyMethod: out.buyMethod || bet.buyMethod || 'simple',
+      unitAmount: out.unitAmount || bet.unitAmount || bet.amount,
+      hitCount: out.hitCount || (out.hit ? 1 : 0),
+      totalCount: out.totalCount || (out.subResults?.length || 1),
+      combinations: out.combinations || bet.combinations || null
     });
   });
 
@@ -2706,6 +3014,7 @@ function renderRoundResultBody(){
         <span class="player-result-name">${r.name} <span class="ko-badge">子</span></span>
         <span class="player-result-change ${isWin?'change-pos':'change-neg'}">${isWin?'+':''}${r.change.toLocaleString()}点</span>
       </div>
+      ${(r.buyMethod && r.buyMethod !== 'simple') ? `<div style="font-size:0.75rem;color:#888;margin-top:4px">${(typeof BUY_METHOD_NAMES !== 'undefined' && BUY_METHOD_NAMES[r.buyMethod]) || r.buyMethod} / <strong>${r.hitCount || 0}/${r.totalCount || 0}点的中</strong> (1点${(r.unitAmount||0).toLocaleString()}点×${r.totalCount||0})</div>` : ''}
       <div class="player-result-detail">${betNames[r.betType]} / ${r.amount.toLocaleString()}点賭け → <span style="font-weight:700;color:${isWin?'var(--green-light)':'var(--red)'}">${r.hitType}</span>${(r.odds||r.multiplier)>0?` <span style="background:#fff4cc;border:1px solid var(--gold-dark);border-radius:4px;padding:1px 6px;font-weight:900;color:var(--red);font-size:0.85rem">×${(r.odds||r.multiplier).toFixed(1)}</span>`:''}${isWin&&r.payout?` <span style="font-size:0.75rem;color:#888">配当:${r.payout.toLocaleString()}点</span>`:''}</div>
       <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;padding:6px 8px;background:${isWin?'rgba(245,200,66,0.08)':'rgba(0,0,0,0.03)'};border-radius:6px;border:1px solid ${isWin?'rgba(245,200,66,0.2)':'#eee'}">
         <div style="display:flex;align-items:center;gap:2px;flex-wrap:wrap">
@@ -4427,7 +4736,34 @@ window.onlineBet = {
   betType: 'tansho',
   selectedHorses: [],
   betInputVal: '',
-  oyaSelections: [] // 親の順位入力
+  oyaSelections: [], // 親の順位入力
+  // Phase 2: 買い方拡張
+  buyMethod: 'simple',  // 'simple' | 'box' | 'formation' | 'nagashi'
+  // フォーメーション用: 各位の候補（馬単=2要素、3連単=3要素）
+  formationPositions: [[], [], []],
+  // 流し用: 軸馬1頭 + 位置 + 相手馬
+  nagashiAxis: null,
+  nagashiPosition: 1,  // 1=1着固定, 2=2着固定, 3=3着固定（馬単・3連単のみ意味あり）
+  nagashiOpponents: []
+};
+
+// 賭け方ごとに利用可能な買い方
+const AVAILABLE_BUY_METHODS = {
+  tansho: ['simple'],
+  fukusho: ['simple'],
+  umaren: ['simple', 'box', 'nagashi'],
+  umatan: ['simple', 'box', 'formation', 'nagashi'],
+  wide: ['simple', 'box', 'nagashi'],
+  sanrenfuku: ['simple', 'box', 'nagashi'],
+  sanrentan: ['simple', 'box', 'formation', 'nagashi']
+};
+
+// 買い方の表示名
+const BUY_METHOD_NAMES = {
+  simple: 'シンプル',
+  box: 'ボックス',
+  formation: 'フォーメ',
+  nagashi: '流し'
 };
 
 // 賭けフェーズに入る
@@ -4606,11 +4942,336 @@ function updateOnlineBetTypeLabels(){
 window.onlineSelectBetType = function(type, el){
   window.onlineBet.betType = type;
   window.onlineBet.selectedHorses = [];
+  // 買い方をシンプルにリセット（賭けタイプ切り替え時）
+  window.onlineBet.buyMethod = 'simple';
+  window.onlineBet.formationPositions = [[], [], []];
+  window.onlineBet.nagashiAxis = null;
+  window.onlineBet.nagashiPosition = 1;
+  window.onlineBet.nagashiOpponents = [];
   document.querySelectorAll('#screen-online-betting .bet-type-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
   updateOnlineHorseTitle();
   renderOnlineHorseGrid();
+  renderOnlineBuyMethodTabs();
+  updateOnlineBuyMethodUI();
 };
+
+// 買い方タブを描画
+function renderOnlineBuyMethodTabs(){
+  const type = window.onlineBet.betType;
+  const methods = AVAILABLE_BUY_METHODS[type] || ['simple'];
+  const panel = document.getElementById('ob-buymethod-panel');
+  const tabs = document.getElementById('ob-buymethod-tabs');
+  if (!panel || !tabs) return;
+  // シンプルのみの場合はパネル自体を隠す（UIをすっきり）
+  if (methods.length <= 1) {
+    panel.style.display = 'none';
+    return;
+  }
+  panel.style.display = '';
+  tabs.innerHTML = '';
+  methods.forEach(m => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = BUY_METHOD_NAMES[m] || m;
+    btn.style.cssText = 'flex:1;min-width:60px;padding:8px 4px;border:2px solid #ddd;background:white;border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer';
+    if (m === window.onlineBet.buyMethod) {
+      btn.style.borderColor = 'var(--gold-dark)';
+      btn.style.background = '#fffbe6';
+    }
+    btn.onclick = () => onlineSelectBuyMethod(m);
+    tabs.appendChild(btn);
+  });
+  // ヒント文
+  const hintEl = document.getElementById('ob-buymethod-hint');
+  if (hintEl) {
+    const hints = {
+      simple: '通常通り、1点だけ賭けます',
+      box: '選んだ馬の全組み合わせを買います',
+      formation: '各位に複数の候補を設定して買います',
+      nagashi: '軸馬1頭を決めて、相手と組み合わせて買います'
+    };
+    hintEl.textContent = hints[window.onlineBet.buyMethod] || '';
+  }
+}
+
+// 買い方を選択
+window.onlineSelectBuyMethod = function(method){
+  window.onlineBet.buyMethod = method;
+  window.onlineBet.selectedHorses = [];
+  window.onlineBet.formationPositions = [[], [], []];
+  window.onlineBet.nagashiAxis = null;
+  window.onlineBet.nagashiPosition = 1;
+  window.onlineBet.nagashiOpponents = [];
+  renderOnlineBuyMethodTabs();
+  updateOnlineBuyMethodUI();
+};
+
+// 買い方に応じてUIを切り替え
+function updateOnlineBuyMethodUI(){
+  const method = window.onlineBet.buyMethod;
+  const horsePanel = document.querySelector('#screen-online-betting .panel-title#ob-horse-title')?.closest('.panel');
+  const formPanel = document.getElementById('ob-formation-panel');
+  const nagaPanel = document.getElementById('ob-nagashi-panel');
+  if (method === 'simple' || method === 'box') {
+    if (horsePanel) horsePanel.style.display = '';
+    if (formPanel) formPanel.style.display = 'none';
+    if (nagaPanel) nagaPanel.style.display = 'none';
+    updateOnlineHorseTitleForBuyMethod();
+    renderOnlineHorseGrid();
+  } else if (method === 'formation') {
+    if (horsePanel) horsePanel.style.display = 'none';
+    if (formPanel) formPanel.style.display = '';
+    if (nagaPanel) nagaPanel.style.display = 'none';
+    renderOnlineFormationUI();
+  } else if (method === 'nagashi') {
+    if (horsePanel) horsePanel.style.display = 'none';
+    if (formPanel) formPanel.style.display = 'none';
+    if (nagaPanel) nagaPanel.style.display = '';
+    renderOnlineNagashiUI();
+  }
+  updateOnlineComboInfo();
+}
+
+// 馬選択タイトルを買い方に応じて更新
+function updateOnlineHorseTitleForBuyMethod(){
+  const type = window.onlineBet.betType;
+  const method = window.onlineBet.buyMethod;
+  const titleEl = document.getElementById('ob-horse-title');
+  if (!titleEl) return;
+  if (method === 'box') {
+    // ボックスはn頭以上選ぶ（n=2 or 3）
+    const minCount = (type === 'sanrenfuku' || type === 'sanrentan') ? 3 : 2;
+    titleEl.textContent = `🏇 馬を選ぶ（${minCount}頭以上：ボックス）`;
+  } else {
+    updateOnlineHorseTitle();
+  }
+}
+
+// ボックス時の最大選択数（実質「8頭まで」）
+function getOnlineMaxSelForBox(){
+  // ボックスは多めに選んでいい
+  return 8;
+}
+
+// 賭け方+買い方に応じた最大選択頭数
+function getOnlineMaxSelectionForCurrentMethod(){
+  const method = window.onlineBet.buyMethod;
+  const type = window.onlineBet.betType;
+  if (method === 'simple') return BET_HORSE_COUNT[type] || 1;
+  if (method === 'box') return getOnlineMaxSelForBox();
+  return BET_HORSE_COUNT[type] || 1;
+}
+
+// フォーメーションUI描画
+function renderOnlineFormationUI(){
+  const type = window.onlineBet.betType;
+  const container = document.getElementById('ob-formation-positions');
+  if (!container) return;
+  const positionCount = (type === 'sanrentan') ? 3 : 2;
+  const labels = ['1着候補', '2着候補', '3着候補'];
+  container.innerHTML = '';
+  for (let i = 0; i < positionCount; i++) {
+    const div = document.createElement('div');
+    div.style.cssText = 'margin-top:10px';
+    const label = document.createElement('div');
+    label.style.cssText = 'font-size:0.85rem;font-weight:700;margin-bottom:4px';
+    label.textContent = labels[i];
+    div.appendChild(label);
+    const grid = document.createElement('div');
+    grid.className = 'horse-grid';
+    grid.id = `ob-formation-grid-${i}`;
+    div.appendChild(grid);
+    container.appendChild(div);
+    renderOnlineFormationGrid(i);
+  }
+}
+
+function renderOnlineFormationGrid(positionIdx){
+  const game = window.online.game;
+  const topic = game?.selectedTopic;
+  const c = document.getElementById(`ob-formation-grid-${positionIdx}`);
+  if (!c || !topic) return;
+  c.innerHTML = '';
+  const sel = window.onlineBet.formationPositions[positionIdx] || [];
+  (topic.horses || []).forEach((name, i) => {
+    const isSel = sel.includes(i);
+    const d = document.createElement('div');
+    d.className = 'horse-card' + (isSel ? ' selected-1' : '');
+    let badge = '';
+    if (isSel) {
+      badge = `<div class="sel-label">✓</div>`;
+    }
+    d.innerHTML = `${badge}<div class="num-badge ${HC[i]}">${i+1}</div><div class="horse-name">${escapeHtml(name)}</div>`;
+    d.onclick = () => onlineToggleFormationHorse(positionIdx, i);
+    c.appendChild(d);
+  });
+}
+
+window.onlineToggleFormationHorse = function(positionIdx, horseIdx){
+  const arr = window.onlineBet.formationPositions[positionIdx] || [];
+  const idx = arr.indexOf(horseIdx);
+  if (idx >= 0) {
+    arr.splice(idx, 1);
+  } else {
+    arr.push(horseIdx);
+  }
+  window.onlineBet.formationPositions[positionIdx] = arr;
+  renderOnlineFormationGrid(positionIdx);
+  updateOnlineComboInfo();
+};
+
+// 流しUI描画
+function renderOnlineNagashiUI(){
+  renderOnlineNagashiAxisGrid();
+  renderOnlineNagashiOppGrid();
+  renderOnlineNagashiPositionButtons();
+}
+
+function renderOnlineNagashiAxisGrid(){
+  const game = window.online.game;
+  const topic = game?.selectedTopic;
+  const c = document.getElementById('ob-nagashi-axis-grid');
+  if (!c || !topic) return;
+  c.innerHTML = '';
+  const axis = window.onlineBet.nagashiAxis;
+  (topic.horses || []).forEach((name, i) => {
+    const isSel = (axis === i);
+    const d = document.createElement('div');
+    d.className = 'horse-card' + (isSel ? ' selected-1' : '');
+    let badge = '';
+    if (isSel) badge = `<div class="sel-label">軸</div>`;
+    d.innerHTML = `${badge}<div class="num-badge ${HC[i]}">${i+1}</div><div class="horse-name">${escapeHtml(name)}</div>`;
+    d.onclick = () => onlineSetNagashiAxis(i);
+    c.appendChild(d);
+  });
+}
+
+window.onlineSetNagashiAxis = function(horseIdx){
+  if (window.onlineBet.nagashiAxis === horseIdx) {
+    window.onlineBet.nagashiAxis = null;
+  } else {
+    window.onlineBet.nagashiAxis = horseIdx;
+    // 軸が相手にも入ってたら除去
+    window.onlineBet.nagashiOpponents = window.onlineBet.nagashiOpponents.filter(h => h !== horseIdx);
+  }
+  renderOnlineNagashiAxisGrid();
+  renderOnlineNagashiOppGrid();
+  renderOnlineNagashiPositionButtons();
+  updateOnlineComboInfo();
+};
+
+function renderOnlineNagashiOppGrid(){
+  const game = window.online.game;
+  const topic = game?.selectedTopic;
+  const c = document.getElementById('ob-nagashi-opp-grid');
+  if (!c || !topic) return;
+  c.innerHTML = '';
+  const axis = window.onlineBet.nagashiAxis;
+  const opps = window.onlineBet.nagashiOpponents;
+  (topic.horses || []).forEach((name, i) => {
+    const isAxis = (axis === i);
+    const isSel = opps.includes(i);
+    const d = document.createElement('div');
+    d.className = 'horse-card' + (isSel ? ' selected-1' : '') + (isAxis ? ' disabled' : '');
+    let badge = '';
+    if (isSel) badge = `<div class="sel-label">✓</div>`;
+    if (isAxis) badge = `<div class="sel-label" style="background:#888">軸</div>`;
+    d.innerHTML = `${badge}<div class="num-badge ${HC[i]}">${i+1}</div><div class="horse-name">${escapeHtml(name)}</div>`;
+    if (!isAxis) {
+      d.onclick = () => onlineToggleNagashiOpp(i);
+    } else {
+      d.style.opacity = '0.4';
+      d.style.cursor = 'not-allowed';
+    }
+    c.appendChild(d);
+  });
+}
+
+window.onlineToggleNagashiOpp = function(horseIdx){
+  if (window.onlineBet.nagashiAxis === horseIdx) return;
+  const arr = window.onlineBet.nagashiOpponents;
+  const idx = arr.indexOf(horseIdx);
+  if (idx >= 0) arr.splice(idx, 1);
+  else arr.push(horseIdx);
+  renderOnlineNagashiOppGrid();
+  updateOnlineComboInfo();
+};
+
+function renderOnlineNagashiPositionButtons(){
+  const type = window.onlineBet.betType;
+  const row = document.getElementById('ob-nagashi-position-row');
+  const cont = document.getElementById('ob-nagashi-position-btns');
+  if (!row || !cont) return;
+  // 順序ありの賭け方（馬単・3連単）のみ位置選択を表示
+  const isOrdered = (type === 'umatan' || type === 'sanrentan');
+  if (!isOrdered) {
+    row.style.display = 'none';
+    return;
+  }
+  row.style.display = '';
+  const positions = (type === 'umatan') ? [1, 2] : [1, 2, 3];
+  const labels = { 1: '1着固定', 2: '2着固定', 3: '3着固定' };
+  cont.innerHTML = '';
+  positions.forEach(p => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = labels[p];
+    btn.style.cssText = 'flex:1;padding:8px 6px;border:2px solid #ddd;background:white;border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer';
+    if (window.onlineBet.nagashiPosition === p) {
+      btn.style.borderColor = 'var(--gold-dark)';
+      btn.style.background = '#fffbe6';
+    }
+    btn.onclick = () => {
+      window.onlineBet.nagashiPosition = p;
+      renderOnlineNagashiPositionButtons();
+      updateOnlineComboInfo();
+    };
+    cont.appendChild(btn);
+  });
+}
+
+// 点数・金額情報を表示
+function updateOnlineComboInfo(){
+  const el = document.getElementById('ob-combo-info');
+  if (!el) return;
+  const combos = computeCurrentCombinations();
+  const minBet = window.online.settings?.minBet || 500;
+  const unit = minBet;
+  const total = combos.length * unit;
+  if (combos.length === 0 || window.onlineBet.buyMethod === 'simple') {
+    el.style.display = 'none';
+    return;
+  }
+  el.style.display = '';
+  el.innerHTML = `<strong>${combos.length}点</strong> × 1点 ${unit.toLocaleString()}点 = <strong style="color:var(--gold)">合計 ${total.toLocaleString()}点</strong>`;
+}
+
+// 現在の入力から組み合わせを生成
+function computeCurrentCombinations(){
+  const ob = window.onlineBet;
+  const type = ob.betType;
+  const method = ob.buyMethod;
+  if (method === 'simple') {
+    const sel = ob.selectedHorses;
+    const need = BET_HORSE_COUNT[type] || 1;
+    if (sel.length !== need) return [];
+    return [sel.slice()];
+  } else if (method === 'box') {
+    return expandBox(type, ob.selectedHorses);
+  } else if (method === 'formation') {
+    const positionCount = (type === 'sanrentan') ? 3 : 2;
+    const groups = ob.formationPositions.slice(0, positionCount);
+    return expandFormation(type, groups);
+  } else if (method === 'nagashi') {
+    return expandNagashi(type, {
+      axis: ob.nagashiAxis,
+      axisPosition: ob.nagashiPosition,
+      opponents: ob.nagashiOpponents
+    });
+  }
+  return [];
+}
 
 function updateOnlineHorseTitle(){
   const t = {
@@ -4625,10 +5286,20 @@ function updateOnlineHorseTitle(){
   document.getElementById('ob-horse-title').textContent = t[window.onlineBet.betType] || t.tansho;
 }
 
-function getOnlineMaxSel(){ return (BET_HORSE_COUNT && BET_HORSE_COUNT[window.onlineBet.betType]) || 1; }
+function getOnlineMaxSel(){
+  const method = window.onlineBet.buyMethod || 'simple';
+  if (method === 'box') return getOnlineMaxSelForBox(); // ボックスは8頭まで
+  return (BET_HORSE_COUNT && BET_HORSE_COUNT[window.onlineBet.betType]) || 1;
+}
 
 // 順序が重要な賭け方かどうか
-function isOnlineOrderedBet(){ const bt = window.onlineBet.betType; return bt === 'tansho' || bt === 'umatan' || bt === 'sanrentan'; }
+function isOnlineOrderedBet(){
+  const method = window.onlineBet.buyMethod || 'simple';
+  // ボックスモードでは順序を表示しない（全順列を生成するため）
+  if (method === 'box') return false;
+  const bt = window.onlineBet.betType;
+  return bt === 'tansho' || bt === 'umatan' || bt === 'sanrentan';
+}
 
 function renderOnlineHorseGrid(){
   const game = window.online.game;
@@ -4656,13 +5327,22 @@ function renderOnlineHorseGrid(){
 
 function onlineSelectHorseForBet(idx){
   const sel = window.onlineBet.selectedHorses;
+  const method = window.onlineBet.buyMethod || 'simple';
   const p = sel.indexOf(idx);
   if(p >= 0) sel.splice(p, 1);
   else {
-    if(sel.length >= getOnlineMaxSel()) sel.shift();
-    sel.push(idx);
+    if (method === 'box') {
+      // ボックスは8頭まで追加可能
+      if (sel.length >= getOnlineMaxSelForBox()) return;
+      sel.push(idx);
+    } else {
+      if(sel.length >= getOnlineMaxSel()) sel.shift();
+      sel.push(idx);
+    }
   }
   renderOnlineHorseGrid();
+  // 点数表示更新
+  if (typeof updateOnlineComboInfo === 'function') updateOnlineComboInfo();
 }
 
 // 親の順位入力グリッド
@@ -4736,14 +5416,26 @@ function setOnlineBetInputVal(v){
   const display = document.getElementById('ob-bet-display');
   if(!display) return;
   const num = parseInt(v) || 0;
-  display.textContent = num > 0 ? num.toLocaleString() + ' 点' : '0';
+  const method = window.onlineBet.buyMethod || 'simple';
+  const combos = (typeof computeCurrentCombinations === 'function') ? computeCurrentCombinations() : [];
+  const points = combos.length;
+  const total = (method === 'simple') ? num : (num * points);
   try {
     const game = window.online.game;
     const myPoints = (game?.points && game.points[window.online.playerId]) || 0;
     const minBetRaw = window.online.settings?.minBet || 0;
     const minBet = myPoints <= minBetRaw ? myPoints : minBetRaw;
-    display.style.color = num > myPoints ? '#e74c3c' : num >= minBet ? '#2ecc71' : 'var(--gold)';
+    // 表示テキスト
+    if (method === 'simple' || points === 0) {
+      display.textContent = num > 0 ? num.toLocaleString() + ' 点' : '0';
+    } else {
+      display.innerHTML = `<span style="font-size:0.55em">1点</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#999"> × ${points}点 = </span><br><span style="font-size:0.75em">合計 ${total.toLocaleString()}点</span>`;
+    }
+    // 色判定: 合計が持ち点を超えたら警告色
+    display.style.color = total > myPoints ? '#e74c3c' : num >= minBet ? '#2ecc71' : 'var(--gold)';
   } catch(e){}
+  // 組み合わせ情報も更新
+  if (typeof updateOnlineComboInfo === 'function') updateOnlineComboInfo();
 }
 
 function renderOnlineKeypad(maxPoints){
@@ -4764,7 +5456,14 @@ function renderOnlineKeypad(maxPoints){
     return;
   }
   const hintEl = document.getElementById('ob-bet-hint');
-  if(hintEl) hintEl.textContent = `最低${minBetRaw.toLocaleString()}点 / 最大${maxPoints.toLocaleString()}点 / 1点単位でOK`;
+  if(hintEl) {
+    const method = window.onlineBet.buyMethod || 'simple';
+    if (method === 'simple') {
+      hintEl.textContent = `最低${minBetRaw.toLocaleString()}点 / 最大${maxPoints.toLocaleString()}点 / 1点単位でOK`;
+    } else {
+      hintEl.textContent = `【1点あたり】最低${minBetRaw.toLocaleString()}点 / 持ち点 最大${maxPoints.toLocaleString()}点`;
+    }
+  }
   keypadEl.style.display = 'grid';
   presetEl.style.display = 'flex';
   const presets = minBetRaw === 0 ? [0, 500, 1000, 2000, 3000, 5000] : [minBetRaw, 500, 1000, 2000, 3000, 5000];
@@ -4808,65 +5507,148 @@ function handleOnlineKey(k, max){
 window.onlineSubmitKoBet = function(){
   const game = window.online.game;
   const myPoints = (game?.points && game.points[window.online.playerId]) || 0;
-  const amount = parseInt(window.onlineBet.betInputVal) || 0;
-  const needed = getOnlineMaxSel();
+  const unitAmount = parseInt(window.onlineBet.betInputVal) || 0;
+  const method = window.onlineBet.buyMethod || 'simple';
   const minBetRaw = window.online.settings?.minBet || 0;
-  const minBet = myPoints <= minBetRaw ? myPoints : minBetRaw;
 
   // 見送り（minBet=0かつ0点入力）
-  if(amount === 0 && minBetRaw === 0){
+  if(unitAmount === 0 && minBetRaw === 0){
     const myName = getOnlinePlayersArray().find(p => p.id === window.online.playerId)?.name || '';
     document.getElementById('osc-round-header').textContent = `ROUND ${game.currentRound || 1} — 見送り確認`;
     document.getElementById('osc-name').textContent = myName;
     document.getElementById('osc-points').textContent = myPoints.toLocaleString();
-    // お題情報を見送り画面にも表示
     renderTopicWithHorses('osc-topic-icon', 'osc-topic-title', 'osc-topic-horses', game.selectedTopic);
     goTo('screen-online-skip-confirm');
     return;
   }
-  if(amount < minBet){
-    showNotif(`⚠️ ${minBet.toLocaleString()}点以上を入力してください`);
+
+  // 組み合わせを計算
+  const combinations = computeCurrentCombinations();
+  if (combinations.length === 0) {
+    if (method === 'simple') {
+      const needed = BET_HORSE_COUNT[window.onlineBet.betType] || 1;
+      showNotif(`⚠️ 馬を${needed}頭選んでください`);
+    } else if (method === 'box') {
+      const minN = (window.onlineBet.betType === 'sanrenfuku' || window.onlineBet.betType === 'sanrentan') ? 3 : 2;
+      showNotif(`⚠️ ${minN}頭以上選んでください`);
+    } else if (method === 'formation') {
+      showNotif('⚠️ 各位に馬を1頭以上選んでください');
+    } else if (method === 'nagashi') {
+      if (window.onlineBet.nagashiAxis === null) {
+        showNotif('⚠️ 軸馬を1頭選んでください');
+      } else {
+        const minOpp = (window.onlineBet.betType === 'sanrenfuku' || window.onlineBet.betType === 'sanrentan') ? 2 : 1;
+        showNotif(`⚠️ 相手馬を${minOpp}頭以上選んでください`);
+      }
+    }
     return;
   }
-  if(amount > myPoints){ showNotif('⚠️ 持ち点が足りません'); return; }
-  if(window.onlineBet.selectedHorses.length < needed){ showNotif(`⚠️ 馬を${needed}頭選んでください`); return; }
+
+  const totalAmount = unitAmount * combinations.length;
+  // 最低ベット額のチェック: 1点あたりが minBet 以上
+  const minBet = myPoints <= minBetRaw ? myPoints : minBetRaw;
+  if (method === 'simple') {
+    // シンプルは合計＝1点なので、入力額そのままチェック
+    if(unitAmount < minBet){
+      showNotif(`⚠️ ${minBet.toLocaleString()}点以上を入力してください`);
+      return;
+    }
+  } else {
+    // 複数賭けは「1点あたり」が minBet 以上
+    if(unitAmount < minBet){
+      showNotif(`⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`);
+      return;
+    }
+  }
+  if(totalAmount > myPoints){
+    showNotif(`⚠️ 持ち点が足りません（必要: ${totalAmount.toLocaleString()}点、所持: ${myPoints.toLocaleString()}点）`);
+    return;
+  }
 
   // 確認画面へ
   const myName = getOnlinePlayersArray().find(p => p.id === window.online.playerId)?.name || '';
   const topic = game.selectedTopic;
   const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {tansho:'単勝',rentan:'馬単',sanrentan:'3連単'};
-  // パリミュチュエル方式: オッズは締切後に確定する
   const betDescs = (typeof BET_DESCS !== 'undefined') ? BET_DESCS : {};
-  const multInfo = {};
-  Object.keys(betNames).forEach(k => {
-    const desc = betDescs[k] || '';
-    multInfo[k] = `${desc} — オッズは締切後に確定します（最低×1.1保証）`;
-  });
+  const methodName = BUY_METHOD_NAMES[method] || '';
+  const multInfo = `${betDescs[window.onlineBet.betType] || ''} — オッズは締切後に確定します`;
   const posLabels = ['🥇 1位', '🥈 2位', '🥉 3位'];
   document.getElementById('obc-round-header').textContent = `ROUND ${game.currentRound || 1} — 馬券確認`;
   document.getElementById('obc-name').textContent = myName;
   document.getElementById('obc-points').textContent = myPoints.toLocaleString();
-  document.getElementById('obc-bet-type').textContent = betNames[window.onlineBet.betType];
-  document.getElementById('obc-amount').textContent = amount.toLocaleString() + ' 点';
-  document.getElementById('obc-payout-info').textContent = multInfo[window.onlineBet.betType];
-  document.getElementById('obc-horses').innerHTML = window.onlineBet.selectedHorses.map((hi, i) => `<div style="display:flex;align-items:center;gap:8px;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);border-radius:8px;padding:8px 12px"><div style="color:var(--gold);font-size:0.8rem;font-weight:900;min-width:50px">${posLabels[i] || ''}</div><div class="ibadge ${HC[hi]}" style="width:24px;height:24px;font-size:0.8rem">${hi+1}</div><div style="color:white;font-weight:700">${topic.horses[hi]}</div></div>`).join('');
-  // お題情報を馬券確認画面に表示
+  const betTypeLabel = method === 'simple'
+    ? betNames[window.onlineBet.betType]
+    : `${betNames[window.onlineBet.betType]}${methodName}`;
+  document.getElementById('obc-bet-type').textContent = betTypeLabel;
+  const amountLabel = method === 'simple'
+    ? `${unitAmount.toLocaleString()} 点`
+    : `${unitAmount.toLocaleString()} 点 × ${combinations.length}点 = 合計 ${totalAmount.toLocaleString()} 点`;
+  document.getElementById('obc-amount').textContent = amountLabel;
+  document.getElementById('obc-payout-info').textContent = multInfo;
+
+  // 馬の表示 - 買い方に応じて
+  let horsesHtml = '';
+  if (method === 'simple') {
+    horsesHtml = window.onlineBet.selectedHorses.map((hi, i) => `<div style="display:flex;align-items:center;gap:8px;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);border-radius:8px;padding:8px 12px"><div style="color:var(--gold);font-size:0.8rem;font-weight:900;min-width:50px">${isOnlineOrderedBet() ? (posLabels[i] || '') : '✓'}</div><div class="ibadge ${HC[hi]}" style="width:24px;height:24px;font-size:0.8rem">${hi+1}</div><div style="color:white;font-weight:700">${topic.horses[hi]}</div></div>`).join('');
+  } else {
+    // 複数賭けは「○点」と組み合わせ一覧を表示
+    horsesHtml = `<div style="color:var(--gold);font-weight:700;margin-bottom:6px">${combinations.length}点の組み合わせ:</div>`;
+    horsesHtml += '<div style="max-height:200px;overflow-y:auto">';
+    combinations.slice(0, 30).forEach(combo => {
+      const isOrd = (window.onlineBet.betType === 'umatan' || window.onlineBet.betType === 'sanrentan');
+      const joiner = isOrd ? ' → ' : ' - ';
+      const items = combo.map(hi => `<span class="ibadge ${HC[hi]}" style="width:22px;height:22px;font-size:0.75rem;display:inline-flex;align-items:center;justify-content:center;margin:0 1px">${hi+1}</span>`).join(`<span style="color:#888;margin:0 2px">${joiner}</span>`);
+      horsesHtml += `<div style="background:rgba(245,200,66,0.08);border-radius:6px;padding:4px 8px;margin-bottom:3px;display:flex;align-items:center;flex-wrap:wrap">${items}</div>`;
+    });
+    if (combinations.length > 30) horsesHtml += `<div style="color:#888;font-size:0.75rem;text-align:center;padding:6px">...他 ${combinations.length - 30}点</div>`;
+    horsesHtml += '</div>';
+  }
+  document.getElementById('obc-horses').innerHTML = horsesHtml;
   renderTopicWithHorses('obc-topic-icon', 'obc-topic-title', 'obc-topic-horses', topic, {longPressTargetId:'obc-topic-panel'});
+
+  // 確認画面の確定時に Firebase に送信するための情報を一時保管
+  window.onlineBet._pendingSubmit = {
+    betType: window.onlineBet.betType,
+    buyMethod: method,
+    unitAmount,
+    totalAmount,
+    combinations,
+    selections: method === 'simple' ? window.onlineBet.selectedHorses.slice() : null
+  };
+
   goTo('screen-online-bet-confirm');
 };
 
 // 馬券確定 → DBに保存
 window.onlineConfirmBet = async function(){
-  const amount = parseInt(window.onlineBet.betInputVal) || 0;
+  const pending = window.onlineBet._pendingSubmit;
+  if (!pending) {
+    showNotif('⚠️ 賭け情報がありません。賭け直してください');
+    goTo('screen-online-betting');
+    return;
+  }
   try {
     const myBetRef = ref(db, `rooms/${window.online.roomCode}/game/bets/${window.online.playerId}`);
-    await set(myBetRef, {
-      betType: window.onlineBet.betType,
-      selections: [...window.onlineBet.selectedHorses],
-      amount: amount,
+    const data = {
+      betType: pending.betType,
+      buyMethod: pending.buyMethod,
+      amount: pending.totalAmount,
       skipped: false,
       submittedAt: Date.now()
-    });
+    };
+    if (pending.buyMethod === 'simple') {
+      data.selections = pending.selections || [];
+    } else {
+      data.unitAmount = pending.unitAmount;
+      data.combinations = pending.combinations;
+      // 表示用に selections も入れる（全選択肢の集合）
+      const allSels = new Set();
+      pending.combinations.forEach(c => c.forEach(h => allSels.add(h)));
+      data.selections = [...allSels];
+    }
+    await set(myBetRef, data);
+    // クリーンアップ
+    delete window.onlineBet._pendingSubmit;
     enterOnlineBetWait();
   } catch(e){
     console.error(e);
@@ -5307,8 +6089,30 @@ function enterOnlineReveal(game){
       if(!bet || bet.skipped || bet.amount === 0){
         return `<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;
       }
-      const tags = (bet.selections || []).map((hi, si) => `<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700"><span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem">${hi+1}</span>${escapeHtml(topic.horses[hi])}<span style="color:#aaa;font-size:0.65rem">(${posL[si]})</span></span>`).join('');
-      return `<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span></span><span class="reveal-bet-type">${betNames[bet.betType]}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${tags}</div><div style="font-size:0.85rem;color:#888;margin-top:6px">賭け金：<strong>${(bet.amount||0).toLocaleString()}点</strong></div></div>`;
+      const buyMethod = bet.buyMethod || 'simple';
+      const betTypeLabel = betNames[bet.betType] || bet.betType;
+      const methodLabel = (buyMethod !== 'simple') ? ' ' + (BUY_METHOD_NAMES[buyMethod] || '') : '';
+      const fullTypeLabel = betTypeLabel + methodLabel;
+      // 表示用の馬タグ
+      let tagsHtml = '';
+      let detailHtml = '';
+      if (buyMethod === 'simple') {
+        // シンプル: 通常通り選択順に表示
+        const isOrd = (bet.betType === 'tansho' || bet.betType === 'umatan' || bet.betType === 'sanrentan');
+        const tags = (bet.selections || []).map((hi, si) => `<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700"><span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem">${hi+1}</span>${escapeHtml(topic.horses[hi])}${isOrd ? `<span style="color:#aaa;font-size:0.65rem">(${posL[si]})</span>` : ''}</span>`).join('');
+        tagsHtml = `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${tags}</div>`;
+        detailHtml = `<div style="font-size:0.85rem;color:#888;margin-top:6px">賭け金：<strong>${(bet.amount||0).toLocaleString()}点</strong></div>`;
+      } else {
+        // 複数賭け: 点数と組み合わせ簡略表示
+        const combos = bet.combinations || [];
+        const unitAmount = bet.unitAmount || 0;
+        // 関係する馬の集合（重複なしで色付き表示）
+        const usedHorses = bet.selections || [];
+        const horsesPreview = usedHorses.slice(0, 6).map(hi => `<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.7rem;display:inline-flex;align-items:center;justify-content:center;margin:0 1px">${hi+1}</span>`).join('');
+        tagsHtml = `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;font-size:0.75rem">使用馬: ${horsesPreview}${usedHorses.length > 6 ? `<span style="color:#888">他${usedHorses.length-6}頭</span>` : ''}</div>`;
+        detailHtml = `<div style="font-size:0.85rem;color:#888;margin-top:6px"><strong>${combos.length}点</strong> × 1点 ${unitAmount.toLocaleString()}点 = 合計 <strong>${(bet.amount||0).toLocaleString()}点</strong></div>`;
+      }
+      return `<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span></span><span class="reveal-bet-type">${fullTypeLabel}</span></div>${tagsHtml}${detailHtml}</div>`;
     }).join('');
   }
 
@@ -5520,7 +6324,13 @@ function calculateOnlineResults(game, players){
       odds: out.odds || 0,        // 新仕様の正式プロパティ
       payout: out.payout || 0,    // 配当金（賭け金 × オッズ）
       oyaBonusFromThis: thisBonus,
-      selections: [...selections]
+      selections: [...selections],
+      // Phase 2: 複数賭けの情報
+      buyMethod: out.buyMethod || bet.buyMethod || 'simple',
+      unitAmount: out.unitAmount || bet.unitAmount || amount,
+      hitCount: out.hitCount || (out.hit ? 1 : 0),
+      totalCount: out.totalCount || (out.subResults?.length || 1),
+      combinations: out.combinations || bet.combinations || null
     });
   });
 
@@ -5676,11 +6486,25 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
       const hitClass = r.skipped ? 'skipped' : (r.multiplier > 0 ? 'hit' : 'miss');
       const hitColor = r.skipped ? '#888' : (r.multiplier > 0 ? '#2ecc71' : '#e74c3c');
       const changeStr = r.change >= 0 ? `+${r.change.toLocaleString()}` : r.change.toLocaleString();
-      const selections = (r.selections || []).map((hi, si) => `<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem;display:inline-block">${hi+1}</span>`).join(' ');
       const actualCountMap = {tansho:1, fukusho:3, umaren:2, umatan:2, wide:3, sanrenfuku:3, sanrentan:3, rentan:2, renfuku:2};
       const actualCount = actualCountMap[r.betType] || 3;
       const actualBadges = (log.oyaResult || []).slice(0, actualCount).map(hi => `<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem;display:inline-block">${hi+1}</span>`).join(' ');
-      return `<div class="player-result ${hitClass}"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span></span><span class="player-result-change" style="color:${hitColor}">${r.skipped?'見送り':changeStr+'点'}</span></div>${r.skipped?'':`<div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:0.7rem">${betNames[r.betType]} (${r.amount.toLocaleString()}点) →</span><span>予想:${selections}</span><span style="color:#aaa">vs</span><span>実際:${actualBadges}</span><span style="font-weight:900;color:${hitColor}">${r.hitType}</span>${(r.odds||r.multiplier)>0?`<span style="background:#fff4cc;border:1px solid var(--gold-dark);border-radius:4px;padding:1px 6px;font-weight:900;color:var(--red);font-size:0.8rem">×${((r.odds||r.multiplier)).toFixed(1)}</span>${r.payout?`<span style="font-size:0.7rem;color:#888">配当:${r.payout.toLocaleString()}</span>`:''}`:''}</div>`}</div>`;
+      const buyMethod = r.buyMethod || 'simple';
+      const methodLabel = (buyMethod !== 'simple' && BUY_METHOD_NAMES) ? (BUY_METHOD_NAMES[buyMethod] || '') : '';
+      const fullBetType = (betNames[r.betType] || r.betType) + (methodLabel ? methodLabel : '');
+      // 賭けの説明部
+      let betInfo = '';
+      if (buyMethod === 'simple') {
+        const selections = (r.selections || []).map(hi => `<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.65rem;display:inline-block">${hi+1}</span>`).join(' ');
+        betInfo = `<span style="font-size:0.7rem">${fullBetType} (${r.amount.toLocaleString()}点) →</span><span>予想:${selections}</span><span style="color:#aaa">vs</span><span>実際:${actualBadges}</span>`;
+      } else {
+        const totalCount = r.totalCount || 0;
+        const hitCount = r.hitCount || 0;
+        const unitAmt = r.unitAmount || 0;
+        const summary = `<span style="background:${hitCount>0?'rgba(46,204,113,0.15)':'rgba(231,76,60,0.1)'};padding:2px 8px;border-radius:6px;font-weight:700;color:${hitCount>0?'#2ecc71':'#e74c3c'}">${hitCount}/${totalCount}点的中</span>`;
+        betInfo = `<span style="font-size:0.7rem">${fullBetType} (${r.amount.toLocaleString()}点 = 1点${unitAmt.toLocaleString()}×${totalCount}) →</span>${summary}<span style="color:#aaa">vs</span><span>実際:${actualBadges}</span>`;
+      }
+      return `<div class="player-result ${hitClass}"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span></span><span class="player-result-change" style="color:${hitColor}">${r.skipped?'見送り':changeStr+'点'}</span></div>${r.skipped?'':`<div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${betInfo}<span style="font-weight:900;color:${hitColor}">${r.hitType}</span>${(r.odds||r.multiplier)>0?`<span style="background:#fff4cc;border:1px solid var(--gold-dark);border-radius:4px;padding:1px 6px;font-weight:900;color:var(--red);font-size:0.8rem">×${((r.odds||r.multiplier)).toFixed(1)}</span>${r.payout?`<span style="font-size:0.7rem;color:#888">配当:${r.payout.toLocaleString()}</span>`:''}`:''}</div>`}</div>`;
     }).join('');
   }
 
@@ -6046,6 +6870,8 @@ window.onlineRestartGame = async function(){
     updates[`${baseRoom}/selectedTopic`] = null;
     updates[`${baseRoom}/topicSelections`] = null;
     updates[`${baseRoom}/startedAt`] = Date.now();
+    // ルームステータスを 'waiting' に戻す（新規プレイヤーの入室を可能にする）
+    updates[`rooms/${window.online.roomCode}/status`] = 'waiting';
     await update(ref(db), updates);
     // 演出用キャッシュもクリア
     window.online._lastResultRound = null;
