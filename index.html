@@ -78,18 +78,22 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .c1{background:#eee;color:#333;border:1px solid #ccc}.c2{background:#222;color:white}.c3{background:var(--red);color:white}
 .c4{background:#1a5fcc;color:white}.c5{background:#e0b800;color:#333}.c6{background:#1a7a1a;color:white}.c7{background:#8b1a8b;color:white}.c8{background:#ff7f3f;color:white}
 .bet-types{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;}
-.bet-type-btn{padding:8px 4px;border:2px solid #ddd;border-radius:10px;background:white;cursor:pointer;text-align:center;min-width:0;position:relative;transition:transform 0.12s,box-shadow 0.12s,border-color 0.12s;overflow:hidden;}
-.bet-type-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:#ccc;}
-/* 難易度カラー: 易しい=緑系 → 難しい=赤紫系 */
+.bet-type-btn{padding:14px 4px 8px;border:2px solid #ddd;border-radius:10px;background:white;cursor:pointer;text-align:center;min-width:0;position:relative;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s,background 0.15s;overflow:hidden;}
+.bet-type-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:#ccc;}
+/* 難易度カラー: 易しい=緑系 → 難しい=赤紫系。3連単のみ虹色 */
 .bet-type-btn.diff-easy::before{background:linear-gradient(90deg,#2d9e44,#1a7a1a);}
 .bet-type-btn.diff-mid::before{background:linear-gradient(90deg,#e0a800,#c97a0a);}
 .bet-type-btn.diff-hard::before{background:linear-gradient(90deg,#c0392b,#8b1a8b);}
-.bet-type-btn.active{border-color:var(--gold-dark);background:#fffbe6;box-shadow:0 0 0 3px rgba(245,200,66,0.35),0 4px 10px rgba(0,0,0,0.15);transform:translateY(-2px);}
-.bet-type-btn.active::after{content:'✓ 選択中';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:0.52rem;font-weight:900;color:var(--gold-dark);letter-spacing:1px;}
+.bet-type-btn.diff-rainbow::before{background:linear-gradient(90deg,#ff0040,#ff8c00,#ffd500,#2d9e44,#1a8fff,#7b2fff,#ff0080);background-size:200% 100%;animation:rainbowSlide 3s linear infinite;}
+@keyframes rainbowSlide{0%{background-position:0% 0;}100%{background-position:200% 0;}}
+.bet-type-btn:hover{border-color:var(--gold);box-shadow:0 3px 10px rgba(0,0,0,0.12);}
+.bet-type-btn.active{border-color:var(--gold-dark);background:linear-gradient(160deg,#fffdf2,#fff2c8);box-shadow:0 0 0 3px rgba(245,200,66,0.5),0 6px 16px rgba(201,150,10,0.3);transform:translateY(-3px);}
+.bet-type-btn.active::after{content:'✓';position:absolute;top:7px;right:7px;width:18px;height:18px;line-height:18px;background:var(--gold-dark);color:#fff;font-size:0.66rem;font-weight:900;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,0.3);}
 .bet-type-btn .bet-name{font-size:0.88rem;font-weight:900;color:#2a2010;}
+.bet-type-btn.active .bet-name{color:#7a5400;}
 .bet-type-btn .bet-mult{font-size:0.65rem;color:var(--red);font-weight:700;}
 .bet-type-btn .bet-desc{font-size:0.6rem;color:#555;margin-top:3px;line-height:1.25;}
-.bet-type-btn .bet-odds-range{font-size:0.58rem;color:#8a6500;font-weight:700;margin-top:4px;margin-bottom:9px;background:rgba(245,200,66,0.22);border-radius:4px;padding:2px 3px;line-height:1.3;}
+.bet-type-btn .bet-odds-range{font-size:0.58rem;color:#8a6500;font-weight:700;margin-top:4px;background:rgba(245,200,66,0.22);border-radius:4px;padding:2px 3px;line-height:1.3;}
 .point-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
 .point-btn{flex:1;min-width:60px;padding:8px 4px;border:1px solid #ccc;border-radius:6px;background:white;cursor:pointer;font-size:0.8rem;font-weight:700;text-align:center;}
 .result-horse{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;margin-bottom:6px;background:white;border:1px solid #ddd;}
@@ -281,6 +285,27 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .rainbow-title-star{font-size:1.7rem;line-height:1;color:#ffeb3b;text-shadow:0 0 20px #ffff00,0 0 40px #ff8000;-webkit-text-fill-color:initial;background:none;-webkit-background-clip:initial;}
 @keyframes rainbowTitle{0%{transform:translate(-50%,-50%) scale(0.3) rotate(-5deg);opacity:0;}100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1;}}
 @keyframes rainbowShift{0%{background-position:0% center;}100%{background-position:200% center;}}
+
+/* ★★★ 万馬券（3連単×100）演出：地球→宇宙→銀河 ★★★ */
+.galaxy-bg{background:radial-gradient(circle at 50% 50%,#0a0020 0%,#05010f 40%,#000 100%);animation:galaxyBgIn 6.5s ease-out forwards;}
+@keyframes galaxyBgIn{0%{background:radial-gradient(circle at 50% 50%,#4a8fff 0%,#1a3a8f 30%,#000 70%);}15%{background:radial-gradient(circle at 50% 50%,#0a0020 0%,#05010f 40%,#000 100%);}100%{background:radial-gradient(circle at 50% 50%,#0a0020 0%,#05010f 40%,#000 100%);}}
+.galaxy-warp{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.95) 0%,rgba(180,210,255,0.5) 8%,transparent 22%);opacity:0;animation:galaxyWarpFlash 1.2s ease-out forwards;}
+@keyframes galaxyWarpFlash{0%{opacity:0;transform:scale(0.2);}20%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(2.5);}}
+.galaxy-stars{position:absolute;inset:0;}
+.warp-star{position:absolute;left:50%;top:50%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 6px #cfe3ff;opacity:0;animation:warpStar var(--sd,1s) linear var(--sdelay,0s) infinite;}
+@keyframes warpStar{0%{transform:translate(0,0) scale(0.2);opacity:0;}10%{opacity:1;}100%{transform:translate(var(--sx),var(--sy)) scale(1.4);opacity:0;}}
+.galaxy-earth{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:5rem;filter:drop-shadow(0 0 30px rgba(80,160,255,0.9));animation:galaxyEarth 2.4s ease-in forwards;}
+@keyframes galaxyEarth{0%{transform:translate(-50%,-50%) scale(2.4);opacity:0;}15%{opacity:1;}100%{transform:translate(-50%,-50%) scale(0.12) translateY(20px);opacity:0.2;}}
+.galaxy-spiral{position:absolute;left:50%;top:50%;width:120vmax;height:120vmax;transform:translate(-50%,-50%) scale(0);border-radius:50%;background:conic-gradient(from 0deg,rgba(123,47,255,0.5),rgba(26,143,255,0.35),rgba(255,0,128,0.4),rgba(255,213,0,0.3),rgba(123,47,255,0.5));opacity:0;mix-blend-mode:screen;animation:galaxySpiral 5.5s ease-out forwards;}
+@keyframes galaxySpiral{0%{transform:translate(-50%,-50%) scale(0) rotate(0deg);opacity:0;}25%{opacity:0.85;}100%{transform:translate(-50%,-50%) scale(1) rotate(220deg);opacity:0.5;}}
+.manbaken-title{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;z-index:5;animation:manbakenIn 0.8s cubic-bezier(0.2,1.4,0.4,1) both;}
+.manbaken-sub{font-size:1rem;font-weight:900;letter-spacing:4px;color:#ffe9a8;text-shadow:0 0 16px rgba(255,213,74,0.9);margin-bottom:6px;}
+.manbaken-main{font-size:4.2rem;font-weight:900;letter-spacing:6px;line-height:1;background:linear-gradient(90deg,#fff2c0,#ffd24a,#ff8c1a,#ffd24a,#fff2c0);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 50px rgba(255,170,30,0.8);animation:rainbowShift 2s linear infinite,manbakenPulse 1.2s ease-in-out infinite;}
+.manbaken-jp{font-size:1.6rem;font-weight:900;letter-spacing:8px;color:#fff;text-shadow:0 0 24px rgba(123,47,255,0.9),0 0 40px rgba(26,143,255,0.7);margin-top:4px;}
+@keyframes manbakenIn{0%{transform:translate(-50%,-50%) scale(0.2);opacity:0;filter:blur(8px);}100%{transform:translate(-50%,-50%) scale(1);opacity:1;filter:blur(0);}}
+@keyframes manbakenPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+.manbaken-gold{position:absolute;top:-20px;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#fff6cc,#ffcc33);box-shadow:0 0 8px #ffd24a;animation:manbakenGold var(--gd,2s) linear var(--gdelay,0s) infinite;}
+@keyframes manbakenGold{0%{transform:translateY(0) scale(1);opacity:0;}10%{opacity:1;}100%{transform:translateY(110vh) scale(0.4);opacity:0;}}
 
 /* サウンドON/OFFボタン */
 .sound-toggle{position:fixed;top:12px;right:12px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
@@ -703,8 +728,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       </div>
       <div style="margin:10px"><button class="btn btn-secondary" onclick="onlineAddBetToCart()" style="background:linear-gradient(135deg,#1a6a3a,#0d4a28);color:#fff;border:none;box-shadow:0 3px 8px rgba(26,106,58,0.4)">➕ この賭けをカートに追加</button></div>
       <!-- 複数券種カート -->
-      <div class="panel" id="ob-cart-panel" style="display:none;border-color:var(--gold)">
-        <div class="panel-title">🧾 購入予定の馬券 <span id="ob-cart-count" style="color:var(--gold)"></span></div>
+      <div class="panel" id="ob-cart-panel" style="display:none;border-color:var(--gold);background:linear-gradient(135deg,#1a1a1a,#262019)">
+        <div class="panel-title" style="color:var(--gold);border-bottom-color:rgba(245,200,66,0.4)">🧾 購入予定の馬券 <span id="ob-cart-count" style="color:var(--gold)"></span></div>
         <div id="ob-cart-list" style="display:flex;flex-direction:column;gap:6px"></div>
         <div id="ob-cart-total" style="margin-top:8px;padding:8px 12px;background:rgba(245,200,66,0.12);border-radius:8px;text-align:right;font-weight:900;color:var(--gold)"></div>
       </div>
@@ -1777,6 +1802,50 @@ window.SFX = (function(){
     }, 1800);
   }
 
+  // ★★★ 万馬券（3連単×100）：圧倒的・宇宙へ旅立つ大音量演出 ★★★
+  function hitManbaken(){
+    // 0) ロケット点火の超低音ランブル（長く・重く）
+    tone({type:'sawtooth', freq:38, freqEnd:22, dur:2.2, gain:0.6});
+    noise({freq:90, freqEnd:30, dur:2.2, gain:0.55, filterType:'lowpass'});
+    // 1) 打ち上げの上昇シュー（ワープ加速）
+    setTimeout(() => { noise({freq:400, freqEnd:9000, dur:1.6, gain:0.4, filterType:'highpass'}); }, 150);
+    setTimeout(() => { tone({type:'sawtooth', freq:120, freqEnd:1800, dur:1.5, gain:0.32}); }, 200);
+    // 2) 宇宙へ突き抜ける大ブースト（ドーン）
+    setTimeout(() => {
+      tone({type:'sine', freq:70, freqEnd:28, dur:1.2, gain:0.7});
+      noise({freq:500, freqEnd:60, dur:1.0, gain:0.6, filterType:'lowpass'});
+    }, 1300);
+    // 3) 銀河の中でキラめく星々（高音の煌めきを大量に）
+    setTimeout(() => {
+      for(let i = 0; i < 24; i++){
+        setTimeout(() => tone({type:'sine', freq:2200 + Math.random()*4500, dur:0.4, gain:0.1}), i * 55);
+      }
+    }, 1500);
+    // 4) 壮大なファンファーレ和音（上昇クレッシェンド、長め）
+    setTimeout(() => {
+      [262, 330, 392, 523, 659, 784, 1047, 1319, 1568].forEach((f, i) => {
+        setTimeout(() => tone({type:'triangle', freq:f, dur:0.55, gain:0.2}), i * 90);
+      });
+    }, 2000);
+    // 5) クライマックスの大三和音×複数回（圧倒的）
+    [3000, 3500, 4000].forEach((d) => {
+      setTimeout(() => {
+        tone({type:'triangle', freq:523, dur:0.7, gain:0.22});
+        tone({type:'triangle', freq:659, dur:0.7, gain:0.2});
+        tone({type:'triangle', freq:784, dur:0.7, gain:0.2});
+        tone({type:'triangle', freq:1047, dur:0.7, gain:0.18});
+        tone({type:'sine', freq:65, freqEnd:30, dur:0.5, gain:0.4});
+        noise({freq:300, freqEnd:60, dur:0.45, gain:0.4, filterType:'lowpass'});
+      }, d);
+    });
+    // 6) 余韻のきらめき
+    setTimeout(() => {
+      for(let i = 0; i < 16; i++){
+        setTimeout(() => tone({type:'sine', freq:1800 + Math.random()*3800, dur:0.5, gain:0.07}), i * 70);
+      }
+    }, 4600);
+  }
+
   // 最終結果：超盛大なフィナーレ
   function finale(){
     // 大ドン
@@ -1808,7 +1877,7 @@ window.SFX = (function(){
     init, setEnabled, isEnabled,
     tap, click, select, confirm, notify, warn, whoosh,
     lottery, lotteryDecide, reveal, roundIntro,
-    hitTansho, hitRenfuku, hitRentan, hitSanrenfuku, hitSanrentan,
+    hitTansho, hitRenfuku, hitRentan, hitSanrenfuku, hitSanrentan, hitManbaken,
     finale
   };
 })();
@@ -1887,8 +1956,8 @@ function injectOddsRangeBadges(scopeSelector){
     if(!m) return;
     const betType = m[1];
     // 難易度カラー（易=緑/中=金/難=赤紫）
-    const diffMap = { fukusho:'diff-easy', tansho:'diff-easy', wide:'diff-easy', umaren:'diff-mid', sanrenfuku:'diff-mid', umatan:'diff-hard', sanrentan:'diff-hard' };
-    btn.classList.remove('diff-easy','diff-mid','diff-hard');
+    const diffMap = { fukusho:'diff-easy', tansho:'diff-easy', wide:'diff-mid', umaren:'diff-mid', umatan:'diff-hard', sanrenfuku:'diff-hard', sanrentan:'diff-rainbow' };
+    btn.classList.remove('diff-easy','diff-mid','diff-hard','diff-rainbow');
     if(diffMap[betType]) btn.classList.add(diffMap[betType]);
     // 既存のバッジがあれば更新、なければ追加
     let badge = btn.querySelector('.bet-odds-range');
@@ -3006,9 +3075,10 @@ function renderOffBuyMethodTabs(){
   methods.forEach(m=>{
     const btn=document.createElement('button');
     btn.type='button';
-    btn.textContent=BUY_METHOD_NAMES[m]||m;
-    btn.style.cssText='flex:1;min-width:60px;padding:8px 4px;border:2px solid #ddd;background:white;border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer';
-    if(m===offBuyMethod){ btn.style.borderColor='var(--gold-dark)'; btn.style.background='#fffbe6'; }
+    const active=(m===offBuyMethod);
+    btn.textContent=(active?'✓ ':'')+(BUY_METHOD_NAMES[m]||m);
+    btn.style.cssText='flex:1;min-width:60px;padding:9px 4px;border:2px solid #ddd;background:white;border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s';
+    if(active){ btn.style.borderColor='var(--gold-dark)'; btn.style.background='linear-gradient(160deg,#fffdf2,#fff2c8)'; btn.style.color='#7a5400'; btn.style.boxShadow='0 0 0 3px rgba(245,200,66,0.5),0 4px 10px rgba(201,150,10,0.25)'; btn.style.transform='translateY(-2px)'; }
     btn.onclick=()=>offSelectBuyMethod(m);
     tabs.appendChild(btn);
   });
@@ -3521,6 +3591,12 @@ function finalizeOfflineCart(){
   const total=offCartTotal(koIdx);
   if(total>p.points){ showNotif(`⚠️ 合計が持ち点を超えています（${total.toLocaleString()}>${p.points.toLocaleString()}）`); return; }
 
+  // 確認ダイアログ（券種一覧＋合計＋賭け後の残り）
+  const betNames=(typeof BET_NAMES!=='undefined')?BET_NAMES:{};
+  const lines=cart.map(u=>`・${betNames[u.betType]||u.betType}${u.buyMethod!=='simple'?'('+(BUY_METHOD_NAMES[u.buyMethod]||u.buyMethod)+')':''}　${u.totalAmount.toLocaleString()}点`).join('\n');
+  const ok=confirm(`${p.name} さん、この内容で勝負しますか？\n\n${lines}\n\n合計：${total.toLocaleString()}点\n賭け後の残り：${(p.points-total).toLocaleString()}点\n\n※確定すると変更できません`);
+  if(!ok) return;
+
   // multiBets 構造を作成
   const multiBets=cart.map(u=>{
     if(u.buyMethod==='simple'){
@@ -3612,6 +3688,14 @@ function selectHorseForResult(idx){const p=resultSelections.indexOf(idx);if(p>=0
 function updateResultPreview(){const c=document.getElementById('result-preview-content');const btn=document.getElementById('result-confirm-btn');const t=state.selectedTopic;if(!resultSelections.length){c.innerHTML='<div class="empty">1位・2位・3位の3つを選んでください</div>';btn.disabled=true;btn.textContent='📢 上位3つを選んでください';return;}c.innerHTML=resultSelections.map((hi,i)=>`<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]||''}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700">${t.horses[hi]}</div></div>`).join('');if(resultSelections.length<3){btn.disabled=true;const remaining=3-resultSelections.length;const positions=['1位','2位','3位'];const needed=positions.slice(resultSelections.length).join('・');btn.textContent=`📢 あと${remaining}つ選んでください（${needed}）`;}else{btn.disabled=false;btn.textContent='📢 賭けを公開して結果へ';}}
 
 function goToReveal(){
+  // 親の順位確認ダイアログ
+  const t0=state.selectedTopic;
+  if(t0 && Array.isArray(resultSelections) && resultSelections.length>=3){
+    const posL=['1位','2位','3位'];
+    const rankLines=resultSelections.slice(0,3).map((hi,i)=>`${posL[i]}：${t0.horses[hi]}`).join('\n');
+    const ok=confirm(`親の順位はこれで決定しますか？\n\n${rankLines}\n\n※公開すると変更できません`);
+    if(!ok) return;
+  }
   state.actualResult=[...resultSelections];
   document.getElementById('rv-round-label').textContent=`ROUND ${state.currentRound} REVEAL`;
   document.getElementById('rv-topic-name').textContent=`${state.selectedTopic.icon} ${state.selectedTopic.title}`;
@@ -5933,11 +6017,15 @@ function renderOnlineBuyMethodTabs(){
   methods.forEach(m => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.textContent = BUY_METHOD_NAMES[m] || m;
-    btn.style.cssText = 'flex:1;min-width:60px;padding:8px 4px;border:2px solid #ddd;background:white;border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer';
-    if (m === window.onlineBet.buyMethod) {
+    const active = (m === window.onlineBet.buyMethod);
+    btn.textContent = (active?'✓ ':'') + (BUY_METHOD_NAMES[m] || m);
+    btn.style.cssText = 'flex:1;min-width:60px;padding:9px 4px;border:2px solid #ddd;background:white;border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s';
+    if (active) {
       btn.style.borderColor = 'var(--gold-dark)';
-      btn.style.background = '#fffbe6';
+      btn.style.background = 'linear-gradient(160deg,#fffdf2,#fff2c8)';
+      btn.style.color = '#7a5400';
+      btn.style.boxShadow = '0 0 0 3px rgba(245,200,66,0.5),0 4px 10px rgba(201,150,10,0.25)';
+      btn.style.transform = 'translateY(-2px)';
     }
     btn.onclick = () => onlineSelectBuyMethod(m);
     tabs.appendChild(btn);
@@ -6596,15 +6684,15 @@ function renderOnlineCart(){
     const joiner = isOrd ? '→' : '-';
     let selDisp;
     if (u.buyMethod === 'simple') {
-      selDisp = (u.selections || []).map(hi => `<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#ccc;margin:0 1px">${joiner}</span>`);
+      selDisp = (u.selections || []).map(hi => `<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#ddd;margin:0 1px">${joiner}</span>`);
     } else {
-      selDisp = `<span style="color:#e8e0c8;font-size:0.8rem;font-weight:600">${u.combinations.length}点（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
+      selDisp = `<span style="color:#f0e8d0;font-size:0.82rem;font-weight:700">${u.combinations.length}点（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
     }
-    return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(245,200,66,0.4);border-radius:8px;padding:9px 11px">
+    return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(245,200,66,0.45);border-radius:8px;padding:9px 11px">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0">
         <span style="background:var(--gold);color:#1a1a1a;font-size:0.75rem;font-weight:900;padding:2px 9px;border-radius:10px;white-space:nowrap">${betNames[u.betType]||u.betType}${methodName}</span>
         <span style="display:inline-flex;align-items:center">${selDisp}</span>
-        <span style="color:var(--gold);font-weight:900;font-size:0.85rem;white-space:nowrap">${u.totalAmount.toLocaleString()}点</span>
+        <span style="color:var(--gold);font-weight:900;font-size:0.88rem;white-space:nowrap">${u.totalAmount.toLocaleString()}点</span>
       </div>
       <button onclick="onlineRemoveCartItem(${i})" style="background:rgba(231,76,60,0.3);border:1px solid #e74c3c;color:#ffb3ab;border-radius:6px;padding:5px 10px;font-size:0.78rem;font-weight:900;cursor:pointer;white-space:nowrap">削除</button>
     </div>`;
@@ -6622,6 +6710,12 @@ window.onlineFinalizeCart = async function(){
   if (cart.length === 0) { showNotif('⚠️ カートが空です'); return; }
   const total = onlineCartTotal();
   if (total > myPoints) { showNotif(`⚠️ 合計が持ち点を超えています（${total.toLocaleString()}>${myPoints.toLocaleString()}）`); return; }
+
+  // 確認ダイアログ（券種一覧＋合計＋賭け後の残り）
+  const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {};
+  const lines = cart.map(u => `・${betNames[u.betType]||u.betType}${u.buyMethod!=='simple'?'('+(BUY_METHOD_NAMES[u.buyMethod]||u.buyMethod)+')':''}　${u.totalAmount.toLocaleString()}点`).join('\n');
+  const ok = confirm(`この内容で勝負しますか？\n\n${lines}\n\n合計：${total.toLocaleString()}点\n賭け後の残り：${(myPoints-total).toLocaleString()}点\n\n※確定すると変更できません`);
+  if(!ok) return;
 
   const multiBets = cart.map(u => {
     if (u.buyMethod === 'simple') {
@@ -8449,7 +8543,53 @@ window.showHitEffect = function(hitType, onDone, extraInfo){
       content.innerHTML += `<div class="hit-title" style="font-size:2.2rem;letter-spacing:3px;font-weight:900"><span style="-webkit-text-fill-color:initial;color:#fff;text-shadow:0 0 20px rgba(180,240,238,0.9)">💎</span><span style="background:linear-gradient(90deg,#ffffff,#b4f0ee,#0abab5,#b4f0ee,#ffffff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 30px rgba(180,240,238,0.7)">3連複的中</span><span style="-webkit-text-fill-color:initial;color:#fff;text-shadow:0 0 20px rgba(180,240,238,0.9)">💎</span></div>`;
     }, 400);
     duration = 2500;
-  } else if(pr === 7){ // 3連単：虹色花火（最派手）
+  } else if(pr === 7){ // 3連単
+    const isManbaken = (Number(extraInfo.odds) || 0) >= 100; // ×100 = 万馬券（最大配当）
+    if(isManbaken){
+      // ★★★ 万馬券演出：地球から宇宙・銀河へ旅立つ圧倒的演出 ★★★
+      bg.className = 'galaxy-bg';
+      setTimeout(() => { try{ window.SFX.hitManbaken(); }catch(e){ try{ window.SFX.hitSanrentan(); }catch(e2){} } }, 0);
+      // 1) 打ち上げの閃光
+      content.innerHTML = `<div class="galaxy-warp"></div><div class="galaxy-stars"></div>`;
+      // 2) ワープする星を大量生成（中央から放射状に流れる）
+      const starsEl = content.querySelector('.galaxy-stars');
+      for(let i = 0; i < 140; i++){
+        const s = document.createElement('div');
+        s.className = 'warp-star';
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 80 + Math.random() * 120;
+        s.style.cssText = `--sx:${Math.cos(angle)*dist}vmax;--sy:${Math.sin(angle)*dist}vmax;--sd:${0.6+Math.random()*1.4}s;--sdelay:${Math.random()*1.2}s;`;
+        starsEl.appendChild(s);
+      }
+      // 3) 地球 → 引いて宇宙へ
+      setTimeout(() => {
+        const earth = document.createElement('div');
+        earth.className = 'galaxy-earth';
+        earth.textContent = '🌍';
+        content.appendChild(earth);
+      }, 200);
+      // 4) 銀河の渦
+      setTimeout(() => {
+        const gx = document.createElement('div');
+        gx.className = 'galaxy-spiral';
+        content.appendChild(gx);
+      }, 900);
+      // 5) タイトル「万馬券」圧倒的表示
+      setTimeout(() => {
+        content.innerHTML += `<div class="manbaken-title"><div class="manbaken-sub">★ TRIFECTA ×100 ★</div><div class="manbaken-main">万馬券</div><div class="manbaken-jp">的中</div></div>`;
+      }, 1400);
+      // 6) 後半、金の粒子が降り注ぐ
+      setTimeout(() => {
+        for(let i = 0; i < 60; i++){
+          const g = document.createElement('div');
+          g.className = 'manbaken-gold';
+          g.style.cssText = `left:${Math.random()*100}%;--gd:${1.5+Math.random()*2}s;--gdelay:${Math.random()*1.5}s;`;
+          content.appendChild(g);
+        }
+      }, 1800);
+      duration = 6500;
+    } else {
+    // 通常の3連単：虹色花火（最派手）
     bg.className = 'rainbow-bg';
     setTimeout(() => { try{ window.SFX.hitSanrentan(); }catch(e){} }, 0);
     content.innerHTML = `<div class="rainbow-flash"></div>`;
@@ -8474,6 +8614,7 @@ window.showHitEffect = function(hitType, onDone, extraInfo){
       content.innerHTML += `<div class="rainbow-title"><span class="rainbow-title-star">★</span><span>3連単的中</span><span class="rainbow-title-star">★</span></div>`;
     }, 500);
     duration = 3500;
+    }
   }
   // プレイヤー名バナーを少し遅れて表示（タイトルの後）
   setTimeout(() => { showPlayerBanner(); }, Math.min(700, duration * 0.3));
