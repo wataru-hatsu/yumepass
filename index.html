@@ -2349,6 +2349,25 @@ function calculatePayouts(bets, result, N) {
 }
 
 
+// 賭け方ごとに利用可能な買い方（オフライン版/Script2 classic スコープ用に複製）
+const AVAILABLE_BUY_METHODS = {
+  tansho: ['simple'],
+  fukusho: ['simple'],
+  umaren: ['simple', 'box', 'nagashi'],
+  umatan: ['simple', 'box', 'formation', 'nagashi'],
+  wide: ['simple', 'box', 'nagashi'],
+  sanrenfuku: ['simple', 'box', 'nagashi'],
+  sanrentan: ['simple', 'box', 'formation', 'nagashi']
+};
+
+// 買い方の表示名（オフライン版/Script2 classic スコープ用に複製）
+const BUY_METHOD_NAMES = {
+  simple: 'シンプル',
+  box: 'ボックス',
+  formation: 'フォーメ',
+  nagashi: '流し'
+};
+
 let state={players:[],rounds:5,initialPoints:5000,minBet:500,oyaBonusRate:50,odds:{tansho:2,renfuku:5,rentan:10,sanrenfuku:7,sanrentan:30},currentRound:0,oyaIndex:0,currentBetPlayerIndex:0,koPlayers:[],selectedTopic:null,currentBets:[],actualResult:[],history:[],topics:[],usedTopicIds:[],prevScreen:'screen-home'};
 const CATEGORIES=[
   {id:'g1',label:'G1',sub:'最高峰｜本音と価値観に踏み込む重いお題',icon:'🏆',color:'#8b1a8b',textColor:'white'},
