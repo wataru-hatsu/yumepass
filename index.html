@@ -2721,9 +2721,13 @@ function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id|
 function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
 function showNotif(msg){
   const n=document.getElementById('notif');
-  n.textContent=msg;
+  // 改行(\n)を <br> に変換して複数行表示に対応
+  n.innerHTML=String(msg).split('\n').map(line=>line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')).join('<br>');
   n.classList.add('show');
-  setTimeout(()=>n.classList.remove('show'),2500);
+  // 長文・複数行は表示時間を延長
+  const dur=(String(msg).length>40||String(msg).includes('\n'))?4200:2500;
+  clearTimeout(n._notifTimer);
+  n._notifTimer=setTimeout(()=>n.classList.remove('show'),dur);
 }
 
 // おしゃれな確認モーダル（Promise<boolean>を返す）
@@ -2877,6 +2881,8 @@ function startGame(){
 
 function goToRoundStart(){
   state.currentRound++;state.currentBets=[];state.actualResult=[];state.selectedTopic=null;
+  // 各プレイヤーのラウンド開始時の持ち点を記録（最低ベット額/オールイン判定に使用）
+  state.players.forEach(p=>{ p.roundStartPoints=p.points; });
   state.prevOyaIndex=state.oyaIndex;
   state.oyaIndex=(state.currentRound-1)%state.players.length;
   // koPlayersの順番：前ラウンドの親から始まる（端末の手渡しを最小化）
@@ -3394,7 +3400,11 @@ function setBetInputVal(v){betInputVal=v;const display=document.getElementById('
 }
 function renderKeypad(max){
   const minBet=state.minBet;
-  const isAllin=max<=minBet&&minBet>0||max<=0;
+  // ラウンド開始時の持ち点を取得（最低ベット額未満の開始＝オールインのみ）
+  let roundStart=max;
+  try{ const pp=state.players[state.koPlayers[state.currentBetPlayerIndex]]; if(pp && typeof pp.roundStartPoints==='number') roundStart=pp.roundStartPoints; }catch(e){}
+  const allinAllowed=(roundStart<minBet&&minBet>0);
+  const isAllin=(allinAllowed)||max<=0;
   const keypadEl=document.getElementById('bet-keypad');const presetEl=document.getElementById('point-preset-btns');if(!keypadEl||!presetEl)return;keypadEl.innerHTML='';presetEl.innerHTML='';
   if(isAllin){
     const hintEl=document.getElementById('bet-hint');
@@ -3534,7 +3544,12 @@ function buildValidatedOffUnit(){
   const koIdx=state.koPlayers[state.currentBetPlayerIndex];
   const p=state.players[koIdx];
   const unitAmount=parseInt(betInputVal)||0;
-  const minBet=p.points<=state.minBet?p.points:state.minBet;
+  // ラウンド開始時の持ち点（未記録なら現在値で代用）
+  const roundStart=(typeof p.roundStartPoints==='number')?p.roundStartPoints:p.points;
+  const stdMin=state.minBet;
+  // 最低ベット額未満で賭けられるのは「ラウンド開始時の持ち点が最低ベット額未満」のときだけ（=オールイン）
+  const allinAllowed = roundStart < stdMin && stdMin > 0;
+  const minBet = allinAllowed ? p.points : stdMin;
   const combinations=computeOffCombinations();
   if(combinations.length===0){
     if(offBuyMethod==='simple'){
@@ -3553,13 +3568,23 @@ function buildValidatedOffUnit(){
   }
   const totalAmount=unitAmount*combinations.length;
   if(unitAmount<minBet){
-    showNotif(offBuyMethod==='simple'?`⚠️ ${minBet.toLocaleString()}点以上を入力してください`:`⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`);
+    // パターンA: ラウンド開始時に最低ベット額以上を持っているのに、最低ベット額未満を入力した
+    if(!allinAllowed){
+      showNotif(`⚠️ 最低ベット額は${stdMin.toLocaleString()}点です\n${stdMin.toLocaleString()}点未満で賭けられるのは、ラウンド開始時の持ち点が${stdMin.toLocaleString()}点未満のときだけです。${stdMin.toLocaleString()}点以上を入力してください。`);
+    } else {
+      showNotif(offBuyMethod==='simple'?`⚠️ ${minBet.toLocaleString()}点以上を入力してください`:`⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`);
+    }
     return null;
   }
   // カート既存分との合計が持ち点を超えないか
   const already=offCartTotal(koIdx);
   if(already+totalAmount>p.points){
-    showNotif(`⚠️ 持ち点が足りません（カート合計 ${already.toLocaleString()}＋今回 ${totalAmount.toLocaleString()} > ${p.points.toLocaleString()}点）`);
+    // パターンB: カートに既存の賭けがあり、残りが最低ベット額に届かない
+    if(already>0 && !allinAllowed){
+      showNotif(`⚠️ 残りの持ち点が最低ベット額（${stdMin.toLocaleString()}点）に届きません\n${stdMin.toLocaleString()}点未満で賭けられるのは、ラウンド開始時の持ち点が${stdMin.toLocaleString()}点未満のときだけです。金額を調整するか、カートの賭けを見直してください。`);
+    } else {
+      showNotif(`⚠️ 持ち点が足りません（カート合計 ${already.toLocaleString()}＋今回 ${totalAmount.toLocaleString()} > ${p.points.toLocaleString()}点）`);
+    }
     return null;
   }
   let selections;
@@ -6916,7 +6941,11 @@ function setOnlineBetInputVal(v){
 
 function renderOnlineKeypad(maxPoints){
   const minBetRaw = window.online.settings?.minBet || 0;
-  const isAllin = maxPoints <= minBetRaw && minBetRaw > 0 || maxPoints <= 0;
+  // オンラインは賭けフェーズ中の game.points がラウンド開始時の持ち点に相当
+  const game = window.online.game;
+  const startPts = (game?.points && game.points[window.online.playerId]) || maxPoints;
+  const allinAllowed = startPts < minBetRaw && minBetRaw > 0;
+  const isAllin = allinAllowed || maxPoints <= 0;
   const keypadEl = document.getElementById('ob-keypad');
   const presetEl = document.getElementById('ob-point-presets');
   if(!keypadEl || !presetEl) return;
@@ -7015,14 +7044,27 @@ function buildValidatedOnlineUnit(){
     return null;
   }
   const totalAmount = unitAmount * combinations.length;
-  const minBet = myPoints <= minBetRaw ? myPoints : minBetRaw;
+  const stdMin = minBetRaw;
+  // オンラインは賭けフェーズ中は持ち点が未減算なので myPoints がラウンド開始時の持ち点に相当
+  const allinAllowed = stdMin > 0 && myPoints < stdMin;
+  const minBet = allinAllowed ? myPoints : stdMin;
   if (unitAmount < minBet) {
-    showNotif(method === 'simple' ? `⚠️ ${minBet.toLocaleString()}点以上を入力してください` : `⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`);
+    // パターンA: ラウンド開始時に最低ベット額以上を持っているのに、最低ベット額未満を入力した
+    if(!allinAllowed && stdMin > 0){
+      showNotif(`⚠️ 最低ベット額は${stdMin.toLocaleString()}点です\n${stdMin.toLocaleString()}点未満で賭けられるのは、ラウンド開始時の持ち点が${stdMin.toLocaleString()}点未満のときだけです。${stdMin.toLocaleString()}点以上を入力してください。`);
+    } else {
+      showNotif(method === 'simple' ? `⚠️ ${minBet.toLocaleString()}点以上を入力してください` : `⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`);
+    }
     return null;
   }
   const already = onlineCartTotal();
   if (already + totalAmount > myPoints) {
-    showNotif(`⚠️ 持ち点が足りません（カート合計 ${already.toLocaleString()}＋今回 ${totalAmount.toLocaleString()} > ${myPoints.toLocaleString()}点）`);
+    // パターンB: カートに既存の賭けがあり、残りが最低ベット額に届かない
+    if(already > 0 && !allinAllowed && stdMin > 0){
+      showNotif(`⚠️ 残りの持ち点が最低ベット額（${stdMin.toLocaleString()}点）に届きません\n${stdMin.toLocaleString()}点未満で賭けられるのは、ラウンド開始時の持ち点が${stdMin.toLocaleString()}点未満のときだけです。金額を調整するか、カートの賭けを見直してください。`);
+    } else {
+      showNotif(`⚠️ 持ち点が足りません（カート合計 ${already.toLocaleString()}＋今回 ${totalAmount.toLocaleString()} > ${myPoints.toLocaleString()}点）`);
+    }
     return null;
   }
   let selections;
@@ -7857,11 +7899,19 @@ function enterOnlineReveal(game){
   const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {tansho:'単勝',rentan:'馬単',sanrentan:'3連単'};
   const posL = ['1位', '2位', '3位'];
 
-  // 親パネル：順位入力済の状態（結果発表まで非開示は正しいが、文言を変える）
+  // 親パネル：順位入力済の状態（他の人には結果発表まで非開示。親自身の端末でだけ自分の選んだ順位を表示）
   const oyaPlayer = players[oyaIdx];
   const oyaBlock = document.getElementById('orv-oya-block');
   if(oyaBlock && oyaPlayer){
-    oyaBlock.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:white;border-radius:8px;border:1px solid #c060c0"><span style="font-size:1.5rem">👑</span><div style="flex:1"><div style="color:#a040a0;font-weight:900;font-size:1.05rem">${escapeHtml(oyaPlayer.name)} <span class="oya-badge">親</span></div><div style="color:#888;font-size:0.75rem;margin-top:2px">⏳ 順位入力完了 — 結果発表まで内容は非表示</div></div></div>`;
+    const viewerIsOya = (oyaPlayer.id === window.online.playerId);
+    // 親自身の選んだ順位（FirebaseのoyaResult優先、なければ手元のoyaSelections）
+    let oyaPicks = Array.isArray(game.oyaResult) ? game.oyaResult : (window.onlineBet.oyaSelections || []);
+    if(viewerIsOya && oyaPicks.length === 3 && topic){
+      const items = oyaPicks.map((hi, i) => `<div style="display:flex;align-items:center;gap:8px;background:rgba(192,96,192,0.1);border:1px solid rgba(192,96,192,0.35);border-radius:8px;padding:7px 10px;margin-top:6px"><div style="font-size:1.15rem;width:28px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}" style="width:26px;height:26px;font-size:0.85rem;flex-shrink:0">${hi+1}</div><div style="color:#3a2a3a;font-weight:700;font-size:0.92rem">${escapeHtml(topic.horses[hi] || '')}</div></div>`).join('');
+      oyaBlock.innerHTML = `<div style="padding:10px 12px;background:white;border-radius:8px;border:1px solid #c060c0"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.4rem">👑</span><div style="color:#a040a0;font-weight:900;font-size:1.02rem">${escapeHtml(oyaPlayer.name)} <span class="oya-badge">親</span><span style="color:#888;font-size:0.72rem;font-weight:600;margin-left:6px">（あなたが入力した順位）</span></div></div>${items}<div style="color:#aaa;font-size:0.68rem;margin-top:7px">※この表示はあなたの端末だけ。他の人には結果発表まで見えません</div></div>`;
+    } else {
+      oyaBlock.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:white;border-radius:8px;border:1px solid #c060c0"><span style="font-size:1.5rem">👑</span><div style="flex:1"><div style="color:#a040a0;font-weight:900;font-size:1.05rem">${escapeHtml(oyaPlayer.name)} <span class="oya-badge">親</span></div><div style="color:#888;font-size:0.75rem;margin-top:2px">⏳ 順位入力完了 — 結果発表まで内容は非表示</div></div></div>`;
+    }
   }
 
   // 子リスト
