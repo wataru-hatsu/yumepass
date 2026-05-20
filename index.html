@@ -1412,68 +1412,97 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
   <div class="header"><div class="subtitle">HOW TO PLAY</div><h1>📖 ルール</h1></div>
   <div class="scroll-content">
     <div class="panel">
-      <div class="panel-title">🎯 ゲームの目的</div>
-      <p style="font-size:0.88rem;line-height:1.8">お題に対して、<strong>親（出題者）が1位・2位・3位に何を選ぶか</strong>を予想して点数を賭けるゲームです。<br>予想が当たると、賭けた点数が<strong>オッズ（倍率）倍</strong >になって戻ってきます。</p>
+      <div class="panel-title">🎯 どんなゲーム？</div>
+      <p style="font-size:0.95rem;font-weight:900;color:#5a3a00;line-height:1.6;margin-bottom:8px">「あの人は、何を一番大事にしてる人だろう？」</p>
+      <p style="font-size:0.88rem;line-height:1.85">お題に対して、<strong>親（出題者）が1位・2位・3位に何を選ぶか</strong>を予想して点数を賭けるゲーム。<br>あなたの読み通り当たれば、賭けた点数が<strong>オッズ（倍率）倍</strong>になって返ってくる。</p>
+      <p style="font-size:0.85rem;line-height:1.8;margin-top:8px">意外と知らない友達・家族・恋人の「<strong>価値観</strong>」が見えてくる——それがこのゲームの一番の楽しみ。</p>
+      <div style="background:rgba(245,200,66,0.14);border-left:4px solid var(--gold);border-radius:0 8px 8px 0;padding:9px 12px;margin-top:10px;font-size:0.82rem;line-height:1.7;color:#4a3500">
+        例）お題「スポーツで一番大事なのは？」<br>
+        あの人は熱血だから1位は「勝つこと」かな…？ いや、意外と「楽しむこと」かも？<br>
+        <strong>その読み合いが盛り上がる。</strong>
+      </div>
     </div>
 
-    <div class="panel"><div class="panel-title">👑 親と子ってなに？</div><p style="font-size:0.85rem;line-height:1.8"><strong>親</strong>＝お題の順位を決める出題者。<strong>子</strong>＝親の順位を予想して賭ける人。毎ラウンド1人が親になり、順番に交代します。</p></div>
+    <div class="panel">
+      <div class="panel-title">🔥 親と子ってなに？</div>
+      <p style="font-size:0.86rem;line-height:1.85"><strong>親</strong>＝お題の順位を決める出題者。1人が親になる。<br><strong>子</strong>＝親の順位を予想して賭ける人。</p>
+      <p style="font-size:0.83rem;line-height:1.8;margin-top:6px;color:#666">毎ラウンド、親は順番に交代。みんなが順番に「<strong>読まれる側（予想される側）</strong>」になる。</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">🏇 賭け方は7種類 — 当てやすさで配当が変わる</div>
+      <p style="font-size:0.83rem;line-height:1.7;margin-bottom:4px">簡単な賭けは当たりやすいけど配当は控えめ。難しい賭けほど、当たった時の配当が大きい。<strong>自分の読みの自信に合わせて選ぼう。</strong></p>
+      <div style="font-size:0.76rem;color:#b88a00;margin-bottom:10px;line-height:1.6">難易度順 ➜ <strong>複勝 ＜ 単勝・ワイド ＜ 馬連 ＜ 馬単・3連複 ＜ 3連単</strong></div>
+      <div id="rules-bet-cards"></div>
+      <div style="background:linear-gradient(135deg,#2a1a00,#3a2a00);border:1px solid var(--gold-dark);border-radius:8px;padding:10px 12px;margin-top:10px;color:#ffe9a8;font-size:0.82rem;line-height:1.7">
+        💡 自信があるなら3連単で<strong style="color:var(--gold)">一発逆転（最大100倍！）</strong>、堅く行くなら複勝。<br>1回のレースで<strong>何種類でも同時に買える</strong>（複数券種購入）。
+      </div>
+    </div>
+
+    <div class="panel" style="border-color:var(--gold)">
+      <div class="panel-title">💰 オッズの仕組み ← ここが面白い！</div>
+      <p style="font-size:0.86rem;line-height:1.8;margin-bottom:8px">オッズは、<strong>みんなの賭けが締め切られた後に決まる</strong>。ポイントは2つ。</p>
+      <div style="background:rgba(46,158,68,0.1);border-left:4px solid var(--green-light);border-radius:0 8px 8px 0;padding:9px 12px;margin:8px 0;font-size:0.84rem;line-height:1.7">
+        <strong>① 人気がないほど、当たれば高配当。</strong><br>みんなが賭けていない「<strong>穴</strong>」な予想ほど、当てたときのオッズは高い。逆に「本命」は当たってもオッズ控えめ。
+      </div>
+      <div style="background:rgba(201,150,10,0.1);border-left:4px solid var(--gold-dark);border-radius:0 8px 8px 0;padding:9px 12px;margin:8px 0;font-size:0.84rem;line-height:1.7">
+        <strong>② オッズには上限と下限がある。</strong><br>どれだけ人気が偏っても、各賭け方ごとに決まった範囲でしか動かない。<br>（例：単勝は ×1.3〜×4.9、3連単は ×6.0〜×100）
+      </div>
+      <div style="background:rgba(245,200,66,0.14);border-radius:8px;padding:9px 12px;margin:8px 0;font-size:0.82rem;line-height:1.7;color:#4a3500">
+        💡 だから「<strong>みんなと違う読み</strong>」が当たった時が一番気持ちいい。周りの予想を読んで、あえて穴を狙うのも戦略のひとつ。
+      </div>
+      <div style="background:linear-gradient(135deg,#2a1a00,#3a2a00);border:1px solid var(--gold-dark);border-radius:8px;padding:10px 12px;margin-top:8px;color:#ffe9a8;font-size:0.82rem;line-height:1.7">
+        そして大事なこと：この上限のおかげで、<strong style="color:var(--gold)">「全部の選択肢に賭けて確実に儲ける」ことはできない</strong>。ちゃんと予想を当てた人だけが報われる、フェアな設計です。
+      </div>
+    </div>
 
     <div class="panel" id="rules-bonus-panel">
-      <div class="panel-title">💰 親ボーナス</div>
+      <div class="panel-title">💎 親ボーナス</div>
       <div id="rules-bonus-content"></div>
     </div>
 
     <div class="panel">
-      <div class="panel-title">🎰 賭け方は7種類</div>
-      <div style="font-size:0.78rem;color:#b88a00;margin-bottom:10px;line-height:1.6">当てやすさと配当（オッズ）が違います。<br>当てやすい順 ➜ <strong>複勝 ＜ 単勝・ワイド ＜ 馬連 ＜ 馬単・3連複 ＜ 3連単</strong></div>
-      <div id="rules-bet-cards"></div>
-    </div>
-
-    <div class="panel" style="border-color:var(--gold)">
-      <div class="panel-title">📈 オッズ（配当倍率）の仕組み</div>
-      <div style="font-size:0.86rem;line-height:1.85">
-        <p style="margin:0 0 8px"><strong>オッズは「みんなの賭けが締め切られた後」に決まります。</strong></p>
-        <div style="background:rgba(46,158,68,0.1);border-left:4px solid var(--green-light);border-radius:6px;padding:8px 12px;margin:8px 0">
-          🔵 <strong>人気がない予想</strong>（みんなが賭けていない選択肢）ほど、当たった時のオッズが<strong>高い</strong>
-        </div>
-        <div style="background:rgba(192,57,43,0.08);border-left:4px solid var(--red);border-radius:6px;padding:8px 12px;margin:8px 0">
-          🔴 <strong>人気がある予想</strong>（みんなが賭けている選択肢）ほど、オッズは<strong>低い</strong>
-        </div>
-        <p style="margin:8px 0">つまり「人気によってオッズが変動する」仕組みです。</p>
-        <p style="margin:8px 0">ただし各賭け方には<strong>オッズの上限と下限</strong>があります（例：単勝は ×1.3〜×4.9、3連単は ×6.0〜×100.0）。どんなに人気が集中しても下限より下がらず、どんなに穴でも上限より上がりません。</p>
-        <div style="background:linear-gradient(135deg,#2a1a00,#3a2a00);border:1px solid var(--gold-dark);border-radius:8px;padding:10px 12px;margin-top:8px;color:#ffe9a8;font-size:0.82rem;line-height:1.7">
-          💡 この上限があるおかげで、<strong style="color:var(--gold)">「全部の選択肢に賭けて確実に儲ける」ことはできません</strong>。予想を当てた人だけが報われる、公平なゲームです。
-        </div>
+      <div class="panel-title">🎫 賭けの買い方いろいろ</div>
+      <div style="font-size:0.84rem;line-height:1.9">
+        ・<strong>通常買い</strong> … 1つの予想に賭ける<br>
+        ・<strong>ボックス</strong> … 選んだ選択肢の組み合わせを全部買う（順番違いもカバー）<br>
+        ・<strong>フォーメーション</strong> … 1位はこの選択肢、2位はこの2つから…のように指定<br>
+        ・<strong>流し</strong> … 軸になる1つの選択肢を固定して、相手を何通りか流す<br>
+        ・<strong>複数券種</strong> … 単勝も複勝も馬連も、1回のレースでまとめて買える
       </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">🛒 賭けの買い方</div>
-      <div style="font-size:0.85rem;line-height:1.8">
-        ・<strong>通常買い</strong>：1つの予想に賭ける<br>
-        ・<strong>ボックス／フォーメーション／流し</strong>：複数の組み合わせをまとめて買う<br>
-        ・<strong>複数券種の同時購入</strong>：単勝と複勝を両方など、別々の券種をいくつも買える（各券種ごとに最低賭け金以上）
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">🪙 点数のルール</div>
-      <div style="font-size:0.85rem;line-height:1.8" id="rules-points-content">
-        ・最低賭け金は<strong>初期持ち点の5%</strong>（例：持ち点5,000なら250点）<br>
-        ・親が当たりを出した子の配当の一部が親に入ります（<strong>親ボーナス</strong>、設定で変更可）
-      </div>
+      <div id="rules-points-content" style="background:rgba(245,200,66,0.14);border-radius:8px;padding:9px 12px;margin-top:10px;font-size:0.82rem;line-height:1.7;color:#4a3500"></div>
     </div>
 
     <div class="panel">
       <div class="panel-title">📱 ゲームの流れ</div>
-      <ol style="font-size:0.85rem;line-height:2;padding-left:18px">
-        <li>子がみんなで相談してお題を選ぶ</li>
-        <li>子が順番に端末を回して賭けを入力（秘密）</li>
-        <li>親がお題の順位を入力（秘密）</li>
-        <li>全員の賭け内容を一斉公開！</li>
-        <li><strong>結果発表 &amp; 自動精算🎊</strong></li>
-      </ol>
+      <div style="margin-bottom:12px">
+        <div style="display:inline-block;background:var(--gold-dark);color:#fff;font-size:0.72rem;font-weight:900;padding:3px 10px;border-radius:9px;margin-bottom:6px">🐎 1台で遊ぶ（端末を回す）</div>
+        <ol style="font-size:0.84rem;line-height:1.95;padding-left:18px;margin-top:4px">
+          <li>子がみんなで相談してお題を選ぶ</li>
+          <li>子が順番に1台の端末を回して賭けを入力（他の人は見ない）</li>
+          <li>親がお題の順位を入力（秘密）</li>
+          <li>全員の賭け内容を一斉公開！</li>
+          <li><strong>結果発表 &amp; 自動精算🎊</strong></li>
+        </ol>
+      </div>
+      <div style="border-top:1px dashed var(--border);padding-top:10px">
+        <div style="display:inline-block;background:#1a5fcc;color:#fff;font-size:0.72rem;font-weight:900;padding:3px 10px;border-radius:9px;margin-bottom:6px">🌐 オンライン対戦（各自の端末）</div>
+        <ol style="font-size:0.84rem;line-height:1.95;padding-left:18px;margin-top:4px">
+          <li>部屋を作って、合言葉（部屋コード）で全員が参加</li>
+          <li>お題を選ぶ（設定により全員 or 子だけ）</li>
+          <li>各自が自分の端末で同時に入力（子＝賭け / 親＝お題の順位1〜3位）→ 準備完了を押す</li>
+          <li>全員の準備が揃うと、賭け内容を一斉公開！</li>
+          <li><strong>結果発表 &amp; 自動精算🎊</strong></li>
+        </ol>
+      </div>
     </div>
+
+    <div class="panel" style="border-color:var(--gold)">
+      <div class="panel-title">🏆 勝利条件</div>
+      <p style="font-size:0.86rem;line-height:1.85">決められたラウンド数が終わったとき、<strong>点数が一番多い人が優勝！</strong><br>本命を堅く積むも良し、大穴の3連単で一発逆転も良し。</p>
+      <p style="font-size:0.85rem;line-height:1.8;margin-top:8px;font-weight:900;color:#5a3a00">あなたは「読む人」？それとも「読まれにくい人」？</p>
+    </div>
+
     <div style="margin:10px"><button class="btn btn-secondary" onclick="goTo('screen-home')">← 戻る</button></div>
   </div>
 </div>
@@ -1886,7 +1915,7 @@ const BET_DESCS = {
   fukusho: '選んだ1人が3位以内ならOK',
   umaren: '1位と2位の2人を当てる（順番自由）',
   umatan: '1位と2位を順番通りに当てる',
-  wide: '選んだ2人が3位以内ならOK（順番自由）',
+  wide: '選んだ2人がどちらも3位以内ならOK（順番自由）',
   sanrenfuku: '1〜3位の3人を当てる（順番自由）',
   sanrentan: '1〜3位を順番通りに当てる'
 };
@@ -2634,33 +2663,50 @@ function renderRulesScreen(){
   const r=state.oyaBonusRate;
   const bp=document.getElementById('rules-bonus-content');
   if(bp){
+    const note2p=`<div style="background:rgba(26,95,204,0.1);border-left:4px solid #1a5fcc;border-radius:0 8px 8px 0;padding:8px 12px;margin-top:8px;font-size:0.8rem;line-height:1.6;color:#0d3d7a">ℹ️ <strong>2人プレイ時は一律「親ボーナスなし」</strong>（設定に関わらず0%）になります。</div>`;
     if(r===0){
-      bp.innerHTML=`<p style="font-size:0.85rem;line-height:1.8">現在の設定では<strong>親ボーナスなし（0%）</strong>です。</p><div style="font-size:0.75rem;color:#aaa;margin-top:6px">💡 詳細設定でボーナス割合を変更できます（デフォルト：50%）</div>`;
+      bp.innerHTML=`<p style="font-size:0.85rem;line-height:1.8">現在の設定では<strong>親ボーナスなし（0%）</strong>です。</p><div style="font-size:0.75rem;color:#888;margin-top:6px">💡 詳細設定でボーナス割合を変更できます（デフォルト：50%）</div>${note2p}`;
     } else {
-      bp.innerHTML=`<p style="font-size:0.85rem;line-height:1.8">子が的中した場合、その配当金の<strong>${r}%が親にボーナス</strong>として入ります。子は配当金を全額受け取ります。</p><div style="background:#f9eef9;border:1px solid var(--oya-light);border-radius:8px;padding:10px;margin-top:8px;font-size:0.8rem">例）子が1000点でオッズ×5的中なら、子：+5,000点 / 親：+${Math.floor(1000*5*(r/100)).toLocaleString()}点ボーナス</div><div style="font-size:0.75rem;color:#aaa;margin-top:6px">💡 詳細設定でボーナス割合を変更できます</div>`;
+      const bonus2500=Math.floor(1000*5*(r/100));
+      bp.innerHTML=`<p style="font-size:0.86rem;line-height:1.85">子が的中すると、その配当の一部（初期設定${r}%）が<strong>親にもボーナス</strong>として入ります。子は配当を全額もらえて、親の取り分は別途プラス。</p>
+      <div style="background:#f9eef9;border:1px solid var(--oya-light);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:0.82rem;line-height:1.7">例）子が1000点でオッズ×5的中 → <strong style="color:var(--oya)">子：+5,000点</strong> / <strong style="color:var(--oya)">親：+${bonus2500.toLocaleString()}点</strong>ボーナス</div>
+      <div style="font-size:0.82rem;color:#7a5a8a;margin-top:8px;line-height:1.6">💡 親も「子に当てさせる絶妙なお題選び」で稼げる。<span style="color:#999">（割合は詳細設定で変更可）</span></div>${note2p}`;
     }
   }
-  // 賭け方カード（説明＋オッズ範囲を BET_CONFIG / BET_DESCS から動的生成）
+  // 賭け方カード（難易度色つき。説明＋オッズ範囲を BET_CONFIG / BET_DESCS から動的生成）
   const bc=document.getElementById('rules-bet-cards');
   if(bc){
+    // 難易度順。tier: 易=🟡緑 / 中=🟠橙 / 難=🔴赤 / 最難=🟣紫
+    const meta={
+      fukusho:{dot:'🟡',bar:'#2d9e44'},
+      tansho:{dot:'🟡',bar:'#2d9e44'},
+      wide:{dot:'🟠',bar:'#e08a00'},
+      umaren:{dot:'🟠',bar:'#e08a00'},
+      umatan:{dot:'🔴',bar:'#c0392b'},
+      sanrenfuku:{dot:'🔴',bar:'#c0392b'},
+      sanrentan:{dot:'🟣',bar:'#8b1a8b'}
+    };
     const order=['fukusho','tansho','wide','umaren','umatan','sanrenfuku','sanrentan'];
     bc.innerHTML=order.map(bt=>{
       const c=BET_CONFIG[bt]; if(!c) return '';
       const lo=Number.isInteger(c.minOdds)?c.minOdds:c.minOdds.toFixed(1);
       const hi=Number.isInteger(c.maxOdds)?c.maxOdds:c.maxOdds.toFixed(1);
-      return `<div style="display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--border)">
-        <span style="background:var(--gold-dark);color:#fff;font-weight:900;font-size:0.85rem;padding:3px 10px;border-radius:10px;white-space:nowrap;min-width:54px;text-align:center">${BET_NAMES[bt]}</span>
-        <span style="flex:1;font-size:0.82rem;line-height:1.4">${BET_DESCS[bt]}</span>
-        <span style="font-size:0.74rem;font-weight:900;color:var(--gold-dark);white-space:nowrap">×${lo}〜${hi}</span>
+      const m=meta[bt]||{dot:'',bar:'#ccc'};
+      const big=(bt==='sanrentan');
+      return `<div style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-left:4px solid ${m.bar};background:#fff;border-radius:0 8px 8px 0;margin-bottom:6px;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+        <span style="font-size:0.9rem;flex-shrink:0">${m.dot}</span>
+        <span style="background:${m.bar};color:#fff;font-weight:900;font-size:0.82rem;padding:3px 9px;border-radius:9px;white-space:nowrap;min-width:50px;text-align:center;flex-shrink:0">${BET_NAMES[bt]}</span>
+        <span style="flex:1;font-size:0.8rem;line-height:1.4;color:#2a2010;min-width:0">${BET_DESCS[bt]}${big?'<strong style="color:#8b1a8b">（最高難度！）</strong>':''}</span>
+        <span style="font-size:0.74rem;font-weight:900;color:${big?'#8b1a8b':'#8a6500'};white-space:nowrap;flex-shrink:0">×${lo}〜${hi}</span>
       </div>`;
     }).join('');
   }
-  // 点数ルール（最低賭け金＝初期持ち点の5%、現在値を反映）
+  // 点数コメント（買い方パネル内。最低賭け金＝ゲーム開始時の持ち点の5%を現在値で反映）
   const pc=document.getElementById('rules-points-content');
   if(pc){
     const ip=state.initialPoints||5000;
     const mb=Math.ceil(ip*0.05);
-    pc.innerHTML=`・最低賭け金は<strong>初期持ち点の5%</strong>（現在：持ち点${ip.toLocaleString()}なら<strong>${mb.toLocaleString()}点</strong>）<br>・親が当たりを出した子の配当の一部が親に入ります（<strong>親ボーナス</strong>、設定で変更可）`;
+    pc.innerHTML=`💡 最低賭け金は<strong>ゲーム開始時の持ち点の5%</strong>から（現在：開始時${ip.toLocaleString()}点なら<strong>${mb.toLocaleString()}点</strong>）。少額で何種類も試せる。<br><span style="color:#7a5a00">※ 所持点がゲーム開始時の持ち点の5%（${mb.toLocaleString()}点）を下回ったら、その残り全額で<strong>オールイン</strong>になります。</span>`;
   }
 }
 function startGame(){
