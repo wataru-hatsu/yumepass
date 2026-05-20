@@ -474,7 +474,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 
         <div style="margin-top:10px">
           <label style="font-size:0.8rem;color:#666;display:block;margin-bottom:4px">📉 最低ベット額</label>
-          <input type="tel" id="online-minbet" value="500" min="0" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'');onlineSettingChanged()">
+          <input type="tel" id="online-minbet" value="250" min="0" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'');onlineSettingChanged()">
           <div id="online-minbet-warn" style="display:none;font-size:0.75rem;color:var(--red);margin-top:4px;padding:6px;background:#fff5f5;border-left:3px solid var(--red);border-radius:4px"></div>
           <div style="font-size:0.7rem;color:#888;margin-top:3px">💡 初期持ち金の5%以上で設定してください</div>
         </div>
@@ -988,9 +988,10 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         </div>
         <label style="display:block;margin-top:12px;margin-bottom:4px">最低ベット額（自由入力）</label>
         <div style="display:flex;align-items:center;gap:8px">
-          <input type="tel" id="custom-min-bet" placeholder="例：200" style="flex:1;margin-top:0" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+          <input type="tel" id="custom-min-bet" placeholder="未入力で初期点数の5%（例:250）" style="flex:1;margin-top:0" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
           <span style="font-size:0.85rem;color:#888;white-space:nowrap">点（0以上）</span>
         </div>
+        <div style="font-size:0.7rem;color:#888;margin-top:3px">💡 初期持ち金の5%以上で設定してください（未入力なら自動で5%）</div>
         <label style="display:block;margin-top:12px;margin-bottom:4px">親ボーナス割合（プリセット + 自由入力）</label>
         <div style="display:flex;gap:4px;margin-bottom:6px">
           <button type="button" onclick="offlineSetBonusPreset(0)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">0%</button>
@@ -2433,7 +2434,7 @@ const BUY_METHOD_NAMES = {
   nagashi: '流し'
 };
 
-let state={players:[],rounds:5,initialPoints:5000,minBet:500,oyaBonusRate:50,odds:{tansho:2,renfuku:5,rentan:10,sanrenfuku:7,sanrentan:30},currentRound:0,oyaIndex:0,currentBetPlayerIndex:0,koPlayers:[],selectedTopic:null,currentBets:[],actualResult:[],history:[],topics:[],usedTopicIds:[],prevScreen:'screen-home'};
+let state={players:[],rounds:5,initialPoints:5000,minBet:250,oyaBonusRate:50,odds:{tansho:2,renfuku:5,rentan:10,sanrenfuku:7,sanrentan:30},currentRound:0,oyaIndex:0,currentBetPlayerIndex:0,koPlayers:[],selectedTopic:null,currentBets:[],actualResult:[],history:[],topics:[],usedTopicIds:[],prevScreen:'screen-home'};
 const CATEGORIES=[
   {id:'g1',label:'G1',sub:'最高峰｜本音と価値観に踏み込む重いお題',icon:'🏆',color:'#8b1a8b',textColor:'white'},
   {id:'g2',label:'G2',sub:'準重賞｜少し深くて考えさせられるお題',icon:'🥈',color:'#1a5fcc',textColor:'white'},
@@ -2603,7 +2604,7 @@ function startGame(){
     showNotif('⚠️ 初期点数は1以上を入力してください');return;
   }
   if(customBet!==''&&customBet!==null&&customBet!==undefined&&!isNaN(parseInt(customBet))) state.minBet=Math.max(0,parseInt(customBet));
-  else state.minBet=500;
+  else state.minBet=Math.ceil(state.initialPoints * 0.05); // 未入力時は初期持ち点の5%（例: 5000→250）
   // 最低ベット額バリデーション: 初期持ち金の5%以上であること
   const minRequired = Math.ceil(state.initialPoints * 0.05);
   if (state.minBet < minRequired) {
@@ -3348,22 +3349,22 @@ function renderOfflineCart(){
     // 代表表示: simpleは選択馬、複数買いは「N点」
     let selDisp;
     if(u.buyMethod==='simple'){
-      selDisp=(u.selections||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#aaa;margin:0 1px">${joiner}</span>`);
+      selDisp=(u.selections||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#555;margin:0 1px">${joiner}</span>`);
     } else {
-      selDisp=`<span style="color:#666;font-size:0.78rem">${u.combinations.length}点（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
+      selDisp=`<span style="color:#333;font-size:0.8rem;font-weight:600">${u.combinations.length}点（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
     }
-    return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e0d5b0;border-radius:8px;padding:8px 10px">
+    return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #d8c98a;border-radius:8px;padding:9px 11px">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0">
-        <span style="background:var(--gold-dark);color:#fff;font-size:0.72rem;font-weight:900;padding:2px 8px;border-radius:10px;white-space:nowrap">${betNames[u.betType]||u.betType}${methodName}</span>
+        <span style="background:var(--gold-dark);color:#fff;font-size:0.75rem;font-weight:900;padding:2px 9px;border-radius:10px;white-space:nowrap">${betNames[u.betType]||u.betType}${methodName}</span>
         <span style="display:inline-flex;align-items:center">${selDisp}</span>
-        <span style="color:#7a5a00;font-weight:700;font-size:0.82rem;white-space:nowrap">${u.totalAmount.toLocaleString()}点</span>
+        <span style="color:#8a6500;font-weight:900;font-size:0.85rem;white-space:nowrap">${u.totalAmount.toLocaleString()}点</span>
       </div>
-      <button onclick="removeOfflineCartItem(${i})" style="background:#fdecea;border:1px solid #f5b7b1;color:#c0392b;border-radius:6px;padding:4px 8px;font-size:0.75rem;font-weight:700;cursor:pointer;white-space:nowrap">削除</button>
+      <button onclick="removeOfflineCartItem(${i})" style="background:#fdecea;border:1px solid #e88;color:#a93226;border-radius:6px;padding:5px 10px;font-size:0.78rem;font-weight:900;cursor:pointer;white-space:nowrap">削除</button>
     </div>`;
   }).join('');
   const total=offCartTotal(koIdx);
   const remaining=p.points-total;
-  if(totalEl) totalEl.innerHTML=`合計 ${total.toLocaleString()}点 / 持ち点 ${p.points.toLocaleString()}点　<span style="color:${remaining<0?'#c0392b':'#2ecc71'}">残り ${remaining.toLocaleString()}点</span>`;
+  if(totalEl) totalEl.innerHTML=`<span style="color:#5a4500">合計 ${total.toLocaleString()}点 / 持ち点 ${p.points.toLocaleString()}点</span>　<span style="color:${remaining<0?'#c0392b':'#1a7a1a'}">残り ${remaining.toLocaleString()}点</span>`;
 }
 
 // カート確定 → multiBets として currentBets に積み、次のプレイヤーへ
@@ -3762,27 +3763,61 @@ function renderRoundResultBody(){
 }
 
 // オフライン版の演出を発動（calculateResults からは画面遷移後に呼ばれる）
+// 券種コードから showHitEffect が認識する hitType 文字列を返す
+function effectHitTypeFor(betType){
+  const t = (typeof normalizeBetType === 'function') ? normalizeBetType(betType) : betType;
+  switch(t){
+    case 'sanrentan': return '3連単的中🎊';
+    case 'sanrenfuku': return '3連複的中';
+    case 'umatan': return '馬単的中';
+    case 'umaren': return '馬連的中';
+    case 'wide': return 'ワイド的中';
+    case 'tansho': return '単勝的中';
+    case 'fukusho': return '複勝的中';
+    default: return '';
+  }
+}
+
+// プレイヤー結果から「的中した個々の券種」を平らに列挙する
+// 返り値: [{ betType, odds, buyMethod, name }]
+function extractWinningBets(r){
+  const out = [];
+  if(r.skipped) return out;
+  if(r.isMulti && Array.isArray(r.betResults)){
+    r.betResults.forEach(br => {
+      if(br.hit && (br.odds || 0) > 0){
+        out.push({ betType: br.betType, odds: br.odds || 0, buyMethod: br.buyMethod || 'simple', name: r.name });
+      }
+    });
+  } else if(!r.skipped && ((r.odds || r.multiplier) > 0) && (r.payout > 0)){
+    out.push({ betType: r.betType, odds: r.odds || r.multiplier || 0, buyMethod: r.buyMethod || 'simple', name: r.name });
+  }
+  return out;
+}
+// モジュールスクリプトからも使えるよう window に公開
+window.effectHitTypeFor = effectHitTypeFor;
+window.extractWinningBets = extractWinningBets;
+
 function triggerOfflineEffects(log){
   if(!log || !log.playerResults) return;
-  // 的中者を抽出
-  const winners = log.playerResults.filter(r => !r.skipped && (r.odds || r.multiplier) > 0 && r.payout > 0);
-  if(winners.length === 0) return;
+  // 全プレイヤーの「的中した個々の券種」を集める（複数券種も券種単位に展開）
+  let allWins = [];
+  log.playerResults.forEach(r => { allWins = allWins.concat(extractWinningBets(r)); });
+  if(allWins.length === 0) return;
   // 最高オッズの的中を主役にする
   let topWinner = null;
   let topOdds = -1;
-  winners.forEach(r => {
-    const o = r.odds || r.multiplier || 0;
-    if(o > topOdds){ topOdds = o; topWinner = r; }
-  });
+  allWins.forEach(w => { if(w.odds > topOdds){ topOdds = w.odds; topWinner = w; } });
   if(!topWinner) return;
-  const topHitType = topWinner.hitType;
+  const topHitType = effectHitTypeFor(topWinner.betType);
+  if(!topHitType) return;
   const betLabel = (typeof BET_NAMES !== 'undefined' && BET_NAMES[topWinner.betType]) ? BET_NAMES[topWinner.betType] : topWinner.betType;
   const methodLabel = (topWinner.buyMethod && topWinner.buyMethod !== 'simple' && typeof BUY_METHOD_NAMES !== 'undefined') ? (BUY_METHOD_NAMES[topWinner.buyMethod] || '') : '';
   const extraInfo = {
     playerName: topWinner.name,
     odds: topOdds,
     betLabel: betLabel + methodLabel,
-    isTopOdds: winners.length > 1 // 複数当選者がいる中での最高オッズなら王冠
+    isTopOdds: allWins.length > 1 // 複数当選がある中での最高オッズなら王冠
   };
   // 画面遷移が完全に完了してから演出開始（300ms待つ）
   setTimeout(() => {
@@ -6394,22 +6429,22 @@ function renderOnlineCart(){
     const joiner = isOrd ? '→' : '-';
     let selDisp;
     if (u.buyMethod === 'simple') {
-      selDisp = (u.selections || []).map(hi => `<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#aaa;margin:0 1px">${joiner}</span>`);
+      selDisp = (u.selections || []).map(hi => `<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#ccc;margin:0 1px">${joiner}</span>`);
     } else {
-      selDisp = `<span style="color:#aaa;font-size:0.78rem">${u.combinations.length}点（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
+      selDisp = `<span style="color:#e8e0c8;font-size:0.8rem;font-weight:600">${u.combinations.length}点（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
     }
-    return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(245,200,66,0.25);border-radius:8px;padding:8px 10px">
+    return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(245,200,66,0.4);border-radius:8px;padding:9px 11px">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0">
-        <span style="background:var(--gold);color:#1a1a1a;font-size:0.72rem;font-weight:900;padding:2px 8px;border-radius:10px;white-space:nowrap">${betNames[u.betType]||u.betType}${methodName}</span>
+        <span style="background:var(--gold);color:#1a1a1a;font-size:0.75rem;font-weight:900;padding:2px 9px;border-radius:10px;white-space:nowrap">${betNames[u.betType]||u.betType}${methodName}</span>
         <span style="display:inline-flex;align-items:center">${selDisp}</span>
-        <span style="color:var(--gold);font-weight:700;font-size:0.82rem;white-space:nowrap">${u.totalAmount.toLocaleString()}点</span>
+        <span style="color:var(--gold);font-weight:900;font-size:0.85rem;white-space:nowrap">${u.totalAmount.toLocaleString()}点</span>
       </div>
-      <button onclick="onlineRemoveCartItem(${i})" style="background:rgba(192,57,43,0.2);border:1px solid #c0392b;color:#ff8c8c;border-radius:6px;padding:4px 8px;font-size:0.75rem;font-weight:700;cursor:pointer;white-space:nowrap">削除</button>
+      <button onclick="onlineRemoveCartItem(${i})" style="background:rgba(231,76,60,0.3);border:1px solid #e74c3c;color:#ffb3ab;border-radius:6px;padding:5px 10px;font-size:0.78rem;font-weight:900;cursor:pointer;white-space:nowrap">削除</button>
     </div>`;
   }).join('');
   const total = onlineCartTotal();
   const remaining = myPoints - total;
-  if (totalEl) totalEl.innerHTML = `合計 ${total.toLocaleString()}点 / 持ち点 ${myPoints.toLocaleString()}点　<span style="color:${remaining<0?'#ff8c8c':'#7dff7d'}">残り ${remaining.toLocaleString()}点</span>`;
+  if (totalEl) totalEl.innerHTML = `<span style="color:#fff">合計 ${total.toLocaleString()}点 / 持ち点 ${myPoints.toLocaleString()}点</span>　<span style="color:${remaining<0?'#ff8c8c':'#7dff7d'}">残り ${remaining.toLocaleString()}点</span>`;
 }
 
 // カート確定 → multiBets を Firebase に送信
@@ -7057,13 +7092,13 @@ function enterOnlineReveal(game){
           const ordered=orderedSet.includes(u.betType);
           let selDisp;
           if(u.buyMethod==='simple'){
-            selDisp=(u.selections||[]).map((hi,si)=>`<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:2px 7px;border-radius:10px;font-size:0.72rem;font-weight:700"><span class="ibadge ${HC[hi]}" style="width:16px;height:16px;font-size:0.6rem">${hi+1}</span>${escapeHtml(topic.horses[hi])}${ordered?`<span style="color:#aaa;font-size:0.6rem">(${posL[si]})</span>`:''}</span>`).join('');
+            selDisp=(u.selections||[]).map((hi,si)=>`<span style="display:inline-flex;align-items:center;gap:3px;background:#f0e8d0;padding:2px 7px;border-radius:10px;font-size:0.72rem;font-weight:700;color:#3a2e10"><span class="ibadge ${HC[hi]}" style="width:16px;height:16px;font-size:0.6rem">${hi+1}</span>${escapeHtml(topic.horses[hi])}${ordered?`<span style="color:#777;font-size:0.6rem">(${posL[si]})</span>`:''}</span>`).join('');
           } else {
-            selDisp=`<span style="color:#888;font-size:0.75rem">${u.combinations.length}点（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
+            selDisp=`<span style="color:#555;font-size:0.76rem;font-weight:600">${u.combinations.length}点（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
           }
-          return `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:5px;padding:4px 6px;background:#faf6ea;border-radius:6px"><span style="background:var(--gold-dark);color:#fff;font-size:0.65rem;font-weight:900;padding:1px 7px;border-radius:9px">${betNames[u.betType]||u.betType}${mName}</span><span style="display:inline-flex;align-items:center;gap:3px">${selDisp}</span><span style="margin-left:auto;font-size:0.72rem;color:#888">${(u.amount||0).toLocaleString()}点</span></div>`;
+          return `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:5px;padding:5px 7px;background:#f6efdc;border-radius:6px"><span style="background:var(--gold-dark);color:#fff;font-size:0.66rem;font-weight:900;padding:1px 8px;border-radius:9px">${betNames[u.betType]||u.betType}${mName}</span><span style="display:inline-flex;align-items:center;gap:3px">${selDisp}</span><span style="margin-left:auto;font-size:0.74rem;color:#5a4500;font-weight:700">${(u.amount||0).toLocaleString()}点</span></div>`;
         }).join('');
-        return `<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span> <span style="background:#6a3aa0;color:#fff;font-size:0.6rem;font-weight:900;padding:1px 6px;border-radius:8px">複数券種</span></span><span class="reveal-bet-type">${bet.multiBets.length}券種</span></div>${rows}<div style="font-size:0.85rem;color:#888;margin-top:6px">合計賭け金：<strong>${(bet.amount||0).toLocaleString()}点</strong></div></div>`;
+        return `<div class="reveal-card"><div class="reveal-card-header"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span> <span style="background:#6a3aa0;color:#fff;font-size:0.6rem;font-weight:900;padding:1px 6px;border-radius:8px">複数券種</span></span><span class="reveal-bet-type">${bet.multiBets.length}券種</span></div>${rows}<div style="font-size:0.85rem;color:#555;margin-top:6px">合計賭け金：<strong style="color:#3a2e10">${(bet.amount||0).toLocaleString()}点</strong></div></div>`;
       }
       const buyMethod = bet.buyMethod || 'simple';
       const betTypeLabel = betNames[bet.betType] || bet.betType;
@@ -7391,14 +7426,13 @@ function enterOnlineRoundResult(game){
 
   // 初回表示時は演出を順番に発動：ガチャ → 的中演出
   if(isFirstShow){
-    // 的中者の中で最高オッズの人を主役にする
-    const winners = (log.playerResults || []).filter(r => !r.skipped && (r.odds || r.multiplier) > 0 && r.payout > 0);
+    // 的中した個々の券種を全プレイヤーから集める（複数券種は券種単位に展開）
+    const extract = window.extractWinningBets || ((r)=>[]);
+    let allWins = [];
+    (log.playerResults || []).forEach(r => { allWins = allWins.concat(extract(r)); });
     let topWinner = null, topOdds = -1;
-    winners.forEach(r => {
-      const o = r.odds || r.multiplier || 0;
-      if(o > topOdds){ topOdds = o; topWinner = r; }
-    });
-    const maxHitType = topWinner ? topWinner.hitType : null;
+    allWins.forEach(w => { if(w.odds > topOdds){ topOdds = w.odds; topWinner = w; } });
+    const maxHitType = topWinner ? (window.effectHitTypeFor ? window.effectHitTypeFor(topWinner.betType) : null) : null;
     let extraInfo = {};
     if(topWinner){
       const betLabel = (typeof BET_NAMES !== 'undefined' && BET_NAMES[topWinner.betType]) ? BET_NAMES[topWinner.betType] : topWinner.betType;
@@ -7407,7 +7441,7 @@ function enterOnlineRoundResult(game){
         playerName: topWinner.name,
         odds: topOdds,
         betLabel: betLabel + methodLabel,
-        isTopOdds: winners.length > 1
+        isTopOdds: allWins.length > 1
       };
     }
 
