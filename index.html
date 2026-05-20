@@ -39,11 +39,13 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--green);color:var(--d
 /* 演出中はbody背景もダークに */
 body.fx-active{background:#000;}
 html.fx-active{background:#000;}
-.screen{display:none;min-height:100vh;flex-direction:column;background:#0a0a0a;}.screen.active{display:flex;}
+.screen{display:none;min-height:100vh;flex-direction:column;background:linear-gradient(160deg,#0e1a14 0%,#0a0f0d 45%,#14110a 100%);}.screen.active{display:flex;}
+.screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 12%,rgba(245,200,66,0.10),transparent 42%),radial-gradient(circle at 85% 80%,rgba(26,107,42,0.18),transparent 46%);}
+.screen>*{position:relative;z-index:1;}
 .header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:14px 16px;text-align:center;border-bottom:3px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);}
 .header h1{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:1.8rem;letter-spacing:2px;text-shadow:0 0 14px rgba(245,200,66,0.5),0 2px 4px rgba(0,0,0,0.6);}
 .header .subtitle{color:#b9b9b9;font-size:0.7rem;letter-spacing:3px;}
-.panel{background:var(--panel);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin:10px;box-shadow:0 6px 18px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.5);}
+.panel{background:linear-gradient(160deg,rgba(253,248,237,0.93),rgba(250,243,225,0.88));backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1);border:1px solid rgba(201,150,10,0.55);border-radius:16px;padding:16px;margin:10px;box-shadow:0 8px 26px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.6);}
 .panel-title{font-size:0.66rem;letter-spacing:3px;color:var(--gold-dark);font-weight:900;text-transform:uppercase;margin-bottom:11px;padding-bottom:7px;border-bottom:1.5px solid rgba(201,150,10,0.45);}
 .btn{display:block;width:100%;padding:14px;border:none;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:transform 0.12s ease,box-shadow 0.12s ease,filter 0.12s ease;margin-top:8px;box-shadow:0 3px 8px rgba(0,0,0,0.22);}
 .btn:hover{filter:brightness(1.06);box-shadow:0 5px 14px rgba(0,0,0,0.3);}
@@ -75,8 +77,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .horse-card .horse-name{font-size:0.75rem;font-weight:700;line-height:1.2;word-break:break-word;overflow-wrap:anywhere;hyphens:auto;}
 .horse-card .sel-label{position:absolute;top:-6px;right:-6px;background:var(--gold);color:#333;font-size:0.6rem;font-weight:900;padding:2px 5px;border-radius:10px;}
 .sel-label.pos-2{background:#888;color:white;}.sel-label.pos-3{background:#cd7f32;color:white;}
-.c1{background:#eee;color:#333;border:1px solid #ccc}.c2{background:#222;color:white}.c3{background:var(--red);color:white}
-.c4{background:#1a5fcc;color:white}.c5{background:#e0b800;color:#333}.c6{background:#1a7a1a;color:white}.c7{background:#8b1a8b;color:white}.c8{background:#ff7f3f;color:white}
+.c1{background:#d4d4d4;color:#222;border:1px solid #999}.c2{background:#222;color:white}.c3{background:var(--red);color:white}
+.c4{background:#2a72e0;color:white}.c5{background:#e0b800;color:#333}.c6{background:#1a7a1a;color:white}.c7{background:#8b1a8b;color:white}.c8{background:#ff7f3f;color:white}
 .bet-types{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;}
 .bet-type-btn{padding:14px 4px 8px;border:2px solid #ddd;border-radius:10px;background:white;cursor:pointer;text-align:center;min-width:0;position:relative;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s,background 0.15s;overflow:hidden;}
 .bet-type-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:#ccc;}
@@ -125,14 +127,14 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);text-align:center;padding:12px;font-size:0.82rem;letter-spacing:3px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.3);}
 .flip-msg{background:#f5c842;color:#333;text-align:center;padding:8px;font-weight:700;font-size:0.85rem;border-top:2px solid #c9960a;}
 .oya-banner{background:linear-gradient(135deg,var(--oya) 0%,#5a005a 100%);color:white;text-align:center;padding:10px;font-size:0.85rem;font-weight:700;}
-.reveal-card{background:white;border:2px solid #ddd;border-radius:10px;padding:12px;margin-bottom:8px;}
+.reveal-card{background:linear-gradient(160deg,rgba(255,255,255,0.96),rgba(252,248,238,0.92));border:1px solid rgba(201,150,10,0.3);border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
 .reveal-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
 .reveal-card-name{font-weight:700;font-size:1rem;}
 .reveal-bet-type{font-size:0.8rem;font-weight:700;color:var(--gold-dark);}
 .notif{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#222;color:var(--gold);padding:10px 20px;border-radius:20px;font-size:0.85rem;font-weight:700;z-index:999;opacity:0;transition:opacity 0.3s;white-space:nowrap;}
 .notif.show{opacity:1;}
 .empty{text-align:center;color:#aaa;padding:30px 10px;font-size:0.85rem;}
-.ibadge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:0.75rem;font-weight:900;color:white;}
+.ibadge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:0.75rem;font-weight:900;color:white;box-shadow:0 0 0 1.5px rgba(255,255,255,0.7),0 1px 2px rgba(0,0,0,0.3);}
 .history-round{border:1px solid #ddd;border-radius:8px;overflow:hidden;margin-bottom:10px;}
 .history-round-header{background:#2d2d2d;color:var(--gold);padding:8px 12px;font-size:0.8rem;font-weight:700;}
 .history-round-body{background:white;padding:8px 12px;}
@@ -646,7 +648,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 
     <!-- 待機ステータス（選んだ後） -->
     <div id="online-topic-submitted" style="display:none;margin:20px 10px">
-      <div class="panel" style="background:linear-gradient(135deg,#0d3d7a,#1a5fcc);border:2px solid #4a8fff;text-align:center;padding:30px">
+      <div class="panel" style="background:linear-gradient(135deg,rgba(10,35,72,0.92),rgba(18,52,110,0.9));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(110,160,255,0.5);text-align:center;padding:30px">
         <div style="color:white;font-size:1.2rem;font-weight:700">✅ お題を選びました</div>
         <div style="color:#aef5a0;font-size:0.9rem;margin-top:10px">あなたが選んだお題：</div>
         <div id="my-selected-topic-icon" style="font-size:1.8rem;margin-top:8px">🎯</div>
@@ -917,7 +919,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       </div>
       <div id="obw-topic-horses" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
     </div>
-    <div class="panel" style="background:linear-gradient(135deg,#0d3d7a,#1a5fcc);border:2px solid #4a8fff;text-align:center;padding:30px">
+    <div class="panel" style="background:linear-gradient(135deg,rgba(10,35,72,0.92),rgba(18,52,110,0.9));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(110,160,255,0.5);text-align:center;padding:30px">
       <div style="color:white;font-size:1.2rem;font-weight:700" id="obw-message">✅ 入力完了しました</div>
       <div style="color:#aef5a0;font-size:0.9rem;margin-top:10px">他のプレイヤーを待っています...</div>
       <div id="obw-remaining" style="color:#f5c842;font-weight:700;font-size:1.1rem;margin-top:10px"></div>
@@ -4185,16 +4187,10 @@ function bakenHtml(bet, horses, opts){
   const groupBg = dark ? 'rgba(255,255,255,0.04)' : '#f4eeda';
   const arrowCol = dark ? '#ffd24a' : '#c97a0a';
   const struct = bet.structure || null;
-  // 当選馬セット（結果表示でハイライトする馬番）
-  const winSet = new Set();
-  if(Array.isArray(opts.winningCombos)){ opts.winningCombos.forEach(c=>(c||[]).forEach(h=>winSet.add(h))); }
-  // 馬番バッジ（当選馬は光らせる）
+  // 馬番バッジ（背景に依らず見やすいよう白リング＋影を付与。当選マークは付けない）
   const badge = (hi, sizeBig)=>{
     const sz = sizeBig?24:20;
-    const win = winSet.has(hi);
-    const ring = win ? ';box-shadow:0 0 0 2px #2ecc71,0 0 8px rgba(46,204,113,0.7);outline:none' : '';
-    const chk = win ? `<span style="position:absolute;top:-5px;right:-5px;background:#2ecc71;color:#fff;width:13px;height:13px;border-radius:50%;font-size:0.55rem;line-height:13px;text-align:center;font-weight:900">✓</span>` : '';
-    return `<span style="position:relative;display:inline-flex"><span class="ibadge ${HC[hi]}" style="width:${sz}px;height:${sz}px;font-size:${sizeBig?'0.72rem':'0.64rem'};flex-shrink:0;display:inline-flex;align-items:center;justify-content:center${ring}">${hi+1}</span>${chk}</span>`;
+    return `<span class="ibadge ${HC[hi]}" style="width:${sz}px;height:${sz}px;font-size:${sizeBig?'0.72rem':'0.64rem'};flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 0 0 1.5px rgba(255,255,255,0.85),0 1px 3px rgba(0,0,0,0.35)">${hi+1}</span>`;
   };
   const unit = bet.unitAmount || (method==='simple' ? (bet.amount||0) : 0);
   let combos;
