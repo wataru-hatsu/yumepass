@@ -3304,7 +3304,7 @@ function updateOffComboInfo(){
   const total=combos.length*minBet;
   if(combos.length===0||offBuyMethod==='simple'){ el.style.display='none'; return; }
   el.style.display='';
-  el.innerHTML=`<strong>${combos.length}点</strong> × 1点 ${minBet.toLocaleString()}点 = <strong style="color:var(--gold-dark)">合計 ${total.toLocaleString()}点</strong>`;
+  el.innerHTML=`<strong>${combos.length}通り</strong> × 1点あたり ${minBet.toLocaleString()}点 = <strong style="color:var(--gold-dark)">合計 ${total.toLocaleString()}点</strong>`;
 }
 function computeOffCombinations(){
   if(offBuyMethod==='simple'){
@@ -3398,8 +3398,9 @@ function renderKeypad(max){
   const keypadEl=document.getElementById('bet-keypad');const presetEl=document.getElementById('point-preset-btns');if(!keypadEl||!presetEl)return;keypadEl.innerHTML='';presetEl.innerHTML='';
   if(isAllin){
     const hintEl=document.getElementById('bet-hint');
-    if(hintEl)hintEl.innerHTML=`<span style="color:var(--red);font-weight:700">⚠️ 最低ベット額以下 — オールインのみ（${Math.max(max,0).toLocaleString()}点）</span>`;
-    betInputVal=String(Math.max(max,0));
+    const aiAmount=Math.max(max,0);
+    if(hintEl)hintEl.innerHTML=`<span style="color:var(--red);font-weight:700">⚠️ 最低ベット額以下 — オールイン（${aiAmount.toLocaleString()}点を自動入力）</span>`;
+    betInputVal=String(aiAmount);
     setBetInputVal(betInputVal);
     keypadEl.style.display='none';presetEl.style.display='none';return;
   }
@@ -3469,7 +3470,7 @@ function showBetConfirm(){
   document.getElementById('bc-player-name').textContent=p.name;
   document.getElementById('bc-player-points').textContent=p.points.toLocaleString();
   document.getElementById('bc-bet-type').textContent=offBuyMethod==='simple'?betNames[currentBetType]:`${betNames[currentBetType]}${methodName}`;
-  document.getElementById('bc-amount').textContent=offBuyMethod==='simple'?(unitAmount.toLocaleString()+' 点'):`${unitAmount.toLocaleString()}点 × ${combinations.length}点 = 合計 ${totalAmount.toLocaleString()}点`;
+  document.getElementById('bc-amount').textContent=offBuyMethod==='simple'?(unitAmount.toLocaleString()+' 点'):`1点あたり ${unitAmount.toLocaleString()}点 × ${combinations.length}通り = 合計 ${totalAmount.toLocaleString()}点`;
   document.getElementById('bc-payout-info').textContent=`${betDescs[currentBetType]||''} — オッズは締切後に確定します`;
 
   const t=state.selectedTopic;
@@ -3485,7 +3486,7 @@ function showBetConfirm(){
   } else {
     const isOrd=(currentBetType==='umatan'||currentBetType==='sanrentan');
     const joiner=isOrd?' → ':' - ';
-    let html=`<div style="color:var(--gold);font-weight:700;margin-bottom:6px">${combinations.length}点の組み合わせ:</div><div style="max-height:240px;overflow-y:auto">`;
+    let html=`<div style="color:var(--gold);font-weight:700;margin-bottom:6px">${combinations.length}通りの組み合わせ:</div><div style="max-height:240px;overflow-y:auto">`;
     combinations.slice(0,40).forEach(combo=>{
       const items=combo.map(hi=>`<span class="ibadge ${HC[hi]}" style="width:24px;height:24px;font-size:0.75rem;display:inline-flex;align-items:center;justify-content:center;margin:0 1px">${hi+1}</span>`).join(`<span style="color:#888;margin:0 2px">${joiner}</span>`);
       html+=`<div style="background:rgba(255,255,255,0.06);border-radius:6px;padding:5px 8px;margin-bottom:3px;display:flex;align-items:center;flex-wrap:wrap">${items}</div>`;
@@ -3608,6 +3609,12 @@ function removeOfflineCartItem(idx){
   const cart=getOffCart(koIdx);
   cart.splice(idx,1);
   renderOfflineCart();
+  // カート削除で持ち点に余裕が出るため、キーパッドを最新の残り持ち点で再描画
+  const p=state.players[koIdx];
+  if(p && typeof renderKeypad==='function'){
+    const remaining=Math.max(0, p.points - offCartTotal(koIdx));
+    renderKeypad(remaining);
+  }
 }
 
 // カート内の賭けを「見直し（編集）」: 入力欄に戻して再編集できるようにする
@@ -3720,7 +3727,7 @@ function renderOfflineCart(){
     if(u.buyMethod==='simple'){
       selDisp=(u.selections||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#555;margin:0 1px">${joiner}</span>`);
     } else {
-      selDisp=`<span style="color:#333;font-size:0.8rem;font-weight:600">${u.combinations.length}点（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
+      selDisp=`<span style="color:#333;font-size:0.8rem;font-weight:600">${u.combinations.length}通り（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
     }
     return `<div style="background:#fff;border:1px solid #d8c98a;border-radius:8px;padding:9px 11px">
       <div class="off-cart-tap" data-cart-idx="${i}" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0;cursor:pointer">
@@ -3757,8 +3764,13 @@ function finalizeOfflineCart(){
   const total=offCartTotal(koIdx);
   if(total>p.points){ showNotif(`⚠️ 合計が持ち点を超えています（${total.toLocaleString()}>${p.points.toLocaleString()}）`); return; }
 
-  // 確認ダイアログ（端的な買い目サマリー＋合計＋賭け後の残り）
-  const lines=cart.map(u=>`<div class="uiconfirm-betline"><span>${bakenSummaryText(u)}</span></div>`).join('');
+  // 確認ダイアログ（写真形式の馬券＋合計＋賭け後の残り）
+  const t=state.selectedTopic;
+  const horses=(t&&t.horses)?t.horses:[];
+  const lines=cart.map(u=>{
+    const betObj={ betType:u.betType, buyMethod:u.buyMethod||'simple', selections:u.selections, combinations:u.combinations, unitAmount:u.unitAmount, amount:u.totalAmount, structure:u.structure||null };
+    return `<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(245,200,66,0.3);border-radius:10px;padding:9px 11px;margin:6px 0">${bakenHtml(betObj, horses, {dark:true})}</div>`;
+  }).join('');
   const bodyHtml=`${lines}<div class="uiconfirm-summary">合計：<strong style="color:var(--gold)">${total.toLocaleString()}点</strong><br>賭け後の残り：<strong>${(p.points-total).toLocaleString()}点</strong><br><span style="color:#c8bfa8;font-size:0.82rem">※確定すると変更できません</span></div>`;
   uiConfirm({ icon:'🎯', title:`${p.name} さん、この内容で勝負しますか？`, bodyHtml, okText:'🏁 勝負する', cancelText:'戻る' }).then(ok=>{
     if(!ok) return;
@@ -4149,7 +4161,7 @@ function renderRoundResultBody(){
         <span class="player-result-name">${r.name} <span class="ko-badge">子</span> ${_rs.badge}</span>
         ${_rs.amountHtml}
       </div>
-      ${(r.buyMethod && r.buyMethod !== 'simple') ? `<div style="font-size:0.75rem;color:#888;margin-top:4px">${(typeof BUY_METHOD_NAMES !== 'undefined' && BUY_METHOD_NAMES[r.buyMethod]) || r.buyMethod} / <strong>${r.hitCount || 0}/${r.totalCount || 0}点的中</strong> (1点${(r.unitAmount||0).toLocaleString()}点×${r.totalCount||0})</div>` : ''}
+      ${(r.buyMethod && r.buyMethod !== 'simple') ? `<div style="font-size:0.75rem;color:#888;margin-top:4px">${(typeof BUY_METHOD_NAMES !== 'undefined' && BUY_METHOD_NAMES[r.buyMethod]) || r.buyMethod} / <strong>${r.hitCount || 0}/${r.totalCount || 0}通り的中</strong> (1点あたり${(r.unitAmount||0).toLocaleString()}点×${r.totalCount||0}通り)</div>` : ''}
       <div class="player-result-detail" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px">${betNames[r.betType]} / ${r.amount.toLocaleString()}点賭け${(r.odds||r.multiplier)>0?` ${oddsChipHtml(r.odds||r.multiplier)}`:''}${isWin&&r.payout?` <span style="font-size:0.75rem;color:#777;font-weight:700">配当 ${r.payout.toLocaleString()}点</span>`:''}</div>
       <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;padding:6px 8px;background:${isWin?'rgba(245,200,66,0.08)':'rgba(0,0,0,0.03)'};border-radius:6px;border:1px solid ${isWin?'rgba(245,200,66,0.2)':'#eee'}">
         <div style="display:flex;align-items:center;gap:2px;flex-wrap:wrap">
@@ -4162,7 +4174,7 @@ function renderRoundResultBody(){
           ${actualBadges}
         </div>
       </div>
-      ${(r.buyMethod && r.buyMethod !== 'simple' && (r.winningSubs||[]).length > 0) ? `<div style="margin-top:6px;padding:6px 8px;background:rgba(46,204,113,0.06);border-radius:6px"><div style="font-size:0.65rem;color:#888;margin-bottom:2px">当たった${r.winningSubs.length}点の明細:</div>${r.winningSubs.map(s=>{const isOrd=(r.betType==='umatan'||r.betType==='sanrentan');const joiner=isOrd?'→':'-';const combo=(s.selection||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:16px;height:16px;font-size:0.6rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#aaa;font-size:0.6rem;margin:0 1px">${joiner}</span>`);return `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(46,204,113,0.08);border-radius:5px;margin-top:3px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center">${combo}</span>${oddsChipHtml(s.odds, '', '0.7rem')}<span style="font-size:0.65rem;color:#777;font-weight:700">配当${(s.payout||0).toLocaleString()}</span></div>`;}).join('')}</div>` : ''}
+      ${(r.buyMethod && r.buyMethod !== 'simple' && (r.winningSubs||[]).length > 0) ? `<div style="margin-top:6px;padding:6px 8px;background:rgba(46,204,113,0.06);border-radius:6px"><div style="font-size:0.65rem;color:#888;margin-bottom:2px">当たった${r.winningSubs.length}通りの明細:</div>${r.winningSubs.map(s=>{const isOrd=(r.betType==='umatan'||r.betType==='sanrentan');const joiner=isOrd?'→':'-';const combo=(s.selection||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:16px;height:16px;font-size:0.6rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#aaa;font-size:0.6rem;margin:0 1px">${joiner}</span>`);return `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(46,204,113,0.08);border-radius:5px;margin-top:3px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center">${combo}</span>${oddsChipHtml(s.odds, '', '0.7rem')}<span style="font-size:0.65rem;color:#777;font-weight:700">配当${(s.payout||0).toLocaleString()}</span></div>`;}).join('')}</div>` : ''}
     </div>`;
   }).join('');
   // 各結果行に長押し/タップで「馬券＋当選ハイライト」詳細を付与
@@ -4277,7 +4289,7 @@ function bakenHtml(bet, horses, opts){
   const head = `<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:7px">
     <span style="background:var(--gold-dark);color:#fff;font-size:0.72rem;font-weight:900;padding:2px 9px;border-radius:9px">${betName}</span>
     ${methodName?`<span style="background:${dark?'rgba(245,200,66,0.2)':'#fff3d0'};color:${dark?'#ffe9a8':'#8a6500'};font-size:0.68rem;font-weight:900;padding:2px 8px;border-radius:8px;border:1px solid rgba(201,150,10,0.4)">${methodName}</span>`:''}
-    <span style="color:${subTxt};font-size:0.72rem;font-weight:700">${method==='simple'?'1点':combos.length+'点'} × ${unit.toLocaleString()}点</span>
+    <span style="color:${subTxt};font-size:0.72rem;font-weight:700">${method==='simple'?'1通り':combos.length+'通り'} × ${unit.toLocaleString()}点</span>
     <span style="margin-left:auto;color:${dark?'var(--gold)':'#8a6500'};font-weight:900;font-size:0.85rem">計 ${total.toLocaleString()}点</span>
   </div>`;
 
@@ -4341,7 +4353,7 @@ function bakenSummaryText(bet){
   const betName = (typeof BET_NAMES!=='undefined' && BET_NAMES[betType]) ? BET_NAMES[betType] : betType;
   const ptCount = (method==='simple') ? 1 : (bet.combinations? bet.combinations.length : 1);
   const sels = (bet.selections||[]).map(hi=>hi+1).join(',');
-  const ptInfo = (method==='simple') ? '' : ` ${ptCount}点（${sels}）`;
+  const ptInfo = (method==='simple') ? '' : ` ${ptCount}通り（${sels}）`;
   return `${betName}${methodName}${ptInfo}　${(bet.amount||0).toLocaleString()}点`;
 }
 window.bakenSummaryText = bakenSummaryText;
@@ -6708,7 +6720,7 @@ function updateOnlineComboInfo(){
     return;
   }
   el.style.display = '';
-  el.innerHTML = `<strong>${combos.length}点</strong> × 1点 ${unit.toLocaleString()}点 = <strong style="color:var(--gold)">合計 ${total.toLocaleString()}点</strong>`;
+  el.innerHTML = `<strong>${combos.length}通り</strong> × 1点あたり ${unit.toLocaleString()}点 = <strong style="color:var(--gold)">合計 ${total.toLocaleString()}点</strong>`;
 }
 
 // 現在の入力から組み合わせを生成
@@ -6912,8 +6924,9 @@ function renderOnlineKeypad(maxPoints){
   presetEl.innerHTML = '';
   if(isAllin){
     const hintEl = document.getElementById('ob-bet-hint');
-    if(hintEl) hintEl.innerHTML = `<span style="color:var(--red);font-weight:700">⚠️ 最低ベット額以下 — オールインのみ（${Math.max(maxPoints,0).toLocaleString()}点）</span>`;
-    window.onlineBet.betInputVal = String(Math.max(maxPoints, 0));
+    const aiAmount = Math.max(maxPoints, 0);
+    if(hintEl) hintEl.innerHTML = `<span style="color:var(--red);font-weight:700">⚠️ 最低ベット額以下 — オールイン（${aiAmount.toLocaleString()}点を自動入力）</span>`;
+    window.onlineBet.betInputVal = String(aiAmount);
     setOnlineBetInputVal(window.onlineBet.betInputVal);
     keypadEl.style.display = 'none';
     presetEl.style.display = 'none';
@@ -7060,6 +7073,11 @@ window.onlineRemoveCartItem = function(idx){
   if (!window.onlineBet.cart) return;
   window.onlineBet.cart.splice(idx, 1);
   renderOnlineCart();
+  // カート削除で持ち点に余裕が出るため、キーパッドを最新の残り持ち点で再描画
+  const game = window.online.game;
+  const myPoints = (game?.points && game.points[window.online.playerId]) || 0;
+  const remaining = Math.max(0, myPoints - onlineCartTotal());
+  if(typeof renderOnlineKeypad==='function') renderOnlineKeypad(remaining);
 };
 
 // カート内の賭けを「見直し（編集）」
@@ -7171,7 +7189,7 @@ function renderOnlineCart(){
     if (u.buyMethod === 'simple') {
       selDisp = (u.selections || []).map(hi => `<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#ddd;margin:0 1px">${joiner}</span>`);
     } else {
-      selDisp = `<span style="color:#f0e8d0;font-size:0.82rem;font-weight:700">${u.combinations.length}点（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
+      selDisp = `<span style="color:#f0e8d0;font-size:0.82rem;font-weight:700">${u.combinations.length}通り（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
     }
     return `<div style="background:rgba(255,255,255,0.07);border:1px solid rgba(245,200,66,0.45);border-radius:8px;padding:9px 11px">
       <div class="ob-cart-tap" data-cart-idx="${i}" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0;cursor:pointer">
@@ -7209,8 +7227,13 @@ window.onlineFinalizeCart = async function(){
   const total = onlineCartTotal();
   if (total > myPoints) { showNotif(`⚠️ 合計が持ち点を超えています（${total.toLocaleString()}>${myPoints.toLocaleString()}）`); return; }
 
-  // 確認ダイアログ（端的な買い目サマリー＋合計＋賭け後の残り）
-  const lines = cart.map(u => `<div class="uiconfirm-betline"><span>${window.bakenSummaryText(u)}</span></div>`).join('');
+  // 確認ダイアログ（写真形式の馬券＋合計＋賭け後の残り）
+  const topic = game.selectedTopic;
+  const horses = (topic && topic.horses) ? topic.horses : [];
+  const lines = cart.map(u => {
+    const betObj = { betType:u.betType, buyMethod:u.buyMethod||'simple', selections:u.selections, combinations:u.combinations, unitAmount:u.unitAmount, amount:u.totalAmount, structure:u.structure||null };
+    return `<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(245,200,66,0.3);border-radius:10px;padding:9px 11px;margin:6px 0">${window.bakenHtml(betObj, horses, {dark:true})}</div>`;
+  }).join('');
   const bodyHtml = `${lines}<div class="uiconfirm-summary">合計：<strong style="color:var(--gold)">${total.toLocaleString()}点</strong><br>賭け後の残り：<strong>${(myPoints-total).toLocaleString()}点</strong><br><span style="color:#c8bfa8;font-size:0.82rem">※確定すると変更できません</span></div>`;
   const ok = await uiConfirm({ icon:'🎯', title:'この内容で勝負しますか？', bodyHtml, okText:'🏁 勝負する', cancelText:'戻る' });
   if(!ok) return;
@@ -7318,7 +7341,7 @@ window.onlineSubmitKoBet = function(){
   document.getElementById('obc-bet-type').textContent = betTypeLabel;
   const amountLabel = method === 'simple'
     ? `${unitAmount.toLocaleString()} 点`
-    : `${unitAmount.toLocaleString()} 点 × ${combinations.length}点 = 合計 ${totalAmount.toLocaleString()} 点`;
+    : `1点あたり ${unitAmount.toLocaleString()} 点 × ${combinations.length}通り = 合計 ${totalAmount.toLocaleString()} 点`;
   document.getElementById('obc-amount').textContent = amountLabel;
   document.getElementById('obc-payout-info').textContent = multInfo;
 
@@ -7328,7 +7351,7 @@ window.onlineSubmitKoBet = function(){
     horsesHtml = window.onlineBet.selectedHorses.map((hi, i) => `<div style="display:flex;align-items:center;gap:8px;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);border-radius:8px;padding:8px 12px"><div style="color:var(--gold);font-size:0.8rem;font-weight:900;min-width:50px">${isOnlineOrderedBet() ? (posLabels[i] || '') : '✓'}</div><div class="ibadge ${HC[hi]}" style="width:24px;height:24px;font-size:0.8rem">${hi+1}</div><div style="color:white;font-weight:700">${topic.horses[hi]}</div></div>`).join('');
   } else {
     // 複数賭けは「○点」と組み合わせ一覧を表示
-    horsesHtml = `<div style="color:var(--gold);font-weight:700;margin-bottom:6px">${combinations.length}点の組み合わせ:</div>`;
+    horsesHtml = `<div style="color:var(--gold);font-weight:700;margin-bottom:6px">${combinations.length}通りの組み合わせ:</div>`;
     horsesHtml += '<div style="max-height:200px;overflow-y:auto">';
     combinations.slice(0, 30).forEach(combo => {
       const isOrd = (window.onlineBet.betType === 'umatan' || window.onlineBet.betType === 'sanrentan');
@@ -8336,8 +8359,8 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
         const totalCount = r.totalCount || 0;
         const hitCount = r.hitCount || 0;
         const unitAmt = r.unitAmount || 0;
-        const summary = `<span style="background:${hitCount>0?'rgba(46,204,113,0.15)':'rgba(231,76,60,0.1)'};padding:2px 8px;border-radius:6px;font-weight:700;color:${hitCount>0?'#2ecc71':'#e74c3c'}">${hitCount}/${totalCount}点的中</span>`;
-        betInfo = `<span style="font-size:0.7rem">${fullBetType} (${r.amount.toLocaleString()}点 = 1点${unitAmt.toLocaleString()}×${totalCount}) →</span>${summary}<span style="color:#aaa">vs</span><span>実際:${actualBadges}</span>`;
+        const summary = `<span style="background:${hitCount>0?'rgba(46,204,113,0.15)':'rgba(231,76,60,0.1)'};padding:2px 8px;border-radius:6px;font-weight:700;color:${hitCount>0?'#2ecc71':'#e74c3c'}">${hitCount}/${totalCount}通り的中</span>`;
+        betInfo = `<span style="font-size:0.7rem">${fullBetType} (${r.amount.toLocaleString()}点 = 1点あたり${unitAmt.toLocaleString()}×${totalCount}通り) →</span>${summary}<span style="color:#aaa">vs</span><span>実際:${actualBadges}</span>`;
       }
       // 複数賭けで複数当選した場合、個々のオッズ明細を表示
       let subDetailHtml = '';
@@ -8349,7 +8372,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
           const combo = (s.selection || []).map(hi => `<span class="ibadge ${HC[hi]}" style="width:16px;height:16px;font-size:0.6rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#aaa;font-size:0.6rem;margin:0 1px">${joiner}</span>`);
           return `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(46,204,113,0.08);border-radius:5px;margin-top:3px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center">${combo}</span>${window.oddsChipHtml(s.odds, "", "0.7rem")}<span style="font-size:0.65rem;color:#777;font-weight:700">配当${(s.payout||0).toLocaleString()}</span></div>`;
         }).join('');
-        subDetailHtml = `<div style="margin-top:6px;padding:6px 8px;background:rgba(0,0,0,0.03);border-radius:6px"><div style="font-size:0.65rem;color:#888;margin-bottom:2px">当たった${wsubs.length}点の明細:</div>${rows}</div>`;
+        subDetailHtml = `<div style="margin-top:6px;padding:6px 8px;background:rgba(0,0,0,0.03);border-radius:6px"><div style="font-size:0.65rem;color:#888;margin-bottom:2px">当たった${wsubs.length}通りの明細:</div>${rows}</div>`;
       }
       const _rsS = window.resultStatusHtml(r);
       return `<div class="player-result ${hitClass}"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> ${r.skipped?'<span style="background:#999;color:#fff;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px">見送り</span>':_rsS.badge}</span>${r.skipped?'<span class="player-result-change" style="color:#aaa">±0</span>':_rsS.amountHtml}</div>${r.skipped?'':`<div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px">${betInfo}${(r.odds||r.multiplier)>0?`${window.oddsChipHtml(r.odds||r.multiplier, (buyMethod!=='simple'&&wsubs.length>1?'最高':''))}${r.payout?`<span style="font-size:0.7rem;color:#777;font-weight:700">配当 ${r.payout.toLocaleString()}</span>`:''}`:''}</div>${subDetailHtml}`}</div>`;
