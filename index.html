@@ -363,6 +363,21 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
   </div>
 </div>
 
+<!-- プレイ中の簡潔ルールモーダル -->
+<div id="quick-rules-modal" class="game-menu-modal hidden" onclick="if(event.target===this)closeQuickRules()">
+  <div class="game-menu-content" style="max-width:420px;max-height:82vh;overflow-y:auto;text-align:left">
+    <div class="game-menu-title">📖 かんたんルール</div>
+    <div style="color:#f0e8d4;font-size:0.86rem;line-height:1.75">
+      <div style="margin-bottom:10px"><strong style="color:var(--gold)">🎯 ゲームの目的</strong><br>お題に対して<strong>親が1位・2位・3位に何を選ぶか</strong>を予想して点数を賭ける。読みが当たれば配当ゲット！</div>
+      <div style="margin-bottom:10px"><strong style="color:var(--gold)">🎫 賭け方（券種）</strong><br>当てる範囲が広いほど当たりやすく低配当、狭いほど当てにくく高配当。<br><span style="color:#c8bfa8;font-size:0.8rem">単勝＝1位だけ／3連単＝1〜3位を順番通り など</span></div>
+      <div style="margin-bottom:10px"><strong style="color:var(--gold)">💰 オッズの仕組み</strong><br>みんなが賭けてない「穴」ほど高配当。<strong>他の人が知らない親の性格を読めればオッズで有利！</strong><br><span style="color:#c8bfa8;font-size:0.8rem">※全部に賭けても上限があるので必ず損する設計。</span></div>
+      <div style="margin-bottom:10px"><strong style="color:var(--gold)">👑 親ボーナス</strong><br>親は自分が選ばれる側。子の賭けが当たると親にもボーナスが入る。</div>
+      <div style="background:rgba(245,200,66,0.12);border-radius:8px;padding:8px 10px;font-size:0.8rem;color:#ffe9a8">💡 最低ベット額あり。ラウンド開始時の持ち点が最低額未満のときだけオールイン可。</div>
+    </div>
+    <button class="btn btn-secondary" onclick="closeQuickRules()" style="margin-top:14px">閉じる</button>
+  </div>
+</div>
+
 <!-- ガチャ風フルスクリーン演出オーバーレイ -->
 <div id="gacha-overlay" class="hidden">
   <div class="gacha-rays"></div>
@@ -1568,7 +1583,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <p style="font-size:0.85rem;line-height:1.8;margin-top:8px;font-weight:900;color:#5a3a00">あなたは「読む人」？それとも「読まれにくい人」？</p>
     </div>
 
-    <div style="margin:10px"><button class="btn btn-secondary" onclick="goBack()">← 戻る</button></div>
+    <div style="margin:10px"><button class="btn btn-secondary" onclick="goTo('screen-home')">← 戻る</button></div>
   </div>
 </div>
 
@@ -2722,17 +2737,7 @@ function getAllTopics(){
   return all.map(ensureEightChoices);
 }
 function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}}
-function goBack(){
-  const fromRules=(document.getElementById('screen-rules')||{}).classList?.contains('active');
-  const prev=state.prevScreen||'screen-home';
-  goTo(prev);
-  if(prev==='screen-roundstart')renderCategoryStep();
-  // オンライン対戦中にルールを見て戻った場合、最新のゲーム状態に合わせて画面を復帰
-  if(fromRules && window.online && window.online.game && window.online._pendingResync){
-    window.online._pendingResync=false;
-    try{ onGameStateUpdate(window.online.game); }catch(e){}
-  }
-}
+function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
 function showNotif(msg){
   const n=document.getElementById('notif');
   // 改行(\n)を <br> に変換して複数行表示に対応
@@ -5553,16 +5558,13 @@ function onGameStateUpdate(game){
   }
 
   // フェーズに応じて画面遷移
-  // ※ルール画面を見ている間は自動遷移しない（読み終わって戻ったら最新状態へ）
-  const _viewingRules = document.getElementById('screen-rules') && document.getElementById('screen-rules').classList.contains('active');
-  if(_viewingRules){ window.online._pendingResync = true; }
-  if(!_viewingRules && game.phase === 'topic-select' && !document.getElementById('screen-online-topic-select').classList.contains('active')){
+  if(game.phase === 'topic-select' && !document.getElementById('screen-online-topic-select').classList.contains('active')){
     enterOnlineTopicSelect();
   }
-  if(!_viewingRules && game.phase === 'topic-lottery' && !document.getElementById('screen-online-topic-lottery').classList.contains('active')){
+  if(game.phase === 'topic-lottery' && !document.getElementById('screen-online-topic-lottery').classList.contains('active')){
     enterOnlineTopicLottery(game);
   }
-  if(!_viewingRules && game.phase === 'betting'){
+  if(game.phase === 'betting'){
     // 初回遷移
     const onBettingScreen = document.getElementById('screen-online-betting').classList.contains('active')
                           || document.getElementById('screen-online-bet-confirm').classList.contains('active')
@@ -5581,21 +5583,21 @@ function onGameStateUpdate(game){
     // 全員入力完了チェック → 公開ボタン表示 → 全員ボタン押下 → reveal遷移
     checkAllBetsSubmitted();
   }
-  if(!_viewingRules && game.phase === 'reveal' && !document.getElementById('screen-online-reveal').classList.contains('active')){
+  if(game.phase === 'reveal' && !document.getElementById('screen-online-reveal').classList.contains('active')){
     enterOnlineReveal(game);
   }
   if(game.phase === 'reveal' && document.getElementById('screen-online-reveal').classList.contains('active')){
     updateRevealReadyStatus(game);
     checkAllReadyForResult();
   }
-  if(!_viewingRules && game.phase === 'result' && !document.getElementById('screen-online-roundresult').classList.contains('active')){
+  if(game.phase === 'result' && !document.getElementById('screen-online-roundresult').classList.contains('active')){
     enterOnlineRoundResult(game);
   }
   if(game.phase === 'result' && document.getElementById('screen-online-roundresult').classList.contains('active')){
     updateNextReadyStatus(game);
     checkAllReadyForNext();
   }
-  if(!_viewingRules && game.phase === 'final' && !document.getElementById('screen-online-final').classList.contains('active')){
+  if(game.phase === 'final' && !document.getElementById('screen-online-final').classList.contains('active')){
     enterOnlineFinal(game);
   }
 
@@ -9043,7 +9045,12 @@ function updateRulesButtonVisibility(onlineGameActive){
 
 // ゲーム中に📖を押したらルールを開く（戻り先を覚えておく）
 window.openRulesDuringGame = function(){
-  goTo('screen-rules');
+  const m=document.getElementById('quick-rules-modal');
+  if(m) m.classList.remove('hidden');
+};
+window.closeQuickRules = function(){
+  const m=document.getElementById('quick-rules-modal');
+  if(m) m.classList.add('hidden');
 };
 
 // goToを上書きしてメニューボタン表示制御
