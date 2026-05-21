@@ -339,6 +339,10 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .menu-toggle{position:fixed;top:12px;right:58px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;line-height:1;padding:0;}
 .rules-toggle{position:fixed;top:12px;right:104px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:100;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
 .menu-toggle:active{transform:scale(0.92);}
+/* 一番下までスクロールする矢印（小さく半透明・邪魔にならない） */
+.scroll-down-fab{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;width:34px;height:34px;border-radius:50%;background:rgba(20,20,20,0.32);border:1px solid rgba(245,200,66,0.28);color:rgba(245,200,66,0.7);font-size:0.95rem;cursor:pointer;z-index:90;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(2px);animation:scrollFabBounce 1.8s ease-in-out infinite;transition:opacity 0.3s;}
+.scroll-down-fab:active{transform:translateX(-50%) scale(0.9);}
+@keyframes scrollFabBounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(4px);}}
 .game-menu-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
 .game-menu-modal.hidden{display:none;}
 .game-menu-content{background:linear-gradient(135deg,#1a1a1a,#2d2d2d);border:2px solid var(--gold);border-radius:14px;padding:20px;max-width:340px;width:100%;box-shadow:0 0 40px rgba(245,200,66,0.4);}
@@ -349,6 +353,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <button id="sound-toggle" class="sound-toggle" onclick="toggleSound()" title="サウンド切り替え">🔊</button>
 <button id="menu-toggle" class="menu-toggle" onclick="toggleGameMenu()" title="メニュー" style="display:none">⋮</button>
 <button id="rules-toggle" class="rules-toggle" onclick="openRulesDuringGame()" title="ルール確認">📖</button>
+<button id="scroll-down-fab" class="scroll-down-fab" onclick="scrollActiveScreenToBottom()" title="一番下へ">▼</button>
 <div class="notif" id="notif"></div>
 <div id="celebration-overlay" class="hidden"></div>
 
@@ -2732,6 +2737,18 @@ function getAllTopics(){
 }
 function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}}
 function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
+// アクティブな画面の .scroll-content を一番下までスムーズスクロール
+function scrollActiveScreenToBottom(){
+  setTimeout(()=>{
+    const active=document.querySelector('.screen.active');
+    if(!active) return;
+    const sc=active.querySelector('.scroll-content');
+    const target=sc||active;
+    try{ target.scrollTo({ top: target.scrollHeight, behavior:'smooth' }); }
+    catch(e){ target.scrollTop=target.scrollHeight; }
+  }, 80);
+}
+window.scrollActiveScreenToBottom=scrollActiveScreenToBottom;
 function showNotif(msg){
   const n=document.getElementById('notif');
   // 改行(\n)を <br> に変換して複数行表示に対応
@@ -3641,19 +3658,26 @@ function addBetToCart(){
   resetOffBetBuilder();
   renderOfflineCart();
   showNotif('✅ カートに追加しました');
+  scrollActiveScreenToBottom();
 }
 
 function removeOfflineCartItem(idx){
   const koIdx=state.koPlayers[state.currentBetPlayerIndex];
   const cart=getOffCart(koIdx);
-  cart.splice(idx,1);
-  renderOfflineCart();
-  // カート削除で持ち点に余裕が出るため、キーパッドを最新の残り持ち点で再描画
-  const p=state.players[koIdx];
-  if(p && typeof renderKeypad==='function'){
-    const remaining=Math.max(0, p.points - offCartTotal(koIdx));
-    renderKeypad(remaining);
-  }
+  const u=cart[idx];
+  if(!u) return;
+  const label=`${BET_NAMES[u.betType]||u.betType}${u.buyMethod&&u.buyMethod!=='simple'?'('+(BUY_METHOD_NAMES[u.buyMethod]||u.buyMethod)+')':''}　${(u.totalAmount||0).toLocaleString()}点`;
+  uiConfirm({ icon:'🗑️', title:'この賭けを削除しますか？', bodyHtml:`<div style="color:#f0e8d4">${label}</div><div style="color:#c8bfa8;font-size:0.82rem;margin-top:6px">カートから取り消します。</div>`, okText:'削除する', cancelText:'やめる' }).then(ok=>{
+    if(!ok) return;
+    cart.splice(idx,1);
+    renderOfflineCart();
+    // カート削除で持ち点に余裕が出るため、キーパッドを最新の残り持ち点で再描画
+    const p=state.players[koIdx];
+    if(p && typeof renderKeypad==='function'){
+      const remaining=Math.max(0, p.points - offCartTotal(koIdx));
+      renderKeypad(remaining);
+    }
+  });
 }
 
 // カート内の賭けを「見直し（編集）」: 入力欄に戻して再編集できるようにする
@@ -7199,17 +7223,24 @@ window.onlineAddBetToCart = function(){
   resetOnlineBetBuilder();
   renderOnlineCart();
   showNotif('✅ カートに追加しました');
+  scrollActiveScreenToBottom();
 };
 
 window.onlineRemoveCartItem = function(idx){
   if (!window.onlineBet.cart) return;
-  window.onlineBet.cart.splice(idx, 1);
-  renderOnlineCart();
-  // カート削除で持ち点に余裕が出るため、キーパッドを最新の残り持ち点で再描画
-  const game = window.online.game;
-  const myPoints = (game?.points && game.points[window.online.playerId]) || 0;
-  const remaining = Math.max(0, myPoints - onlineCartTotal());
-  if(typeof renderOnlineKeypad==='function') renderOnlineKeypad(remaining);
+  const u = window.onlineBet.cart[idx];
+  if(!u) return;
+  const label=`${BET_NAMES[u.betType]||u.betType}${u.buyMethod&&u.buyMethod!=='simple'?'('+(BUY_METHOD_NAMES[u.buyMethod]||u.buyMethod)+')':''}　${(u.totalAmount||0).toLocaleString()}点`;
+  uiConfirm({ icon:'🗑️', title:'この賭けを削除しますか？', bodyHtml:`<div style="color:#f0e8d4">${label}</div><div style="color:#c8bfa8;font-size:0.82rem;margin-top:6px">カートから取り消します。</div>`, okText:'削除する', cancelText:'やめる' }).then(ok=>{
+    if(!ok) return;
+    window.onlineBet.cart.splice(idx, 1);
+    renderOnlineCart();
+    // カート削除で持ち点に余裕が出るため、キーパッドを最新の残り持ち点で再描画
+    const game = window.online.game;
+    const myPoints = (game?.points && game.points[window.online.playerId]) || 0;
+    const remaining = Math.max(0, myPoints - onlineCartTotal());
+    if(typeof renderOnlineKeypad==='function') renderOnlineKeypad(remaining);
+  });
 };
 
 // カート内の賭けを「見直し（編集）」
@@ -9035,7 +9066,32 @@ function updateRulesButtonVisibility(onlineGameActive){
   const menuBtn = document.getElementById('menu-toggle');
   const menuShown = menuBtn && menuBtn.style.display !== 'none';
   rbtn.style.right = menuShown ? '104px' : '58px';
+  updateScrollFabVisibility();
 }
+
+// ▼下までスクロール矢印：賭け公開・結果発表の画面で、まだ下に隠れたボタンがあるとき表示
+function updateScrollFabVisibility(){
+  const fab=document.getElementById('scroll-down-fab');
+  if(!fab) return;
+  const fabScreens=['screen-reveal','screen-roundresult','screen-online-reveal','screen-online-roundresult'];
+  const activeId=fabScreens.find(id=>{ const el=document.getElementById(id); return el && el.classList.contains('active'); });
+  if(!activeId){ fab.style.display='none'; return; }
+  const sc=document.getElementById(activeId).querySelector('.scroll-content');
+  if(!sc){ fab.style.display='none'; return; }
+  // まだ下にスクロール余地があるときだけ表示（最下部付近では隠す）
+  const remaining = sc.scrollHeight - sc.scrollTop - sc.clientHeight;
+  fab.style.display = (remaining > 40) ? 'flex' : 'none';
+}
+window.updateScrollFabVisibility=updateScrollFabVisibility;
+
+// 各スクロールコンテナのスクロールに応じて矢印の表示を更新
+(function(){
+  document.addEventListener('scroll', function(e){
+    if(e.target && e.target.classList && e.target.classList.contains('scroll-content')){
+      updateScrollFabVisibility();
+    }
+  }, true);
+})();
 
 // ゲーム中に📖を押したらルールを開く（戻り先を覚えておく）
 window.openRulesDuringGame = function(){
@@ -9099,6 +9155,9 @@ window.closeQuickRules = function(){
     window.goTo = function(id){
       originalGoTo(id);
       setTimeout(updateMenuButtonVisibility, 10);
+      // 結果系画面はコンテンツ描画後に矢印判定（描画タイミングを考慮して複数回）
+      setTimeout(updateScrollFabVisibility, 250);
+      setTimeout(updateScrollFabVisibility, 600);
     };
   }
 })();
