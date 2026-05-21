@@ -43,7 +43,7 @@ body.fx-active{background:#000;}
 html.fx-active{background:#000;}
 .screen{display:none;min-height:100vh;flex-direction:column;background:linear-gradient(160deg,#0e1a14 0%,#0a0f0d 45%,#14110a 100%);}.screen.active{display:flex;}
 #screen-online-oya-confirm,#screen-online-reveal{background:linear-gradient(160deg,#14110b 0%,#0c0c0e 100%);}
-#screen-online-roundresult{--result-accent:#3fd0c8;--result-accent-soft:rgba(63,208,200,0.4);--result-accent-dark:#0a4a44;--result-accent-bg:rgba(63,208,200,0.12);background:linear-gradient(160deg,#14110b 0%,#0c0c0e 100%);}
+#screen-online-roundresult{--result-accent:#3fd0c8;--result-accent-soft:rgba(63,208,200,0.4);--result-accent-dark:#0a4a44;--result-accent-bg:rgba(63,208,200,0.12);--result-panel1:#06302e;--result-panel2:#0a4a44;background:linear-gradient(160deg,#14110b 0%,#0c0c0e 100%);}
 #screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 12%,rgba(245,200,66,0.10),transparent 42%),radial-gradient(circle at 85% 80%,rgba(26,107,42,0.18),transparent 46%);}
 .screen>*{position:relative;z-index:1;}
@@ -993,18 +993,18 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-online-roundresult">
   <div class="round-header" id="orr-round-label">ROUND 1 RESULT</div>
   <div class="scroll-content">
-    <!-- お題パネル（電光掲示板風） -->
-    <div class="panel" style="background:linear-gradient(135deg,#2a1f04,#3a2a08);border:1px solid #b8911e">
-      <div style="text-align:center;color:#c9a233;font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TOPIC</div>
+    <!-- お題パネル（賭け方の色ベース） -->
+    <div class="panel" style="background:linear-gradient(135deg,var(--result-panel1),var(--result-panel2));border:1px solid var(--result-accent-soft)">
+      <div style="text-align:center;color:var(--result-accent);font-size:0.65rem;letter-spacing:2px;margin-bottom:4px;font-weight:700">TOPIC</div>
       <div style="display:flex;align-items:center;gap:8px;justify-content:center">
         <div style="font-size:1.4rem" id="orr-topic-icon">🎯</div>
-        <div style="color:var(--result-accent);font-size:1.1rem;font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,0.6)" id="orr-topic-title">—</div>
+        <div style="color:var(--result-accent);font-size:1.1rem;font-weight:900" id="orr-topic-title">—</div>
       </div>
       <div id="orr-topic-horses" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
     </div>
     <!-- 高オッズ的中バナー（該当時のみJSで表示） -->
     <div id="orr-jackpot-banner" style="display:none;margin:10px;border-radius:12px;padding:12px 14px;text-align:center;font-weight:900;box-shadow:0 0 18px rgba(0,0,0,0.35)"></div>
-    <div class="panel" style="background:linear-gradient(135deg,#06302e,#0a4a44);border:1px solid var(--result-accent-soft)"><div class="panel-title" id="orr-actual-title" style="color:var(--result-accent)">🏆 親の実際の順位</div><div id="orr-actual-result"></div></div>
+    <div class="panel" style="background:linear-gradient(135deg,var(--result-panel1),var(--result-panel2));border:1px solid var(--result-accent-soft)"><div class="panel-title" id="orr-actual-title" style="color:var(--result-accent)">🏆 親の実際の順位</div><div id="orr-actual-result"></div></div>
     <div class="panel"><div class="panel-title">💰 子の結果</div><div id="orr-player-results"></div></div>
     <div class="panel" id="orr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="orr-oya-summary"></div></div>
     <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="orr-score-table"></table></div>
@@ -8472,7 +8472,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
   document.getElementById('orr-topic-title').textContent = topicTitle;
   const horsesEl = document.getElementById('orr-topic-horses');
   if(horsesEl){
-    horsesEl.innerHTML = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--result-accent-bg);border:1px solid var(--result-accent-soft);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.85),0 0 3px rgba(0,0,0,0.7)"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+    horsesEl.innerHTML = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--result-accent-bg);border:1px solid var(--result-accent-soft);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
   }
 
   // === ノーゲーム判定（親オフラインによる返金） ===
@@ -8531,7 +8531,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
   }
   const actualEl = document.getElementById('orr-actual-result');
   if(actualEl){
-    actualEl.innerHTML = (log.oyaResult || []).map((hi, i) => `<div class="result-horse" style="background:var(--result-accent-bg);border:1px solid var(--result-accent-soft)"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.85),0 0 3px rgba(0,0,0,0.7)">${(log.topicHorses || topic?.horses || [])[hi] || ''}</div></div>`).join('');
+    actualEl.innerHTML = (log.oyaResult || []).map((hi, i) => `<div class="result-horse" style="background:var(--result-accent-bg);border:1px solid var(--result-accent-soft)"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700;color:#fff">${(log.topicHorses || topic?.horses || [])[hi] || ''}</div></div>`).join('');
   }
 
   // 子の結果
@@ -8692,14 +8692,22 @@ function applyJackpotDye(log){
   // 染める条件：オッズ2.0倍以上の的中があったら、その賭け方の色に
   const DYE_THRESHOLD = 2.0;
   const BET_COLOR_DARK = { tansho:'#9a7110', fukusho:'#1a6a26', wide:'#b04e0a', umaren:'#6a3aa8', umatan:'#b01e6a', sanrenfuku:'#0a7a76', sanrentan:'#a83a6a' };
+  // パネル背景用（その賭け方の色を暗くした2トーン）
+  const BET_PANEL = {
+    tansho:['#2e2406','#3e3008'], fukusho:['#0a2e16','#0e3e1e'], wide:['#2e1606','#3e1e08'],
+    umaren:['#241038','#301450'], umatan:['#2e0e22','#3e1230'], sanrenfuku:['#06302e','#0a4244'], sanrentan:['#2e1024','#3e1432']
+  };
   if(best && best.odds >= DYE_THRESHOLD && BET_COLOR[best.betType]){
     const col = BET_COLOR[best.betType];
     const colDark = BET_COLOR_DARK[best.betType] || col;
+    const panel = BET_PANEL[best.betType] || ['#06302e','#0a4a44'];
     const isRainbow = best.betType === 'sanrentan';
     screen.style.setProperty('--result-accent', col);
     screen.style.setProperty('--result-accent-soft', col + '66');
     screen.style.setProperty('--result-accent-dark', colDark);
     screen.style.setProperty('--result-accent-bg', col + '22');
+    screen.style.setProperty('--result-panel1', panel[0]);
+    screen.style.setProperty('--result-panel2', panel[1]);
     // 3連単（虹）はヘッダーを虹グラデにする
     const headerEl = screen.querySelector('.round-header');
     if(headerEl){
@@ -8720,11 +8728,13 @@ function applyJackpotDye(log){
       banner.innerHTML = `🎉 ${BET_LABEL[best.betType]||best.betType} 的中！ <span style="font-size:0.85em">×${best.odds.toFixed(1)} の高配当！</span>`;
     }
   } else {
-    // 通常はG1（緑×金）のまま
+    // 通常（高配当なし）はゴールドの落ち着いた色
     screen.style.setProperty('--result-accent', '#f5d65a');
     screen.style.setProperty('--result-accent-soft', 'rgba(245,214,90,0.4)');
     screen.style.setProperty('--result-accent-dark', '#9a7a10');
     screen.style.setProperty('--result-accent-bg', 'rgba(245,214,90,0.12)');
+    screen.style.setProperty('--result-panel1', '#2e2406');
+    screen.style.setProperty('--result-panel2', '#3e3008');
     const headerEl = screen.querySelector('.round-header');
     if(headerEl) headerEl.style.background = '';
     if(banner) banner.style.display = 'none';
