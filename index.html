@@ -337,6 +337,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .sound-toggle{position:fixed;top:12px;right:12px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
 .sound-toggle:active{transform:scale(0.92);}
 .menu-toggle{position:fixed;top:12px;right:58px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;line-height:1;padding:0;}
+.rules-toggle{position:fixed;top:12px;right:104px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:100;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
 .menu-toggle:active{transform:scale(0.92);}
 .game-menu-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
 .game-menu-modal.hidden{display:none;}
@@ -347,6 +348,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <body>
 <button id="sound-toggle" class="sound-toggle" onclick="toggleSound()" title="サウンド切り替え">🔊</button>
 <button id="menu-toggle" class="menu-toggle" onclick="toggleGameMenu()" title="メニュー" style="display:none">⋮</button>
+<button id="rules-toggle" class="rules-toggle" onclick="openRulesDuringGame()" title="ルール確認">📖</button>
 <div class="notif" id="notif"></div>
 <div id="celebration-overlay" class="hidden"></div>
 
@@ -1566,7 +1568,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <p style="font-size:0.85rem;line-height:1.8;margin-top:8px;font-weight:900;color:#5a3a00">あなたは「読む人」？それとも「読まれにくい人」？</p>
     </div>
 
-    <div style="margin:10px"><button class="btn btn-secondary" onclick="goTo('screen-home')">← 戻る</button></div>
+    <div style="margin:10px"><button class="btn btn-secondary" onclick="goBack()">← 戻る</button></div>
   </div>
 </div>
 
@@ -2720,7 +2722,17 @@ function getAllTopics(){
   return all.map(ensureEightChoices);
 }
 function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}}
-function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
+function goBack(){
+  const fromRules=(document.getElementById('screen-rules')||{}).classList?.contains('active');
+  const prev=state.prevScreen||'screen-home';
+  goTo(prev);
+  if(prev==='screen-roundstart')renderCategoryStep();
+  // オンライン対戦中にルールを見て戻った場合、最新のゲーム状態に合わせて画面を復帰
+  if(fromRules && window.online && window.online.game && window.online._pendingResync){
+    window.online._pendingResync=false;
+    try{ onGameStateUpdate(window.online.game); }catch(e){}
+  }
+}
 function showNotif(msg){
   const n=document.getElementById('notif');
   // 改行(\n)を <br> に変換して複数行表示に対応
@@ -3048,11 +3060,12 @@ function openTopicPopup(t, opts){
   const closeBtn=document.getElementById('popupCloseBtn');
   if(opts && Array.isArray(opts.buttons) && opts.buttons.length){
     actions.style.display='flex';
+    actions.style.flexWrap='wrap';
     actions.innerHTML='';
     opts.buttons.forEach(b=>{
       const btn=document.createElement('button');
       btn.className='btn '+(b.cls||'btn-secondary');
-      btn.style.cssText='flex:1;margin-top:0;padding:12px 4px;font-size:0.9rem';
+      btn.style.cssText = b.fullWidth ? 'flex:1 1 100%;margin-top:0;padding:11px 4px;font-size:0.88rem' : 'flex:1;margin-top:0;padding:12px 4px;font-size:0.9rem';
       btn.textContent=b.label;
       btn.onclick=()=>{ closeTopicPopup(); if(typeof b.onClick==='function') b.onClick(); };
       actions.appendChild(btn);
@@ -5540,13 +5553,16 @@ function onGameStateUpdate(game){
   }
 
   // フェーズに応じて画面遷移
-  if(game.phase === 'topic-select' && !document.getElementById('screen-online-topic-select').classList.contains('active')){
+  // ※ルール画面を見ている間は自動遷移しない（読み終わって戻ったら最新状態へ）
+  const _viewingRules = document.getElementById('screen-rules') && document.getElementById('screen-rules').classList.contains('active');
+  if(_viewingRules){ window.online._pendingResync = true; }
+  if(!_viewingRules && game.phase === 'topic-select' && !document.getElementById('screen-online-topic-select').classList.contains('active')){
     enterOnlineTopicSelect();
   }
-  if(game.phase === 'topic-lottery' && !document.getElementById('screen-online-topic-lottery').classList.contains('active')){
+  if(!_viewingRules && game.phase === 'topic-lottery' && !document.getElementById('screen-online-topic-lottery').classList.contains('active')){
     enterOnlineTopicLottery(game);
   }
-  if(game.phase === 'betting'){
+  if(!_viewingRules && game.phase === 'betting'){
     // 初回遷移
     const onBettingScreen = document.getElementById('screen-online-betting').classList.contains('active')
                           || document.getElementById('screen-online-bet-confirm').classList.contains('active')
@@ -5565,21 +5581,21 @@ function onGameStateUpdate(game){
     // 全員入力完了チェック → 公開ボタン表示 → 全員ボタン押下 → reveal遷移
     checkAllBetsSubmitted();
   }
-  if(game.phase === 'reveal' && !document.getElementById('screen-online-reveal').classList.contains('active')){
+  if(!_viewingRules && game.phase === 'reveal' && !document.getElementById('screen-online-reveal').classList.contains('active')){
     enterOnlineReveal(game);
   }
   if(game.phase === 'reveal' && document.getElementById('screen-online-reveal').classList.contains('active')){
     updateRevealReadyStatus(game);
     checkAllReadyForResult();
   }
-  if(game.phase === 'result' && !document.getElementById('screen-online-roundresult').classList.contains('active')){
+  if(!_viewingRules && game.phase === 'result' && !document.getElementById('screen-online-roundresult').classList.contains('active')){
     enterOnlineRoundResult(game);
   }
   if(game.phase === 'result' && document.getElementById('screen-online-roundresult').classList.contains('active')){
     updateNextReadyStatus(game);
     checkAllReadyForNext();
   }
-  if(game.phase === 'final' && !document.getElementById('screen-online-final').classList.contains('active')){
+  if(!_viewingRules && game.phase === 'final' && !document.getElementById('screen-online-final').classList.contains('active')){
     enterOnlineFinal(game);
   }
 
@@ -5777,7 +5793,8 @@ window.onlinePickRandomAll = function(){
       hideClose: true,
       buttons: [
         { label: '⭕ はい、これでいく', cls: 'btn-success', onClick: () => selectOnlineTopicConfirmed(pick.id) },
-        { label: '❌ いいえ、引き直す', cls: 'btn-secondary', onClick: () => window.onlinePickRandomAll() }
+        { label: '🎲 引き直す', cls: 'btn-secondary', onClick: () => window.onlinePickRandomAll() },
+        { label: '← 戻る', cls: 'btn-secondary', fullWidth: true, onClick: () => {} }
       ]
     });
   } else {
@@ -9000,7 +9017,34 @@ function updateMenuButtonVisibility(){
     return el && el.classList.contains('active');
   });
   btn.style.display = onGameScreen ? 'flex' : 'none';
+  // 📖ルールボタン：オフライン・オンライン問わずゲーム中画面で表示
+  updateRulesButtonVisibility(onGameScreen);
 }
+
+// 📖ルール確認ボタンの表示制御（オフライン＋オンラインのプレイ中画面）
+function updateRulesButtonVisibility(onlineGameActive){
+  const rbtn = document.getElementById('rules-toggle');
+  if(!rbtn) return;
+  // オフラインのプレイ中画面も対象
+  const offlineGameScreens = [
+    'screen-roundstart','screen-bet','screen-bet-confirm','screen-skip-confirm',
+    'screen-result','screen-reveal','screen-roundresult','screen-final'
+  ];
+  const onOfflineGame = offlineGameScreens.some(id=>{ const el=document.getElementById(id); return el && el.classList.contains('active'); });
+  // ルール画面自身を見ているときは隠す
+  const onRules = (document.getElementById('screen-rules')||{}).classList?.contains('active');
+  const show = (onlineGameActive || onOfflineGame) && !onRules;
+  rbtn.style.display = show ? 'flex' : 'none';
+  // ⋮メニューが表示中かどうかで位置を調整（重ならないように）
+  const menuBtn = document.getElementById('menu-toggle');
+  const menuShown = menuBtn && menuBtn.style.display !== 'none';
+  rbtn.style.right = menuShown ? '104px' : '58px';
+}
+
+// ゲーム中に📖を押したらルールを開く（戻り先を覚えておく）
+window.openRulesDuringGame = function(){
+  goTo('screen-rules');
+};
 
 // goToを上書きしてメニューボタン表示制御
 (function(){
