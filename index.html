@@ -2737,15 +2737,18 @@ function getAllTopics(){
 }
 function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}}
 function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
-// アクティブな画面の .scroll-content を一番下までスムーズスクロール
+// アクティブな画面を一番下までスムーズスクロール（実際のスクローラはwindow）
 function scrollActiveScreenToBottom(){
   setTimeout(()=>{
     const active=document.querySelector('.screen.active');
-    if(!active) return;
-    const sc=active.querySelector('.scroll-content');
-    const target=sc||active;
-    try{ target.scrollTo({ top: target.scrollHeight, behavior:'smooth' }); }
-    catch(e){ target.scrollTop=target.scrollHeight; }
+    const sc=active?active.querySelector('.scroll-content'):null;
+    // .scroll-content が実際にスクロール可能ならそれを、そうでなければページ全体をスクロール
+    if(sc && sc.scrollHeight > sc.clientHeight + 4){
+      try{ sc.scrollTo({ top: sc.scrollHeight, behavior:'smooth' }); }catch(e){ sc.scrollTop=sc.scrollHeight; }
+    } else {
+      const h=Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+      try{ window.scrollTo({ top: h, behavior:'smooth' }); }catch(e){ window.scrollTo(0,h); }
+    }
   }, 80);
 }
 window.scrollActiveScreenToBottom=scrollActiveScreenToBottom;
@@ -9076,16 +9079,25 @@ function updateScrollFabVisibility(){
   const fabScreens=['screen-reveal','screen-roundresult','screen-online-reveal','screen-online-roundresult'];
   const activeId=fabScreens.find(id=>{ const el=document.getElementById(id); return el && el.classList.contains('active'); });
   if(!activeId){ fab.style.display='none'; return; }
-  const sc=document.getElementById(activeId).querySelector('.scroll-content');
-  if(!sc){ fab.style.display='none'; return; }
-  // まだ下にスクロール余地があるときだけ表示（最下部付近では隠す）
-  const remaining = sc.scrollHeight - sc.scrollTop - sc.clientHeight;
+  const screenEl=document.getElementById(activeId);
+  const sc=screenEl.querySelector('.scroll-content');
+  let remaining;
+  if(sc && sc.scrollHeight > sc.clientHeight + 4){
+    // .scroll-content 自体がスクロールするケース
+    remaining = sc.scrollHeight - sc.scrollTop - sc.clientHeight;
+  } else {
+    // ページ全体（window）がスクロールするケース
+    const docH=Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+    const winTop=window.pageYOffset||document.documentElement.scrollTop||0;
+    remaining = docH - winTop - window.innerHeight;
+  }
   fab.style.display = (remaining > 40) ? 'flex' : 'none';
 }
 window.updateScrollFabVisibility=updateScrollFabVisibility;
 
-// 各スクロールコンテナのスクロールに応じて矢印の表示を更新
+// スクロールに応じて矢印の表示を更新（window と scroll-content の両方を監視）
 (function(){
+  window.addEventListener('scroll', function(){ updateScrollFabVisibility(); }, { passive:true });
   document.addEventListener('scroll', function(e){
     if(e.target && e.target.classList && e.target.classList.contains('scroll-content')){
       updateScrollFabVisibility();
