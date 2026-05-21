@@ -342,6 +342,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 /* 一番下までスクロールする矢印（小さく半透明・邪魔にならない） */
 .scroll-down-fab{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;width:72px;height:36px;border-radius:18px;background:rgba(24,95,165,0.78);border:1px solid rgba(110,170,235,0.8);color:#eaf4ff;font-size:1.05rem;cursor:pointer;z-index:90;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(2px);box-shadow:0 2px 10px rgba(24,95,165,0.5);animation:scrollFabBounce 1.8s ease-in-out infinite;transition:opacity 0.3s;}
 .scroll-down-fab:active{transform:translateX(-50%) scale(0.9);}
+.scroll-down-fab.fab-green{background:rgba(20,90,55,0.62);border:1px solid rgba(90,180,120,0.7);color:#dff6e6;box-shadow:0 2px 10px rgba(20,90,55,0.45);}
 @keyframes scrollFabBounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(4px);}}
 .game-menu-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
 .game-menu-modal.hidden{display:none;}
@@ -661,6 +662,9 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div class="panel">
         <div class="panel-title" id="online-topic-list-title">② お題を選ぼう</div>
         <div id="online-topic-list"></div>
+      </div>
+      <div style="margin:6px 10px 16px">
+        <button class="btn btn-secondary" onclick="onlineBackToCategory()" style="font-size:0.85rem;padding:8px 14px">← カテゴリ選択に戻る</button>
       </div>
     </div>
 
@@ -1194,6 +1198,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         </div>
         <div style="font-size:0.7rem;color:#aaa;margin-bottom:8px">スマホ：長押し　PC：右クリックで選択肢を確認</div>
         <div id="topic-list"></div>
+        <div style="margin-top:12px"><button onclick="resetMethodStep()" style="background:var(--gold);border:none;border-radius:6px;color:#1a1a1a;font-size:0.8rem;font-weight:900;cursor:pointer;padding:8px 16px">← カテゴリ選択に戻る</button></div>
       </div>
 
       <!-- ④ お題確定確認 -->
@@ -2980,8 +2985,8 @@ function renderCategoryStep(){
   CATEGORIES.forEach(cat=>{const pool=getTopicsByCategory(cat.id);const total=pool.length;const unused=pool.filter(t=>!state.usedTopicIds.includes(t.id)).length;const b=document.createElement('button');b.style.cssText=`background:${cat.color};color:${cat.textColor};border:none;border-radius:10px;padding:12px 8px;cursor:pointer;text-align:left;`;b.innerHTML=`<div style="font-size:1.2rem">${cat.icon}</div><div style="font-weight:900;font-size:1rem;margin-top:4px">${cat.label}</div><div style="font-size:0.65rem;opacity:0.85;margin-top:2px;line-height:1.4">${cat.sub}</div><div style="font-size:0.7rem;margin-top:6px;opacity:0.9">未使用 ${unused} / ${total} 問</div>`;b.addEventListener('click',()=>selectCategory(cat.id));c.appendChild(b);});
 }
 function selectCategory(catId){selectedCategory=catId;document.getElementById('category-step').style.display='none';document.getElementById('method-step').style.display='block';}
-function resetCategoryStep(){renderCategoryStep();}
-function resetMethodStep(){document.getElementById('method-step').style.display='block';document.getElementById('random-step').style.display='none';document.getElementById('list-step').style.display='none';state.selectedTopic=null;}
+function resetCategoryStep(){renderCategoryStep();if(typeof updateScrollFabVisibility==='function')setTimeout(updateScrollFabVisibility,80);}
+function resetMethodStep(){document.getElementById('method-step').style.display='block';document.getElementById('random-step').style.display='none';document.getElementById('list-step').style.display='none';state.selectedTopic=null;if(typeof updateScrollFabVisibility==='function')setTimeout(updateScrollFabVisibility,80);}
 function pickRandom(){
   const pool=getTopicsByCategory(selectedCategory);if(pool.length===0){showNotif('⚠️ このカテゴリーにお題がありません');return;}
   let unused=pool.filter(t=>!state.usedTopicIds.includes(t.id));
@@ -3047,7 +3052,7 @@ function confirmRandomTopic(){
   showConfirmStep();
 }
 
-function showTopicList(){document.getElementById('method-step').style.display='none';document.getElementById('list-step').style.display='block';renderTopicList();}
+function showTopicList(){document.getElementById('method-step').style.display='none';document.getElementById('list-step').style.display='block';renderTopicList();if(typeof updateScrollFabVisibility==='function'){setTimeout(updateScrollFabVisibility,80);setTimeout(updateScrollFabVisibility,400);}}
 function renderTopicList(){
   const pool=getTopicsByCategory(selectedCategory||'all');const c=document.getElementById('topic-list');if(!c)return;c.innerHTML='';
   if(pool.length===0){c.innerHTML='<div class="empty">📭 このカテゴリーにお題がありません</div>';return;}
@@ -5793,6 +5798,7 @@ window.onlinePickCategory = function(category){
   }
 
   renderOnlineTopicListByCategory(category);
+  if(typeof updateScrollFabVisibility==='function'){setTimeout(updateScrollFabVisibility,80);setTimeout(updateScrollFabVisibility,400);}
 };
 
 // カテゴリ選択に戻る
@@ -5801,6 +5807,8 @@ window.onlineBackToCategory = function(){
   const listStep = document.getElementById('online-topic-list-step');
   if(categoryStep) categoryStep.style.display = '';
   if(listStep) listStep.style.display = 'none';
+  try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
+  if(typeof updateScrollFabVisibility==='function')setTimeout(updateScrollFabVisibility,80);
 };
 
 // 完全ランダム（全カテゴリから1問選んで即決定）
@@ -9076,13 +9084,16 @@ function updateRulesButtonVisibility(onlineGameActive){
   updateScrollFabVisibility();
 }
 
-// ▼下までスクロール矢印：賭け公開・結果発表の画面で、まだ下に隠れたボタンがあるとき表示
+// ▼下までスクロール矢印：賭け公開・結果発表・お題選択などで、まだ下に隠れた要素があるとき表示
 function updateScrollFabVisibility(){
   const fab=document.getElementById('scroll-down-fab');
   if(!fab) return;
-  const fabScreens=['screen-reveal','screen-roundresult','screen-online-reveal','screen-online-roundresult','screen-rules','screen-room-lobby'];
+  const fabScreens=['screen-reveal','screen-roundresult','screen-online-reveal','screen-online-roundresult','screen-rules','screen-room-lobby','screen-online-topic-select','screen-roundstart'];
+  const greenScreens=['screen-online-topic-select','screen-roundstart'];
   const activeId=fabScreens.find(id=>{ const el=document.getElementById(id); return el && el.classList.contains('active'); });
   if(!activeId){ fab.style.display='none'; return; }
+  // お題選択画面では深緑、それ以外は青
+  if(greenScreens.includes(activeId)) fab.classList.add('fab-green'); else fab.classList.remove('fab-green');
   const screenEl=document.getElementById(activeId);
   const sc=screenEl.querySelector('.scroll-content');
   let remaining;
