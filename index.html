@@ -2,13 +2,15 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f0d">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="msapplication-navbutton-color" content="#0a0f0d">
 <title>夢へのパスポート</title>
 <meta name="google-site-verification" content="C0j93fE_uTKhmmuSnjRmJFzH4GKPL2CH7Ns0CJagK4E" />
 <meta name="description" content="競馬の三連単をモチーフにした価値観ゲーム。単勝・連単・三連単で友達・家族・カップルの価値観を読んで賭けよう！意外と身近な人の価値観は知らない？G1・G2・G3のお題で盛り上がる。2〜30人対応。飲み会・パーティーに最適。無料で今すぐ遊べる。">
 <meta name="keywords" content="価値観ゲーム,飲み会ゲーム,競馬,三連単,単勝,連単,G1,パーティーゲーム,心理ゲーム,盛り上がるゲーム,無料ゲーム,家族ゲーム,カップルゲーム,友達ゲーム,身近な人,価値観,知らない,夢へのパスポート,yumepass">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="夢パスポート">
 <link rel="apple-touch-icon" id="pwa-icon" href="">
 <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;夢へのパスポート&quot;,&quot;short_name&quot;:&quot;夢パスポート&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#1a1a1a&quot;,&quot;theme_color&quot;:&quot;#c9960a&quot;}">
@@ -34,8 +36,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Racing+Sans+One&display=swap');
 :root{--green:#1a6b2a;--green-light:#2d9e44;--gold:#f5c842;--gold-dark:#c9960a;--red:#c0392b;--white:#f9f5e8;--dark:#1a1a1a;--panel:#fdf8ed;--border:#c9960a;--oya:#8b1a8b;--oya-light:#c060c0;}
 *{box-sizing:border-box;margin:0;padding:0;}
-html{background:var(--green);min-height:100vh;}
-body{font-family:'Noto Sans JP',sans-serif;background:var(--green);color:var(--dark);min-height:100vh;overflow-x:hidden;}
+html{background:#0a0f0d;min-height:100vh;overscroll-behavior:none;}
+body{font-family:'Noto Sans JP',sans-serif;background:#0a0f0d;color:var(--dark);min-height:100vh;overflow-x:hidden;overscroll-behavior:none;}
 /* 演出中はbody背景もダークに */
 body.fx-active{background:#000;}
 html.fx-active{background:#000;}
@@ -1510,7 +1512,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         <strong>② オッズには上限と下限がある。</strong><br>どれだけ人気が偏っても、各賭け方ごとに決まった範囲でしか動かない。<br>（例：単勝は ×1.3〜×4.9、3連単は ×6.0〜×100）
       </div>
       <div style="background:rgba(245,200,66,0.14);border-radius:8px;padding:9px 12px;margin:8px 0;font-size:0.82rem;line-height:1.7;color:#4a3500">
-        💡 だから「<strong>みんなと違う読み</strong>」が当たった時が一番気持ちいい。周りの予想を読んで、あえて穴を狙うのも戦略のひとつ。
+        💡 つまり、<strong>他の人は知らなそうな親の性格や特徴を知っていると、オッズで有利になる</strong>ということ！みんなが選ばない「穴」をあなただけが読めれば、当てたときの配当が大きくなる。<br>だから「<strong>みんなと違う読み</strong>」が当たった時が一番気持ちいい！
       </div>
       <div style="background:linear-gradient(135deg,#2a1a00,#3a2a00);border:1px solid var(--gold-dark);border-radius:8px;padding:10px 12px;margin-top:8px;color:#ffe9a8;font-size:0.82rem;line-height:1.7">
         そして大事なこと：この上限のおかげで、<strong style="color:var(--gold)">「全部の選択肢に賭けて確実に儲ける」ことはできない</strong>。ちゃんと予想を当てた人だけが報われる、フェアな設計です。
@@ -3392,7 +3394,7 @@ function setBetInputVal(v){betInputVal=v;const display=document.getElementById('
     if(offBuyMethod==='simple'||points===0){
       display.textContent=num>0?num.toLocaleString()+' 点':'0';
     } else {
-      display.innerHTML=`<span style="font-size:0.55em">1点</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#999"> × ${points}点 = </span><br><span style="font-size:0.75em">合計 ${total.toLocaleString()}点</span>`;
+      display.innerHTML=`<span style="font-size:0.5em;color:#bbb">1点あたり</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#999"> × ${points}通り = </span><br><span style="font-size:0.75em">合計 ${total.toLocaleString()}点</span>`;
     }
     display.style.color=total>p.points?'#e74c3c':num>=minBet?'#2ecc71':'var(--gold)';
   }catch(e){}
@@ -3934,11 +3936,12 @@ function _doGoToReveal(){
     // コンパクト表示（券種チップ＋点数）。詳細は長押し。
     let summaryChips;
     if(Array.isArray(bet.multiBets) && bet.multiBets.length>1){
-      summaryChips = bet.multiBets.map(u=>`<span style="background:var(--gold-dark);color:#fff;font-size:0.66rem;font-weight:900;padding:2px 8px;border-radius:9px;white-space:nowrap">${(BET_NAMES[u.betType]||u.betType)}${u.buyMethod&&u.buyMethod!=='simple'?'('+(BUY_METHOD_NAMES[u.buyMethod]||u.buyMethod)+')':''}</span>`).join(' ');
+      summaryChips = bet.multiBets.map(u=>`<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:3px">${compactBetLine(u)}</div>`).join('');
     } else {
-      summaryChips = `<span style="background:var(--gold-dark);color:#fff;font-size:0.66rem;font-weight:900;padding:2px 8px;border-radius:9px;white-space:nowrap">${(BET_NAMES[bet.betType]||bet.betType)}${bet.buyMethod&&bet.buyMethod!=='simple'?'('+(BUY_METHOD_NAMES[bet.buyMethod]||bet.buyMethod)+')':''}</span>`;
+      const single = Array.isArray(bet.multiBets)&&bet.multiBets[0] ? bet.multiBets[0] : bet;
+      summaryChips = `<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${compactBetLine(single)}</div>`;
     }
-    return`<div class="reveal-card" data-bet-idx="${idx}"><div class="reveal-card-header" style="gap:8px"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span>${hint}</div><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px">${summaryChips}<span style="margin-left:auto;color:#8a6500;font-weight:900;font-size:0.82rem;white-space:nowrap">${bet.amount.toLocaleString()}点</span></div></div>`;
+    return`<div class="reveal-card" data-bet-idx="${idx}"><div class="reveal-card-header" style="gap:8px"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span>${hint}</div><div style="display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;margin-top:6px"><div style="flex:1;min-width:0">${summaryChips}</div><span style="color:#8a6500;font-weight:900;font-size:0.82rem;white-space:nowrap">${bet.amount.toLocaleString()}点</span></div></div>`;
   }).join('');
   // 長押し/タップで詳細（写真形式の馬券）
   rvListEl.querySelectorAll('[data-bet-idx]').forEach(el=>{
@@ -3989,6 +3992,7 @@ function calculateResults(){
   const roundLog = {
     round: state.currentRound,
     topic: state.selectedTopic.title,
+    topicHorses: (state.selectedTopic.horses||[]).slice(),
     oyaName: oya.name,
     result: state.actualResult.map(i => state.selectedTopic.horses[i]),
     playerResults: [],
@@ -4489,6 +4493,67 @@ function attachResultLongPress(el, r, horses){
 }
 window.attachResultLongPress = attachResultLongPress;
 
+// 結果詳細HTML：当選した賭け方の馬券のみ表示＋収支（外れは「当選なし −○点」）
+// r: playerResult, horses: 選択肢名配列
+function resultDetailHtml(r, horses){
+  horses = horses || [];
+  const win = !r.skipped && ((r.payout && r.payout>0) || r.change>0);
+  const net = (typeof r.change==='number') ? r.change : ((r.payout||0) - (r.amount||0));
+  // 収支ライン
+  let pl;
+  if(r.skipped){
+    pl = `<span style="color:#aaa;font-weight:700">見送り（${net<0?net.toLocaleString():'±0'}点）</span>`;
+  } else if(win){
+    pl = `<span style="color:#7dff7d;font-weight:900">🎯 当選　収支 ${net>=0?'+':''}${net.toLocaleString()}点</span><br><span style="color:#c8bfa8;font-size:0.78rem">（払戻 ${(r.payout||0).toLocaleString()}点 − 賭け金 ${(r.amount||0).toLocaleString()}点）</span>`;
+  } else {
+    pl = `<span style="color:#ff9a9a;font-weight:900">当選なし　収支 ${net.toLocaleString()}点</span>`;
+  }
+  // 馬券本体（当選時は当たった賭けのみ、外れ時は賭けた内容を表示）
+  let inner = '';
+  const winCombos = winningCombosFromResult(r);
+  if(r.isMulti && Array.isArray(r.betResults)){
+    let units = r.betResults.map((br,i)=>({
+      betType:br.betType, buyMethod:br.buyMethod||'simple', selections:br.selections, combinations:br.combinations,
+      unitAmount:br.unitAmount, amount:br.amount,
+      structure:(r.multiStructures&&r.multiStructures[i])||br.structure||null,
+      _hit: (br.winningSubs && br.winningSubs.length>0) || (br.payout&&br.payout>0)
+    }));
+    if(win){
+      // 当選した賭け方のみに絞る
+      const winners = units.filter(u=>u._hit);
+      const shown = winners.length>0 ? winners : units;
+      inner = shown.map(u=>`<div style="margin-bottom:8px">${bakenHtml(u, horses, {dark:true})}</div>`).join('');
+    } else {
+      inner = units.map(u=>`<div style="margin-bottom:8px">${bakenHtml(u, horses, {dark:true})}</div>`).join('');
+    }
+  } else {
+    const betObj = resultToBetObj(r);
+    inner = bakenHtml(betObj, horses, {dark:true});
+  }
+  if(!inner) inner = '<div style="color:#c8bfa8;font-size:0.82rem">（賭けの詳細データがありません）</div>';
+  return `${inner}<div class="uiconfirm-summary">${pl}</div>`;
+}
+window.resultDetailHtml = resultDetailHtml;
+
+// 賭け公開カード用：券種チップ＋選んだ馬番を簡潔に1行で表示
+function compactBetLine(bet){
+  const betType = (typeof normalizeBetType==='function')? normalizeBetType(bet.betType) : bet.betType;
+  const method = bet.buyMethod || 'simple';
+  const methodName = (method!=='simple') ? '('+(BUY_METHOD_NAMES[method]||method)+')' : '';
+  const betName = (BET_NAMES[betType]||betType);
+  const chip = `<span style="background:var(--gold-dark);color:#fff;font-size:0.64rem;font-weight:900;padding:2px 7px;border-radius:8px;white-space:nowrap;flex-shrink:0">${betName}${methodName}</span>`;
+  // 選んだ馬番（構造があればそれ準拠、なければselections）
+  let hs = [];
+  const st = bet.structure;
+  if(st && st.kind==='formation'){ const set=new Set(); (st.positions||[]).forEach(a=>(a||[]).forEach(h=>set.add(h))); hs=[...set]; }
+  else if(st && st.kind==='nagashi'){ hs=[st.axis, ...(st.opponents||[])]; }
+  else if(st && st.kind==='box'){ hs=(st.horses||[]).slice(); }
+  else { hs=(bet.selections||[]).slice(); }
+  const badges = hs.map(hi=>`<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.6rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join('');
+  return `${chip}<span style="display:inline-flex;flex-wrap:wrap;gap:2px;align-items:center">${badges}</span>`;
+}
+window.compactBetLine = compactBetLine;
+
 function triggerOfflineEffects(log){
   if(!log || !log.playerResults) return;
   // 全プレイヤーの「的中した個々の券種」を集める（複数券種も券種単位に展開）
@@ -4658,10 +4723,22 @@ function renderFinalScreen(){
       </div>
       <div class="history-round-body">
         <div style="font-size:0.75rem;color:#888;margin-bottom:4px">結果：${r.result.map((n,i)=>`${i+1}位 ${n}`).join(' / ')}</div>
-        ${r.playerResults.map(p=>{const win=!p.skipped&&((p.payout&&p.payout>0)||p.change>0);const disp=p.skipped?'<span style="color:#aaa">見送り</span>':(win?`<span style="color:var(--green-light);font-weight:700">🎯 +${(p.payout||0).toLocaleString()}</span>`:'<span style="color:#bbb;font-weight:700">非当選</span>');return `<div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:2px 0;border-bottom:1px solid #f0e8d0"><span>${p.name}</span>${disp}</div>`;}).join('')}
+        <div style="font-size:0.66rem;color:#aaa;margin-bottom:4px">各行をタップで馬券の詳細</div>
+        ${r.playerResults.map((p,pi)=>{const win=!p.skipped&&((p.payout&&p.payout>0)||p.change>0);const net=(typeof p.change==='number')?p.change:((p.payout||0)-(p.amount||0));const disp=p.skipped?'<span style="color:#aaa">見送り</span>':(win?`<span style="color:var(--green-light);font-weight:700">🎯 +${net.toLocaleString()}</span>`:`<span style="color:#c0392b;font-weight:700">当選なし ${net.toLocaleString()}</span>`);return `<div class="off-fin-pres-row" data-pi="${pi}" style="display:flex;justify-content:space-between;font-size:0.8rem;padding:4px 0;border-bottom:1px solid #f0e8d0;cursor:pointer"><span>${p.name} <span style="font-size:0.6rem;color:#bbb">👆</span></span>${disp}</div>`;}).join('')}
         ${r.oyaBonus>0&&state.oyaBonusRate>0?`<div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:2px 0;color:var(--oya-light)"><span>${r.oyaName}（親ボーナス）</span><span style="font-weight:700">+${r.oyaBonus.toLocaleString()}</span></div>`:''}
       </div>
     `;
+    // 各プレイヤー行タップ → 馬券詳細（当選分のみ＋収支）
+    const rhorses=(r.topicHorses&&r.topicHorses.length)?r.topicHorses:((topicObj&&topicObj.horses)||[]);
+    div.querySelectorAll('.off-fin-pres-row').forEach(row=>{
+      row.addEventListener('click',(e)=>{
+        e.stopPropagation();
+        const pi=parseInt(row.getAttribute('data-pi'));
+        const pr=r.playerResults[pi];
+        if(!pr) return;
+        uiConfirm({ icon:'🎫', title:`${pr.name||''} さんの結果`, bodyHtml: resultDetailHtml(pr, rhorses), okText:'閉じる', cancelText:null });
+      });
+    });
     // ヘッダーに長押し・右クリック
     if(topicObj){
       const header=div.querySelector('.history-round-header');
@@ -6930,7 +7007,7 @@ function setOnlineBetInputVal(v){
     if (method === 'simple' || points === 0) {
       display.textContent = num > 0 ? num.toLocaleString() + ' 点' : '0';
     } else {
-      display.innerHTML = `<span style="font-size:0.55em">1点</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#999"> × ${points}点 = </span><br><span style="font-size:0.75em">合計 ${total.toLocaleString()}点</span>`;
+      display.innerHTML = `<span style="font-size:0.5em;color:#bbb">1点あたり</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#999"> × ${points}通り = </span><br><span style="font-size:0.75em">合計 ${total.toLocaleString()}点</span>`;
     }
     // 色判定: 合計が持ち点を超えたら警告色
     display.style.color = total > myPoints ? '#e74c3c' : num >= minBet ? '#2ecc71' : 'var(--gold)';
@@ -7928,11 +8005,12 @@ function enterOnlineReveal(game){
       // コンパクト表示（券種チップ＋点数）。詳細は長押し。
       let summaryChips;
       if(Array.isArray(bet.multiBets) && bet.multiBets.length > 1){
-        summaryChips = bet.multiBets.map(u=>`<span style="background:var(--gold-dark);color:#fff;font-size:0.66rem;font-weight:900;padding:2px 8px;border-radius:9px;white-space:nowrap">${(BET_NAMES[u.betType]||u.betType)}${u.buyMethod&&u.buyMethod!=='simple'?'('+(BUY_METHOD_NAMES[u.buyMethod]||u.buyMethod)+')':''}</span>`).join(' ');
+        summaryChips = bet.multiBets.map(u=>`<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:3px">${compactBetLine(u)}</div>`).join('');
       } else {
-        summaryChips = `<span style="background:var(--gold-dark);color:#fff;font-size:0.66rem;font-weight:900;padding:2px 8px;border-radius:9px;white-space:nowrap">${(BET_NAMES[bet.betType]||bet.betType)}${bet.buyMethod&&bet.buyMethod!=='simple'?'('+(BUY_METHOD_NAMES[bet.buyMethod]||bet.buyMethod)+')':''}</span>`;
+        const single = Array.isArray(bet.multiBets)&&bet.multiBets[0] ? bet.multiBets[0] : bet;
+        summaryChips = `<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${compactBetLine(single)}</div>`;
       }
-      return `<div class="reveal-card" data-ko="${ki}"><div class="reveal-card-header" style="gap:8px"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span></span>${hint}</div><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px">${summaryChips}<span style="margin-left:auto;color:#8a6500;font-weight:900;font-size:0.82rem;white-space:nowrap">${(bet.amount||0).toLocaleString()}点</span></div></div>`;
+      return `<div class="reveal-card" data-ko="${ki}"><div class="reveal-card-header" style="gap:8px"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span></span>${hint}</div><div style="display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;margin-top:6px"><div style="flex:1;min-width:0">${summaryChips}</div><span style="color:#8a6500;font-weight:900;font-size:0.82rem;white-space:nowrap">${(bet.amount||0).toLocaleString()}点</span></div></div>`;
     }).join('');
     // 長押し/タップで詳細（写真形式の馬券）
     list.querySelectorAll('[data-ko]').forEach(el=>{
@@ -8783,19 +8861,32 @@ function enterOnlineFinal(game){
             <div style="text-align:right;margin-top:6px;font-size:0.64rem;color:#888;font-weight:600">👆 タップで子の結果</div>
           </div>`;
         }).join('');
-        // 各ラウンドのタップで子の結果（当選/非当選）を端的に表示
+        // 各ラウンドのタップで子の結果（当選/非当選＋収支）を表示。各行タップで馬券詳細
         histEl.querySelectorAll('.ofn-round-card').forEach(card=>{
           card.addEventListener('click', ()=>{
             const rnd=parseInt(card.getAttribute('data-round'));
             const h=history.find(x=>x.round===rnd);
             if(!h || !Array.isArray(h.playerResults)) return;
-            const rows=h.playerResults.map(p=>{
+            const horses=(h.topicHorses)|| (h.horses) || [];
+            const rows=h.playerResults.map((p,pi)=>{
               const win=!p.skipped&&((p.payout&&p.payout>0)||p.change>0);
-              const disp=p.skipped?'<span style="color:#aaa">見送り</span>':(win?`<span style="color:#7dff7d;font-weight:900">🎯 +${(p.payout||0).toLocaleString()}点</span>`:'<span style="color:#bbb;font-weight:700">非当選</span>');
-              return `<div class="uiconfirm-betline" style="justify-content:space-between"><span>${escapeHtml(p.name)}</span>${disp}</div>`;
+              const net=(typeof p.change==='number')?p.change:((p.payout||0)-(p.amount||0));
+              const disp=p.skipped?'<span style="color:#aaa">見送り</span>':(win?`<span style="color:#7dff7d;font-weight:900">🎯 +${net.toLocaleString()}点</span>`:`<span style="color:#ff9a9a;font-weight:700">当選なし ${net.toLocaleString()}点</span>`);
+              return `<div class="uiconfirm-betline ofn-pres-row" data-round="${rnd}" data-pi="${pi}" style="justify-content:space-between;cursor:pointer"><span>${escapeHtml(p.name)} <span style="font-size:0.6rem;color:#999">👆</span></span>${disp}</div>`;
             }).join('');
             const oyaB=(h.oyaBonus>0)?`<div class="uiconfirm-summary"><span style="color:#e0a0e0">👑 ${escapeHtml(h.oyaName)}（親ボーナス）+${h.oyaBonus.toLocaleString()}点</span></div>`:'';
-            uiConfirm({ icon:'📜', title:`ROUND ${h.round} の結果`, bodyHtml:`<div style="font-size:0.78rem;color:#c8bfa8;margin-bottom:6px">${h.topicIcon||'🎯'} ${escapeHtml(h.topic||'')}</div>${rows}${oyaB}`, okText:'閉じる', cancelText:null });
+            uiConfirm({ icon:'📜', title:`ROUND ${h.round} の結果`, bodyHtml:`<div style="font-size:0.78rem;color:#c8bfa8;margin-bottom:6px">${h.topicIcon||'🎯'} ${escapeHtml(h.topic||'')}</div><div style="font-size:0.68rem;color:#888;margin-bottom:8px">各行をタップで馬券の詳細が見られます</div>${rows}${oyaB}`, okText:'閉じる', cancelText:null });
+            // ダイアログ描画後に各行へ詳細ハンドラを付与
+            setTimeout(()=>{
+              document.querySelectorAll('.ofn-pres-row').forEach(row=>{
+                row.addEventListener('click',()=>{
+                  const pi=parseInt(row.getAttribute('data-pi'));
+                  const pr=h.playerResults[pi];
+                  if(!pr) return;
+                  uiConfirm({ icon:'🎫', title:`${escapeHtml(pr.name||'')} さんの結果`, bodyHtml: resultDetailHtml(pr, horses), okText:'閉じる', cancelText:null });
+                });
+              });
+            }, 60);
           });
         });
       }
