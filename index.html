@@ -42,12 +42,8 @@ body{font-family:'Noto Sans JP',sans-serif;background:#0a0f0d;color:var(--dark);
 body.fx-active{background:#000;}
 html.fx-active{background:#000;}
 .screen{display:none;min-height:100vh;flex-direction:column;background:linear-gradient(160deg,#0e1a14 0%,#0a0f0d 45%,#14110a 100%);}.screen.active{display:flex;}
-#screen-online-oya-confirm,#screen-online-reveal{background:linear-gradient(160deg,#eef1f6 0%,#e6eaf2 100%);}
-#screen-online-oya-confirm .round-header,#screen-online-reveal .header{background:#2a3a5a;border-bottom:3px solid #1a2a4a;}
-#screen-online-oya-confirm .round-header{color:#fff;}
-#screen-online-reveal .header h1{color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.4);}
-#screen-online-reveal .header .subtitle{color:#c8d2e4;}
-#screen-online-roundresult{--result-accent:#f5d65a;--result-accent-soft:rgba(245,214,90,0.4);--result-accent-dark:#9a7a10;--result-accent-bg:rgba(245,214,90,0.12);background:linear-gradient(160deg,#0c2417 0%,#0a1c12 100%);}
+#screen-online-oya-confirm,#screen-online-reveal{background:linear-gradient(160deg,#14110b 0%,#0c0c0e 100%);}
+#screen-online-roundresult{--result-accent:#3fd0c8;--result-accent-soft:rgba(63,208,200,0.4);--result-accent-dark:#0a4a44;--result-accent-bg:rgba(63,208,200,0.12);background:linear-gradient(160deg,#14110b 0%,#0c0c0e 100%);}
 #screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 12%,rgba(245,200,66,0.10),transparent 42%),radial-gradient(circle at 85% 80%,rgba(26,107,42,0.18),transparent 46%);}
 .screen>*{position:relative;z-index:1;}
@@ -907,31 +903,31 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-online-oya-confirm">
   <div class="round-header" id="ooc-round-header">ROUND 1 — 順位確認</div>
   <div class="scroll-content">
-    <!-- お題パネル -->
-    <div id="ooc-topic-panel" style="margin:10px;background:#ffffff;border:1px solid #d8dde6;border-radius:10px;padding:12px">
-      <div style="color:#5a6a8a;font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TODAY'S TOPIC</div>
+    <!-- お題パネル（電光掲示板風） -->
+    <div id="ooc-topic-panel" style="margin:10px;background:linear-gradient(135deg,#2a1f04,#3a2a08);border:1px solid #b8911e;border-radius:10px;padding:12px">
+      <div style="color:#c9a233;font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TODAY'S TOPIC</div>
       <div style="display:flex;align-items:center;gap:8px">
         <div style="font-size:1.4rem" id="ooc-topic-icon">🎯</div>
-        <div style="color:#2a3a5a;font-size:1rem;font-weight:900" id="ooc-topic-title">—</div>
+        <div style="color:#f5c842;font-size:1rem;font-weight:900" id="ooc-topic-title">—</div>
       </div>
       <div id="ooc-topic-horses" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
     </div>
-    <!-- 順位確認チケット -->
-    <div style="background:#f7f9fc;margin:10px;border-radius:14px;border:1px solid #d8dde6;overflow:hidden;box-shadow:0 4px 16px rgba(42,58,90,0.12)">
-      <div style="background:#2a3a5a;padding:13px 16px;text-align:center">
+    <!-- 順位確認チケット（K3 ディープグリーン） -->
+    <div style="background:linear-gradient(135deg,#0c3020,#103e2a);margin:10px;border-radius:14px;border:1px solid #2ea860;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,0.45)">
+      <div style="background:linear-gradient(135deg,#0c3020,#16542e);padding:13px 16px;text-align:center;border-bottom:1px solid rgba(90,200,140,0.4)">
         <div style="font-family:'Racing Sans One',cursive;color:#fff;font-size:1.1rem;letter-spacing:4px;margin-bottom:2px">RANKING</div>
         <div style="color:#fff;font-size:1.2rem;font-weight:900" id="ooc-name">—</div>
       </div>
       <div style="padding:16px">
-        <div style="color:#5a6a8a;font-size:0.7rem;letter-spacing:2px;margin-bottom:10px;text-align:center;font-weight:700">YOUR RANKING</div>
+        <div style="color:#4cc888;font-size:0.7rem;letter-spacing:2px;margin-bottom:10px;text-align:center;font-weight:700">YOUR RANKING</div>
         <div id="ooc-ranking" style="display:flex;flex-direction:column;gap:8px"></div>
-        <div style="border-top:1px dashed #d8dde6;margin-top:14px;padding-top:10px;text-align:center;color:#8a93a4;font-size:0.7rem;line-height:1.5">
+        <div style="border-top:1px dashed rgba(90,200,140,0.35);margin-top:14px;padding-top:10px;text-align:center;color:rgba(120,210,160,0.75);font-size:0.7rem;line-height:1.5">
           ⚠️ この内容で決定すると変更できません<br>子の予想と照合されます
         </div>
       </div>
     </div>
     <div style="margin:10px">
-      <button class="btn btn-oya" onclick="onlineConfirmOyaResult()" style="background:linear-gradient(135deg,#3a5a8a,#2a3a5a);color:#fff;box-shadow:0 3px 8px rgba(42,58,90,0.4)">🏁 この順位で決定！</button>
+      <button class="btn btn-oya" onclick="onlineConfirmOyaResult()" style="background:linear-gradient(135deg,#2ea860,#1d7a4a);color:#fff;box-shadow:0 3px 8px rgba(46,168,96,0.4)">🏁 この順位で決定！</button>
       <button class="btn btn-secondary" onclick="goTo('screen-online-betting')" style="margin-top:8px">← 順位を修正する</button>
     </div>
   </div>
@@ -976,19 +972,19 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-online-reveal">
   <div class="header"><div class="subtitle" id="orv-round-label">ROUND 1 REVEAL</div><h1>📢 賭け公開！</h1></div>
   <div class="scroll-content">
-    <div class="panel" style="background:#ffffff;border:1px solid #d8dde6">
-      <div style="text-align:center;color:#5a6a8a;font-size:0.75rem;letter-spacing:2px;margin-bottom:6px;font-weight:700">TODAY'S TOPIC</div>
-      <div style="text-align:center;color:#2a3a5a;font-size:1.3rem;font-weight:900" id="orv-topic-name">—</div>
+    <div class="panel" style="background:linear-gradient(135deg,#2a1f04,#3a2a08);border:1px solid #b8911e">
+      <div style="text-align:center;color:#c9a233;font-size:0.75rem;letter-spacing:2px;margin-bottom:6px;font-weight:700">TODAY'S TOPIC</div>
+      <div style="text-align:center;color:#f5c842;font-size:1.3rem;font-weight:900" id="orv-topic-name">—</div>
       <div id="orv-topic-horses" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
     </div>
-    <!-- 親パネル（上） -->
-    <div class="panel" style="background:#ffffff;border:1px solid #d8dde6"><div class="panel-title" style="color:#2a4e7a">👑 親の順位入力</div><div id="orv-oya-block"></div></div>
-    <!-- 子パネル（下） -->
-    <div class="panel" style="background:#fbfcfe;border:1px solid #d8dde6"><div class="panel-title" style="color:#3a5a8a">🎯 子の賭け内容</div><div id="orv-bets-list"></div></div>
-    <div style="color:#3a5a8a;text-align:center;padding:12px;font-size:0.85rem;font-weight:700">みんなで確認したら結果発表！</div>
+    <!-- 親パネル（上）K1 ネイビー -->
+    <div class="panel" style="background:linear-gradient(135deg,#0e2452,#16346e);border:1px solid #3a6ad0"><div class="panel-title" style="color:#9fc0f5">👑 親の順位入力</div><div id="orv-oya-block"></div></div>
+    <!-- 子パネル（下）クリーム -->
+    <div class="panel" style="background:linear-gradient(135deg,#fdf8ed,#f5edd8);border:1px solid #e0c83a"><div class="panel-title" style="color:#8a6a10">🎯 子の賭け内容</div><div id="orv-bets-list"></div></div>
+    <div style="color:#f5c842;text-align:center;padding:12px;font-size:0.85rem;font-weight:700">みんなで確認したら結果発表！</div>
     <div style="margin:10px">
       <button class="btn btn-primary" id="orv-reveal-btn" onclick="onlineReadyForResult()">🎊 結果発表の準備完了！</button>
-      <div id="orv-ready-status" style="text-align:center;color:#5a6a8a;font-size:0.85rem;margin-top:8px"></div>
+      <div id="orv-ready-status" style="text-align:center;color:#f5c842;font-size:0.85rem;margin-top:8px"></div>
     </div>
   </div>
 </div>
@@ -997,18 +993,18 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-online-roundresult">
   <div class="round-header" id="orr-round-label">ROUND 1 RESULT</div>
   <div class="scroll-content">
-    <!-- お題パネル -->
-    <div class="panel" style="background:linear-gradient(135deg,#103020,#0c2417);border:1px solid rgba(120,210,150,0.4)">
-      <div style="text-align:center;color:var(--result-accent);opacity:0.85;font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TOPIC</div>
+    <!-- お題パネル（電光掲示板風） -->
+    <div class="panel" style="background:linear-gradient(135deg,#2a1f04,#3a2a08);border:1px solid #b8911e">
+      <div style="text-align:center;color:#c9a233;font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TOPIC</div>
       <div style="display:flex;align-items:center;gap:8px;justify-content:center">
         <div style="font-size:1.4rem" id="orr-topic-icon">🎯</div>
-        <div style="color:var(--result-accent);font-size:1.1rem;font-weight:900" id="orr-topic-title">—</div>
+        <div style="color:var(--result-accent);font-size:1.1rem;font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,0.6)" id="orr-topic-title">—</div>
       </div>
       <div id="orr-topic-horses" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
     </div>
     <!-- 高オッズ的中バナー（該当時のみJSで表示） -->
     <div id="orr-jackpot-banner" style="display:none;margin:10px;border-radius:12px;padding:12px 14px;text-align:center;font-weight:900;box-shadow:0 0 18px rgba(0,0,0,0.35)"></div>
-    <div class="panel"><div class="panel-title" id="orr-actual-title">🏆 親の実際の順位</div><div id="orr-actual-result"></div></div>
+    <div class="panel" style="background:linear-gradient(135deg,#06302e,#0a4a44);border:1px solid var(--result-accent-soft)"><div class="panel-title" id="orr-actual-title" style="color:var(--result-accent)">🏆 親の実際の順位</div><div id="orr-actual-result"></div></div>
     <div class="panel"><div class="panel-title">💰 子の結果</div><div id="orr-player-results"></div></div>
     <div class="panel" id="orr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="orr-oya-summary"></div></div>
     <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="orr-score-table"></table></div>
@@ -7689,7 +7685,7 @@ window.onlineSubmitOyaResult = function(){
   renderTopicWithHorses('ooc-topic-icon', 'ooc-topic-title', 'ooc-topic-horses', topic);
   const rankingEl = document.getElementById('ooc-ranking');
   if(rankingEl){
-    rankingEl.innerHTML = window.onlineBet.oyaSelections.map((hi, i) => `<div style="display:flex;align-items:center;gap:10px;background:#ffffff;border:1px solid #dde2ea;border-radius:8px;padding:10px 12px"><div style="font-size:1.5rem;width:36px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}" style="width:32px;height:32px;font-size:1rem;flex-shrink:0">${hi+1}</div><div style="color:#2a3a5a;font-weight:700;font-size:1rem">${escapeHtml(topic.horses[hi] || '')}</div></div>`).join('');
+    rankingEl.innerHTML = window.onlineBet.oyaSelections.map((hi, i) => `<div style="display:flex;align-items:center;gap:10px;background:rgba(90,200,140,0.1);border:1px solid rgba(90,200,140,0.4);border-radius:8px;padding:10px 12px"><div style="font-size:1.5rem;width:36px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}" style="width:32px;height:32px;font-size:1rem;flex-shrink:0">${hi+1}</div><div style="color:#e0f5e8;font-weight:700;font-size:1rem">${escapeHtml(topic.horses[hi] || '')}</div></div>`).join('');
   }
   goTo('screen-online-oya-confirm');
 };
@@ -8072,7 +8068,7 @@ function enterOnlineReveal(game){
     // 選択肢を表示
     const horsesEl = document.getElementById('orv-topic-horses');
     if(horsesEl){
-      horsesEl.innerHTML = (topic.horses || []).map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:#f7f9fc;border:1px solid #dde2ea;padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#2a3a5a;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+      horsesEl.innerHTML = (topic.horses || []).map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.4);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.7)"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
     }
   }
 
@@ -8090,10 +8086,10 @@ function enterOnlineReveal(game){
     // 親自身の選んだ順位（FirebaseのoyaResult優先、なければ手元のoyaSelections）
     let oyaPicks = Array.isArray(game.oyaResult) ? game.oyaResult : (window.onlineBet.oyaSelections || []);
     if(viewerIsOya && oyaPicks.length === 3 && topic){
-      const items = oyaPicks.map((hi, i) => `<div style="display:flex;align-items:center;gap:8px;background:#f7f9fc;border:1px solid #dde2ea;border-radius:8px;padding:7px 10px;margin-top:6px"><div style="font-size:1.15rem;width:28px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}" style="width:26px;height:26px;font-size:0.85rem;flex-shrink:0">${hi+1}</div><div style="color:#2a3a5a;font-weight:700;font-size:0.92rem">${escapeHtml(topic.horses[hi] || '')}</div></div>`).join('');
-      oyaBlock.innerHTML = `<div style="padding:10px 12px;background:#ffffff;border-radius:8px;border:1px solid #d8dde6"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.4rem">👑</span><div style="color:#2a4e7a;font-weight:900;font-size:1.02rem">${escapeHtml(oyaPlayer.name)} <span class="oya-badge">親</span><span style="color:#8a93a4;font-size:0.72rem;font-weight:600;margin-left:6px">（あなたが入力した順位）</span></div></div>${items}<div style="color:#9aa0ac;font-size:0.68rem;margin-top:7px">※この表示はあなたの端末だけ。他の人には結果発表まで見えません</div></div>`;
+      const items = oyaPicks.map((hi, i) => `<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(120,160,230,0.4);border-radius:8px;padding:7px 10px;margin-top:6px"><div style="font-size:1.15rem;width:28px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}" style="width:26px;height:26px;font-size:0.85rem;flex-shrink:0">${hi+1}</div><div style="color:#e6ecf8;font-weight:700;font-size:0.92rem">${escapeHtml(topic.horses[hi] || '')}</div></div>`).join('');
+      oyaBlock.innerHTML = `<div style="padding:10px 12px;background:rgba(8,20,48,0.55);border-radius:8px;border:1px solid rgba(120,160,230,0.5)"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.4rem">👑</span><div style="color:#9fc0f5;font-weight:900;font-size:1.02rem">${escapeHtml(oyaPlayer.name)} <span class="oya-badge">親</span><span style="color:#8fa8d0;font-size:0.72rem;font-weight:600;margin-left:6px">（あなたが入力した順位）</span></div></div>${items}<div style="color:#7f93b8;font-size:0.68rem;margin-top:7px">※この表示はあなたの端末だけ。他の人には結果発表まで見えません</div></div>`;
     } else {
-      oyaBlock.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ffffff;border-radius:8px;border:1px solid #d8dde6"><span style="font-size:1.5rem">👑</span><div style="flex:1"><div style="color:#2a4e7a;font-weight:900;font-size:1.05rem">${escapeHtml(oyaPlayer.name)} <span class="oya-badge">親</span></div><div style="color:#8a93a4;font-size:0.75rem;margin-top:2px">⏳ 順位入力完了 — 結果発表まで内容は非表示</div></div></div>`;
+      oyaBlock.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(8,20,48,0.55);border-radius:8px;border:1px solid rgba(120,160,230,0.5)"><span style="font-size:1.5rem">👑</span><div style="flex:1"><div style="color:#9fc0f5;font-weight:900;font-size:1.05rem">${escapeHtml(oyaPlayer.name)} <span class="oya-badge">親</span></div><div style="color:#8fa8d0;font-size:0.75rem;margin-top:2px">⏳ 順位入力完了 — 結果発表まで内容は非表示</div></div></div>`;
     }
   }
 
@@ -8535,7 +8531,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
   }
   const actualEl = document.getElementById('orr-actual-result');
   if(actualEl){
-    actualEl.innerHTML = (log.oyaResult || []).map((hi, i) => `<div class="result-horse" style="background:var(--result-accent-bg);border:1px solid var(--result-accent-soft)"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700;color:#1a1a1a;text-shadow:0 1px 1px rgba(255,255,255,0.6)">${(log.topicHorses || topic?.horses || [])[hi] || ''}</div></div>`).join('');
+    actualEl.innerHTML = (log.oyaResult || []).map((hi, i) => `<div class="result-horse" style="background:var(--result-accent-bg);border:1px solid var(--result-accent-soft)"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.85),0 0 3px rgba(0,0,0,0.7)">${(log.topicHorses || topic?.horses || [])[hi] || ''}</div></div>`).join('');
   }
 
   // 子の結果
