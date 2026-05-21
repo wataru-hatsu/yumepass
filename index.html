@@ -42,6 +42,8 @@ body{font-family:'Noto Sans JP',sans-serif;background:#0a0f0d;color:var(--dark);
 body.fx-active{background:#000;}
 html.fx-active{background:#000;}
 .screen{display:none;min-height:100vh;flex-direction:column;background:linear-gradient(160deg,#0e1a14 0%,#0a0f0d 45%,#14110a 100%);}.screen.active{display:flex;}
+#screen-online-reveal,#screen-reveal,#screen-online-roundresult,#screen-roundresult,#screen-online-oya-confirm{background:linear-gradient(165deg,#fff4ea 0%,#ffe8f1 40%,#f1e6ff 75%,#e6f0ff 100%);}
+#screen-online-final,#screen-final{background:linear-gradient(165deg,#fbeeff 0%,#ffe6f3 45%,#fff2dd 100%);}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 12%,rgba(245,200,66,0.10),transparent 42%),radial-gradient(circle at 85% 80%,rgba(26,107,42,0.18),transparent 46%);}
 .screen>*{position:relative;z-index:1;}
 .header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:14px 16px;text-align:center;border-bottom:3px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);}
@@ -126,7 +128,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .privacy-msg{color:#aaa;font-size:0.85rem;margin-bottom:30px;line-height:1.8;}
 .oya-badge{display:inline-block;background:var(--oya);color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
 .ko-badge{display:inline-block;background:#2a7a2a;color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
-.round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);text-align:center;padding:12px;font-size:0.82rem;letter-spacing:3px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.3);}
+.round-header{background:linear-gradient(120deg,#3a2a5a,#5a2a6a 50%,#7a3a5a);color:#ffe9a8;text-align:center;padding:12px;font-size:0.82rem;letter-spacing:3px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.35);}
 .flip-msg{background:#f5c842;color:#333;text-align:center;padding:8px;font-weight:700;font-size:0.85rem;border-top:2px solid #c9960a;}
 .oya-banner{background:linear-gradient(135deg,var(--oya) 0%,#5a005a 100%);color:white;text-align:center;padding:10px;font-size:0.85rem;font-weight:700;}
 .reveal-card{background:linear-gradient(160deg,rgba(255,255,255,0.96),rgba(252,248,238,0.92));border:1px solid rgba(201,150,10,0.3);border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
@@ -344,6 +346,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .scroll-down-fab:active{transform:translateX(-50%) scale(0.9);}
 .scroll-down-fab.fab-green{background:rgba(20,90,55,0.62);border:1px solid rgba(90,180,120,0.7);color:#dff6e6;box-shadow:0 2px 10px rgba(20,90,55,0.45);}
 .scroll-down-fab.fab-yellow{background:rgba(200,150,10,0.72);border:1px solid rgba(245,200,66,0.85);color:#2a1c00;box-shadow:0 2px 10px rgba(200,150,10,0.45);}
+.scroll-down-fab.fab-purple{background:rgba(120,50,140,0.62);border:1px solid rgba(200,120,220,0.8);color:#f7e6ff;box-shadow:0 2px 10px rgba(120,50,140,0.45);}
 @keyframes scrollFabBounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(4px);}}
 .game-menu-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
 .game-menu-modal.hidden{display:none;}
@@ -900,24 +903,24 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
   <div class="round-header" id="ooc-round-header">ROUND 1 — 順位確認</div>
   <div class="scroll-content">
     <!-- お題パネル -->
-    <div id="ooc-topic-panel" style="margin:10px;background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:12px">
-      <div style="color:rgba(245,200,66,0.6);font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TODAY'S TOPIC</div>
+    <div id="ooc-topic-panel" style="margin:10px;background:linear-gradient(135deg,#fff3df,#ffe6f0);border:1px solid rgba(224,122,192,0.5);border-radius:12px;padding:12px">
+      <div style="color:#b07a1a;font-size:0.65rem;letter-spacing:2px;margin-bottom:4px;font-weight:700">TODAY'S TOPIC</div>
       <div style="display:flex;align-items:center;gap:8px">
         <div style="font-size:1.4rem" id="ooc-topic-icon">🎯</div>
-        <div style="color:var(--gold);font-size:1rem;font-weight:900" id="ooc-topic-title">—</div>
+        <div style="color:#7a3a1a;font-size:1rem;font-weight:900" id="ooc-topic-title">—</div>
       </div>
       <div id="ooc-topic-horses" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
     </div>
     <!-- 順位確認チケット -->
-    <div style="background:linear-gradient(135deg,#1a3d2a 0%,#0d2a1a 100%);margin:10px;border-radius:12px;border:2px solid #c060c0;overflow:hidden;box-shadow:0 0 20px rgba(192,96,192,0.4)">
-      <div style="background:linear-gradient(135deg,#a040a0,#c060c0);padding:12px 16px;text-align:center">
-        <div style="font-family:'Racing Sans One',cursive;color:white;font-size:1.1rem;letter-spacing:4px;margin-bottom:4px">RANKING</div>
-        <div style="color:white;font-size:1.2rem;font-weight:900" id="ooc-name">—</div>
+    <div style="background:linear-gradient(160deg,#fff7fb 0%,#fdeef7 100%);margin:10px;border-radius:18px;border:1px solid rgba(192,96,192,0.45);overflow:hidden;box-shadow:0 10px 30px rgba(150,60,150,0.28)">
+      <div style="background:linear-gradient(120deg,#c060c0 0%,#e07ac0 50%,#ffae7a 100%);padding:16px;text-align:center">
+        <div style="font-family:'Racing Sans One',cursive;color:#fff;font-size:1.15rem;letter-spacing:5px;margin-bottom:4px;text-shadow:0 2px 6px rgba(120,30,120,0.4)">RANKING</div>
+        <div style="color:#fff;font-size:1.25rem;font-weight:900;text-shadow:0 1px 4px rgba(120,30,120,0.4)" id="ooc-name">—</div>
       </div>
-      <div style="padding:16px">
-        <div style="color:#aef5a0;font-size:0.7rem;letter-spacing:2px;margin-bottom:10px;text-align:center">YOUR RANKING</div>
-        <div id="ooc-ranking" style="display:flex;flex-direction:column;gap:8px"></div>
-        <div style="border-top:1px dashed rgba(192,96,192,0.4);margin-top:14px;padding-top:10px;text-align:center;color:rgba(174,245,160,0.7);font-size:0.7rem;line-height:1.5">
+      <div style="padding:18px 16px">
+        <div style="color:#b04a9a;font-size:0.72rem;letter-spacing:2px;margin-bottom:12px;text-align:center;font-weight:800">YOUR RANKING</div>
+        <div id="ooc-ranking" style="display:flex;flex-direction:column;gap:9px"></div>
+        <div style="border-top:1px dashed rgba(192,96,192,0.4);margin-top:16px;padding-top:12px;text-align:center;color:#a86a98;font-size:0.72rem;line-height:1.6">
           ⚠️ この内容で決定すると変更できません<br>子の予想と照合されます
         </div>
       </div>
@@ -968,19 +971,19 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-online-reveal">
   <div class="header"><div class="subtitle" id="orv-round-label">ROUND 1 REVEAL</div><h1>📢 賭け公開！</h1></div>
   <div class="scroll-content">
-    <div class="panel" style="background:#1a1a1a;border-color:#333">
-      <div style="text-align:center;color:#aaa;font-size:0.75rem;letter-spacing:2px;margin-bottom:6px">TODAY'S TOPIC</div>
-      <div style="text-align:center;color:var(--gold);font-size:1.3rem;font-weight:900" id="orv-topic-name">—</div>
+    <div class="panel" style="background:linear-gradient(135deg,#fff3df,#ffe6f0);border:1px solid rgba(224,122,192,0.5)">
+      <div style="text-align:center;color:#b07a1a;font-size:0.75rem;letter-spacing:2px;margin-bottom:6px;font-weight:700">TODAY'S TOPIC</div>
+      <div style="text-align:center;color:#7a3a1a;font-size:1.3rem;font-weight:900" id="orv-topic-name">—</div>
       <div id="orv-topic-horses" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
     </div>
     <!-- 親パネル（上） -->
     <div class="panel" style="background:linear-gradient(135deg,#f9eef9,#f5e0f5);border:2px solid #c060c0"><div class="panel-title" style="color:#a040a0">👑 親の順位入力</div><div id="orv-oya-block"></div></div>
     <!-- 子パネル（下） -->
     <div class="panel"><div class="panel-title">🎯 子の賭け内容</div><div id="orv-bets-list"></div></div>
-    <div style="color:#fdf8ed;text-align:center;padding:12px;font-size:0.85rem">みんなで確認したら結果発表！</div>
+    <div style="color:#7a3a5a;text-align:center;padding:12px;font-size:0.85rem;font-weight:700">みんなで確認したら結果発表！</div>
     <div style="margin:10px">
       <button class="btn btn-primary" id="orv-reveal-btn" onclick="onlineReadyForResult()">🎊 結果発表の準備完了！</button>
-      <div id="orv-ready-status" style="text-align:center;color:#aaa;font-size:0.85rem;margin-top:8px"></div>
+      <div id="orv-ready-status" style="text-align:center;color:#7a3a5a;font-size:0.85rem;margin-top:8px"></div>
     </div>
   </div>
 </div>
@@ -990,11 +993,11 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
   <div class="round-header" id="orr-round-label">ROUND 1 RESULT</div>
   <div class="scroll-content">
     <!-- お題パネル -->
-    <div class="panel" style="background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark)">
-      <div style="text-align:center;color:rgba(245,200,66,0.6);font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TOPIC</div>
+    <div class="panel" style="background:linear-gradient(135deg,#fff3df,#ffe6f0);border:1px solid rgba(224,122,192,0.5)">
+      <div style="text-align:center;color:#b07a1a;font-size:0.65rem;letter-spacing:2px;margin-bottom:4px;font-weight:700">TOPIC</div>
       <div style="display:flex;align-items:center;gap:8px;justify-content:center">
         <div style="font-size:1.4rem" id="orr-topic-icon">🎯</div>
-        <div style="color:var(--gold);font-size:1.1rem;font-weight:900" id="orr-topic-title">—</div>
+        <div style="color:#7a3a1a;font-size:1.1rem;font-weight:900" id="orr-topic-title">—</div>
       </div>
       <div id="orr-topic-horses" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
     </div>
@@ -1004,7 +1007,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="orr-score-table"></table></div>
     <div style="margin:10px">
       <button class="btn btn-primary" id="orr-next-btn" onclick="onlineReadyForNext()">次のラウンドへ →</button>
-      <div id="orr-ready-status" style="text-align:center;color:#aaa;font-size:0.85rem;margin-top:8px"></div>
+      <div id="orr-ready-status" style="text-align:center;color:#7a3a5a;font-size:0.85rem;margin-top:8px"></div>
       <button class="btn btn-secondary" onclick="confirmLeaveDuringGame()" style="margin-top:14px;font-size:0.85rem;opacity:0.7">🚪 ここで退室する</button>
     </div>
   </div>
@@ -1031,7 +1034,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div id="ofn-host-controls" style="display:none;margin:10px">
       <button class="btn btn-primary" onclick="onlineRestartGame()" style="background:linear-gradient(135deg,#c0392b,#922b21)">🔄 同じメンバーでもう一度</button>
     </div>
-    <div id="ofn-guest-info" style="display:none;text-align:center;color:#aaa;font-size:0.85rem;padding:8px 16px">
+    <div id="ofn-guest-info" style="display:none;text-align:center;color:#7a3a5a;font-size:0.85rem;padding:8px 16px">
       ホストが「もう一度」を押すと再戦できます
     </div>
     <div style="margin:10px">
@@ -1428,12 +1431,12 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-reveal">
   <div class="header"><div class="subtitle" id="rv-round-label">ROUND 1 REVEAL</div><h1>📢 賭け公開！</h1></div>
   <div class="scroll-content">
-    <div class="panel" style="background:#1a1a1a;border-color:#333;text-align:center">
-      <div style="color:#aaa;font-size:0.75rem;letter-spacing:2px;margin-bottom:6px">TODAY'S TOPIC</div>
-      <div style="color:var(--gold);font-size:1.3rem;font-weight:900" id="rv-topic-name">—</div>
+    <div class="panel" style="background:linear-gradient(135deg,#fff3df,#ffe6f0);border:1px solid rgba(224,122,192,0.5);text-align:center">
+      <div style="color:#b07a1a;font-size:0.75rem;letter-spacing:2px;margin-bottom:6px;font-weight:700">TODAY'S TOPIC</div>
+      <div style="color:#7a3a1a;font-size:1.3rem;font-weight:900" id="rv-topic-name">—</div>
     </div>
     <div class="panel"><div class="panel-title">🎰 みんなの賭け内容</div><div id="rv-bets-list"></div></div>
-    <div style="color:#fdf8ed;text-align:center;padding:12px;font-size:0.85rem">みんなで確認したら結果を発表！</div>
+    <div style="color:#7a3a5a;text-align:center;padding:12px;font-size:0.85rem;font-weight:700">みんなで確認したら結果を発表！</div>
     <div style="margin:10px"><button class="btn btn-primary" onclick="calculateResults()">🎊 結果を発表する！</button></div>
   </div>
 </div>
@@ -3424,7 +3427,20 @@ function renderHorseGrid(cid,sel,onSel){
     c.appendChild(d);
   });
 }
-function setBetInputVal(v){betInputVal=v;const display=document.getElementById('bet-display');if(!display)return;const num=parseInt(v)||0;
+function setBetInputVal(v){
+  // オールイン状態（ラウンド開始時の持ち点が最低ベット額未満）なら全額を赤文字で自動表示
+  try{
+    const _p=state.players[state.koPlayers[state.currentBetPlayerIndex]];
+    const _start=(_p && typeof _p.roundStartPoints==='number')?_p.roundStartPoints:(_p?_p.points:0);
+    if(_p && state.minBet>0 && _start<state.minBet && _start>0){
+      betInputVal=String(_start);
+      const d=document.getElementById('bet-display');
+      if(d){ d.textContent=_start.toLocaleString()+' 点'; d.style.color='#ff5a5a'; }
+      if(typeof updateOffComboInfo==='function')updateOffComboInfo();
+      return;
+    }
+  }catch(e){}
+  betInputVal=v;const display=document.getElementById('bet-display');if(!display)return;const num=parseInt(v)||0;
   const combos=(typeof computeOffCombinations==='function')?computeOffCombinations():[];
   const points=combos.length;
   const total=(offBuyMethod==='simple')?num:(num*points);
@@ -6404,7 +6420,7 @@ function renderTopicWithHorses(iconElId, titleElId, horsesElId, topic, opts){
   if(titleEl) titleEl.textContent = topic.title || '—';
   if(horsesEl){
     const horses = topic.horses || [];
-    horsesEl.innerHTML = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.35);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+    horsesEl.innerHTML = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.88);border:1px solid rgba(150,120,60,0.3);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#5a3a10;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
   }
   // 長押し対応（任意）
   if(opts?.longPressTargetId){
@@ -7050,6 +7066,19 @@ function updateOyaPreview(){
 
 // ベット額入力
 function setOnlineBetInputVal(v){
+  // オールイン状態（ラウンド開始時の持ち点が最低ベット額未満）なら、自動で全額を赤文字で表示
+  const _game = window.online.game;
+  const _start = (_game?.points && _game.points[window.online.playerId]) || 0;
+  const _minRaw = window.online.settings?.minBet || 0;
+  const _allin = _minRaw > 0 && _start < _minRaw && _start > 0;
+  if(_allin){
+    v = String(_start);
+    window.onlineBet.betInputVal = v;
+    const d = document.getElementById('ob-bet-display');
+    if(d){ d.textContent = _start.toLocaleString() + ' 点'; d.style.color = '#ff5a5a'; }
+    if (typeof updateOnlineComboInfo === 'function') updateOnlineComboInfo();
+    return;
+  }
   window.onlineBet.betInputVal = v;
   const display = document.getElementById('ob-bet-display');
   if(!display) return;
@@ -7650,7 +7679,7 @@ window.onlineSubmitOyaResult = function(){
   renderTopicWithHorses('ooc-topic-icon', 'ooc-topic-title', 'ooc-topic-horses', topic);
   const rankingEl = document.getElementById('ooc-ranking');
   if(rankingEl){
-    rankingEl.innerHTML = window.onlineBet.oyaSelections.map((hi, i) => `<div style="display:flex;align-items:center;gap:10px;background:rgba(192,96,192,0.12);border:1px solid rgba(192,96,192,0.4);border-radius:8px;padding:10px 12px"><div style="font-size:1.5rem;width:36px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}" style="width:32px;height:32px;font-size:1rem;flex-shrink:0">${hi+1}</div><div style="color:white;font-weight:700;font-size:1rem">${escapeHtml(topic.horses[hi] || '')}</div></div>`).join('');
+    rankingEl.innerHTML = window.onlineBet.oyaSelections.map((hi, i) => `<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(255,255,255,0.9),rgba(255,240,250,0.85));border:1px solid rgba(192,96,192,0.35);border-radius:10px;padding:10px 12px;box-shadow:0 2px 6px rgba(150,60,150,0.1)"><div style="font-size:1.5rem;width:36px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}" style="width:32px;height:32px;font-size:1rem;flex-shrink:0">${hi+1}</div><div style="color:#5a2a52;font-weight:800;font-size:1rem">${escapeHtml(topic.horses[hi] || '')}</div></div>`).join('');
   }
   goTo('screen-online-oya-confirm');
 };
@@ -8033,7 +8062,7 @@ function enterOnlineReveal(game){
     // 選択肢を表示
     const horsesEl = document.getElementById('orv-topic-horses');
     if(horsesEl){
-      horsesEl.innerHTML = (topic.horses || []).map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.35);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+      horsesEl.innerHTML = (topic.horses || []).map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.85);border:1px solid rgba(224,122,192,0.4);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#7a3a1a;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
     }
   }
 
@@ -8437,7 +8466,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
   document.getElementById('orr-topic-title').textContent = topicTitle;
   const horsesEl = document.getElementById('orr-topic-horses');
   if(horsesEl){
-    horsesEl.innerHTML = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.35);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+    horsesEl.innerHTML = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.85);border:1px solid rgba(224,122,192,0.4);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#7a3a1a;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
   }
 
   // === ノーゲーム判定（親オフラインによる返金） ===
@@ -9101,15 +9130,17 @@ function updateRulesButtonVisibility(onlineGameActive){
 function updateScrollFabVisibility(){
   const fab=document.getElementById('scroll-down-fab');
   if(!fab) return;
-  const fabScreens=['screen-reveal','screen-roundresult','screen-online-reveal','screen-online-roundresult','screen-rules','screen-room-lobby','screen-online-topic-select','screen-roundstart'];
+  const fabScreens=['screen-reveal','screen-roundresult','screen-online-reveal','screen-online-roundresult','screen-rules','screen-room-lobby','screen-online-topic-select','screen-roundstart','screen-online-final','screen-final'];
   const greenScreens=['screen-online-topic-select','screen-roundstart']; // お題選択＝深緑
   const yellowScreens=['screen-room-lobby','screen-reveal','screen-online-reveal','screen-roundresult','screen-online-roundresult']; // ロビー・賭け公開・結果発表＝黄色
+  const purpleScreens=['screen-online-final','screen-final']; // 最終結果＝紫
   const activeId=fabScreens.find(id=>{ const el=document.getElementById(id); return el && el.classList.contains('active'); });
   if(!activeId){ fab.style.display='none'; return; }
   // 画面ごとに矢印の色を切り替え（お題選択=深緑／ロビー・賭け公開・結果発表=黄色／その他=青）
-  fab.classList.remove('fab-green','fab-yellow');
+  fab.classList.remove('fab-green','fab-yellow','fab-purple');
   if(greenScreens.includes(activeId)) fab.classList.add('fab-green');
   else if(yellowScreens.includes(activeId)) fab.classList.add('fab-yellow');
+  else if(purpleScreens.includes(activeId)) fab.classList.add('fab-purple');
   const screenEl=document.getElementById(activeId);
   const sc=screenEl.querySelector('.scroll-content');
   let remaining;
