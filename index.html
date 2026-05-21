@@ -343,6 +343,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .scroll-down-fab{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;width:72px;height:36px;border-radius:18px;background:rgba(24,95,165,0.78);border:1px solid rgba(110,170,235,0.8);color:#eaf4ff;font-size:1.05rem;cursor:pointer;z-index:90;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(2px);box-shadow:0 2px 10px rgba(24,95,165,0.5);animation:scrollFabBounce 1.8s ease-in-out infinite;transition:opacity 0.3s;}
 .scroll-down-fab:active{transform:translateX(-50%) scale(0.9);}
 .scroll-down-fab.fab-green{background:rgba(20,90,55,0.62);border:1px solid rgba(90,180,120,0.7);color:#dff6e6;box-shadow:0 2px 10px rgba(20,90,55,0.45);}
+.scroll-down-fab.fab-yellow{background:rgba(200,150,10,0.72);border:1px solid rgba(245,200,66,0.85);color:#2a1c00;box-shadow:0 2px 10px rgba(200,150,10,0.45);}
 @keyframes scrollFabBounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(4px);}}
 .game-menu-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
 .game-menu-modal.hidden{display:none;}
@@ -997,7 +998,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       </div>
       <div id="orr-topic-horses" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
     </div>
-    <div class="panel"><div class="panel-title">🏆 親の実際の順位</div><div id="orr-actual-result"></div></div>
+    <div class="panel"><div class="panel-title" id="orr-actual-title">🏆 親の実際の順位</div><div id="orr-actual-result"></div></div>
     <div class="panel"><div class="panel-title">💰 子の結果</div><div id="orr-player-results"></div></div>
     <div class="panel" id="orr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="orr-oya-summary"></div></div>
     <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="orr-score-table"></table></div>
@@ -1441,7 +1442,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-roundresult">
   <div class="header"><div class="subtitle" id="rr-round-label">ROUND 1 RESULT</div><h1>🎊 ラウンド結果</h1></div>
   <div class="scroll-content">
-    <div class="panel"><div class="panel-title">🏆 今回の順位</div><div id="rr-actual-result"></div></div>
+    <div class="panel"><div class="panel-title" id="rr-actual-title">🏆 今回の順位</div><div id="rr-actual-result"></div></div>
     <div class="panel"><div class="panel-title">💰 子の結果</div><div id="rr-player-results"></div></div>
     <div class="panel" id="rr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="rr-oya-summary"></div></div>
     <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="rr-score-table"></table></div>
@@ -4156,6 +4157,13 @@ function renderRoundResultBody(){
   topicHeader.addEventListener('touchmove',()=>clearTimeout(pt));
   topicHeader.addEventListener('mousedown',(e)=>{if(e.button===0)pt=setTimeout(()=>openTopicPopup(t),600);});
   topicHeader.addEventListener('mouseup',()=>clearTimeout(pt));
+  // 親の名前を「今回の順位」見出しに表示
+  const rrActualTitle=document.getElementById('rr-actual-title');
+  if(rrActualTitle){
+    const oyaP=state.players[state.oyaIndex];
+    const oyaNm=oyaP?escapeHtml(oyaP.name):'親';
+    rrActualTitle.innerHTML=`🏆 親（${oyaNm}）の実際の順位`;
+  }
   document.getElementById('rr-actual-result').innerHTML=state.actualResult.map((hi,i)=>`<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div><div style="font-weight:700">${t.horses[hi]}</div><div style="font-size:0.7rem;color:#888">${i+1}位</div></div></div>`).join('')+
   `<div style="margin-top:10px;padding-top:10px;border-top:1px dashed #e0d8c0">
     <div style="font-size:0.7rem;color:#aaa;margin-bottom:6px">📋 全選択肢</div>
@@ -8481,6 +8489,11 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
   // === 通常表示 ===
 
   // 実際の順位
+  const actualTitleEl = document.getElementById('orr-actual-title');
+  if(actualTitleEl){
+    const oyaNm = log.oyaName ? escapeHtml(log.oyaName) : '親';
+    actualTitleEl.innerHTML = `🏆 親（${oyaNm}）の実際の順位`;
+  }
   const actualEl = document.getElementById('orr-actual-result');
   if(actualEl){
     actualEl.innerHTML = (log.oyaResult || []).map((hi, i) => `<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700">${(log.topicHorses || topic?.horses || [])[hi] || ''}</div></div>`).join('');
@@ -9089,11 +9102,14 @@ function updateScrollFabVisibility(){
   const fab=document.getElementById('scroll-down-fab');
   if(!fab) return;
   const fabScreens=['screen-reveal','screen-roundresult','screen-online-reveal','screen-online-roundresult','screen-rules','screen-room-lobby','screen-online-topic-select','screen-roundstart'];
-  const greenScreens=['screen-online-topic-select','screen-roundstart'];
+  const greenScreens=['screen-online-topic-select','screen-roundstart']; // お題選択＝深緑
+  const yellowScreens=['screen-room-lobby','screen-reveal','screen-online-reveal','screen-roundresult','screen-online-roundresult']; // ロビー・賭け公開・結果発表＝黄色
   const activeId=fabScreens.find(id=>{ const el=document.getElementById(id); return el && el.classList.contains('active'); });
   if(!activeId){ fab.style.display='none'; return; }
-  // お題選択画面では深緑、それ以外は青
-  if(greenScreens.includes(activeId)) fab.classList.add('fab-green'); else fab.classList.remove('fab-green');
+  // 画面ごとに矢印の色を切り替え（お題選択=深緑／ロビー・賭け公開・結果発表=黄色／その他=青）
+  fab.classList.remove('fab-green','fab-yellow');
+  if(greenScreens.includes(activeId)) fab.classList.add('fab-green');
+  else if(yellowScreens.includes(activeId)) fab.classList.add('fab-yellow');
   const screenEl=document.getElementById(activeId);
   const sc=screenEl.querySelector('.scroll-content');
   let remaining;
