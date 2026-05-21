@@ -43,8 +43,8 @@ body.fx-active{background:#000;}
 html.fx-active{background:#000;}
 .screen{display:none;min-height:100vh;flex-direction:column;background:linear-gradient(160deg,#0e1a14 0%,#0a0f0d 45%,#14110a 100%);}.screen.active{display:flex;}
 #screen-online-oya-confirm,#screen-online-reveal{background:linear-gradient(160deg,#0c2417 0%,#0a1c12 100%);}
-#screen-online-roundresult{--result-accent:#f5d65a;--result-accent-soft:rgba(245,214,90,0.4);background:linear-gradient(160deg,#0c2417 0%,#0a1c12 100%);}
-#screen-online-roundresult .round-header{background:linear-gradient(120deg,#1d7a4a,#2ea860 45%,var(--result-accent));color:#04210f;border-bottom:2px solid var(--result-accent);}
+#screen-online-roundresult{--result-accent:#f5d65a;--result-accent-soft:rgba(245,214,90,0.4);--result-accent-dark:#9a7a10;background:linear-gradient(160deg,#0c2417 0%,#0a1c12 100%);}
+#screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 #screen-online-reveal .header{background:linear-gradient(120deg,#1d7a4a,#2ea860 55%,#caa12a);border-bottom:3px solid #caa12a;}
 #screen-online-reveal .header h1{color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.55);}
 #screen-online-reveal .header .subtitle{color:#eafff2;}
@@ -998,10 +998,10 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
   <div class="scroll-content">
     <!-- お題パネル -->
     <div class="panel" style="background:linear-gradient(135deg,#103020,#0c2417);border:1px solid rgba(120,210,150,0.4)">
-      <div style="text-align:center;color:rgba(158,232,184,0.7);font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TOPIC</div>
+      <div style="text-align:center;color:var(--result-accent);opacity:0.85;font-size:0.65rem;letter-spacing:2px;margin-bottom:4px">TOPIC</div>
       <div style="display:flex;align-items:center;gap:8px;justify-content:center">
         <div style="font-size:1.4rem" id="orr-topic-icon">🎯</div>
-        <div style="color:#cfe89a;font-size:1.1rem;font-weight:900" id="orr-topic-title">—</div>
+        <div style="color:var(--result-accent);font-size:1.1rem;font-weight:900" id="orr-topic-title">—</div>
       </div>
       <div id="orr-topic-horses" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
     </div>
@@ -8694,12 +8694,24 @@ function applyJackpotDye(log){
   });
   // 染める条件：オッズ2.0倍以上の的中があったら、その賭け方の色に
   const DYE_THRESHOLD = 2.0;
+  const BET_COLOR_DARK = { tansho:'#9a7110', fukusho:'#1a6a26', wide:'#b04e0a', umaren:'#6a3aa8', umatan:'#b01e6a', sanrenfuku:'#0a7a76', sanrentan:'#a83a6a' };
   if(best && best.odds >= DYE_THRESHOLD && BET_COLOR[best.betType]){
     const col = BET_COLOR[best.betType];
+    const colDark = BET_COLOR_DARK[best.betType] || col;
+    const isRainbow = best.betType === 'sanrentan';
     screen.style.setProperty('--result-accent', col);
     screen.style.setProperty('--result-accent-soft', col + '66');
+    screen.style.setProperty('--result-accent-dark', colDark);
+    // 3連単（虹）はヘッダーを虹グラデにする
+    const headerEl = screen.querySelector('.round-header');
+    if(headerEl){
+      if(isRainbow){
+        headerEl.style.background = 'linear-gradient(120deg,#ff5e5e,#ffd65a 30%,#5ad07a 55%,#5aa0ff 78%,#c060ff)';
+      } else {
+        headerEl.style.background = '';
+      }
+    }
     if(banner){
-      const isRainbow = best.betType === 'sanrentan';
       const bg = isRainbow
         ? 'linear-gradient(120deg,#ff5e5e,#ffd65a,#5ad07a,#5aa0ff,#c060ff)'
         : `linear-gradient(120deg,${col},${col})`;
@@ -8713,6 +8725,9 @@ function applyJackpotDye(log){
     // 通常はG1（緑×金）のまま
     screen.style.setProperty('--result-accent', '#f5d65a');
     screen.style.setProperty('--result-accent-soft', 'rgba(245,214,90,0.4)');
+    screen.style.setProperty('--result-accent-dark', '#9a7a10');
+    const headerEl = screen.querySelector('.round-header');
+    if(headerEl) headerEl.style.background = '';
     if(banner) banner.style.display = 'none';
   }
 }
