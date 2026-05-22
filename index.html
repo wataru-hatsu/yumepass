@@ -369,6 +369,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div class="game-menu-title">⋮ メニュー</div>
     <button class="btn btn-secondary" onclick="toggleGameMenu()" style="margin-bottom:10px">← 閉じる</button>
     <button class="btn btn-secondary" onclick="toggleSound();" style="margin-bottom:10px">🔊 サウンド切替</button>
+    <button id="countdown-toggle-btn" class="btn btn-secondary" onclick="toggleCountdown();" style="margin-bottom:10px">⏱️ 結果カウントダウン：ON</button>
     <button class="btn btn-danger" onclick="toggleGameMenu();confirmLeaveDuringGame()">🚪 ゲームから退室する</button>
     <div style="color:#aaa;font-size:0.7rem;margin-top:14px;line-height:1.5;text-align:center">退室すると戸籍と点数は完全に消えます。<br>残りのプレイヤーでゲームは続行します。</div>
   </div>
@@ -2667,66 +2668,66 @@ const CATEGORIES=[
 ];
 const HC=['c1','c2','c3','c4','c5','c6','c7','c8'];
 const BASE_TOPICS = [
-  {id:'base1',category:'g1',title:"人生で最も失いたくないもの",icon:"💎",horses:["自分で選択できる自由", "心から信頼できる人間関係", "誇れる過去や記憶", "安心して生きられる環境", "将来への希望", "誰かに必要とされている実感", "新しいことに挑戦する意欲"]},
-  {id:'base2',category:'g1',title:"恋人に一番求めるもの",icon:"❤️",horses:["嘘をつかない誠実さ", "感情を受け止める、共感力と安心感", "自立していて、依存しすぎないこと", "楽しい時間を共有でき、辛い時は支えてくれること", "改善点を指摘し、成長させてくれること", "親族や友人とも、良好な関係を築いてくれること", "困難でも逃げない責任感"]},
-  {id:'base3',category:'g1',title:"自分が最も恐れていること",icon:"😨",horses:["落ちぶれること", "誰にも必要とされなくなること", "自分らしさを失うこと", "大切な人を傷つけること", "挑戦しないまま、歳を取ること", "他人に人生を支配されること", "生きる意味を見失うこと"]},
-  {id:'base4',category:'g1',title:"「成功」に最も必要だと思うもの",icon:"🏆",horses:["継続する力", "恵まれた環境や運", "人を巻き込む力", "行動する速さ", "自分を客観視する力", "それを成功と捉えず、より高みを目指すこと", "強い欲望や執念"]},
-  {id:'base5',category:'g1',title:"恋人にされても許せること（交際1年）",icon:"💑",horses:["小さな嘘をつかれる", "友達や親族に、頑なに会わせてくれない", "自分より仕事や夢を優先される", "会計のたびに、毎回トイレに行っている", "ファッションや見た目をいじられる", "実は嘘告がスタートだった", "返信が遅く、緊急連絡はいつも電話"]},
-  {id:'base6',category:'g1',title:"友人として最も信頼できる人の特徴",icon:"🤝",horses:["秘密を守れる", "間違いを、正直に指摘してくれる", "損得で態度を変えない", "察しが良い", "自分の成功を妬まず、喜んでくれる", "無理に合わせようとしない", "言葉と行動が一致している"]},
-  {id:'base7',category:'g1',title:"幸せな人生に最も重要な要素",icon:"🌟",horses:["愛されている実感", "健康な心と身体", "お金の安心感", "自分らしく生きられること", "打ち込める目標や夢", "深い人間関係", "穏やかな日常"]},
-  {id:'base8',category:'g1',title:"自分の人生観を最も変えた経験",icon:"🔄",horses:["大きな挫折", "誰かとの出会いや別れ", "強烈な孤独", "本気で努力した経験", "他人に救われた経験", "自分の限界を知った瞬間", "死を身近に感じた出来事"]},
-  {id:'base9',category:'g1',title:"自分の子どもに最も伝えたい価値観",icon:"👨‍👧",horses:["自分を大切にすること", "他人への思いやり", "やるからには、上位を目指すこと", "失敗を恐れず、挑戦すること", "誠実であること", "辛い環境からは、逃げ出すこと", "他人と比べすぎないこと"]},
-  {id:'base10',category:'g1',title:"一番苦手なタイプの人間",icon:"😤",horses:["他人を見下す人", "自分の非を認めず、謝らない人", "人によって態度を変える人", "察しが悪く、空気を読めない発言をする人", "自分の利益のために、人を利用する人", "話し合いから逃げる人", "他人の挑戦を嘲笑する人"]},
-  {id:'base11',category:'g1',title:"自分が一番後悔しそうな人生",icon:"😔",horses:["挑戦しないまま終わる人生", "大切な人を大事にできなかった人生", "他人の期待に合わせ続けた人生", "本音を隠して生きた人生", "仕事だけで人生が終わる人生", "自分を好きになれなかった人生", "貯めた貯金に手をつけずに死を迎える人生"]},
-  {id:'base12',category:'g1',title:"他人から本当に理解されたい部分",icon:"🫂",horses:["努力してきた過程", "弱さや不安、そして孤独感", "自分なりの優しさ", "自分に向いていることと、向いていないこと", "自分がいるから、場が回ること", "自分の価値観や信念", "聞かれて困ることがある、ということ"]},
-  {id:'base13',category:'g1',title:"自分が思う自分の弱さ",icon:"😶",horses:["長期的な忍耐を要する状況に、ストレスを感じる", "行動する前に諦めること", "他人の評価を気にしすぎること", "大切な時や深刻な状況から逃げること", "本音を言えないこと", "素直に非を認められないこと", "今この選択肢を読み、自分と向き合う辛さ"]},
-  {id:'base14',category:'g1',title:"「これなら死んだほうがマシ」と思う状況は？",icon:"🌑",horses:["自分の意思で、何も選べずに生き続けること", "誰にも本音を話せないまま、孤独に生きること", "愛する人を裏切った自分を、許せずに生きること", "他人に利用され続け、自分を失うこと", "挑戦したい気持ちを押し殺したまま、終わること", "一番大切な人から、完全に拒絶されること", "そう思う状況はなく、いかなる状況でも生き続けたい"]},
-  {id:'base15',category:'g1',title:"絶対に手放したくない「自分のルール」は？",icon:"📏",horses:["嘘をついてまで、人に好かれない", "感謝は必ず言葉にする", "自分が嫌だと思うことは、人にしない", "一旦、冷静になる", "本音で向き合える人とだけ、深く付き合う", "自分が一番、自分の味方でいる", "楽しくないことを、楽しいふりをしない"]},
-  {id:'base16',category:'g2',title:"可愛がりたくない後輩の特徴は？",icon:"😒",horses:["ツッコミが的外れ", "絶対に一軒目で帰る", "運動音痴", "異性にとことん好かれない", "空気が読めない", "話の腰を折る", "奢られて当然という態度をとる"]},
-  {id:'base17',category:'g2',title:"好きなことわざは？",icon:"📜",horses:["初志貫徹", "笑う門には福来る", "能ある鷹は爪を隠す", "明日は明日の風が吹く", "人事を尽くして天命を待つ", "一期一会", "七転び八起き"]},
-  {id:'base18',category:'g2',title:"好きな言葉は？",icon:"💬",horses:["来るもの拒まず、去るもの追わず", "縁の下の力持ち", "一石二鳥", "一期一会", "急がば回れ", "生きてるだけで丸儲け", "継続は力なり"]},
-  {id:'base19',category:'g2',title:"もし明日が人生最後の日だったら、何をする？",icon:"🌅",horses:["大切な人に会いに行く", "食べたいものを好きなだけ食べる", "手紙を書く", "全部話す", "行きたかった場所へ行く", "いつも通り過ごす", "本当に人生最後の日かどうかわからないから、動揺しない"]},
-  {id:'base20',category:'g2',title:"「大人になる」を一言で表すなら？",icon:"🧠",horses:["妥協", "我慢", "解像度", "手放す", "丸くなる", "腹をくくる", "黙ること"]},
-  {id:'base21',category:'g2',title:"「本当の優しさ」を一言で表すなら？",icon:"🤍",horses:["何もしないこと", "先回りしないこと", "待てること", "正直でいること", "弱さを見せること", "期待しないこと", "覚えていること"]},
-  {id:'base22',category:'g2',title:"「孤独」を一言で表すなら？",icon:"🌙",horses:["自由", "代償", "静寂", "慣れ", "本音", "磨く時間", "選んだ場所"]},
-  {id:'base23',category:'g2',title:"ゲームをする時に大事にしていることは？",icon:"🎮",horses:["全力で勝ちにいくこと", "みんなが楽しめること", "ルールを正確に守ること", "空気を読んで手加減すること", "負けている時の態度を悪くしないこと", "勝っている時も調子に乗らないこと", "終わった後も仲良くいられること"]},
-  {id:'base24',category:'g2',title:"絶対にやりたくない罰ゲームは？",icon:"😱",horses:["バンジージャンプ", "電流ビリビリ（超ハードモード）", "昆虫料理を食べる", "満員電車3時間立ちっぱなし", "全員の前で本気モノマネ10連発", "校庭100周", "坊主"]},
-  {id:'base25',category:'g2',title:"自分が他の人とずれていると思うのは？",icon:"🌀",horses:["笑いのツボが独特", "感動するポイントが違う", "好きなものへの熱量が異常", "あえて空気を壊しにいくことがある", "金銭感覚", "感情の起伏", "人間観察の好き度合い"]},
-  {id:'base26',category:'g2',title:"旅先でやりたいことは？",icon:"✈️",horses:["浴衣で食べ歩き", "シュノーケリング", "泥んこバギー体験", "その土地の人気居酒屋でハシゴ酒", "牧場で乳搾り・ポニー乗馬", "ガラス工房体験", "絶景ロードドライブ"]},
-  {id:'base27',category:'g2',title:'「あ、この人だめだ」と思った瞬間は？',icon:'😮',horses:['初対面で自分の年収を話し始めた','店員への態度が急に変わった','自分の失敗を全部、他人のせいにした','怒ったら急に敬語がなくなった','奢ってもらってお礼を言わなかった','笑いのために誰かを傷つけた','都合が悪くなったら急に体調不良になった']},
-  {id:'base28',category:'g2',title:"自分が誇れることは？",icon:"💪",horses:["人との価値観の違いを、面白いと思えること", "最後の最後まで、諦めないこと", "自己分析力が高いこと", "ユーモアのさじ加減が、ちょうどいいこと", "寝たら忘れられること", "笑いで場をほぐせること", "ちゃんと根に持てること"]},
-  {id:'base29',category:'g2',title:"その人の本性が出ると思うところは？",icon:"🎭",horses:["怒る時の言葉の選び方", "誰も見ていない時の行動", "運転中", "別れ際", "できない人への対応と態度", "イジられた時", "お酒で酔っている時"]},
-  {id:'base30',category:'g2',title:"人生で一番「騙された」と思った思い込みは？",icon:"😑",horses:["継続すれば必ず報われる", "大人になれば自然とわかる", "良いことをすれば返ってくる", "本音で話せばわかり合える", "努力は必ず見てくれている人がいる", "時間が解決してくれる", "年齢を重ねると落ち着く"]},
-  {id:'base31',category:'g3',title:"好きな人に求めるもの",icon:"💕",horses:["家庭的", "性格", "顔", "ファッションセンス", "スタイル", "声", "おもしろさ"]},
-  {id:'base32',category:'g3',title:"生まれ変わったら何になりたいか",icon:"🔮",horses:["もう一度人間", "飼われている犬", "鷹", "猫", "お金持ちの子ども", "大きな桜の幹", "金持ちの家のルンバ"]},
-  {id:'base33',category:'g3',title:"言われて嬉しい言葉は？",icon:"😊",horses:["さすがだね", "助かったよ", "気が利くね", "おもしろいね", "モテそうだね", "シゴデキだね", "よく有能って言われるでしょ"]},
-  {id:'base34',category:'g3',title:"恋愛を一言で表すなら",icon:"💘",horses:["誤算", "宿題", "体力", "錯覚", "賭け", "修行", "奇跡"]},
-  {id:'base35',category:'g3',title:"仕事を一言で表すなら",icon:"💼",horses:["修行", "舞台", "義務", "檻", "自分探し", "我慢", "ゲーム"]},
-  {id:'base36',category:'g3',title:"お金を一言で表すなら",icon:"💴",horses:["体力", "自由", "点数", "道具", "呪い", "安心", "燃料"]},
-  {id:'base37',category:'g3',title:"「強さ」の本質を一言で表すなら",icon:"🦁",horses:["戻れること", "認められること", "笑えること", "頼れること", "続けられること", "手放せること", "泣けること"]},
-  {id:'base38',category:'g3',title:"このメンバーでやりたいことは？",icon:"🎉",horses:["旅行", "飲み会", "謎解き", "キャンプ", "カラオケ", "人生ゲーム", "このゲームをもう一回"]},
-  {id:'base39',category:'g3',title:"ゴールデンウィークに行きたい旅行先は？",icon:"🗺️",horses:["シンガポール", "韓国", "カナダ", "スペイン", "ハワイ", "エジプト", "北海道"]},
-  {id:'base40',category:'g3',title:"こだわりたいものは？",icon:"✨",horses:["時間の使い方", "言葉の選び方", "食べるもの", "旅行の計画", "身だしなみ", "寝る環境", "見送り方と迎え方"]},
-  {id:'base41',category:'g3',title:"自分のテーマソングにしたい曲のジャンル",icon:"🎵",horses:["熱い応援歌", "おしゃれなジャズ", "壮大なオーケストラ", "明るいポップス", "静かなバラード", "アップテンポなダンス曲", "無音"]},
-  {id:'base42',category:'g3',title:"自分の取扱説明書に書くなら",icon:"📋",horses:["褒めると伸びる", "急かすと止まる", "放置が一番育つ", "食わせれば機嫌が直る", "本音は3杯目以降", "笑わせれば何でも許す", "返品・交換は受け付けません"]},
-  {id:'base43',category:'g3',title:"家族の中で自分は何キャラ？",icon:"👨‍👩‍👧‍👦",horses:["まとめ役", "ムードメーカー", "末っ子気質（年齢関係なく）", "一番頑固", "空気", "毒舌担当", "いるだけで場が和む人"]},
-  {id:'base44',category:'g3',title:"運動会で一番燃えるのは？",icon:"🏃",horses:["徒競走", "騎馬戦", "リレー", "綱引き", "玉入れ", "借り物競走", "応援合戦"]},
-  {id:'base45',category:'g3',title:"スポーツで一番大事なのは？",icon:"⚽",horses:["センス", "体力", "チームワーク", "精神力", "戦略", "楽しむこと", "勝つこと"]},
+  {id:'base1',category:'g1',title:"人生で最も失いたくないもの",icon:"💎",horses:["自分で選択できる自由", "心から信頼できる人間関係", "誇れる過去や記憶", "安心して生きられる環境", "将来への希望", "誰かに必要とされている実感", "新しいことに挑戦する意欲", "趣味（何かに夢中になれる感性）"]},
+  {id:'base2',category:'g1',title:"恋人に一番求めるもの",icon:"❤️",horses:["嘘をつかない誠実さ", "感情を受け止める、共感力と安心感", "自立していて、依存しすぎないこと", "一緒にいて楽しい", "改善点を指摘し、成長させてくれること", "親族や友人とも、良好な関係を築いてくれること", "辛い時に支えてくれる", "高収入"]},
+  {id:'base3',category:'g1',title:"自分が最も恐れていること",icon:"😨",horses:["落ちぶれること", "誰にも必要とされなくなること", "自分らしさを失うこと", "大切な人を傷つけること", "挑戦しないまま、歳を取ること", "他人に人生を支配されること", "生きる意味を見失うこと", "大切な人に先立たれること"]},
+  {id:'base4',category:'g1',title:"「成功」に最も必要だと思うもの",icon:"🏆",horses:["継続する力", "恵まれた環境や運", "人を巻き込む力", "行動する速さ", "自分を客観視する力", "それを成功と捉えず、より高みを目指すこと", "強い欲望や執念", "正しいタイミングを見極める力"]},
+  {id:'base5',category:'g1',title:"恋人にされても許せること（交際1年）",icon:"💑",horses:["小さな嘘をつかれる", "友達や親族に、頑なに会わせてくれない", "自分より仕事や夢を優先される", "会計のたびに、毎回トイレに行っている", "ファッションや見た目をいじられる", "実は嘘告がスタートだった", "返信が遅く、緊急連絡はいつも電話", "記念日をうっかり忘れる"]},
+  {id:'base6',category:'g1',title:"友人として最も信頼できる人の特徴",icon:"🤝",horses:["秘密を守れる", "間違いを、正直に指摘してくれる", "損得で態度を変えない", "察しが良い", "自分の成功を妬まず、喜んでくれる", "無理に合わせようとしない", "言葉と行動が一致している", "困った時、見返りなく助けてくれる"]},
+  {id:'base7',category:'g1',title:"幸せな人生に最も重要な要素",icon:"🌟",horses:["愛されている実感", "健康な心と身体", "豊富な経済力", "誰かの役に立てている実感", "打ち込める目標や夢", "深い人間関係", "穏やかな日常", "適度な刺激や変化があること"]},
+  {id:'base8',category:'g1',title:"自分の人生観を最も変えた経験",icon:"🔄",horses:["大きな挫折", "誰かとの出会いや別れ", "強烈な孤独", "本気で努力した経験", "他人に救われた経験", "自分の限界を知った瞬間", "死を身近に感じた出来事", "誰かを心から愛した経験"]},
+  {id:'base9',category:'g1',title:"自分の子ども（12歳）に最も伝えたい価値観",icon:"👨‍👧",horses:["自分を大切にすること", "他人への思いやりや誠実さ", "やるからには、上位を目指すこと", "失敗を恐れず、挑戦すること", "自分の頭で考え、判断すること", "辛い環境からは、逃げ出すこと", "他人と比べすぎないこと", "人生を楽しむこと"]},
+  {id:'base10',category:'g1',title:"一番苦手なタイプの人間",icon:"😤",horses:["他人を見下す人", "自分の非を認めず、謝らない人", "人によって態度を変える人", "察しが悪く、空気を読めない発言をする人", "自分の利益のために、人を利用する人", "話し合いから逃げる人", "他人の挑戦を嘲笑する人", "時間やルールにルーズな人"]},
+  {id:'base11',category:'g1',title:"自分が一番後悔しそうな人生",icon:"😔",horses:["挑戦しないまま終わる人生", "大切な人を大事にできなかった人生", "他人の期待に合わせ続けた人生", "本音を隠して生きた人生", "仕事だけで人生が終わる人生", "自分を好きになれなかった人生", "貯めた貯金に手をつけずに死を迎える人生", "健康を顧みず、身体を壊して終わる人生"]},
+  {id:'base12',category:'g1',title:"他人から本当に理解されたい部分",icon:"🫂",horses:["努力してきた過程", "弱さや不安、そして孤独感", "自分なりの優しさ", "自分に向いていることと、向いていないこと", "自分がいるから、場が回ること", "自分の価値観や信念", "聞かれて困ることがある、ということ", "見た目や第一印象とは、中身が違うこと"]},
+  {id:'base13',category:'g1',title:"自分が思う自分の弱さ",icon:"😶",horses:["長期的な忍耐を要する状況に、ストレスを感じる", "行動する前に諦めること", "他人の評価を気にしすぎること", "大切な時や深刻な状況から逃げること", "本音を言えないこと", "素直に非を認められないこと", "今この選択肢を読み、自分と向き合う辛さ", "感情的になりやすく、すぐ顔や態度に出ること"]},
+  {id:'base14',category:'g1',title:"「これなら死んだほうがマシ」と思う状況は？",icon:"🌑",horses:["自分の意思で、何も選べずに生き続けること", "誰にも本音を話せないまま、孤独に生きること", "愛する人を裏切った自分を、許せずに生きること", "他人に利用され続け、自分を失うこと", "挑戦したい気持ちを押し殺したまま、終わること", "一番大切な人から、完全に拒絶されること", "大切な記憶や自分が誰かを、すべて失うこと", "そう思う状況はなく、いかなる状況でも生き続けたい"]},
+  {id:'base15',category:'g1',title:"絶対に手放したくない「自分のルール」は？",icon:"📏",horses:["嘘をついてまで、人に好かれない", "感謝は必ず言葉にする", "自分が嫌だと思うことは、人にしない", "一旦、冷静になる", "本音で向き合える人とだけ、深く付き合う", "自分が一番、自分の味方でいる", "楽しくないことを、楽しいふりをしない", "その日の機嫌を、人にぶつけない"]},
+  {id:'base16',category:'g2',title:"可愛がりたくない後輩の特徴は？",icon:"😒",horses:["ツッコミが的外れ", "絶対に一軒目で帰る", "かわいげのない正論をしてくる", "同性にとことん好かれない", "空気が読めない", "話の腰を折る", "奢られて当然という態度をとる", "「マジっすか」しか言わない（リアクションが薄い）"]},
+  {id:'base17',category:'g2',title:"好きなことわざは？",icon:"📜",horses:["初志貫徹", "笑う門には福来る", "能ある鷹は爪を隠す", "明日は明日の風が吹く", "人事を尽くして天命を待つ", "一期一会", "七転び八起き", "塵も積もれば山となる"]},
+  {id:'base18',category:'g2',title:"好きな言葉は？",icon:"💬",horses:["来るもの拒まず、去るもの追わず", "縁の下の力持ち", "一石二鳥", "一期一会", "急がば回れ", "生きてるだけで丸儲け", "継続は力なり", "なるようになる"]},
+  {id:'base19',category:'g2',title:"もし明日が地球最後の日だったら、何をする？",icon:"🌅",horses:["大切な人に会いに行く", "食べたいものを好きなだけ食べる", "ずっと言えなかった「ありがとう」「ごめん」を伝える", "全部話す", "行きたかった場所へ行く", "いつも通り過ごす", "本当に地球最後の日かどうかわからないから、動揺しない", "静かに、これまでの人生を振り返る"]},
+  {id:'base20',category:'g2',title:"「大人になる」を一言で表すなら？",icon:"🧠",horses:["妥協", "我慢", "解像度", "線引き", "演技", "腹をくくる", "黙ること", "責任"]},
+  {id:'base21',category:'g2',title:"「本当の優しさ」を一言で表すなら？",icon:"🤍",horses:["そっとしておくこと", "想像すること", "先回りせずに待つこと", "正直でいること", "弱さを見せること", "期待しないこと", "覚えていること", "厳しさを持つこと"]},
+  {id:'base22',category:'g2',title:"「孤独」を一言で表すなら？",icon:"🌙",horses:["自由", "代償", "静寂", "慣れ", "本音", "磨く時間", "選んだ場所", "友"]},
+  {id:'base23',category:'g2',title:"ゲームをする時に大事にしていることは？",icon:"🎮",horses:["全力で勝ちにいくこと", "みんなが楽しめること", "ルールを正確に守ること", "空気を読んで手加減すること", "負けている時の態度を悪くしないこと", "勝っている時も調子に乗らないこと", "終わった後も仲良くいられること", "接戦・盛り上がりを作ること"]},
+  {id:'base24',category:'g2',title:"絶対にやりたくない罰ゲームは？",icon:"😱",horses:["バンジージャンプ", "電流ビリビリ（超ハードモード）", "昆虫料理を食べる", "満員電車3時間立ちっぱなし", "全員の前で本気モノマネ10連発", "校庭100周", "坊主", "自分の黒歴史エピソードを暴露される"]},
+  {id:'base25',category:'g2',title:"自分が他の人とずれていると思うのは？",icon:"🌀",horses:["笑いのツボが独特", "感動するポイントが違う", "好きなものへの熱量が異常", "物事の優先順位のつけ方", "金銭感覚", "感情の起伏", "人間観察の好き度合い", "トイレの頻度"]},
+  {id:'base26',category:'g2',title:"旅先でやりたいことは？",icon:"✈️",horses:["浴衣で食べ歩き", "シュノーケリング", "泥んこバギー体験", "その土地の人気居酒屋でハシゴ酒", "牧場で乳搾り・ポニー乗馬", "ガラス工房体験", "絶景ロードドライブ", "温泉と部屋食を満喫"]},
+  {id:'base27',category:'g2',title:'「あ、この人だめだ」と思った瞬間は？',icon:'😮',horses:['初対面で自分の年収を話し始めた','店員への態度が急に変わった','自分の失敗を全部、他人のせいにした','怒ったら急に敬語がなくなった','奢ってもらってお礼を言わなかった','笑いのために誰かを傷つけた','都合が悪くなったら急に体調不良になった','酔うと悪態をつく']},
+  {id:'base28',category:'g2',title:"自分が誇れることは？",icon:"💪",horses:["人との価値観の違いを、面白いと思えること", "最後の最後まで、諦めないこと", "自己分析力が高いこと", "ユーモアのさじ加減が、ちょうどいいこと", "寝たら忘れられること", "笑いで場をほぐせること", "楽しみを見つけられること", "人に恵まれていること"]},
+  {id:'base29',category:'g2',title:"その人の本性が出ると思うところは？",icon:"🎭",horses:["怒る時の言葉の選び方", "誰も見ていない時の行動", "運転中", "別れ際", "できない人への対応と態度", "イジられた時", "お酒で酔っている時", "SNS"]},
+  {id:'base30',category:'g2',title:"綺麗事に過ぎないのは？",icon:"🎭",horses:["継続すれば必ず報われる", "大人になれば自然とわかる", "良いことをすれば返ってくる", "本音で話せばわかり合える", "努力は必ず見てくれている人がいる", "時間が解決してくれる", "年齢を重ねると落ち着く", "お金より大事なものがある"]},
+  {id:'base31',category:'g3',title:"好きな人に求めるもの",icon:"💕",horses:["家庭的", "性格", "顔", "ファッションセンス", "スタイル", "声", "おもしろさ", "清潔感"]},
+  {id:'base32',category:'g3',title:"生まれ変わったら何になりたいか",icon:"🔮",horses:["もう一度人間", "飼われている犬", "鷹", "猫", "お金持ちの子ども", "大きな桜の幹", "金持ちの家のルンバ", "チーター"]},
+  {id:'base33',category:'g3',title:"言われて嬉しい言葉は？",icon:"😊",horses:["さすがだね", "助かったよ", "気が利くね", "おもしろいね", "モテそうだね", "シゴデキだね", "よく有能って言われるでしょ", "一緒にいると落ち着く"]},
+  {id:'base34',category:'g3',title:"恋愛を一言で表すなら",icon:"💘",horses:["誤算", "宿題", "体力", "錯覚", "賭け", "修行", "奇跡", "依存"]},
+  {id:'base35',category:'g3',title:"仕事を一言で表すなら",icon:"💼",horses:["修行", "舞台", "義務", "檻", "自分探し", "我慢", "ゲーム", "夢"]},
+  {id:'base36',category:'g3',title:"お金を一言で表すなら",icon:"💴",horses:["体力", "自由", "点数", "道具", "呪い", "安心", "燃料", "信用"]},
+  {id:'base37',category:'g3',title:"「強さ」の本質を一言で表すなら",icon:"🦁",horses:["変われること", "認められること", "笑えること", "頼れること", "続けられること", "手放せること", "守れること", "待てること"]},
+  {id:'base38',category:'g3',title:"このメンバーでやりたいことは？",icon:"🎉",horses:["旅行", "飲み会", "謎解き", "キャンプ", "カラオケ", "人生ゲーム", "スポーツ", "遊園地・テーマパーク"]},
+  {id:'base39',category:'g3',title:"ゴールデンウィークに行きたい旅行先は？",icon:"🗺️",horses:["シンガポール", "韓国", "カナダ", "スペイン", "ハワイ", "エジプト", "北海道", "軽井沢"]},
+  {id:'base40',category:'g3',title:"こだわりたいものは？",icon:"✨",horses:["時間の使い方", "言葉の選び方", "食べるもの", "旅行の計画", "身だしなみ", "寝る環境", "見送り方と迎え方", "人付き合い（誰と過ごすか）"]},
+  {id:'base41',category:'g3',title:"自分のテーマソングにしたい曲のジャンル",icon:"🎵",horses:["熱い応援歌", "おしゃれなジャズ", "壮大なオーケストラ", "明るいポップス", "静かなバラード", "アップテンポなダンス曲", "渋い演歌", "無音"]},
+  {id:'base42',category:'g3',title:"自分の取扱説明書に書くなら",icon:"📋",horses:["褒めると伸びる", "急かすと止まる", "放置が一番育つ", "食わせれば機嫌が直る", "本音は3杯目以降", "笑わせれば何でも許す", "睡眠不足だと、性能が大幅に低下します", "怒らせると、長期保証で根に持ちます"]},
+  {id:'base43',category:'g3',title:"家族の中で自分は何キャラ？",icon:"👨‍👩‍👧‍👦",horses:["まとめ役", "ムードメーカー", "末っ子気質", "一番頑固", "空気", "毒舌担当", "いるだけで場が和む人", "マイペースな自由人"]},
+  {id:'base44',category:'g3',title:"運動会で一番燃えるのは？",icon:"🏃",horses:["徒競走", "騎馬戦", "リレー", "綱引き", "玉入れ", "借り物競走", "応援合戦", "パン食い競走"]},
+  {id:'base45',category:'g3',title:"スポーツで一番大事なのは？",icon:"⚽",horses:["センス", "体力", "チームワーク", "精神力", "戦略", "楽しむこと", "勝つこと", "運"]},
 
   // 追加お題
-  {id:'base46',category:'g1',title:"言われたらギクッとする一言は？",icon:"😳",horses:["◯月◯日、どこにいた？", "香水、変えた？", "無理して笑わなくていいよ", "フリスク、いる？", "トイレ行ってきな", "話、聞いてた？", "直接会って話したいんだけど、明日の昼、空いてる？"]},
-  {id:'base47',category:'g1',title:"許せない衛生観念は？",icon:"🤢",horses:["道にタンを吐く", "2日連続で同じ服を着る", "人の家に素足で上がる", "紙をめくる時に指を舐める", "電車の床に荷物を置く", "くしゃみを抑えた手で吊り革を握る", "3秒ルールと言って落ちた食べ物を食べる"]},
-  {id:'base48',category:'g1',title:"この人、信用できないと思う瞬間は？",icon:"🤨",horses:["「ここだけの話」と言って話し始める", "「忙しくて連絡できなかった」と言いながらSNSを更新している", "自分のミスを指摘されると話題を変える", "謝るより先に言い訳が出る", "真剣な相談をしても「考えすぎだよ」と言う", "会うたびに恋人が変わっている", "「あとでPayPayする」と言う"]},
-  {id:'base49',category:'g1',title:"仕事でミスをした時に、一番救われる一言は？",icon:"💼",horses:["経験できてよかったね", "運が悪かっただけだよ", "切り替えて、美味しいもの食べに行こう", "でも、いつも頑張ってるもんね", "俺もそのミスしたことあるから大丈夫", "今日はもう早く帰って休みな", "後輩たちへの教訓にしてあげて"]},
+  {id:'base46',category:'g1',title:"言われたらギクッとする一言は？",icon:"😳",horses:["◯月◯日、どこにいた？", "香水、変えた？", "無理して笑わなくていいよ", "フリスク、いる？", "トイレ行ってきな", "話、聞いてた？", "直接会って話したいんだけど、明日の昼、空いてる？", "つかぬことをお聞きしますが…"]},
+  {id:'base47',category:'g1',title:"許せない衛生観念は？",icon:"🤢",horses:["道にタンを吐く", "2日連続で同じ服を着る", "人の家に素足で上がる", "紙をめくる時に指を舐める", "電車の床に荷物を置く", "くしゃみを抑えた手で吊り革を握る", "3秒ルールと言って落ちた食べ物を食べる", "味見したスプーンを、鍋に戻す"]},
+  {id:'base48',category:'g1',title:"この人、信用できないと思う瞬間は？",icon:"🤨",horses:["「ここだけの話」と言って話し始める", "「忙しくて連絡できなかった」と言いながらSNSを更新している", "自分のミスを指摘されると話題を変える", "謝るより先に言い訳が出る", "真剣な相談をしても「考えすぎだよ」と言う", "会うたびに恋人が変わっている", "「あとでPayPayする」と言う", "話を盛っているのが、だんだん分かってくる"]},
+  {id:'base49',category:'g1',title:"仕事でミスをした時に、一番救われる一言は？",icon:"💼",horses:["経験できてよかったね", "運が悪かっただけだよ", "切り替えて、美味しいもの食べに行こう", "でも、いつも頑張ってるもんね", "俺もそのミスしたことあるから大丈夫", "今日はもう早く帰って休みな", "後輩たちへの教訓にしてあげて", "大きな問題になる前で、むしろよかった"]},
 
-  {id:'base50',category:'g2',title:"住みたくないアパートの特徴は？",icon:"🏚️",horses:["ゴミ捨て場にゴミがない時がない", "築53年", "隣人がバンドで売れることを夢見ている", "坂道の途中にある", "住人同士のコミュニケーションが密", "1階が中華料理屋", "ポストにチラシが溢れかえっている"]},
-  {id:'base51',category:'g2',title:"テーマパークで同行者に言われて萎える一言は？",icon:"🎢",horses:["これ、ぼったくりじゃない？", "あと何分待つの？", "足疲れた", "ちゃんといい写真撮ってよ", "これ、中に人が入ってるんだよね", "カチューシャは恥ずかしい", "「楽しい？」と聞いてくる"]},
-  {id:'base52',category:'g2',title:"この人、贅沢だなと思う瞬間は？",icon:"💎",horses:["お土産代をケチらない", "ハンカチがブランドもの", "スーパー銭湯でマッサージを受ける", "昼からはしご酒", "アトラクションの待ち時間をお金で解決", "回転寿司で一番高い皿を迷わず頼む", "パン屋で食パンを買う"]},
+  {id:'base50',category:'g2',title:"住みたくないアパートの特徴は？",icon:"🏚️",horses:["ゴミ捨て場にゴミがない時がない", "築53年", "隣人がバンドで売れることを夢見ている", "坂道の途中にある", "住人同士のコミュニケーションが密", "1階が中華料理屋", "ポストにチラシが溢れかえっている", "大家さんが、やたらと部屋を見に来る"]},
+  {id:'base51',category:'g2',title:"テーマパークで同行者に言われて萎える一言は？",icon:"🎢",horses:["これ、ぼったくりじゃない？", "あと何分待つの？", "疲れたから、もう帰らない？", "ちゃんといい写真撮ってよ", "これ、中に人が入ってるんだよね", "カチューシャは恥ずかしい", "「楽しい？」と聞いてくる", "これ、〇〇のリュックに入れといて"]},
+  {id:'base52',category:'g2',title:"この人、贅沢だなと思う瞬間は？",icon:"💎",horses:["お土産代をケチらない", "ハンカチがブランドもの", "スーパー銭湯でマッサージを受ける", "昼からはしご酒", "アトラクションの待ち時間をお金で解決", "回転寿司で一番高い皿を迷わず頼む", "パン屋で食パンを買う", "Uberを日常使い"]},
 
-  {id:'base53',category:'g3',title:"服を買う時の基準は？",icon:"👕",horses:["価格", "着回しやすさ", "耐久性", "トレンド感", "着心地", "ブランド", "異性ウケ"]},
-  {id:'base54',category:'g3',title:"旅行の宿を選ぶ上で、大事なことは？",icon:"🏨",horses:["値段の安さ", "口コミの評価", "SNSでよく見る", "朝食ビュッフェの質", "部屋の眺望", "無料サービスの多さ", "露天風呂の有無"]},
-  {id:'base55',category:'g3',title:"お金をかけるべき自己投資は？",icon:"💰",horses:["ジム", "歯列矯正", "マッチングアプリ", "良質な寝具", "旅行", "全身脱毛", "英会話教室"]},
-  {id:'base56',category:'g3',title:"人に言いたくないことは？",icon:"🤫",horses:["体重", "貯金額", "MBTI", "最寄り駅", "学歴", "推し", "家庭環境"]},
+  {id:'base53',category:'g3',title:"服を買う時の基準は？",icon:"👕",horses:["価格", "着回しやすさ", "耐久性", "トレンド感", "着心地", "ブランド", "異性ウケ", "自分らしさを表現できるか"]},
+  {id:'base54',category:'g3',title:"旅行の宿を選ぶ上で、大事なことは？",icon:"🏨",horses:["値段の安さ", "口コミの評価", "SNSでよく見る", "朝食ビュッフェの質", "部屋の眺望", "無料サービスの多さ", "露天風呂の有無", "立地・アクセスの良さ"]},
+  {id:'base55',category:'g3',title:"お金をかけるべき自己投資は？",icon:"💰",horses:["ジム", "歯列矯正", "マッチングアプリ", "良質な寝具", "旅行", "全身脱毛", "英会話教室", "人脈づくり（交流・会食）"]},
+  {id:'base56',category:'g3',title:"人に言いたくないことは？",icon:"🤫",horses:["体重", "貯金額", "MBTI", "最寄り駅", "学歴", "推し", "家庭環境", "年齢"]},
 ];
 window.onload=()=>{const s=localStorage.getItem('sanrentan_topics');state.topics=s?JSON.parse(s):[];initSetupScreen();renderTopicsScreen();initNewTopicOptions();initCategoryBtns();};
 function saveTopics(){localStorage.setItem('sanrentan_topics',JSON.stringify(state.topics));}
@@ -8406,6 +8407,138 @@ function calculateOnlineResults(game, players){
 // ラウンド結果画面
 // ============================================================
 
+// 結果発表前のカウントダウン演出（3→2→1→結果発表！）
+function showResultCountdown(done){
+  try {
+    // 既存のオーバーレイがあれば除去
+    const old = document.getElementById('result-countdown-overlay');
+    if(old) old.remove();
+    const ov = document.createElement('div');
+    ov.id = 'result-countdown-overlay';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 50%,rgba(20,17,11,0.92),rgba(8,8,10,0.97));backdrop-filter:blur(3px);';
+    const num = document.createElement('div');
+    num.style.cssText = 'font-family:"Racing Sans One",cursive;font-weight:900;color:#f5d65a;text-shadow:0 0 30px rgba(245,214,90,0.7),0 4px 12px rgba(0,0,0,0.6);will-change:transform,opacity;';
+    ov.appendChild(num);
+    document.body.appendChild(ov);
+
+    const steps = ['3','2','1','結果発表！'];
+    let i = 0;
+    function tick(){
+      if(i >= steps.length){
+        ov.style.transition = 'opacity 0.25s ease';
+        ov.style.opacity = '0';
+        setTimeout(() => { ov.remove(); if(typeof done==='function') done(); }, 250);
+        return;
+      }
+      const isFinal = (i === steps.length - 1);
+      num.textContent = steps[i];
+      num.style.fontSize = isFinal ? 'clamp(2.2rem,9vw,5rem)' : 'clamp(4rem,18vw,11rem)';
+      num.style.color = isFinal ? '#fff' : '#f5d65a';
+      // ポップ＆フェードのアニメ
+      num.style.transition = 'none';
+      num.style.transform = 'scale(0.4)';
+      num.style.opacity = '0';
+      // 効果音
+      try {
+        if(window.SFX){
+          if(isFinal){ if(typeof window.SFX.finale==='function') window.SFX.finale(); }
+          else { if(typeof window.SFX.confirm==='function') window.SFX.confirm(); }
+        }
+      } catch(e){}
+      requestAnimationFrame(() => {
+        num.style.transition = 'transform 0.35s cubic-bezier(.2,1.4,.4,1), opacity 0.25s ease';
+        num.style.transform = 'scale(1)';
+        num.style.opacity = '1';
+      });
+      i++;
+      setTimeout(tick, isFinal ? 900 : 750);
+    }
+    tick();
+  } catch(e){
+    console.error('countdown error:', e);
+    if(typeof done==='function') done();
+  }
+}
+window.showResultCountdown = showResultCountdown;
+
+// 最終結果前のカウントダウン演出（結果発表とは別の、より壮大な演出）
+function showFinalCountdown(done){
+  try {
+    const old = document.getElementById('final-countdown-overlay');
+    if(old) old.remove();
+    const ov = document.createElement('div');
+    ov.id = 'final-countdown-overlay';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 45%,#3a2c08,#140f04 60%,#070707 100%);';
+    // 光のリング
+    const ring = document.createElement('div');
+    ring.style.cssText = 'position:absolute;width:40vmin;height:40vmin;border-radius:50%;border:2px solid rgba(245,214,90,0.35);box-shadow:0 0 60px rgba(245,214,90,0.3),inset 0 0 60px rgba(245,214,90,0.15);will-change:transform,opacity;';
+    ov.appendChild(ring);
+    const sub = document.createElement('div');
+    sub.style.cssText = 'position:relative;color:#c9a233;font-size:clamp(0.9rem,3.5vw,1.4rem);letter-spacing:6px;font-weight:700;margin-bottom:14px;opacity:0;transition:opacity .4s ease;text-shadow:0 2px 8px rgba(0,0,0,0.6);';
+    sub.textContent = 'FINAL RESULT';
+    const main = document.createElement('div');
+    main.style.cssText = 'position:relative;font-family:"Racing Sans One",cursive;font-weight:900;will-change:transform,opacity;text-align:center;';
+    ov.appendChild(sub);
+    ov.appendChild(main);
+    document.body.appendChild(ov);
+
+    requestAnimationFrame(()=>{ sub.style.opacity = '1'; });
+
+    // 演出シーケンス（テキスト, サイズ, 色, 表示時間, 音）
+    const seq = [
+      { t:'優勝者は…？', size:'clamp(1.8rem,7vw,4rem)', color:'#f5d65a', hold:1100, sound:'whoosh' },
+      { t:'3', size:'clamp(4rem,18vw,11rem)', color:'#fff7e0', hold:650, sound:'confirm' },
+      { t:'2', size:'clamp(4rem,18vw,11rem)', color:'#fff7e0', hold:650, sound:'confirm' },
+      { t:'1', size:'clamp(4rem,18vw,11rem)', color:'#fff7e0', hold:650, sound:'confirm' },
+      { t:'🏆', size:'clamp(5rem,22vw,14rem)', color:'#f5d65a', hold:1000, sound:'finale' }
+    ];
+    let i = 0;
+    function step(){
+      if(i >= seq.length){
+        ov.style.transition = 'opacity 0.35s ease';
+        ov.style.opacity = '0';
+        setTimeout(()=>{ ov.remove(); if(typeof done==='function') done(); }, 350);
+        return;
+      }
+      const s = seq[i];
+      main.textContent = s.t;
+      main.style.fontSize = s.size;
+      main.style.color = s.color;
+      main.style.textShadow = '0 0 36px rgba(245,214,90,0.7),0 4px 14px rgba(0,0,0,0.6)';
+      main.style.transition = 'none';
+      main.style.transform = 'scale(0.3) rotate(-6deg)';
+      main.style.opacity = '0';
+      // リングを脈動
+      ring.style.transition = 'none';
+      ring.style.transform = 'scale(0.6)';
+      ring.style.opacity = '0.2';
+      // 音
+      try {
+        if(window.SFX){
+          if(s.sound==='finale' && typeof window.SFX.finale==='function') window.SFX.finale();
+          else if(s.sound==='whoosh' && typeof window.SFX.whoosh==='function') window.SFX.whoosh();
+          else if(s.sound==='confirm' && typeof window.SFX.confirm==='function') window.SFX.confirm();
+        }
+      } catch(e){}
+      requestAnimationFrame(()=>{
+        main.style.transition = 'transform 0.45s cubic-bezier(.2,1.5,.4,1), opacity 0.3s ease';
+        main.style.transform = 'scale(1) rotate(0deg)';
+        main.style.opacity = '1';
+        ring.style.transition = 'transform 0.6s ease-out, opacity 0.6s ease-out';
+        ring.style.transform = 'scale(1.25)';
+        ring.style.opacity = '0.5';
+      });
+      i++;
+      setTimeout(step, s.hold);
+    }
+    step();
+  } catch(e){
+    console.error('final countdown error:', e);
+    if(typeof done==='function') done();
+  }
+}
+window.showFinalCountdown = showFinalCountdown;
+
 function enterOnlineRoundResult(game){
   const log = game.results;
   if(!log) return;
@@ -8414,6 +8547,15 @@ function enterOnlineRoundResult(game){
   // oyaIndex も含めることで、ノーゲームやり直し後の本ラウンドでも演出が出る
   const roundKey = `r${game.currentRound || 1}-oya${game.oyaIndex || 0}`;
   const isFirstShow = window.online._lastResultRound !== roundKey;
+
+  // 結果発表に移る前にカウントダウン演出（初回・ノーゲーム以外・設定ON）
+  const cdOn = (typeof window.isCountdownEnabled === 'function') ? window.isCountdownEnabled() : true;
+  if(cdOn && isFirstShow && !log.noGame && window.online._countdownRound !== roundKey){
+    window.online._countdownRound = roundKey;
+    showResultCountdown(() => { enterOnlineRoundResult(game); });
+    return;
+  }
+
   window.online._lastResultRound = roundKey;
 
   // まず画面遷移（これで多重呼び出しを防ぐ）
@@ -8689,8 +8831,8 @@ function applyJackpotDye(log){
       if(od > 0 && (!best || od > best.odds)) best = { odds: od, betType: r.betType };
     }
   });
-  // 染める条件：オッズ2.0倍以上の的中があったら、その賭け方の色に
-  const DYE_THRESHOLD = 2.0;
+  // 染める条件：的中が1つでもあれば、最高倍率の券種の色に染める（複勝1.1倍なども対象）
+  const DYE_THRESHOLD = 0;
   const BET_COLOR_DARK = { tansho:'#9a7110', fukusho:'#1a6a26', wide:'#b04e0a', umaren:'#6a3aa8', umatan:'#b01e6a', sanrenfuku:'#0a7a76', sanrentan:'#a83a6a' };
   // パネル背景用（その賭け方の色を暗くした2トーン）
   const BET_PANEL = {
@@ -8744,7 +8886,8 @@ function applyJackpotDye(log){
       banner.style.background = bg;
       banner.style.color = (best.betType==='tansho'||best.betType==='fukusho'||best.betType==='wide'||best.betType==='sanrenfuku') ? '#2a1500' : '#fff';
       banner.style.border = '1px solid rgba(255,255,255,0.4)';
-      banner.innerHTML = `🎉 ${BET_LABEL[best.betType]||best.betType} 的中！ <span style="font-size:0.85em">×${best.odds.toFixed(1)} の高配当！</span>`;
+      const tail = best.odds >= 5 ? ' の高配当！' : (best.odds >= 2 ? ' 的中！' : '');
+      banner.innerHTML = `🎉 ${BET_LABEL[best.betType]||best.betType} 的中！ <span style="font-size:0.85em">×${best.odds.toFixed(1)}${tail}</span>`;
     }
   } else {
     // 通常（高配当なし）はゴールドの落ち着いた色
@@ -8998,6 +9141,15 @@ function enterOnlineFinal(game){
   // 初回のみ豪華フィナーレ演出
   // _lastFinalShown が null/undefined（復帰直後など）の場合も初回扱い
   const isFirstShow = window.online._lastFinalShown !== game.startedAt;
+
+  // 最終結果の前にカウントダウン演出（初回・設定ON、結果発表とは違う演出）
+  const cdOn = (typeof window.isCountdownEnabled === 'function') ? window.isCountdownEnabled() : true;
+  if(cdOn && isFirstShow && window.online._finalCountdownDone !== game.startedAt){
+    window.online._finalCountdownDone = game.startedAt;
+    showFinalCountdown(() => { enterOnlineFinal(game); });
+    return;
+  }
+
   window.online._lastFinalShown = game.startedAt;
 
   const renderFinalBody = () => {
@@ -9186,11 +9338,31 @@ window.toggleSound = function(){
   }
 };
 
+// 結果発表カウントダウンの ON/OFF
+window.isCountdownEnabled = function(){
+  try { return localStorage.getItem('yumepass_countdown') !== '0'; } catch(e){ return true; }
+};
+window.toggleCountdown = function(){
+  const next = !window.isCountdownEnabled();
+  try { localStorage.setItem('yumepass_countdown', next ? '1' : '0'); } catch(e){}
+  const btn = document.getElementById('countdown-toggle-btn');
+  if(btn) btn.textContent = next ? '⏱️ 結果カウントダウン：ON' : '⏱️ 結果カウントダウン：OFF';
+  if(typeof showNotif==='function') showNotif(next ? '⏱️ カウントダウンON' : '⏱️ カウントダウンOFF');
+};
+// メニューを開いたときにボタン表示を現在値へ同期
+window.syncCountdownToggleLabel = function(){
+  const btn = document.getElementById('countdown-toggle-btn');
+  if(btn) btn.textContent = window.isCountdownEnabled() ? '⏱️ 結果カウントダウン：ON' : '⏱️ 結果カウントダウン：OFF';
+};
+
 // ゲーム中メニュー切替
 window.toggleGameMenu = function(){
   const modal = document.getElementById('game-menu-modal');
   if(!modal) return;
   modal.classList.toggle('hidden');
+  if(!modal.classList.contains('hidden') && typeof window.syncCountdownToggleLabel==='function'){
+    window.syncCountdownToggleLabel();
+  }
 };
 
 // ゲーム中画面に居る時のみメニューボタンを表示
