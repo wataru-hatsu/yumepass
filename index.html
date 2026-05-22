@@ -44,8 +44,24 @@ var escapeHtml = window.escapeHtml;
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Racing+Sans+One&display=swap');
 :root{--green:#1a6b2a;--green-light:#2d9e44;--gold:#f5c842;--gold-dark:#c9960a;--red:#c0392b;--white:#f9f5e8;--dark:#1a1a1a;--panel:#fdf8ed;--border:#c9960a;--oya:#8b1a8b;--oya-light:#c060c0;}
 *{box-sizing:border-box;margin:0;padding:0;}
-html{background:#0a0f0d;min-height:100vh;overscroll-behavior:none;}
+html{background:#0a0f0d;min-height:100vh;overscroll-behavior:none;font-size:18px;}
 body{font-family:'Noto Sans JP',sans-serif;background:#0a0f0d;color:var(--dark);min-height:100vh;overflow-x:hidden;overscroll-behavior:none;}
+/* 老眼配慮：極小フォントの底上げ＆主要テキスト拡大 */
+.panel-title{font-size:0.82rem !important;}
+.btn{font-size:1.12rem !important;}
+.btn-sm{font-size:1rem !important;}
+.score-table th{font-size:0.95rem !important;}
+.score-table td{font-size:1.02rem !important;}
+.horse-card .horse-name{font-size:0.95rem !important;}
+.horse-card .num-badge{font-size:1.05rem !important;}
+.bet-type-btn .bet-name{font-size:1.08rem !important;}
+.bet-type-btn .bet-mult{font-size:0.85rem !important;}
+.bet-type-btn .bet-desc{font-size:0.82rem !important;line-height:1.4 !important;}
+.bet-type-btn .bet-odds-range{font-size:0.8rem !important;}
+.header .subtitle{font-size:0.85rem !important;}
+label{font-size:1rem !important;}
+.reveal-card-name{font-size:1.05rem !important;}
+.oya-badge,.ko-badge{font-size:0.8rem !important;}
 /* 演出中はbody背景もダークに */
 body.fx-active{background:#000;}
 html.fx-active{background:#000;}
@@ -2858,14 +2874,14 @@ function renderRulesScreen(){
   const r=state.oyaBonusRate;
   const bp=document.getElementById('rules-bonus-content');
   if(bp){
-    const note2p=`<div style="background:rgba(26,95,204,0.1);border-left:4px solid #1a5fcc;border-radius:0 8px 8px 0;padding:8px 12px;margin-top:8px;font-size:0.8rem;line-height:1.6;color:#0d3d7a">ℹ️ <strong>2人プレイ時は一律「親ボーナスなし」</strong>（設定に関わらず0%）になります。</div>`;
+    const note2p=`<div style="background:rgba(26,95,204,0.1);border-left:4px solid #1a5fcc;border-radius:0 8px 8px 0;padding:10px 13px;margin-top:8px;font-size:0.95rem;line-height:1.6;color:#0d3d7a">ℹ️ <strong>2人プレイは親ボーナスなし</strong>（一律0%）</div>`;
     if(r===0){
-      bp.innerHTML=`<p style="font-size:0.85rem;line-height:1.8">現在の設定では<strong>親ボーナスなし（0%）</strong>です。</p><div style="font-size:0.75rem;color:#888;margin-top:6px">💡 詳細設定でボーナス割合を変更できます（デフォルト：50%）</div>${note2p}`;
+      bp.innerHTML=`<p style="font-size:1rem;line-height:1.8"><strong>親ボーナスなし（0%）</strong>の設定です。</p><div style="font-size:0.9rem;color:#888;margin-top:6px">💡 詳細設定で割合を変更できます（初期50%）</div>${note2p}`;
     } else {
       const bonus2500=Math.floor(1000*5*(r/100));
-      bp.innerHTML=`<p style="font-size:0.86rem;line-height:1.85">子が的中すると、その配当の一部（初期設定${r}%）が<strong>親にもボーナス</strong>として入ります。子は配当を全額もらえて、親の取り分は別途プラス。</p>
-      <div style="background:#f9eef9;border:1px solid var(--oya-light);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:0.82rem;line-height:1.7">例）子が1000点でオッズ×5的中 → <strong style="color:var(--oya)">子：+5,000点</strong> / <strong style="color:var(--oya)">親：+${bonus2500.toLocaleString()}点</strong>ボーナス</div>
-      <div style="font-size:0.82rem;color:#7a5a8a;margin-top:8px;line-height:1.6">💡 親も「子に当てさせる絶妙なお題選び」で稼げる。<span style="color:#999">（割合は詳細設定で変更可）</span></div>${note2p}`;
+      bp.innerHTML=`<p style="font-size:1rem;line-height:1.8">子が的中すると、配当の<strong>${r}%が親にもボーナス</strong>。子は満額もらえます。</p>
+      <div style="background:#f9eef9;border:1px solid var(--oya-light);border-radius:8px;padding:11px 13px;margin-top:8px;font-size:0.95rem;line-height:1.7">例）子が1000点で×5的中 → <strong style="color:var(--oya)">子：+5,000点</strong> / <strong style="color:var(--oya)">親：+${bonus2500.toLocaleString()}点</strong></div>
+      <div style="font-size:0.92rem;color:#7a5a8a;margin-top:8px;line-height:1.6">💡 親も「絶妙なお題選び」で稼げる<span style="color:#999">（割合は設定で変更可）</span></div>${note2p}`;
     }
   }
   // 賭け方カード（難易度色つき。説明＋オッズ範囲を BET_CONFIG / BET_DESCS から動的生成）
@@ -2888,11 +2904,11 @@ function renderRulesScreen(){
       const hi=Number.isInteger(c.maxOdds)?c.maxOdds:c.maxOdds.toFixed(1);
       const m=meta[bt]||{dot:'',bar:'#ccc'};
       const big=(bt==='sanrentan');
-      return `<div style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-left:4px solid ${m.bar};background:#fff;border-radius:0 8px 8px 0;margin-bottom:6px;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
-        <span style="font-size:0.9rem;flex-shrink:0">${m.dot}</span>
-        <span style="background:${m.bar};color:#fff;font-weight:900;font-size:0.82rem;padding:3px 9px;border-radius:9px;white-space:nowrap;min-width:50px;text-align:center;flex-shrink:0">${BET_NAMES[bt]}</span>
-        <span style="flex:1;font-size:0.8rem;line-height:1.4;color:#2a2010;min-width:0">${BET_DESCS[bt]}${big?'<strong style="color:#8b1a8b">（最高難度！）</strong>':''}</span>
-        <span style="font-size:0.74rem;font-weight:900;color:${big?'#8b1a8b':'#8a6500'};white-space:nowrap;flex-shrink:0">×${lo}〜${hi}</span>
+      return `<div style="display:flex;align-items:center;gap:9px;padding:11px 12px;border-left:5px solid ${m.bar};background:#fff;border-radius:0 8px 8px 0;margin-bottom:7px;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+        <span style="font-size:1.1rem;flex-shrink:0">${m.dot}</span>
+        <span style="background:${m.bar};color:#fff;font-weight:900;font-size:0.98rem;padding:4px 11px;border-radius:9px;white-space:nowrap;min-width:58px;text-align:center;flex-shrink:0">${BET_NAMES[bt]}</span>
+        <span style="flex:1;font-size:0.98rem;line-height:1.45;color:#2a2010;min-width:0">${BET_DESCS[bt]}${big?'<strong style="color:#8b1a8b">（最高難度！）</strong>':''}</span>
+        <span style="font-size:0.9rem;font-weight:900;color:${big?'#8b1a8b':'#8a6500'};white-space:nowrap;flex-shrink:0">×${lo}〜${hi}</span>
       </div>`;
     }).join('');
   }
@@ -4401,8 +4417,8 @@ function bakenHtml(bet, horses, opts){
   const struct = bet.structure || null;
   // 馬番バッジ（背景に依らず見やすいよう白リング＋影を付与。当選マークは付けない）
   const badge = (hi, sizeBig)=>{
-    const sz = sizeBig?24:20;
-    return `<span class="ibadge ${HC[hi]}" style="width:${sz}px;height:${sz}px;font-size:${sizeBig?'0.72rem':'0.64rem'};flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 0 0 1.5px rgba(255,255,255,0.85),0 1px 3px rgba(0,0,0,0.35)">${hi+1}</span>`;
+    const sz = sizeBig?30:26;
+    return `<span class="ibadge ${HC[hi]}" style="width:${sz}px;height:${sz}px;font-size:${sizeBig?'0.92rem':'0.82rem'};flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 0 0 1.5px rgba(255,255,255,0.85),0 1px 3px rgba(0,0,0,0.35)">${hi+1}</span>`;
   };
   const unit = bet.unitAmount || (method==='simple' ? (bet.amount||0) : 0);
   let combos;
@@ -4410,10 +4426,10 @@ function bakenHtml(bet, horses, opts){
   const total = bet.amount || (unit * combos.length);
   // ヘッダー
   const head = `<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:7px">
-    <span style="background:var(--gold-dark);color:#fff;font-size:0.72rem;font-weight:900;padding:2px 9px;border-radius:9px">${betName}</span>
-    ${methodName?`<span style="background:${dark?'rgba(245,200,66,0.2)':'#fff3d0'};color:${dark?'#ffe9a8':'#8a6500'};font-size:0.68rem;font-weight:900;padding:2px 8px;border-radius:8px;border:1px solid rgba(201,150,10,0.4)">${methodName}</span>`:''}
-    <span style="color:${subTxt};font-size:0.72rem;font-weight:700">${method==='simple'?'1通り':combos.length+'通り'} × ${unit.toLocaleString()}点</span>
-    <span style="margin-left:auto;color:${dark?'var(--gold)':'#8a6500'};font-weight:900;font-size:0.85rem">計 ${total.toLocaleString()}点</span>
+    <span style="background:var(--gold-dark);color:#fff;font-size:0.92rem;font-weight:900;padding:3px 11px;border-radius:9px">${betName}</span>
+    ${methodName?`<span style="background:${dark?'rgba(245,200,66,0.2)':'#fff3d0'};color:${dark?'#ffe9a8':'#8a6500'};font-size:0.85rem;font-weight:900;padding:3px 9px;border-radius:8px;border:1px solid rgba(201,150,10,0.4)">${methodName}</span>`:''}
+    <span style="color:${subTxt};font-size:0.9rem;font-weight:700">${method==='simple'?'1通り':combos.length+'通り'} × ${unit.toLocaleString()}点</span>
+    <span style="margin-left:auto;color:${dark?'var(--gold)':'#8a6500'};font-weight:900;font-size:1.02rem">計 ${total.toLocaleString()}点</span>
   </div>`;
 
   // 位ラベル（順序あり=着順、なし=群）
@@ -4427,7 +4443,7 @@ function bakenHtml(bet, horses, opts){
         const chips = (g||[]).map(hi=>badge(hi)).join('');
         return `<div style="display:flex;align-items:center;gap:6px">
           <div style="background:${groupBg};border:1px solid ${dark?'rgba(245,200,66,0.25)':'#e0d5b0'};border-radius:8px;padding:5px 7px;min-width:0">
-            ${lbl?`<div style="font-size:0.6rem;color:${subTxt};font-weight:700;margin-bottom:3px;text-align:center">${lbl}</div>`:''}
+            ${lbl?`<div style="font-size:0.82rem;color:${subTxt};font-weight:700;margin-bottom:3px;text-align:center">${lbl}</div>`:''}
             <div style="display:flex;flex-wrap:wrap;gap:3px;justify-content:center">${chips}</div>
           </div>
           ${gi<groups.length-1?`<span style="color:${arrowCol};font-weight:900;font-size:1rem;flex-shrink:0">▶</span>`:''}
@@ -4447,7 +4463,7 @@ function bakenHtml(bet, horses, opts){
     body = renderGroups(groups, labels);
   } else if(struct && struct.kind==='box'){
     const hs=struct.horses||bet.selections||[];
-    body = `<div style="background:${groupBg};border:1px solid ${dark?'rgba(245,200,66,0.25)':'#e0d5b0'};border-radius:8px;padding:6px 8px"><div style="font-size:0.6rem;color:${subTxt};font-weight:700;margin-bottom:4px">ボックス（選んだ馬の全組み合わせ）</div><div style="display:flex;flex-wrap:wrap;gap:4px">${hs.map(hi=>badge(hi)).join('')}</div></div>`;
+    body = `<div style="background:${groupBg};border:1px solid ${dark?'rgba(245,200,66,0.25)':'#e0d5b0'};border-radius:8px;padding:6px 8px"><div style="font-size:0.82rem;color:${subTxt};font-weight:700;margin-bottom:4px">ボックス（選んだ馬の全組み合わせ）</div><div style="display:flex;flex-wrap:wrap;gap:4px">${hs.map(hi=>badge(hi)).join('')}</div></div>`;
   } else if(method==='simple'){
     // シンプル：1点を着順付きで
     const sel=bet.selections||[];
