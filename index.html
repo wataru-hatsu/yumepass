@@ -156,8 +156,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);text-align:center;padding:12px;font-size:0.82rem;letter-spacing:3px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.3);}
 .flip-msg{background:#f5c842;color:#333;text-align:center;padding:8px;font-weight:700;font-size:0.85rem;border-top:2px solid #c9960a;}
 .oya-banner{background:linear-gradient(135deg,var(--oya) 0%,#5a005a 100%);color:white;text-align:center;padding:10px;font-size:0.85rem;font-weight:700;}
-.reveal-card{background:linear-gradient(160deg,rgba(255,255,255,0.96),rgba(252,248,238,0.92));border:1px solid rgba(201,150,10,0.3);border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
-.reveal-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.reveal-card{background:linear-gradient(160deg,rgba(255,255,255,0.96),rgba(252,248,238,0.92));border:1px solid rgba(201,150,10,0.3);border-radius:10px;padding:8px 10px;margin-bottom:6px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.reveal-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
 .reveal-card-name{font-weight:700;font-size:1rem;}
 .reveal-bet-type{font-size:0.8rem;font-weight:700;color:var(--gold-dark);}
 .notif{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#222;color:var(--gold);padding:10px 20px;border-radius:20px;font-size:0.85rem;font-weight:700;z-index:999;opacity:0;transition:opacity 0.3s;white-space:nowrap;}
@@ -754,20 +754,21 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <div class="screen" id="screen-online-betting">
   <div class="round-header" id="ob-round-header">ROUND 1 — 賭けフェーズ</div>
   <div class="scroll-content">
-    <!-- お題表示 -->
-    <div id="ob-topic-panel" style="margin:10px;background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:12px;cursor:pointer;user-select:none">
-      
+    <!-- お題表示（タップで選択肢） -->
+    <div id="ob-topic-panel" style="margin:8px 10px;background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:9px 12px;cursor:pointer;user-select:none">
       <div style="display:flex;align-items:center;gap:8px">
-        <div style="font-size:1.4rem" id="ob-topic-icon">🎯</div>
-        <div style="color:var(--gold);font-size:1rem;font-weight:900" id="ob-topic-title">—</div>
+        <div style="font-size:1.2rem" id="ob-topic-icon">🎯</div>
+        <div style="color:var(--gold);font-size:0.95rem;font-weight:900;flex:1;min-width:0" id="ob-topic-title">—</div>
+        <div style="font-size:0.6rem;color:#999;white-space:nowrap">👆選択肢</div>
       </div>
+      <div id="ob-topic-horses" style="margin-top:6px;display:none;flex-wrap:wrap;gap:4px"></div>
     </div>
 
     <!-- 役割バナー -->
     <div id="ob-role-banner-wrap" style="margin:6px 10px"></div>
 
     <!-- 自分の情報 -->
-    <div class="panel" style="background:#1a1a1a;border-color:#333">
+    <div class="panel" id="ob-my-info-panel" style="background:#1a1a1a;border-color:#333">
       <div style="color:var(--gold);font-size:0.75rem;letter-spacing:2px;margin-bottom:4px" id="ob-my-label">YOUR TURN</div>
       <div style="color:white;font-size:1.3rem;font-weight:900" id="ob-my-name">—</div>
       <div style="color:#aaa;font-size:0.75rem;margin-top:4px">持ち点: <span id="ob-my-points" style="color:var(--gold);font-weight:700">5000</span> 点</div>
@@ -836,9 +837,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 
     <!-- 親用 順位入力エリア -->
     <div id="ob-oya-area" style="display:none">
-      <div class="panel" style="background:linear-gradient(135deg,#1a3d2a,#0d2a1a);border:2px solid #7dff7d">
-        <div style="color:#aef5a0;font-size:0.85rem;line-height:1.5">👑 <strong>あなた自身</strong>の順位（1位→2位→3位）を入力してください</div>
-        <div style="color:#5dcc5d;font-size:0.75rem;margin-top:4px">他のプレイヤーには見えません</div>
+      <div style="margin:6px 10px;background:linear-gradient(135deg,#1a3d2a,#0d2a1a);border:2px solid #7dff7d;border-radius:10px;padding:9px 12px">
+        <div style="color:#aef5a0;font-size:0.92rem;font-weight:900;line-height:1.4">👑 あなた（親）の順位（1位→2位→3位）を入力しよう</div>
       </div>
       <div class="panel">
         <div class="panel-title">🏆 あなたの順位を入力</div>
@@ -1002,7 +1002,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div id="orv-topic-horses" style="margin-top:7px;display:flex;flex-wrap:wrap;gap:5px;justify-content:center"></div>
     </div>
     <!-- 親パネル（上）K1 ネイビー -->
-    <div class="panel" style="background:linear-gradient(135deg,#0e2452,#16346e);border:1px solid #3a6ad0"><div class="panel-title" style="color:#9fc0f5">👑 親の順位入力</div><div id="orv-oya-block"></div></div>
+    <div class="panel" style="background:linear-gradient(135deg,#0e2452,#16346e);border:1px solid #3a6ad0"><div id="orv-oya-block"></div></div>
     <!-- 子パネル（下）クリーム -->
     <div class="panel" style="background:linear-gradient(135deg,#fdf8ed,#f5edd8);border:1px solid #e0c83a"><div class="panel-title" style="color:#8a6a10">🎯 子の賭け内容</div><div id="orv-bets-list"></div></div>
     <div style="color:#f5c842;text-align:center;padding:12px;font-size:0.85rem;font-weight:700">みんなで確認したら結果発表！</div>
@@ -6593,44 +6593,32 @@ function enterOnlineBetting(game){
   if(topic){
     document.getElementById('ob-topic-icon').textContent = topic.icon || '🎯';
     document.getElementById('ob-topic-title').textContent = topic.title || '—';
-    // お題長押しで選択肢確認
+    // お題タップで選択肢の表示トグル
     const tp = document.getElementById('ob-topic-panel');
-    if(tp){
-      let pt = null;
-      tp.onclick = null;
-      tp.oncontextmenu = (e) => { e.preventDefault(); openOnlineTopicPopup(topic); };
-      tp.ontouchstart = () => { pt = setTimeout(() => openOnlineTopicPopup(topic), 400); };
-      tp.ontouchend = () => clearTimeout(pt);
-      tp.ontouchmove = () => clearTimeout(pt);
-      tp.onmousedown = (e) => { if(e.button === 0) pt = setTimeout(() => openOnlineTopicPopup(topic), 600); };
-      tp.onmouseup = () => clearTimeout(pt);
+    const tph = document.getElementById('ob-topic-horses');
+    if(tp && tph){
+      tph.innerHTML = (topic.horses || []).map((name, i) => `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.3);border-radius:12px;padding:3px 8px;font-size:0.8rem;color:#f0e8d4"><span class="ibadge ${HC[i]}" style="width:20px;height:20px;font-size:0.7rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+      tph.style.display = 'none';
+      tp.onclick = function(){ tph.style.display = (tph.style.display==='none')?'flex':'none'; };
     }
   }
 
   // 役割バナー
   const bannerWrap = document.getElementById('ob-role-banner-wrap');
+  const myInfoPanel = document.getElementById('ob-my-info-panel');
   const topicTitleForBanner = (game.selectedTopic && game.selectedTopic.title) ? escapeHtml(game.selectedTopic.title) : 'このお題';
   if(isOya){
-    bannerWrap.innerHTML = `
-      <div style="background:linear-gradient(135deg,#3a1a3a,#5a2a5a);border:3px solid #c060c0;border-radius:12px;padding:14px 16px;box-shadow:0 0 16px rgba(192,96,192,0.3)">
-        <div style="color:#ffaaff;font-size:0.95rem;font-weight:900;margin-bottom:6px">👑 あなたは<span style="color:#fff">親</span>です</div>
-        <div style="color:#ffffff;font-size:1rem;font-weight:700;line-height:1.5">あなたの<br><span style="color:#ffd0ff;font-size:1.1rem">「${topicTitleForBanner}」</span><br>に対する<span style="color:#ffd700">順位</span>をつけよう</div>
-        <div style="color:#ffaaff;font-size:0.7rem;margin-top:8px;line-height:1.5">下から1位・2位・3位を選んでください<br>子はあなたの順位を予想します</div>
-      </div>`;
+    // 親：バナー・黒情報パネルは出さず、緑の指示だけ（ob-oya-area内）
+    bannerWrap.innerHTML = '';
+    if(myInfoPanel) myInfoPanel.style.display = 'none';
     document.getElementById('ob-ko-area').style.display = 'none';
     document.getElementById('ob-oya-area').style.display = '';
     document.getElementById('ob-my-label').textContent = '👑 親 — 順位入力';
-    // 親も全員の得点を見れる
-    renderOnlineScoreTable('ob-oya-score-table', game);
     renderOyaHorseGrid();
   } else {
+    if(myInfoPanel) myInfoPanel.style.display = '';
     const oyaName = oyaPlayer ? escapeHtml(oyaPlayer.name) : '親';
-    bannerWrap.innerHTML = `
-      <div style="background:linear-gradient(135deg,#0d2a3a,#1a4a6a);border:3px solid #4488ff;border-radius:12px;padding:14px 16px;box-shadow:0 0 16px rgba(68,136,255,0.3)">
-        <div style="color:#88ccff;font-size:0.95rem;font-weight:900;margin-bottom:6px">🎯 あなたは<span style="color:#fff">子</span>です</div>
-        <div style="color:#ffffff;font-size:1rem;font-weight:700;line-height:1.5"><span style="color:#ffd700">${oyaName}</span>さんの<br><span style="color:#aaddff;font-size:1.1rem">「${topicTitleForBanner}」</span><br>に対する<span style="color:#ffd700">価値観</span>を予想しよう</div>
-        <div style="color:#88ccff;font-size:0.7rem;margin-top:8px;line-height:1.5">親が1位・2位・3位をどう選ぶか予想して賭けてください</div>
-      </div>`;
+    bannerWrap.innerHTML = `<div style="background:linear-gradient(135deg,#0d2a3a,#1a4a6a);border:2px solid #4488ff;border-radius:10px;padding:8px 12px"><div style="color:#cfe8ff;font-size:0.92rem;font-weight:900;line-height:1.4">🎯 あなた（子）— <span style="color:#ffd700">${oyaName}</span>さんの順位を予想して賭けよう</div></div>`;
     document.getElementById('ob-ko-area').style.display = '';
     document.getElementById('ob-oya-area').style.display = 'none';
     document.getElementById('ob-my-label').textContent = '🎯 子 — 賭け';
@@ -8168,7 +8156,7 @@ function enterOnlineReveal(game){
     let oyaPicks = Array.isArray(game.oyaResult) ? game.oyaResult : (window.onlineBet.oyaSelections || []);
     if(viewerIsOya && oyaPicks.length === 3 && topic){
       const items = oyaPicks.map((hi, i) => `<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(120,160,230,0.4);border-radius:8px;padding:6px 10px;margin-top:5px"><div style="font-size:1.1rem;width:26px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}" style="width:24px;height:24px;font-size:0.8rem;flex-shrink:0">${hi+1}</div><div style="color:#e6ecf8;font-weight:700;font-size:0.9rem">${escapeHtml(topic.horses[hi] || '')}</div></div>`).join('');
-      oyaBlock.innerHTML = `<div style="color:#9fc0f5;font-weight:900;font-size:0.95rem;margin-bottom:2px">👑 ${escapeHtml(oyaPlayer.name)} <span class="oya-badge">親</span> の順位</div>${items}<div style="color:#7f93b8;font-size:0.7rem;margin-top:6px">他の人にはまだ表示されていません</div>`;
+      oyaBlock.innerHTML = `<div style="color:#9fc0f5;font-weight:900;font-size:0.95rem;margin-bottom:2px">👑 ${escapeHtml(oyaPlayer.name)} <span class="oya-badge">親</span> の順位<span style="color:#8fa8d0;font-size:0.68rem;font-weight:600">（他の人にはまだ表示されていません）</span></div>${items}`;
     } else {
       oyaBlock.innerHTML = `<div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.2rem">👑</span><div style="color:#9fc0f5;font-weight:900;font-size:0.95rem">${escapeHtml(oyaPlayer.name)} <span class="oya-badge">親</span></div><div style="color:#8fa8d0;font-size:0.72rem;margin-left:auto">⏳ 結果発表まで非表示</div></div>`;
     }
@@ -8182,9 +8170,9 @@ function enterOnlineReveal(game){
     list.innerHTML = koPlayers.map((p,ki) => {
       const bet = bets[p.id];
       if(!bet || bet.skipped || bet.amount === 0){
-        return `<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;
+        return `<div class="reveal-card" style="opacity:0.6"><div class="reveal-card-header"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span></span><span style="color:#444;font-size:0.92rem;font-weight:700">— 見送り</span></div></div>`;
       }
-      const hint = `<span style="font-size:0.62rem;color:#aaa;font-weight:600;white-space:nowrap">👆 詳細</span>`;
+      const hint = `<span style="font-size:0.72rem;color:#333;font-weight:700;white-space:nowrap">👆 詳細</span>`;
       // コンパクト表示（券種チップ＋点数）。詳細は長押し。
       let summaryChips;
       if(Array.isArray(bet.multiBets) && bet.multiBets.length > 1){
@@ -8193,7 +8181,7 @@ function enterOnlineReveal(game){
         const single = Array.isArray(bet.multiBets)&&bet.multiBets[0] ? bet.multiBets[0] : bet;
         summaryChips = `<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${compactBetLine(single)}</div>`;
       }
-      return `<div class="reveal-card" data-ko="${ki}"><div class="reveal-card-header" style="gap:8px"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span></span>${hint}</div><div style="display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;margin-top:6px"><div style="flex:1;min-width:0">${summaryChips}</div><span style="color:#8a6500;font-weight:900;font-size:0.82rem;white-space:nowrap">${(bet.amount||0).toLocaleString()}点</span></div></div>`;
+      return `<div class="reveal-card" data-ko="${ki}"><div class="reveal-card-header" style="gap:8px"><span class="reveal-card-name">${escapeHtml(p.name)} <span class="ko-badge">子</span></span>${hint}</div><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px"><div style="flex:1;min-width:0">${summaryChips}</div><span style="color:#8a6500;font-weight:900;font-size:1rem;white-space:nowrap">${(bet.amount||0).toLocaleString()}点</span></div></div>`;
     }).join('');
     // 長押し/タップで詳細（写真形式の馬券）
     list.querySelectorAll('[data-ko]').forEach(el=>{
