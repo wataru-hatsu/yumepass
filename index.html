@@ -79,7 +79,7 @@ html.fx-active{background:#000;}
 #screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 12%,rgba(245,200,66,0.10),transparent 42%),radial-gradient(circle at 85% 80%,rgba(26,107,42,0.18),transparent 46%);}
 .screen>*{position:relative;z-index:1;}
-.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:5px 14px;text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);}
+.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:5px 104px;text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);}
 .header h1{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:0.95rem;letter-spacing:1px;text-shadow:0 0 14px rgba(245,200,66,0.5),0 2px 4px rgba(0,0,0,0.6);}
 .header .subtitle{color:#b9b9b9;font-size:0.56rem;letter-spacing:2px;}
 .panel{background:linear-gradient(160deg,rgba(253,248,237,0.93),rgba(250,243,225,0.88));backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1);border:1px solid rgba(201,150,10,0.55);border-radius:14px;padding:12px;margin:7px 10px;box-shadow:0 8px 26px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.6);}
@@ -161,29 +161,30 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .privacy-msg{color:#aaa;font-size:0.85rem;margin-bottom:30px;line-height:1.8;}
 .oya-badge{display:inline-block;background:var(--oya);color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
 .ko-badge{display:inline-block;background:#2a7a2a;color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
-.round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);text-align:center;padding:9px 56px;font-size:0.74rem;letter-spacing:2px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.3);position:relative;z-index:1;}
+.round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);text-align:center;padding:9px 104px;font-size:0.74rem;letter-spacing:2px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.3);position:relative;z-index:1;}
 .flip-msg{background:#f5c842;color:#333;text-align:center;padding:8px;font-weight:700;font-size:0.85rem;border-top:2px solid #c9960a;}
 .oya-banner{background:linear-gradient(135deg,var(--oya) 0%,#5a005a 100%);color:white;text-align:center;padding:10px;font-size:0.85rem;font-weight:700;}
 .reveal-card{background:linear-gradient(160deg,rgba(255,255,255,0.96),rgba(252,248,238,0.92));border:1px solid rgba(201,150,10,0.3);border-radius:10px;padding:8px 10px;margin-bottom:6px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
 .reveal-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
 .reveal-card-name{font-weight:700;font-size:1rem;}
 .reveal-bet-type{font-size:0.8rem;font-weight:700;color:var(--gold-dark);}
-.notif{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#222;color:var(--gold);padding:10px 20px;border-radius:20px;font-size:0.85rem;font-weight:700;z-index:999;opacity:0;transition:opacity 0.3s;white-space:nowrap;}
+.notif{position:fixed;top:12px;left:50%;transform:translateX(-50%);background:#222;color:var(--gold);padding:10px 18px;border-radius:14px;font-size:0.9rem;font-weight:700;z-index:999;opacity:0;transition:opacity 0.3s;white-space:normal;max-width:calc(100vw - 24px);width:max-content;box-sizing:border-box;text-align:center;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,0.4);}
+.notif.warn{background:linear-gradient(135deg,#c0392b,#922b21);color:#fff;border:1px solid #ff8c7a;}
 .notif.show{opacity:1;}
 .empty{text-align:center;color:#aaa;padding:30px 10px;font-size:0.85rem;}
 .ibadge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:0.75rem;font-weight:900;color:white;box-shadow:0 0 0 2px rgba(255,255,255,0.95),0 1px 3px rgba(0,0,0,0.5);flex-shrink:0;box-sizing:border-box;}
 .history-round{border:1px solid #ddd;border-radius:8px;overflow:hidden;margin-bottom:10px;}
 .history-round-header{background:#2d2d2d;color:var(--gold);padding:8px 12px;font-size:0.8rem;font-weight:700;}
 .history-round-body{background:white;padding:8px 12px;}
-.topic-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.topic-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:8px;}
 .topic-popup-overlay.hidden{display:none;}
-.topic-popup{background:var(--panel);border:2px solid var(--border);border-radius:16px;width:100%;max-width:360px;max-height:80vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:popIn 0.15s ease;}
+.topic-popup{background:var(--panel);border:2px solid var(--border);border-radius:16px;width:100%;max-width:440px;max-height:94vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:popIn 0.15s ease;}
 @keyframes popIn{from{transform:scale(0.92);opacity:0;}to{transform:scale(1);opacity:1;}}
 .topic-popup-header{background:linear-gradient(135deg,#1a1a1a,#2d2d2d);padding:14px 16px;border-radius:14px 14px 0 0;display:flex;align-items:center;gap:10px;}
 .topic-popup-icon{font-size:1.8rem;}
 .topic-popup-title{color:var(--gold);font-size:1.1rem;font-weight:900;}
 .topic-popup-body{padding:12px 16px;}
-.topic-popup-horse{display:flex;align-items:flex-start;gap:8px;padding:10px 8px;border-bottom:1px solid #e8dfc0;}
+.topic-popup-horse{display:flex;align-items:flex-start;gap:8px;padding:9px 8px;border-bottom:1px solid #e8dfc0;}
 .topic-popup-horse:last-child{border-bottom:none;}
 .topic-popup-close{margin:10px 16px 14px;display:block;width:calc(100% - 32px);padding:12px;background:#2d2d2d;color:var(--gold);border:none;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;}
 
@@ -371,9 +372,9 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 /* サウンドON/OFFボタン */
 .sound-toggle{position:fixed;top:12px;right:12px;width:38px;height:38px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
 .sound-toggle:active{transform:scale(0.92);}
-.menu-toggle{position:fixed;top:12px;right:58px;width:38px;height:38px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;line-height:1;padding:0;}
-.rules-toggle{position:fixed;top:12px;right:104px;width:38px;height:38px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:100;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
-.score-toggle{position:fixed;top:12px;right:150px;width:38px;height:38px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:100;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.menu-toggle{position:fixed;top:12px;left:12px;width:38px;height:38px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;line-height:1;padding:0;}
+.rules-toggle{position:fixed;top:12px;left:58px;width:38px;height:38px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:100;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.score-toggle{position:fixed;top:12px;right:58px;width:38px;height:38px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:100;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
 .score-toggle:active{transform:scale(0.92);}
 .menu-toggle:active{transform:scale(0.92);}
 /* 一番下までスクロールする矢印（小さく半透明・邪魔にならない） */
@@ -475,7 +476,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
   <div class="topic-popup" onclick="event.stopPropagation()">
     <div class="topic-popup-header"><div class="topic-popup-icon" id="popupIcon">🎯</div><div class="topic-popup-title" id="popupTitle">お題</div></div>
     <div class="topic-popup-body" id="popupBody"></div>
-    <div id="popupActions" style="display:none;gap:8px;margin-bottom:8px"></div>
+    <div id="popupActions" style="display:none;gap:8px;margin:0;padding:8px 16px;position:sticky;bottom:0;background:var(--panel);border-top:1px solid #e8dfc0"></div>
     <button class="topic-popup-close" id="popupCloseBtn" onclick="closeTopicPopup()">✕ 閉じる</button>
   </div>
 </div>
@@ -685,15 +686,15 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         <div style="font-size:0.78rem;color:#000;margin-bottom:10px;font-weight:700" id="online-category-target">どのレベルのお題を選びますか？</div>
         <div style="display:flex;flex-direction:column;gap:10px">
           <button class="btn btn-category" onclick="onlinePickCategory('g1')" style="background:linear-gradient(135deg,#4a3a0a,#5a4a0a);border:2px solid var(--gold);color:var(--gold);padding:18px 14px;text-align:left">
-            <div style="font-size:1.05rem;font-weight:900">🏆 G1（高得点・難）</div>
-            <div style="font-size:0.78rem;color:#fff;margin-top:4px;font-weight:600">人生・価値観など、難しいけど高得点が狙えるお題</div>
+            <div style="font-size:1.05rem;font-weight:900">🏆 G1（難）</div>
+            <div style="font-size:0.78rem;color:#fff;margin-top:4px;font-weight:600">本音と価値観に踏み込む重いお題</div>
           </button>
           <button class="btn btn-category" onclick="onlinePickCategory('g2')" style="background:linear-gradient(135deg,#2a2a3a,#3a3a4a);border:2px solid #aaaaaa;color:white;padding:18px 14px;text-align:left">
-            <div style="font-size:1.05rem;font-weight:900">🥈 G2（中得点・中）</div>
+            <div style="font-size:1.05rem;font-weight:900">🥈 G2（中）</div>
             <div style="font-size:0.78rem;color:#fff;margin-top:4px;font-weight:600">バランスの取れた、ほどよい難易度のお題</div>
           </button>
           <button class="btn btn-category" onclick="onlinePickCategory('g3')" style="background:linear-gradient(135deg,#3a2010,#4a3010);border:2px solid #cc8855;color:#ffcc99;padding:18px 14px;text-align:left">
-            <div style="font-size:1.05rem;font-weight:900">🥉 G3（低得点・易）</div>
+            <div style="font-size:1.05rem;font-weight:900">🥉 G3（易）</div>
             <div style="font-size:0.78rem;color:#fff;margin-top:4px;font-weight:600">話しやすい身近なお題</div>
           </button>
           <button class="btn btn-category" onclick="onlinePickRandomAll()" style="background:linear-gradient(135deg,#3a1a4a,#4a2a5a);border:2px solid #c060c0;color:#f0c0f0;padding:18px 14px;text-align:left">
@@ -729,8 +730,12 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       </div>
       <!-- お題選択進捗（誰が選び終わったか） -->
       <div class="panel" id="topic-progress-panel" style="margin-top:8px;padding:7px 9px">
-        <div class="panel-title" style="font-size:0.56rem;margin-bottom:5px;padding-bottom:3px">📊 お題選択の進捗</div>
-        <div id="topic-progress-list"></div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div class="panel-title" style="font-size:0.56rem;margin:0;padding:0;border:none">📊 お題選択の進捗</div>
+          <div id="topic-progress-count" style="font-size:0.8rem;font-weight:800;color:#5a4500;flex:1;min-width:0"></div>
+          <button id="topic-progress-toggle" onclick="toggleTopicProgress()" style="background:linear-gradient(135deg,#a8d84a,#7cb518);color:#1a3000;border:none;border-radius:8px;padding:5px 11px;font-size:0.76rem;font-weight:900;cursor:pointer;white-space:nowrap;box-shadow:0 2px 6px rgba(124,181,24,0.4)">👥 誰が完了？</button>
+        </div>
+        <div id="topic-progress-list" style="display:none;margin-top:7px"></div>
       </div>
     </div>
     <!-- 親の待機画面用：お題選択進捗（誰が選び終わったか） -->
@@ -740,8 +745,12 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         <div id="online-oya-wait-msg" style="text-align:center;color:#333;font-size:0.8rem;margin-top:4px;font-weight:600">他のみんながあなたに向けたお題を選んでいます。お待ちください</div>
       </div>
       <div class="panel" id="topic-progress-panel-oya" style="padding:7px 9px">
-        <div class="panel-title" style="font-size:0.56rem;margin-bottom:5px;padding-bottom:3px">📊 お題選択の進捗</div>
-        <div id="topic-progress-list-oya"></div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div class="panel-title" style="font-size:0.56rem;margin:0;padding:0;border:none">📊 お題選択の進捗</div>
+          <div id="topic-progress-count-oya" style="font-size:0.8rem;font-weight:800;color:#5a4500;flex:1;min-width:0"></div>
+          <button id="topic-progress-toggle-oya" onclick="toggleTopicProgressOya()" style="background:linear-gradient(135deg,#a8d84a,#7cb518);color:#1a3000;border:none;border-radius:8px;padding:5px 11px;font-size:0.76rem;font-weight:900;cursor:pointer;white-space:nowrap;box-shadow:0 2px 6px rgba(124,181,24,0.4)">👥 誰が完了？</button>
+        </div>
+        <div id="topic-progress-list-oya" style="display:none;margin-top:7px"></div>
       </div>
     </div>
   </div>
@@ -768,8 +777,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div id="ob-topic-panel" style="margin:8px 10px;background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:9px 12px;cursor:pointer;user-select:none">
       <div style="display:flex;align-items:center;gap:8px">
         <div style="font-size:1.2rem" id="ob-topic-icon">🎯</div>
-        <div style="color:var(--gold);font-size:0.95rem;font-weight:900;flex:1;min-width:0" id="ob-topic-title">—</div>
-        <div style="font-size:0.6rem;color:#999;white-space:nowrap">👆選択肢</div>
+        <div style="color:var(--gold);font-size:0.95rem;font-weight:900;min-width:0" id="ob-topic-title">—</div>
+        <div style="font-size:0.85rem;color:#fff;font-weight:700;white-space:nowrap;margin-left:6px">👆 選択肢</div>
       </div>
       <div id="ob-topic-horses" style="margin-top:6px;display:none;flex-wrap:wrap;gap:4px"></div>
     </div>
@@ -837,9 +846,9 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <!-- 点数表示 -->
       <div id="ob-combo-info" style="display:none;font-size:0.85rem;color:#fff;background:rgba(245,200,66,0.15);border:1px solid var(--gold);border-radius:8px;padding:8px 12px;margin:8px 10px;text-align:center"></div>
       <div class="panel" id="ob-betamount-panel">
-        <div class="panel-title" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">💴 ベット額 <span style="font-size:0.6rem;color:#444;font-weight:600;letter-spacing:0;text-transform:none">👆 黒い枠をタップして数字を入力</span></div>
-        <div id="ob-bet-hint" style="font-size:0.72rem;color:#444;margin-bottom:6px">最低500点 / 1点単位でOK</div>
-        <div id="ob-bet-display" onclick="focusOnlineBetInput()" style="position:relative;background:#1a1a1a;border-radius:10px;padding:10px 14px 22px;text-align:right;font-size:1.5rem;font-weight:900;color:var(--gold);letter-spacing:1px;min-height:46px;margin-bottom:6px;cursor:text">0<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.62rem;color:var(--gold);font-weight:700;letter-spacing:0;opacity:0.9"></div></div>
+        <div class="panel-title" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">💴 ベット額 <span style="font-size:0.74rem;color:#1565c0;font-weight:800;letter-spacing:0;text-transform:none">👆 黒い枠をタップして数字を入力</span><button onclick="openScorePopup()" style="margin-left:auto;flex-shrink:0;background:rgba(15,15,18,0.9);border:1px solid rgba(245,200,66,0.6);color:#f5c842;font-size:0.74rem;font-weight:800;border-radius:14px;padding:4px 10px;cursor:pointer;white-space:nowrap;letter-spacing:0;text-transform:none">📊 得点</button></div>
+        <div id="ob-bet-hint" style="font-size:0.86rem;color:#333;font-weight:600;margin-bottom:6px">最低500点 / 1点単位でOK</div>
+        <div id="ob-bet-display" onclick="focusOnlineBetInput()" style="position:relative;background:#1a1a1a;border-radius:10px;padding:10px 14px 22px;text-align:right;font-size:1.5rem;font-weight:900;color:var(--gold);letter-spacing:1px;min-height:46px;margin-bottom:6px;cursor:text">0<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:var(--gold);font-weight:800;letter-spacing:0;opacity:0.95"></div></div>
         <input id="ob-bet-native-input" inputmode="numeric" pattern="[0-9]*" oninput="onOnlineBetNativeInput(this.value)" style="position:absolute;opacity:0;height:1px;width:1px;pointer-events:none;left:-9999px">
         <div id="ob-point-presets" style="display:flex;gap:6px;flex-wrap:nowrap;margin-bottom:10px"></div>
         <div id="ob-keypad" style="display:none;grid-template-columns:repeat(3,1fr);gap:8px"></div>
@@ -959,8 +968,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div id="ooc-topic-panel" onclick="document.getElementById('ooc-topic-horses').style.display = (document.getElementById('ooc-topic-horses').style.display==='none'?'flex':'none')" style="margin:8px 10px;background:linear-gradient(135deg,#2a1f04,#3a2a08);border:1px solid #b8911e;border-radius:10px;padding:9px 12px;cursor:pointer;user-select:none">
       <div style="display:flex;align-items:center;gap:8px">
         <div style="font-size:1.2rem" id="ooc-topic-icon">🎯</div>
-        <div style="color:#f5c842;font-size:0.95rem;font-weight:900;flex:1;min-width:0" id="ooc-topic-title">—</div>
-        <div style="color:#f5c842;font-size:0.7rem;white-space:nowrap">👆 選択肢</div>
+        <div style="color:#f5c842;font-size:0.95rem;font-weight:900;min-width:0" id="ooc-topic-title">—</div>
+        <div style="color:#fff;font-size:0.85rem;font-weight:700;white-space:nowrap;margin-left:6px">👆 選択肢</div>
       </div>
       <div id="ooc-topic-horses" style="margin-top:6px;display:none;flex-wrap:wrap;gap:4px"></div>
     </div>
@@ -989,8 +998,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       
       <div style="display:flex;align-items:center;gap:8px">
         <div style="font-size:1.4rem" id="obw-topic-icon">🎯</div>
-        <div style="color:var(--gold);font-size:1rem;font-weight:900;flex:1;min-width:0" id="obw-topic-title">—</div>
-        <div style="font-size:0.6rem;color:#999;white-space:nowrap">👆選択肢</div>
+        <div style="color:var(--gold);font-size:1rem;font-weight:900;min-width:0" id="obw-topic-title">—</div>
+        <div style="font-size:0.85rem;color:#fff;font-weight:700;white-space:nowrap;margin-left:6px">👆 選択肢</div>
       </div>
       <div id="obw-topic-horses" style="margin-top:8px;display:none;flex-wrap:wrap;gap:4px"></div>
     </div>
@@ -1005,8 +1014,12 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div id="obw-reveal-status" style="text-align:center;color:#aef5a0;font-size:0.9rem;margin-top:10px;font-weight:700"></div>
     </div>
     <div class="panel" style="padding:8px 10px">
-      <div class="panel-title" style="font-size:0.6rem">📊 進捗</div>
-      <div id="obw-progress-list"></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div class="panel-title" style="font-size:0.6rem;margin:0;padding:0;border:none">📊 進捗</div>
+        <div id="obw-progress-count" style="font-size:0.82rem;font-weight:800;color:#5a4500;flex:1;min-width:0"></div>
+        <button id="obw-progress-toggle" onclick="toggleObwProgress()" style="background:linear-gradient(135deg,#a8d84a,#7cb518);color:#1a3000;border:none;border-radius:8px;padding:6px 12px;font-size:0.8rem;font-weight:900;cursor:pointer;white-space:nowrap;box-shadow:0 2px 6px rgba(124,181,24,0.4)">👥 誰が完了？</button>
+      </div>
+      <div id="obw-progress-list" style="display:none;margin-top:8px"></div>
     </div>
     <!-- 全員の持ち点（📊ショートカットで表示）-->
     <div class="panel" style="display:none">
@@ -1020,7 +1033,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
   <div class="header"><div class="subtitle" id="orv-round-label">ROUND 1 REVEAL</div><h1>📢 賭け公開！</h1></div>
   <div class="scroll-content">
     <div class="panel" onclick="document.getElementById('orv-topic-horses').style.display = (document.getElementById('orv-topic-horses').style.display==='none'?'flex':'none')" style="background:linear-gradient(135deg,#2a1f04,#3a2a08);border:1px solid #b8911e;cursor:pointer;user-select:none">
-      <div style="display:flex;align-items:center;justify-content:center;gap:8px"><div style="text-align:center;color:#f5c842;font-size:1rem;font-weight:900" id="orv-topic-name">—</div><span style="color:#f5c842;font-size:0.7rem;white-space:nowrap">👆 選択肢</span></div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px"><div style="text-align:center;color:#f5c842;font-size:1rem;font-weight:900" id="orv-topic-name">—</div><span style="color:#fff;font-size:0.85rem;font-weight:700;white-space:nowrap">👆 選択肢</span></div>
       <div id="orv-topic-horses" style="margin-top:7px;display:none;flex-wrap:wrap;gap:5px;justify-content:center"></div>
     </div>
     <!-- 親パネル（上）K1 ネイビー -->
@@ -1290,8 +1303,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div id="bet-topic-panel" style="margin:8px 10px;background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:9px 12px;cursor:pointer;user-select:none">
       <div style="display:flex;align-items:center;gap:8px">
         <div style="font-size:1.2rem" id="bet-topic-icon">🎯</div>
-        <div style="color:var(--gold);font-size:0.95rem;font-weight:900;flex:1;min-width:0" id="bet-topic-title">—</div>
-        <div style="font-size:0.6rem;color:#999;white-space:nowrap">👆選択肢</div>
+        <div style="color:var(--gold);font-size:0.95rem;font-weight:900;min-width:0" id="bet-topic-title">—</div>
+        <div style="font-size:0.85rem;color:#fff;font-weight:700;white-space:nowrap;margin-left:6px">👆 選択肢</div>
       </div>
       <div id="bet-topic-horses" style="margin-top:6px;display:none;flex-wrap:wrap;gap:4px"></div>
     </div>
@@ -1312,13 +1325,13 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div class="panel-title">🎰 賭けの種類</div>
       <div style="font-size:0.85rem;color:#333;line-height:1.5;margin-bottom:8px;background:rgba(245,200,66,0.14);border-radius:6px;padding:7px 9px">💡 配当（倍率）は<strong>人気で変動</strong>。みんなが選ばない「穴」ほど当てると高配当。難しい賭けほど高倍率。</div>
       <div class="bet-types">
-        <div class="bet-type-btn active" onclick="selectBetType('tansho',this)"><div class="bet-name">単勝</div><div class="bet-desc">1位をズバリ当てる</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('fukusho',this)"><div class="bet-name">複勝</div><div class="bet-desc">選んだ1頭が<br>3位以内ならOK</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('umaren',this)"><div class="bet-name">馬連</div><div class="bet-desc">1・2位の2頭<br>順番自由</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('umatan',this)"><div class="bet-name">馬単</div><div class="bet-desc">1・2位を<br>順番通り</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('wide',this)"><div class="bet-name">ワイド</div><div class="bet-desc">選んだ2頭が<br>3位以内ならOK</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('sanrenfuku',this)"><div class="bet-name">3連複</div><div class="bet-desc">1〜3位の3頭<br>順番自由</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('sanrentan',this)"><div class="bet-name">3連単</div><div class="bet-desc">1〜3位を<br>順番通り</div></div>
+        <div class="bet-type-btn active" onclick="selectBetType('tansho',this)"><div class="bet-name">単勝</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('fukusho',this)"><div class="bet-name">複勝</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('umaren',this)"><div class="bet-name">馬連</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('umatan',this)"><div class="bet-name">馬単</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('wide',this)"><div class="bet-name">ワイド</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('sanrenfuku',this)"><div class="bet-name">3連複</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('sanrentan',this)"><div class="bet-name">3連単</div></div>
       </div>
     </div>
     <!-- 買い方タブ（シンプル/ボックス/フォーメ/流し）- 該当賭け方の時のみ表示 -->
@@ -1452,8 +1465,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div id="ri-topic-panel" style="margin:8px 10px;background:linear-gradient(135deg,#1a1a1a,#2d2d2d);border:2px solid var(--gold-dark);border-radius:10px;padding:9px 12px;cursor:pointer;user-select:none">
       <div style="display:flex;align-items:center;gap:8px">
         <div style="font-size:1.2rem" id="ri-topic-icon">🎯</div>
-        <div style="color:var(--gold);font-size:0.95rem;font-weight:900;flex:1;min-width:0" id="ri-topic-title">—</div>
-        <div style="font-size:0.6rem;color:#999;white-space:nowrap">👆選択肢</div>
+        <div style="color:var(--gold);font-size:0.95rem;font-weight:900;min-width:0" id="ri-topic-title">—</div>
+        <div style="font-size:0.85rem;color:#fff;font-weight:700;white-space:nowrap;margin-left:6px">👆 選択肢</div>
       </div>
       <div id="ri-topic-horses" style="margin-top:6px;display:none;flex-wrap:wrap;gap:4px"></div>
     </div>
@@ -1953,6 +1966,16 @@ window.SFX = (function(){
   }
 
   // 最終結果：超盛大なフィナーレ
+  function cracker(){
+    // クラッカー：パン！という破裂音（短いノイズバースト）＋ キラキラ舞う紙吹雪音
+    noise({freq:1200, freqEnd:200, dur:0.12, gain:0.5, filterType:'highpass'});
+    tone({type:'square', freq:180, freqEnd:60, dur:0.1, gain:0.35});
+    // 舞い落ちるキラキラ
+    for(let i=0;i<10;i++){
+      setTimeout(()=>tone({type:'triangle', freq:1800 + Math.random()*2600, dur:0.18, gain:0.06}), 60 + i*55);
+    }
+  }
+
   function finale(){
     // 大ドン
     tone({type:'sine', freq:50, freqEnd:25, dur:0.8, gain:0.5});
@@ -1984,7 +2007,7 @@ window.SFX = (function(){
     tap, click, select, confirm, notify, warn, whoosh,
     lottery, lotteryDecide, reveal, roundIntro,
     hitTansho, hitRenfuku, hitRentan, hitSanrenfuku, hitSanrentan, hitManbaken,
-    finale
+    finale, cracker
   };
 })();
 
@@ -2787,7 +2810,7 @@ function getAllTopics(){
   const all = [...BASE_TOPICS, ...state.topics];
   return all.map(ensureEightChoices);
 }
-function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}}
+function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const _scr=document.getElementById(id);_scr.classList.add('active');window.scrollTo(0,0);try{_scr.querySelectorAll('.scroll-content').forEach(sc=>{sc.scrollTop=0;});}catch(e){}if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}}
 function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
 // アクティブな画面を一番下までスムーズスクロール（実際のスクローラはwindow）
 function scrollActiveScreenToBottom(){
@@ -2804,15 +2827,17 @@ function scrollActiveScreenToBottom(){
   }, 80);
 }
 window.scrollActiveScreenToBottom=scrollActiveScreenToBottom;
-function showNotif(msg){
+function showNotif(msg, type){
   const n=document.getElementById('notif');
   // 改行(\n)を <br> に変換して複数行表示に対応
   n.innerHTML=String(msg).split('\n').map(line=>line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')).join('<br>');
+  // 警告（赤バナー）かどうか
+  if(type==='warn') n.classList.add('warn'); else n.classList.remove('warn');
   n.classList.add('show');
   // 長文・複数行は表示時間を延長
   const dur=(String(msg).length>40||String(msg).includes('\n'))?4200:2500;
   clearTimeout(n._notifTimer);
-  n._notifTimer=setTimeout(()=>n.classList.remove('show'),dur);
+  n._notifTimer=setTimeout(()=>{ n.classList.remove('show'); n.classList.remove('warn'); },dur);
 }
 
 // おしゃれな確認モーダル（Promise<boolean>を返す）
@@ -3124,19 +3149,19 @@ function openTopicPopup(t, opts){
     <div class="topic-popup-horse" style="align-items:flex-start">
       <div style="font-size:0.7rem;color:#aaa;width:20px;text-align:center;flex-shrink:0;padding-top:3px">${nums[i]||i+1+'.'}</div>
       <div class="ibadge ${HC[i]}" style="width:26px;height:26px;font-size:0.8rem;flex-shrink:0">${i+1}</div>
-      <div style="font-size:0.9rem;font-weight:700;line-height:1.4;flex:1">${h}</div>
+      <div style="font-size:1rem;font-weight:700;line-height:1.45;flex:1">${h}</div>
     </div>`).join('');
   // 任意: アクションボタン（はい/いいえ など）を表示
   const actions=document.getElementById('popupActions');
   const closeBtn=document.getElementById('popupCloseBtn');
   if(opts && Array.isArray(opts.buttons) && opts.buttons.length){
     actions.style.display='flex';
-    actions.style.flexWrap='wrap';
+    actions.style.flexWrap = opts.noWrapButtons ? 'nowrap' : 'wrap';
     actions.innerHTML='';
     opts.buttons.forEach(b=>{
       const btn=document.createElement('button');
       btn.className='btn '+(b.cls||'btn-secondary');
-      btn.style.cssText = b.fullWidth ? 'flex:1 1 100%;margin-top:0;padding:11px 4px;font-size:0.88rem' : 'flex:1;margin-top:0;padding:12px 4px;font-size:0.9rem';
+      btn.style.cssText = b.fullWidth ? 'flex:1 1 100%;margin-top:0;padding:9px 4px;font-size:0.86rem;white-space:nowrap' : 'flex:1;margin-top:0;padding:9px 4px;font-size:0.86rem;white-space:nowrap';
       btn.textContent=b.label;
       btn.onclick=()=>{ closeTopicPopup(); if(typeof b.onClick==='function') b.onClick(); };
       actions.appendChild(btn);
@@ -3686,22 +3711,22 @@ function buildValidatedOffUnit(){
   }
   const totalAmount=unitAmount*combinations.length;
   if(unitAmount<minBet){
-    // パターンA: ラウンド開始時に最低ベット額以上を持っているのに、最低ベット額未満を入力した
+    // パターンA: 最低ベット額未満
     if(!allinAllowed){
-      showNotif(`⚠️ 最低ベット額は${stdMin.toLocaleString()}点です\n${stdMin.toLocaleString()}点未満で賭けられるのは、ラウンド開始時の持ち点が${stdMin.toLocaleString()}点未満のときだけです。${stdMin.toLocaleString()}点以上を入力してください。`);
+      showNotif(`⚠️ 最低 ${stdMin.toLocaleString()}点から賭けられます（少額すぎます）`, 'warn');
     } else {
-      showNotif(offBuyMethod==='simple'?`⚠️ ${minBet.toLocaleString()}点以上を入力してください`:`⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`);
+      showNotif(offBuyMethod==='simple'?`⚠️ ${minBet.toLocaleString()}点以上を入力してください`:`⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`, 'warn');
     }
     return null;
   }
   // カート既存分との合計が持ち点を超えないか
   const already=offCartTotal(koIdx);
   if(already+totalAmount>p.points){
-    // パターンB: カートに既存の賭けがあり、残りが最低ベット額に届かない
+    // パターンB: 持ち点オーバー
     if(already>0 && !allinAllowed){
-      showNotif(`⚠️ 残りの持ち点が最低ベット額（${stdMin.toLocaleString()}点）に届きません\n${stdMin.toLocaleString()}点未満で賭けられるのは、ラウンド開始時の持ち点が${stdMin.toLocaleString()}点未満のときだけです。金額を調整するか、カートの賭けを見直してください。`);
+      showNotif(`⚠️ 持ち点を超えています（残り ${Math.max(0,p.points-already).toLocaleString()}点まで）`, 'warn');
     } else {
-      showNotif(`⚠️ 持ち点が足りません（カート合計 ${already.toLocaleString()}＋今回 ${totalAmount.toLocaleString()} > ${p.points.toLocaleString()}点）`);
+      showNotif(`⚠️ 持ち点を超えています（所持 ${p.points.toLocaleString()}点まで）`, 'warn');
     }
     return null;
   }
@@ -4617,7 +4642,33 @@ function attachResultLongPress(el, r, horses){
   const bottom = win ? `<span style="color:#7dff7d;font-weight:900">🎯 当選 +${(r.payout||0).toLocaleString()}点</span>` : (r.skipped?'<span style="color:#aaa">見送り</span>':'<span style="color:#bbb">非当選</span>');
   let inner;
   if(betObj.multiBets){
-    inner = betObj.multiBets.map(u=>`<div style="margin-bottom:8px">${bakenHtml(u, horses, {dark:true, winningCombos:winCombos})}</div>`).join('');
+    // 各賭けの当選判定（r.betResults があればそれを使う）
+    const results = (r.isMulti && Array.isArray(r.betResults)) ? r.betResults : null;
+    const units = betObj.multiBets.map((u,i)=>{
+      const br = results ? results[i] : null;
+      const won = br ? (br.hit || (br.payout>0) || (br.change>0)) : false;
+      // 当選サブ組（ハイライト用）
+      const subs = br && Array.isArray(br.subResults) ? br.subResults.filter(s=>s.hit).map(s=>s.selection) : [];
+      const payout = br ? (br.payout||0) : 0;
+      return { u, won, subs, payout };
+    });
+    const winners = units.filter(x=>x.won);
+    const losers = units.filter(x=>!x.won);
+    const renderUnit = (x)=>{
+      const wc = x.subs.length ? x.subs : winCombos;
+      const payoutTag = x.won && x.payout>0 ? `<div style="text-align:right;margin-top:2px;color:#7dff7d;font-weight:900;font-size:0.85rem">+${x.payout.toLocaleString()}点</div>` : '';
+      return `<div style="margin-bottom:8px">${bakenHtml(x.u, horses, {dark:true, winningCombos:x.won?wc:[]})}${payoutTag}</div>`;
+    };
+    let html='';
+    if(winners.length){
+      html += `<div style="display:flex;align-items:center;gap:8px;margin:2px 0 8px"><span style="background:linear-gradient(135deg,#34b350,#1a7a1a);color:#fff;font-size:0.78rem;font-weight:900;padding:3px 12px;border-radius:9px">🎯 当選</span><span style="flex:1;border-top:1px dashed rgba(125,255,125,0.5)"></span></div>`;
+      html += winners.map(renderUnit).join('');
+    }
+    if(losers.length){
+      html += `<div style="display:flex;align-items:center;gap:8px;margin:${winners.length?'12px':'2px'} 0 8px"><span style="background:rgba(120,120,120,0.3);color:#ccc;font-size:0.78rem;font-weight:900;padding:3px 12px;border-radius:9px;border:1px solid rgba(160,160,160,0.4)">非当選</span><span style="flex:1;border-top:1px dashed rgba(160,160,160,0.4)"></span></div>`;
+      html += losers.map(renderUnit).join('');
+    }
+    inner = html;
   } else {
     inner = bakenHtml(betObj, horses, {dark:true, winningCombos:winCombos});
   }
@@ -4636,6 +4687,74 @@ window.attachResultLongPress = attachResultLongPress;
 
 // 結果詳細HTML：当選した賭け方の馬券のみ表示＋収支（外れは「当選なし −○点」）
 // r: playerResult, horses: 選択肢名配列
+// ★ 子の結果リスト（当選ソート＋リッチ表示）を生成。ライブ結果とアーカイブで共用。
+// 返り値: { html, orderedResults }
+function buildPlayerResultsHtml(playerResults){
+  const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {tansho:'単勝',rentan:'馬単',sanrentan:'3連単'};
+  const rawResults = (playerResults || []).slice();
+  const bestOdds = (r) => {
+    if(Array.isArray(r.winningSubs) && r.winningSubs.length>0){
+      return Math.max(...r.winningSubs.map(s => Number(s.odds)||0));
+    }
+    return Number(r.odds || r.multiplier || 0);
+  };
+  const isWin = (r) => !r.skipped && r.hitType!=='🔴 オフライン' && (r.change > 0 || (r.payout && r.payout > 0) || ((r.odds||r.multiplier)>0 && r.hitCount>0));
+  const rankVal = (r) => {
+    if(r.hitType==='🔴 オフライン') return 3;
+    if(r.skipped) return 2;
+    if(isWin(r)) return 0;
+    return 1;
+  };
+  const sorted = rawResults
+    .map((r, idx) => ({ r, idx }))
+    .sort((a, b) => {
+      const ra = rankVal(a.r), rb = rankVal(b.r);
+      if(ra !== rb) return ra - rb;
+      if(ra === 0) return bestOdds(b.r) - bestOdds(a.r);
+      return a.idx - b.idx;
+    });
+  const orderedResults = sorted.map(x => x.r);
+  const orderedSet = ['tansho','umatan','sanrentan','rentan'];
+  const comboBadges = (sels, ordered) => (sels||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.68rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(ordered?'<span style="color:#888;font-size:0.72rem;margin:0 2px">→</span>':'<span style="color:#888;font-size:0.72rem;margin:0 2px">・</span>');
+  const html = orderedResults.map(r => {
+    if(r.hitType === '🔴 オフライン'){
+      const penalty = r.offlinePenalty || 0;
+      const changeStr = r.change >= 0 ? `±0` : r.change.toLocaleString();
+      return `<div class="player-result skipped" style="opacity:0.7"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:#aa2222;color:white;font-size:0.6rem;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:4px">🔴 オフライン</span></span><span class="player-result-change" style="color:#e74c3c">${changeStr}点</span></div>${penalty > 0 ? `<div class="player-result-detail" style="font-size:0.7rem;color:#444">オフラインのため最低額(${penalty.toLocaleString()}点)が引かれました</div>` : ''}</div>`;
+    }
+    if(r.skipped){
+      return `<div class="player-result skipped"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:#999;color:#fff;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px">見送り</span></span><span class="player-result-change" style="color:#aaa">±0</span></div></div>`;
+    }
+    const win = isWin(r);
+    const ordered = orderedSet.includes(r.betType);
+    const betLabel = betNames[r.betType] || r.betType;
+    if(!win){
+      return `<div class="player-result miss"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:rgba(120,120,120,0.25);color:#555;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px;border:1px solid rgba(120,120,120,0.4)">非当選</span></span><span class="player-result-change" style="color:#bbb;font-size:0.85rem">—</span></div></div>`;
+    }
+    let winCombo = null, winOdds = 0;
+    if(Array.isArray(r.winningSubs) && r.winningSubs.length>0){
+      const top = r.winningSubs.slice().sort((a,b)=>(Number(b.odds)||0)-(Number(a.odds)||0))[0];
+      winCombo = top.selection; winOdds = Number(top.odds)||0;
+    } else {
+      winCombo = (r.selections||[]).slice(0, ({tansho:1,fukusho:1,umaren:2,umatan:2,wide:2,sanrenfuku:3,sanrentan:3,rentan:2}[r.betType]||r.selections?.length||0));
+      winOdds = Number(r.odds || r.multiplier || 0);
+    }
+    const multiHit = (Array.isArray(r.winningSubs) && r.winningSubs.length>1);
+    const comboHtml = comboBadges(winCombo, ordered);
+    const oddsHtml = winOdds>0 ? window.oddsChipHtml(winOdds, multiHit?'最高':'') : '';
+    const payout = r.payout || 0;
+    return `<div class="player-result hit"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:linear-gradient(135deg,#34b350,#1a7a1a);color:#fff;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px;box-shadow:0 1px 4px rgba(26,122,26,0.4)">🎯 当選</span></span><span class="player-result-change change-pos">+${payout.toLocaleString()}点</span></div>
+      <div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:5px">
+        <span style="background:var(--gold);color:#1a1a1a;font-size:0.68rem;font-weight:900;padding:2px 9px;border-radius:9px;white-space:nowrap">${betLabel}</span>
+        <span style="display:inline-flex;align-items:center">${comboHtml}</span>
+        ${oddsHtml}
+        ${multiHit?`<span style="font-size:0.66rem;color:#444;font-weight:700">他${r.winningSubs.length-1}通りも的中</span>`:''}
+      </div></div>`;
+  }).join('');
+  return { html, orderedResults };
+}
+window.buildPlayerResultsHtml = buildPlayerResultsHtml;
+
 function resultDetailHtml(r, horses){
   horses = horses || [];
   const win = !r.skipped && ((r.payout && r.payout>0) || r.change>0);
@@ -4849,21 +4968,24 @@ function openScorePopup(){
     const ov=document.getElementById('score-popup-overlay');
     if(!ov) return;
     const tbl=document.getElementById('popup-score-table');
+    // モジュールスコープの関数は window 経由で参照（クラシックスコープからは直接見えない）
+    const getPlayers = (typeof window.getOnlinePlayersArray==='function') ? window.getOnlinePlayersArray : null;
+    const renderOnline = (typeof window.renderOnlineScoreTable==='function') ? window.renderOnlineScoreTable : null;
     // オンライン画面が表示中か判定
     const onlineScreens=['screen-online-betting','screen-online-bet-wait','screen-online-reveal','screen-online-roundresult','screen-online-final','screen-online-topic-select','screen-online-topic-lottery','screen-online-oya-confirm','screen-online-bet-confirm','screen-online-skip-confirm'];
     const onOnline = onlineScreens.some(id=>{const el=document.getElementById(id);return el&&el.classList.contains('active');});
     // オンラインのゲーム状態（最新は window.online.game、無ければ描画時キャッシュ）
     const og = (typeof window.online==='object' && window.online && window.online.game) ? window.online.game : window._lastOnlineGame;
     // プレイヤーがいればpoints未初期化でも初期点数で表示できる
-    const onlinePlayers = (typeof getOnlinePlayersArray==='function') ? getOnlinePlayersArray() : [];
-    const canShowOnline = (onOnline || (og && og.points)) && og && onlinePlayers.length>0 && typeof renderOnlineScoreTable==='function';
+    const onlinePlayers = getPlayers ? getPlayers() : [];
+    const canShowOnline = (onOnline || (og && og.points)) && og && onlinePlayers.length>0 && renderOnline;
     const hasOffline = (typeof state==='object' && state && Array.isArray(state.players) && state.players.length>0);
 
     if(canShowOnline){
       // 賭けフェーズ系の画面なら自分の賭け額を引いて表示
       const bettingScreens=['screen-online-betting','screen-online-bet-wait','screen-online-bet-confirm','screen-online-skip-confirm','screen-online-oya-confirm'];
       const inBetting = bettingScreens.some(id=>{const el=document.getElementById(id);return el&&el.classList.contains('active');});
-      renderOnlineScoreTable('popup-score-table', og, { showBetDeduction: inBetting });
+      renderOnline('popup-score-table', og, { showBetDeduction: inBetting });
     } else if(hasOffline){
       renderScoreTable('popup-score-table');
     } else if(tbl){
@@ -5793,6 +5915,7 @@ function getOnlinePlayersArray(){
   if(window.online.cachedPlayers) return window.online.cachedPlayers;
   return [];
 }
+window.getOnlinePlayersArray = getOnlinePlayersArray;
 
 // お題選択画面に入る
 function enterOnlineTopicSelect(){
@@ -5927,12 +6050,12 @@ function enterOnlineTopicSelect(){
     roleLabel = '🎯 あなたは<strong>子</strong>です';
     subLabel = `<strong style="color:#ffd700">${oyaName}</strong> さんに向けたお題を選びましょう`;
   }
-  document.getElementById('online-topic-instruction').innerHTML = roleLabel + '<br>' + subLabel + '<br><span style="font-size:0.78rem;color:#fff;font-weight:600">まずカテゴリーを選んでください</span>';
+  document.getElementById('online-topic-instruction').innerHTML = roleLabel + '<br>' + subLabel;
   // 緑の欄は非表示にしたため、誰に向けたお題かをカテゴリ説明に表示（黒文字）
   const catTargetEl = document.getElementById('online-category-target');
   if(catTargetEl){
-    const tgt = isOya ? 'あなた自身に向けたお題' : `${oyaName} さんに向けたお題`;
-    catTargetEl.innerHTML = `${tgt}を選びます。どのレベルにする？`;
+    catTargetEl.innerHTML = '';
+    catTargetEl.style.display = 'none';
   }
 
   goTo('screen-online-topic-select');
@@ -5946,9 +6069,9 @@ window.onlinePickCategory = function(category){
   if(listStep) listStep.style.display = '';
 
   const categoryNames = {
-    g1: '🏆 G1（高得点・難）',
-    g2: '🥈 G2（中得点・中）',
-    g3: '🥉 G3（低得点・易）'
+    g1: '🏆 G1（難）',
+    g2: '🥈 G2（中）',
+    g3: '🥉 G3（易）'
   };
   // 親の名前を取得
   const players = getOnlinePlayersArray();
@@ -5959,7 +6082,7 @@ window.onlinePickCategory = function(category){
   const titleEl = document.getElementById('online-topic-list-title');
   if(titleEl){
     const targetText = isOya ? 'あなた自身に向けたお題' : `${oyaName} さんに向けたお題`;
-    titleEl.innerHTML = `② ${targetText}を選ぼう <span style="font-size:0.78rem;color:#1a1a1a;font-weight:700">— ${categoryNames[category] || category}</span>`;
+    titleEl.innerHTML = `② ${targetText}を選ぼう <span style="font-size:0.78rem;color:#1a1a1a;font-weight:700">— ${categoryNames[category] || category}</span><div style="font-size:0.82rem;color:#1565c0;font-weight:800;margin-top:5px">👆 長押し/右クリックで選択肢を見る</div>`;
   }
 
   renderOnlineTopicListByCategory(category);
@@ -5987,10 +6110,11 @@ window.onlinePickRandomAll = function(){
   if(typeof openTopicPopup === 'function'){
     openTopicPopup(pick, {
       hideClose: true,
+      noWrapButtons: true,
       buttons: [
-        { label: '⭕ はい、これでいく', cls: 'btn-success', onClick: () => selectOnlineTopicConfirmed(pick.id) },
-        { label: '🎲 引き直す', cls: 'btn-secondary', onClick: () => window.onlinePickRandomAll() },
-        { label: '← 戻る', cls: 'btn-secondary', fullWidth: true, onClick: () => {} }
+        { label: '← 戻る', cls: 'btn-secondary', onClick: () => {} },
+        { label: '⭕ 決定', cls: 'btn-success', onClick: () => selectOnlineTopicConfirmed(pick.id) },
+        { label: '🎲 引き直す', cls: 'btn-secondary', onClick: () => window.onlinePickRandomAll() }
       ]
     });
   } else {
@@ -6031,14 +6155,38 @@ function updateTopicProgressList(selections){
     const opacity = isOffline ? '0.6' : '1';
     return `<div style="padding:4px 8px;border:1px solid #ddd;border-radius:6px;margin-bottom:3px;background:white;display:flex;align-items:center;opacity:${opacity}"><span style="flex:1;font-weight:700;font-size:0.78rem">${escapeHtml(p.name)}${meBadge}</span><span style="color:${color};font-weight:700;font-size:0.72rem">${status}</span></div>`;
   }).join('');
-  const summary = `<div style="text-align:center;font-size:0.74rem;color:#333;margin-bottom:5px">完了: <strong style="color:#2ecc71">${done}</strong> / ${total} 人</div>` + html;
+  const summary = html;
+  const countText = `${done}/${total}人 完了`;
   // 子用
   const list1 = document.getElementById('topic-progress-list');
   if(list1) list1.innerHTML = summary;
+  const cnt1 = document.getElementById('topic-progress-count');
+  if(cnt1) cnt1.textContent = countText;
   // 親用
   const list2 = document.getElementById('topic-progress-list-oya');
   if(list2) list2.innerHTML = summary;
+  const cnt2 = document.getElementById('topic-progress-count-oya');
+  if(cnt2) cnt2.textContent = countText;
 }
+
+// お題選択進捗（子用）の詳細リスト開閉
+window.toggleTopicProgress = function(){
+  const list = document.getElementById('topic-progress-list');
+  const btn = document.getElementById('topic-progress-toggle');
+  if(!list) return;
+  const open = list.style.display === 'none' || !list.style.display;
+  list.style.display = open ? 'block' : 'none';
+  if(btn) btn.textContent = open ? '🔼 閉じる' : '👥 誰が完了？';
+};
+// お題選択進捗（親用）の詳細リスト開閉
+window.toggleTopicProgressOya = function(){
+  const list = document.getElementById('topic-progress-list-oya');
+  const btn = document.getElementById('topic-progress-toggle-oya');
+  if(!list) return;
+  const open = list.style.display === 'none' || !list.style.display;
+  list.style.display = open ? 'block' : 'none';
+  if(btn) btn.textContent = open ? '🔼 閉じる' : '👥 誰が完了？';
+};
 
 // カテゴリ別のお題リストを描画
 function renderOnlineTopicListByCategory(category){
@@ -6056,7 +6204,7 @@ function renderOnlineTopicListByCategory(category){
   function makeCard(t, parent){
     const d = document.createElement('div');
     d.style.cssText = 'padding:14px;border:2px solid #ddd;border-radius:10px;margin-bottom:8px;cursor:pointer;background:white;transition:all 0.15s;user-select:none';
-    d.innerHTML = `<div style="font-weight:700;font-size:0.95rem">${t.icon||''} ${escapeHtml(t.title)}</div><div style="font-size:0.72rem;color:#222;margin-top:4px;font-weight:600">長押し/右クリックで選択肢を見る</div>`;
+    d.innerHTML = `<div style="font-weight:700;font-size:0.95rem">${t.icon||''} ${escapeHtml(t.title)}</div>`;
 
     let pt = null;
     let longPressed = false;
@@ -6213,7 +6361,7 @@ function updateTopicWaitingDisplay(selections){
 
   const el2 = document.getElementById('online-topic-waiting');
   if(el2){
-    el2.textContent = remaining > 0 ? `あと${remaining}人が選択中...` : '✅ 全員選び終わりました';
+    el2.textContent = '';
   }
 
   // 進捗リストも更新
@@ -7228,7 +7376,7 @@ function setOnlineBetInputVal(v){
     v = String(_start);
     window.onlineBet.betInputVal = v;
     const d = document.getElementById('ob-bet-display');
-    if(d){ d.innerHTML = _start.toLocaleString() + ' 点' + `<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.62rem;color:var(--gold);font-weight:700;letter-spacing:0;opacity:0.9">所持 0点</div>`; d.style.color = '#ff5a5a'; }
+    if(d){ d.innerHTML = _start.toLocaleString() + ' 点' + `<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:var(--gold);font-weight:800;letter-spacing:0;opacity:0.95">所持 0点</div>`; d.style.color = '#ff5a5a'; }
     if (typeof updateOnlineComboInfo === 'function') updateOnlineComboInfo();
     return;
   }
@@ -7246,7 +7394,7 @@ function setOnlineBetInputVal(v){
     const minBetRaw = window.online.settings?.minBet || 0;
     const minBet = myPoints <= minBetRaw ? myPoints : minBetRaw;
     // 持ち点（左下に黄色表示）。今回の賭け額を引いた残り
-    const holdingHtml = `<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.62rem;color:var(--gold);font-weight:700;letter-spacing:0;opacity:0.9">所持 ${Math.max(0, myPoints - total).toLocaleString()}点</div>`;
+    const holdingHtml = `<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:var(--gold);font-weight:800;letter-spacing:0;opacity:0.95">所持 ${Math.max(0, myPoints - total).toLocaleString()}点</div>`;
     // 表示テキスト（金額本体）
     let mainHtml;
     if (method === 'simple' || points === 0) {
@@ -7365,6 +7513,7 @@ window.onOnlineBetNativeInput = function(v){ try{
 function onlineCartTotal(){
   return (window.onlineBet.cart || []).reduce((s,u)=>s+(u.totalAmount||0),0);
 }
+window.onlineCartTotal = onlineCartTotal;
 
 // 現在の入力を検証して賭けユニットを作る（不正なら notif で null）
 function buildValidatedOnlineUnit(){
@@ -7397,21 +7546,21 @@ function buildValidatedOnlineUnit(){
   const allinAllowed = stdMin > 0 && myPoints < stdMin;
   const minBet = allinAllowed ? myPoints : stdMin;
   if (unitAmount < minBet) {
-    // パターンA: ラウンド開始時に最低ベット額以上を持っているのに、最低ベット額未満を入力した
+    // パターンA: 最低ベット額未満
     if(!allinAllowed && stdMin > 0){
-      showNotif(`⚠️ 最低ベット額は${stdMin.toLocaleString()}点です\n${stdMin.toLocaleString()}点未満で賭けられるのは、ラウンド開始時の持ち点が${stdMin.toLocaleString()}点未満のときだけです。${stdMin.toLocaleString()}点以上を入力してください。`);
+      showNotif(`⚠️ 最低 ${stdMin.toLocaleString()}点から賭けられます（少額すぎます）`, 'warn');
     } else {
-      showNotif(method === 'simple' ? `⚠️ ${minBet.toLocaleString()}点以上を入力してください` : `⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`);
+      showNotif(method === 'simple' ? `⚠️ ${minBet.toLocaleString()}点以上を入力してください` : `⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`, 'warn');
     }
     return null;
   }
   const already = onlineCartTotal();
   if (already + totalAmount > myPoints) {
-    // パターンB: カートに既存の賭けがあり、残りが最低ベット額に届かない
+    // パターンB: 持ち点オーバー
     if(already > 0 && !allinAllowed && stdMin > 0){
-      showNotif(`⚠️ 残りの持ち点が最低ベット額（${stdMin.toLocaleString()}点）に届きません\n${stdMin.toLocaleString()}点未満で賭けられるのは、ラウンド開始時の持ち点が${stdMin.toLocaleString()}点未満のときだけです。金額を調整するか、カートの賭けを見直してください。`);
+      showNotif(`⚠️ 持ち点を超えています（残り ${Math.max(0,myPoints-already).toLocaleString()}点まで）`, 'warn');
     } else {
-      showNotif(`⚠️ 持ち点が足りません（カート合計 ${already.toLocaleString()}＋今回 ${totalAmount.toLocaleString()} > ${myPoints.toLocaleString()}点）`);
+      showNotif(`⚠️ 持ち点を超えています（所持 ${myPoints.toLocaleString()}点まで）`, 'warn');
     }
     return null;
   }
@@ -7532,7 +7681,7 @@ function _onlineReviewCartItemConfirmed(idx){
   if(typeof renderOnlineKeypad==='function') renderOnlineKeypad(remaining);
   if(typeof setOnlineBetInputVal==='function') setOnlineBetInputVal(ob.betInputVal||'');
   renderOnlineCart();
-  showNotif('✏️ 見直しモード：内容を編集できます');
+  showNotif('✏️ 編集モード：内容を変更できます');
   const sc=document.querySelector('#screen-online-betting .scroll-content'); if(sc) sc.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -7596,7 +7745,7 @@ function renderOnlineCart(){
         <span style="font-size:0.8rem;color:#5db0ff;font-weight:800;margin-left:auto">👆詳細</span>
       </div>
       <div style="display:flex;gap:6px;margin-top:7px">
-        <button onclick="onlineReviewCartItem(${i})" style="flex:1;background:rgba(245,200,66,0.18);border:1px solid rgba(245,200,66,0.6);color:#ffe9a8;border-radius:6px;padding:6px 10px;font-size:0.78rem;font-weight:900;cursor:pointer">✏️ 見直し</button>
+        <button onclick="onlineReviewCartItem(${i})" style="flex:1;background:rgba(245,200,66,0.18);border:1px solid rgba(245,200,66,0.6);color:#ffe9a8;border-radius:6px;padding:6px 10px;font-size:0.78rem;font-weight:900;cursor:pointer">✏️ 編集</button>
         <button onclick="onlineRemoveCartItem(${i})" style="flex:1;background:rgba(231,76,60,0.3);border:1px solid #e74c3c;color:#ffb3ab;border-radius:6px;padding:6px 10px;font-size:0.78rem;font-weight:900;cursor:pointer">🗑️ 削除</button>
       </div>
     </div>`;
@@ -7612,7 +7761,7 @@ function renderOnlineCart(){
   });
   const total = onlineCartTotal();
   const remaining = myPoints - total;
-  if (totalEl) totalEl.innerHTML = `<span style="color:#1a1a1a;font-size:0.92rem">合計 ${total.toLocaleString()}点</span>　<span style="color:${remaining<0?'#c0392b':'#1a1a1a'};font-size:0.92rem">残り ${remaining.toLocaleString()}点</span>`;
+  if (totalEl) totalEl.innerHTML = `<span style="color:#1a1a1a;font-size:0.92rem">合計 <span style="font-size:1.12rem;font-weight:900">${total.toLocaleString()}</span>点</span>　<span style="color:${remaining<0?'#c0392b':'#1a1a1a'};font-size:0.92rem">残り所持点 <span style="font-size:1.12rem;font-weight:900">${remaining.toLocaleString()}</span>点</span>`;
 }
 
 // 「購入を続ける」→ 新しい賭けを組むため、入力をリセットして賭けの種類へスクロール
@@ -8041,6 +8190,19 @@ function updateBetWaitProgress(game){
     }).join('');
   }
 
+  // 進捗カウント（完了人数 / 全員。オフライン除外）
+  const progCount = document.getElementById('obw-progress-count');
+  if(progCount){
+    let done=0, totalOnline=0;
+    players.forEach((p,i)=>{
+      if(p.online===false) return;
+      totalOnline++;
+      if(i===oyaIdx){ if(oyaResult && oyaResult.length===3) done++; }
+      else { if(bets[p.id]) done++; }
+    });
+    progCount.textContent = `${done}/${totalOnline}人 完了`;
+  }
+
   // 残り人数（オフラインは含まない — 自動処理されるので）
   let remaining = 0;
   players.forEach((p, i) => {
@@ -8062,6 +8224,16 @@ function updateBetWaitProgress(game){
     }
   }
 }
+
+// 進捗の詳細リスト（誰が完了したか）の開閉
+window.toggleObwProgress = function(){
+  const list = document.getElementById('obw-progress-list');
+  const btn = document.getElementById('obw-progress-toggle');
+  if(!list) return;
+  const open = list.style.display === 'none' || !list.style.display;
+  list.style.display = open ? 'block' : 'none';
+  if(btn) btn.textContent = open ? '🔼 閉じる' : '👥 誰が完了？';
+};
 
 // 全員入力完了 → bet-wait画面に公開ボタン表示 → 全員がボタンを押したら reveal フェーズへ
 async function checkAllBetsSubmitted(){
@@ -8942,82 +9114,11 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
 
   // 子の結果
   const playerEl = document.getElementById('orr-player-results');
-  const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {tansho:'単勝',rentan:'馬単',sanrentan:'3連単'};
   if(playerEl){
-    // 当選者をオッズの高い順に上へ。次に非当選、見送り/オフラインは最後。
-    const rawResults = (log.playerResults || []).slice();
-    const bestOdds = (r) => {
-      if(Array.isArray(r.winningSubs) && r.winningSubs.length>0){
-        return Math.max(...r.winningSubs.map(s => Number(s.odds)||0));
-      }
-      return Number(r.odds || r.multiplier || 0);
-    };
-    const isWin = (r) => !r.skipped && r.hitType!=='🔴 オフライン' && (r.change > 0 || (r.payout && r.payout > 0) || ((r.odds||r.multiplier)>0 && r.hitCount>0));
-    const rankVal = (r) => {
-      if(r.hitType==='🔴 オフライン') return 3;
-      if(r.skipped) return 2;
-      if(isWin(r)) return 0;
-      return 1; // 非当選
-    };
-    const sorted = rawResults
-      .map((r, idx) => ({ r, idx }))
-      .sort((a, b) => {
-        const ra = rankVal(a.r), rb = rankVal(b.r);
-        if(ra !== rb) return ra - rb;
-        if(ra === 0) return bestOdds(b.r) - bestOdds(a.r); // 当選はオッズ高い順
-        return a.idx - b.idx; // それ以外は元順
-      });
-    // 並べ替え後の順序を覚えておく（長押し詳細の対応付け用）
-    const orderedResults = sorted.map(x => x.r);
-
-    const orderedSet = ['tansho','umatan','sanrentan','rentan'];
-    const comboBadges = (sels, ordered) => (sels||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.68rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(ordered?'<span style="color:#888;font-size:0.72rem;margin:0 2px">→</span>':'<span style="color:#888;font-size:0.72rem;margin:0 2px">・</span>');
-
-    playerEl.innerHTML = orderedResults.map(r => {
-      // オフラインプレイヤー
-      if(r.hitType === '🔴 オフライン'){
-        const penalty = r.offlinePenalty || 0;
-        const changeStr = r.change >= 0 ? `±0` : r.change.toLocaleString();
-        return `<div class="player-result skipped" style="opacity:0.7"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:#aa2222;color:white;font-size:0.6rem;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:4px">🔴 オフライン</span></span><span class="player-result-change" style="color:#e74c3c">${changeStr}点</span></div>${penalty > 0 ? `<div class="player-result-detail" style="font-size:0.7rem;color:#444">オフラインのため最低額(${penalty.toLocaleString()}点)が引かれました</div>` : ''}</div>`;
-      }
-      // 見送り
-      if(r.skipped){
-        return `<div class="player-result skipped"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:#999;color:#fff;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px">見送り</span></span><span class="player-result-change" style="color:#aaa">±0</span></div></div>`;
-      }
-
-      const win = isWin(r);
-      const ordered = orderedSet.includes(r.betType);
-      const betLabel = betNames[r.betType] || r.betType;
-
-      if(!win){
-        // 非当選：「非当選」とだけ（券種名はタップ詳細で。シンプルに）
-        return `<div class="player-result miss"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:rgba(120,120,120,0.25);color:#555;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px;border:1px solid rgba(120,120,120,0.4)">非当選</span></span><span class="player-result-change" style="color:#bbb;font-size:0.85rem">—</span></div></div>`;
-      }
-
-      // 当選：当選した賭け方・当選した組み合わせの順番・オッズ・プラス額
-      // 当選した組み合わせ（フォーメーション等でも当たった組だけ）
-      let winCombo = null, winOdds = 0;
-      if(Array.isArray(r.winningSubs) && r.winningSubs.length>0){
-        // オッズ最高の当選組を代表表示
-        const top = r.winningSubs.slice().sort((a,b)=>(Number(b.odds)||0)-(Number(a.odds)||0))[0];
-        winCombo = top.selection; winOdds = Number(top.odds)||0;
-      } else {
-        winCombo = (r.selections||[]).slice(0, ({tansho:1,fukusho:1,umaren:2,umatan:2,wide:2,sanrenfuku:3,sanrentan:3,rentan:2}[r.betType]||r.selections?.length||0));
-        winOdds = Number(r.odds || r.multiplier || 0);
-      }
-      const multiHit = (Array.isArray(r.winningSubs) && r.winningSubs.length>1);
-      const comboHtml = comboBadges(winCombo, ordered);
-      const oddsHtml = winOdds>0 ? window.oddsChipHtml(winOdds, multiHit?'最高':'') : '';
-      const payout = r.payout || 0;
-
-      return `<div class="player-result hit"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:linear-gradient(135deg,#34b350,#1a7a1a);color:#fff;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px;box-shadow:0 1px 4px rgba(26,122,26,0.4)">🎯 当選</span></span><span class="player-result-change change-pos">+${payout.toLocaleString()}点</span></div>
-        <div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:5px">
-          <span style="background:var(--gold);color:#1a1a1a;font-size:0.68rem;font-weight:900;padding:2px 9px;border-radius:9px;white-space:nowrap">${betLabel}</span>
-          <span style="display:inline-flex;align-items:center">${comboHtml}</span>
-          ${oddsHtml}
-          ${multiHit?`<span style="font-size:0.66rem;color:#444;font-weight:700">他${r.winningSubs.length-1}通りも的中</span>`:''}
-        </div></div>`;
-    }).join('');
+    // 当選ソート＋リッチ表示（共通関数。アーカイブと同一フォーマット）
+    const built = buildPlayerResultsHtml(log.playerResults || []);
+    const orderedResults = built.orderedResults;
+    playerEl.innerHTML = built.html;
     // 各結果行に長押し/タップで「馬券＋当選ハイライト」詳細を付与（並べ替え後の順序で対応）
     (function(){
       const rows=playerEl.querySelectorAll(':scope > .player-result');
@@ -9201,7 +9302,10 @@ function renderOnlineScoreTable(tableId, game, opts){
   const initPts = (window.online.settings && window.online.settings.initialPoints) || 5000;
   // 賭けフェーズ中は「自分の」賭け額だけ引いて表示（他人の賭け額は伏せる）
   const showDeduct = !!opts.showBetDeduction;
-  const myBetAmt = (showDeduct && bets[myId]) ? (Number(bets[myId].amount) || 0) : 0;
+  const confirmedBet = (showDeduct && bets[myId]) ? (Number(bets[myId].amount) || 0) : 0;
+  // カートに入れただけ（未確定）の分も引く
+  const cartPending = (showDeduct && typeof window.onlineCartTotal==='function') ? (Number(window.onlineCartTotal()) || 0) : 0;
+  const myBetAmt = confirmedBet + cartPending;
   const arr = players.map((p, i) => {
     let pts = (points[p.id] != null) ? points[p.id] : initPts;
     let deducted = false;
@@ -9246,6 +9350,7 @@ function renderOnlineScoreTable(tableId, game, opts){
     if(oldNote) oldNote.remove();
   }
 }
+window.renderOnlineScoreTable = renderOnlineScoreTable;
 
 function updateNextReadyStatus(game){
   const players = getOnlinePlayersArray();
@@ -9470,13 +9575,13 @@ function enterOnlineFinal(game){
           const topicIcon = h.topicIcon || '🎯';
           const horses = h.topicHorses || [];
           // 選択肢タグ
-          const horseTags = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:2px 7px;border-radius:10px;font-size:0.7rem;color:#aaa"><span class="ibadge ${HC[i]}" style="width:16px;height:16px;font-size:0.6rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+          const horseTags = horses.map((name, i) => `<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:2px 7px;border-radius:10px;font-size:0.8rem;color:#fff"><span class="ibadge ${HC[i]}" style="width:17px;height:17px;font-size:0.62rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
           // ノーゲームの場合
           if(h.noGame){
             return `<div style="margin-bottom:12px;padding:10px;background:#1f1f1f;border:1px solid #555;border-radius:8px;opacity:0.7">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
                 <div style="color:var(--gold);font-weight:900;font-size:0.85rem">ROUND ${h.round}</div>
-                <div style="color:#aaa;font-size:0.7rem">親：<strong style="color:white">${escapeHtml(h.oyaName || '')}</strong></div>
+                <div style="color:#aaa;font-size:0.85rem">親：<strong style="color:var(--gold)">${escapeHtml(h.oyaName || '')}</strong></div>
               </div>
               <div style="color:white;font-weight:700;font-size:0.95rem;margin-bottom:4px">${topicIcon} ${escapeHtml(h.topic || '')}</div>
               ${horseTags ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${horseTags}</div>` : ''}
@@ -9486,19 +9591,19 @@ function enterOnlineFinal(game){
             </div>`;
           }
           // 親の順位（1位→2位→3位）
-          const oyaRanking = (h.oyaResult || []).map((hi, i) => `<div style="display:flex;align-items:center;gap:6px;padding:4px 0"><span style="font-size:0.95rem;width:24px">${['🥇','🥈','🥉'][i]}</span><span class="ibadge ${HC[hi]}" style="width:22px;height:22px;font-size:0.75rem">${hi+1}</span><span style="color:white;font-weight:700;font-size:0.85rem">${escapeHtml(horses[hi] || '')}</span></div>`).join('');
+          const oyaRanking = (h.oyaResult || []).map((hi, i) => `<div style="display:flex;align-items:center;gap:6px;padding:4px 0"><span style="font-size:0.95rem;width:24px">${['🥇','🥈','🥉'][i]}</span><span class="ibadge ${HC[hi]}" style="width:23px;height:23px;font-size:0.78rem">${hi+1}</span><span style="color:white;font-weight:700;font-size:0.92rem">${escapeHtml(horses[hi] || '')}</span></div>`).join('');
           return `<div class="ofn-round-card" data-round="${h.round}" style="margin-bottom:12px;padding:10px;background:#1f1f1f;border:1px solid #444;border-radius:8px;cursor:pointer">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
               <div style="color:var(--gold);font-weight:900;font-size:0.85rem">ROUND ${h.round}</div>
-              <div style="color:#aaa;font-size:0.7rem">親：<strong style="color:white">${escapeHtml(h.oyaName || '')}</strong></div>
+              <div style="color:#aaa;font-size:0.85rem">親：<strong style="color:var(--gold)">${escapeHtml(h.oyaName || '')}</strong></div>
             </div>
             <div style="color:white;font-weight:700;font-size:0.95rem;margin-bottom:4px">${topicIcon} ${escapeHtml(h.topic || '')}</div>
             <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${horseTags}</div>
             <div style="background:#0f0f0f;border-radius:6px;padding:6px 10px">
-              <div style="color:#aaa;font-size:0.7rem;margin-bottom:2px">親が選んだ順位</div>
+              <div style="color:var(--gold);font-size:0.8rem;font-weight:700;margin-bottom:2px">親が選んだ順位</div>
               ${oyaRanking}
             </div>
-            <div style="text-align:right;margin-top:6px;font-size:0.64rem;color:#444;font-weight:600">👆 タップで子の結果</div>
+            <div style="text-align:right;margin-top:6px;font-size:0.78rem;color:var(--gold);font-weight:700">👆 タップで子の結果</div>
           </div>`;
         }).join('');
         // 各ラウンドのタップで子の結果（当選/非当選＋収支）を表示。各行タップで馬券詳細
@@ -9508,23 +9613,22 @@ function enterOnlineFinal(game){
             const h=history.find(x=>x.round===rnd);
             if(!h || !Array.isArray(h.playerResults)) return;
             const horses=(h.topicHorses)|| (h.horses) || [];
-            const rows=h.playerResults.map((p,pi)=>{
-              const win=!p.skipped&&((p.payout&&p.payout>0)||p.change>0);
-              const net=(typeof p.change==='number')?p.change:((p.payout||0)-(p.amount||0));
-              const disp=p.skipped?'<span style="color:#aaa">見送り</span>':(win?`<span style="color:#7dff7d;font-weight:900">🎯 +${net.toLocaleString()}点</span>`:`<span style="color:#ff9a9a;font-weight:700">当選なし ${net.toLocaleString()}点</span>`);
-              return `<div class="uiconfirm-betline ofn-pres-row" data-round="${rnd}" data-pi="${pi}" style="justify-content:space-between;cursor:pointer"><span>${escapeHtml(p.name)} <span style="font-size:0.6rem;color:#555">👆</span></span>${disp}</div>`;
-            }).join('');
-            const oyaB=(h.oyaBonus>0)?`<div class="uiconfirm-summary"><span style="color:#e0a0e0">👑 ${escapeHtml(h.oyaName)}（親ボーナス）+${h.oyaBonus.toLocaleString()}点</span></div>`:'';
-            uiConfirm({ icon:'📜', title:`ROUND ${h.round} の結果`, bodyHtml:`<div style="font-size:0.78rem;color:#c8bfa8;margin-bottom:6px">${h.topicIcon||'🎯'} ${escapeHtml(h.topic||'')}</div><div style="font-size:0.68rem;color:#444;margin-bottom:8px">各行をタップで馬券の詳細が見られます</div>${rows}${oyaB}`, okText:'閉じる', cancelText:null });
-            // ダイアログ描画後に各行へ詳細ハンドラを付与
+            // 親が選んだ順位（結果画面と同じ並び）
+            const oyaRank = (h.oyaResult||[]).map((hi,i)=>`<div style="display:flex;align-items:center;gap:6px;padding:3px 0"><span style="font-size:0.95rem;width:24px">${['🥇','🥈','🥉'][i]}</span><span class="ibadge ${HC[hi]}" style="width:22px;height:22px;font-size:0.75rem">${hi+1}</span><span style="color:#1a1a1a;font-weight:700;font-size:0.9rem">${escapeHtml(horses[hi]||'')}</span></div>`).join('');
+            const oyaBlock = oyaRank ? `<div style="background:#f4eeda;border:1px solid #e0d5b0;border-radius:8px;padding:8px 10px;margin-bottom:10px"><div style="color:#8a6500;font-size:0.8rem;font-weight:800;margin-bottom:3px">👑 親が選んだ順位</div>${oyaRank}</div>` : '';
+            // 子の結果（ライブ結果画面と同じリッチ表示・当選ソート）
+            const built = buildPlayerResultsHtml(h.playerResults);
+            const oyaB=(h.oyaBonus>0)?`<div class="uiconfirm-summary"><span style="color:#9a4a9a;font-weight:800">👑 ${escapeHtml(h.oyaName)}（親ボーナス）+${h.oyaBonus.toLocaleString()}点</span></div>`:'';
+            const body = `<div style="font-size:0.85rem;color:#1a1a1a;font-weight:700;margin-bottom:8px">${h.topicIcon||'🎯'} ${escapeHtml(h.topic||'')}</div>${oyaBlock}<div style="font-size:0.72rem;color:#666;margin-bottom:6px">👆 各プレイヤーをタップで馬券の詳細</div><div id="ofn-arch-results">${built.html}</div>${oyaB}`;
+            uiConfirm({ icon:'📜', title:`ROUND ${h.round} の結果`, bodyHtml: body, okText:'閉じる', cancelText:null });
+            // ダイアログ描画後、各結果行に長押し/タップで馬券詳細を付与（並べ替え後の順序で対応）
             setTimeout(()=>{
-              document.querySelectorAll('.ofn-pres-row').forEach(row=>{
-                row.addEventListener('click',()=>{
-                  const pi=parseInt(row.getAttribute('data-pi'));
-                  const pr=h.playerResults[pi];
-                  if(!pr) return;
-                  uiConfirm({ icon:'🎫', title:`${escapeHtml(pr.name||'')} さんの結果`, bodyHtml: resultDetailHtml(pr, horses), okText:'閉じる', cancelText:null });
-                });
+              const cont=document.getElementById('ofn-arch-results');
+              if(!cont) return;
+              const rows=cont.querySelectorAll('.player-result');
+              built.orderedResults.forEach((pr,i)=>{
+                const el=rows[i];
+                if(el && typeof attachResultLongPress==='function') attachResultLongPress(el, pr, horses);
               });
             }, 60);
           });
@@ -9679,15 +9783,10 @@ function updateRulesButtonVisibility(onlineGameActive){
   const onRules = (document.getElementById('screen-rules')||{}).classList?.contains('active');
   const show = (onlineGameActive || onOfflineGame) && !onRules;
   rbtn.style.display = show ? 'flex' : 'none';
-  // ⋮メニューが表示中かどうかで位置を調整（重ならないように）
-  const menuBtn = document.getElementById('menu-toggle');
-  const menuShown = menuBtn && menuBtn.style.display !== 'none';
-  rbtn.style.right = menuShown ? '104px' : '58px';
-  // 📊得点ショートカット：ルールボタンと同じ表示条件、ひとつ左に配置
+  // 📊得点ショートカット：ルールボタンと同じ表示条件
   const sbtn = document.getElementById('score-toggle');
   if(sbtn){
     sbtn.style.display = show ? 'flex' : 'none';
-    sbtn.style.right = menuShown ? '150px' : '104px';
   }
   updateScrollFabVisibility();
 }
@@ -9794,6 +9893,11 @@ window.closeQuickRules = function(){
   if(typeof originalGoTo === 'function'){
     window.goTo = function(id){
       originalGoTo(id);
+      // 画面切替後は常に最上部から表示（内側スクロールもリセット）
+      const resetTop = ()=>{ try{ const scr=document.getElementById(id); if(scr) scr.querySelectorAll('.scroll-content').forEach(sc=>{ sc.scrollTop=0; }); window.scrollTo(0,0); }catch(e){} };
+      resetTop();
+      requestAnimationFrame(resetTop);
+      setTimeout(resetTop, 60);
       setTimeout(updateMenuButtonVisibility, 10);
       // 結果系画面はコンテンツ描画後に矢印判定（描画タイミングを考慮して複数回）
       setTimeout(updateScrollFabVisibility, 250);
@@ -10218,6 +10322,13 @@ window.showFinalCurtain = function(winnerName, winnerPts, onDismiss){
     }
   } catch(e){}
 
+  // 現在の演出の終わり（最後の花火＝3000ms）から0.5秒後に、クラッカー＋紙吹雪をもう一段
+  setTimeout(() => {
+    if(curtain.classList.contains('hidden')) return; // すでに閉じられていたら何もしない
+    try { window.SFX && window.SFX.cracker && window.SFX.cracker(); } catch(e){}
+    try { spawnFinalConfetti(curtain); } catch(e){}
+  }, 3500);
+
   // タップで閉じる
   let dismissed = false;
   const dismiss = () => {
@@ -10236,8 +10347,8 @@ window.showFinalCurtain = function(winnerName, winnerPts, onDismiss){
     }, 500);
   };
   curtain.onclick = dismiss;
-  // 自動で5秒後にも閉じる（盛大に楽しめるよう少し長く）
-  setTimeout(dismiss, 5000);
+  // 自動で閉じる（最後のクラッカー＋紙吹雪を楽しめるよう少し延長）
+  setTimeout(dismiss, 6500);
 };
 const showFinalCurtain = window.showFinalCurtain;
 
