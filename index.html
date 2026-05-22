@@ -4156,9 +4156,18 @@ function calculateResults(){
   roundLog.oyaBonus = oyaBonus;
   oya.history.push({ round: state.currentRound, change: oyaBonus, hitType: '親ボーナス' });
   state.history.push(roundLog);
-  renderRoundResultBody();
-  goTo('screen-roundresult');
-  triggerOfflineEffects(roundLog);
+  // カウントダウン演出（設定ON時）→ その後に結果表示
+  const _showOfflineResult = function(){
+    renderRoundResultBody();
+    goTo('screen-roundresult');
+    triggerOfflineEffects(roundLog);
+  };
+  const cdOn = (typeof window.isCountdownEnabled === 'function') ? window.isCountdownEnabled() : true;
+  if(cdOn && typeof window.showResultCountdown === 'function'){
+    window.showResultCountdown(_showOfflineResult);
+  } else {
+    _showOfflineResult();
+  }
 }
 
 function renderRoundResult(){
@@ -4762,15 +4771,23 @@ function launchStars(){
 }
 function nextRound(){
   if(state.currentRound>=state.rounds){
-    renderFinalScreen();
-    goTo('screen-final');
-    // 豪華フィナーレを上にかぶせる
-    const sorted=[...state.players].sort((a,b)=>b.points-a.points);
-    const winners=sorted.filter(p=>p.points===sorted[0].points);
-    const winnerNames=winners.map(p=>p.name).join(' & ');
-    const winnerPts=sorted[0].points.toLocaleString()+' 点';
-    if(typeof window.showFinalCurtain === 'function'){
-      setTimeout(()=>window.showFinalCurtain(winnerNames, winnerPts), 100);
+    const _showOfflineFinal = function(){
+      renderFinalScreen();
+      goTo('screen-final');
+      // 豪華フィナーレを上にかぶせる
+      const sorted=[...state.players].sort((a,b)=>b.points-a.points);
+      const winners=sorted.filter(p=>p.points===sorted[0].points);
+      const winnerNames=winners.map(p=>p.name).join(' & ');
+      const winnerPts=sorted[0].points.toLocaleString()+' 点';
+      if(typeof window.showFinalCurtain === 'function'){
+        setTimeout(()=>window.showFinalCurtain(winnerNames, winnerPts), 100);
+      }
+    };
+    const cdOn = (typeof window.isCountdownEnabled === 'function') ? window.isCountdownEnabled() : true;
+    if(cdOn && typeof window.showFinalCountdown === 'function'){
+      window.showFinalCountdown(_showOfflineFinal);
+    } else {
+      _showOfflineFinal();
     }
   } else {
     goToRoundStart();
