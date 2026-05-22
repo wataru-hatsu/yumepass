@@ -370,11 +370,11 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 @keyframes manbakenGold{0%{transform:translateY(0) scale(1);opacity:0;}10%{opacity:1;}100%{transform:translateY(110vh) scale(0.4);opacity:0;}}
 
 /* サウンドON/OFFボタン */
-.sound-toggle{position:fixed;top:12px;right:12px;width:38px;height:38px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.sound-toggle{position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .sound-toggle:active{transform:scale(0.92);}
-.menu-toggle{position:fixed;top:12px;left:12px;width:38px;height:38px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;line-height:1;padding:0;}
-.rules-toggle{position:fixed;top:12px;left:58px;width:38px;height:38px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:100;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
-.score-toggle{position:fixed;top:12px;right:58px;width:38px;height:38px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:100;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.menu-toggle{position:fixed;top:max(12px,env(safe-area-inset-top));left:12px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;line-height:1;padding:0;}
+.rules-toggle{position:fixed;top:max(12px,env(safe-area-inset-top));left:58px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.score-toggle{position:fixed;top:max(12px,env(safe-area-inset-top));right:58px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .score-toggle:active{transform:scale(0.92);}
 .menu-toggle:active{transform:scale(0.92);}
 /* 一番下までスクロールする矢印（小さく半透明・邪魔にならない） */
@@ -800,13 +800,13 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         <div style="font-size:0.85rem;color:#333;line-height:1.5;margin-bottom:8px;background:rgba(245,200,66,0.14);border-radius:6px;padding:7px 9px">💡 オッズは人気で変動します。</div>
         <!-- 賭け方の詳細（タップで開閉）-->
         <div id="ob-bettype-detail" style="display:none;margin-bottom:8px;background:rgba(0,0,0,0.04);border-radius:8px;padding:8px 10px;font-size:0.78rem;color:#222;line-height:1.7">
-          <div><strong>単勝</strong>：1位をズバリ当てる（目安 ×1.3〜4.9）</div>
-          <div><strong>複勝</strong>：選んだ1頭が3位以内ならOK（目安 ×1.1〜1.6）</div>
-          <div><strong>馬連</strong>：1・2位の2頭・順番自由（目安 ×2〜13）</div>
-          <div><strong>馬単</strong>：1・2位を順番通り（目安 ×3〜26）</div>
-          <div><strong>ワイド</strong>：選んだ2頭が3位以内ならOK（目安 ×1.3〜4.4）</div>
-          <div><strong>3連複</strong>：1〜3位の3頭・順番自由（目安 ×3〜16）</div>
-          <div><strong>3連単</strong>：1〜3位を順番通り（目安 ×6〜100）</div>
+          <div><strong>単勝</strong>：1位をズバリ当てる</div>
+          <div><strong>複勝</strong>：選んだ1頭が3位以内ならOK</div>
+          <div><strong>馬連</strong>：1・2位の2頭・順番自由</div>
+          <div><strong>馬単</strong>：1・2位を順番通り</div>
+          <div><strong>ワイド</strong>：選んだ2頭が3位以内ならOK</div>
+          <div><strong>3連複</strong>：1〜3位の3頭・順番自由</div>
+          <div><strong>3連単</strong>：1〜3位を順番通り</div>
         </div>
         <div class="bet-types">
           <div class="bet-type-btn active" onclick="onlineSelectBetType('tansho',this)"><div class="bet-name">単勝</div></div>
@@ -846,9 +846,9 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <!-- 点数表示 -->
       <div id="ob-combo-info" style="display:none;font-size:0.85rem;color:#fff;background:rgba(245,200,66,0.15);border:1px solid var(--gold);border-radius:8px;padding:8px 12px;margin:8px 10px;text-align:center"></div>
       <div class="panel" id="ob-betamount-panel">
-        <div class="panel-title" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">💴 ベット額 <span style="font-size:0.74rem;color:#1565c0;font-weight:800;letter-spacing:0;text-transform:none">👆 黒い枠をタップして数字を入力</span><button onclick="openScorePopup()" style="margin-left:auto;flex-shrink:0;background:rgba(15,15,18,0.9);border:1px solid rgba(245,200,66,0.6);color:#f5c842;font-size:0.74rem;font-weight:800;border-radius:14px;padding:4px 10px;cursor:pointer;white-space:nowrap;letter-spacing:0;text-transform:none">📊 得点</button></div>
+        <div class="panel-title" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">💴 ベット額 <button onclick="openScorePopup()" style="margin-left:auto;flex-shrink:0;background:rgba(15,15,18,0.9);border:1px solid rgba(245,200,66,0.6);color:#f5c842;font-size:0.74rem;font-weight:800;border-radius:14px;padding:4px 10px;cursor:pointer;white-space:nowrap;letter-spacing:0;text-transform:none">📊 得点</button></div>
         <div id="ob-bet-hint" style="font-size:0.86rem;color:#333;font-weight:600;margin-bottom:6px">最低500点 / 1点単位でOK</div>
-        <div id="ob-bet-display" onclick="focusOnlineBetInput()" style="position:relative;background:#1a1a1a;border-radius:10px;padding:10px 14px 22px;text-align:right;font-size:1.5rem;font-weight:900;color:var(--gold);letter-spacing:1px;min-height:46px;margin-bottom:6px;cursor:text">0<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:var(--gold);font-weight:800;letter-spacing:0;opacity:0.95"></div></div>
+        <div id="ob-bet-display" onclick="focusOnlineBetInput()" style="position:relative;background:#1a1a1a;border-radius:10px;padding:24px 14px 22px;text-align:right;font-size:1.5rem;font-weight:900;color:var(--gold);letter-spacing:1px;min-height:46px;margin-bottom:6px;cursor:text"><div style="position:absolute;left:12px;top:6px;font-size:0.74rem;color:#5db0ff;font-weight:800;letter-spacing:0;text-align:left">👆 タップして数字を入力</div>0<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:var(--gold);font-weight:800;letter-spacing:0;opacity:0.95"></div></div>
         <input id="ob-bet-native-input" inputmode="numeric" pattern="[0-9]*" oninput="onOnlineBetNativeInput(this.value)" style="position:absolute;opacity:0;height:1px;width:1px;pointer-events:none;left:-9999px">
         <div id="ob-point-presets" style="display:flex;gap:6px;flex-wrap:nowrap;margin-bottom:10px"></div>
         <div id="ob-keypad" style="display:none;grid-template-columns:repeat(3,1fr);gap:8px"></div>
@@ -2088,14 +2088,9 @@ function injectOddsRangeBadges(scopeSelector){
     const diffMap = { tansho:'bt-tansho', fukusho:'bt-fukusho', wide:'bt-wide', umaren:'bt-umaren', umatan:'bt-umatan', sanrenfuku:'bt-sanrenfuku', sanrentan:'bt-sanrentan' };
     btn.classList.remove('diff-easy','diff-mid','diff-hard','diff-rainbow','bt-tansho','bt-fukusho','bt-wide','bt-umaren','bt-umatan','bt-sanrenfuku','bt-sanrentan');
     if(diffMap[betType]) btn.classList.add(diffMap[betType]);
-    // 既存のバッジがあれば更新、なければ追加
-    let badge = btn.querySelector('.bet-odds-range');
-    if(!badge){
-      badge = document.createElement('div');
-      badge.className = 'bet-odds-range';
-      btn.appendChild(badge);
-    }
-    badge.textContent = getOddsRangeHint(betType);
+    // オッズ目安テキストはカードに表示しない（「賭け方の詳細」で確認できる）
+    const existing = btn.querySelector('.bet-odds-range');
+    if(existing) existing.remove();
   });
 }
 
@@ -3710,23 +3705,30 @@ function buildValidatedOffUnit(){
     return null;
   }
   const totalAmount=unitAmount*combinations.length;
+  const already=offCartTotal(koIdx);
+  const remaining=p.points-already;
+  // 残高が最低額を下回るまで使った状態での少額ベット（ルール違反になりやすい）を明示警告
+  const spentDownBelowMin = stdMin>0 && roundStart>=stdMin && already>0 && remaining<stdMin;
+  if(spentDownBelowMin){
+    showNotif(`⚠️ 残り ${Math.max(0,remaining).toLocaleString()}点では賭けられません\n最低 ${stdMin.toLocaleString()}点必要です。他の馬券を買って残りが ${stdMin.toLocaleString()}点未満になった場合、その残りでのオールインはできません（カートを見直してください）。`, 'warn');
+    return null;
+  }
   if(unitAmount<minBet){
     // パターンA: 最低ベット額未満
     if(!allinAllowed){
-      showNotif(`⚠️ 最低 ${stdMin.toLocaleString()}点から賭けられます（少額すぎます）`, 'warn');
+      showNotif(`⚠️ 最低 ${stdMin.toLocaleString()}点から賭けられます\n（少額すぎます）`, 'warn');
     } else {
       showNotif(offBuyMethod==='simple'?`⚠️ ${minBet.toLocaleString()}点以上を入力してください`:`⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`, 'warn');
     }
     return null;
   }
   // カート既存分との合計が持ち点を超えないか
-  const already=offCartTotal(koIdx);
   if(already+totalAmount>p.points){
     // パターンB: 持ち点オーバー
     if(already>0 && !allinAllowed){
-      showNotif(`⚠️ 持ち点を超えています（残り ${Math.max(0,p.points-already).toLocaleString()}点まで）`, 'warn');
+      showNotif(`⚠️ 持ち点を超えています\n（残り ${Math.max(0,remaining).toLocaleString()}点まで）`, 'warn');
     } else {
-      showNotif(`⚠️ 持ち点を超えています（所持 ${p.points.toLocaleString()}点まで）`, 'warn');
+      showNotif(`⚠️ 持ち点を超えています\n（所持 ${p.points.toLocaleString()}点まで）`, 'warn');
     }
     return null;
   }
@@ -4638,8 +4640,12 @@ function attachResultLongPress(el, r, horses){
   if(!el) return;
   const betObj = resultToBetObj(r);
   const winCombos = winningCombosFromResult(r);
-  const win = !r.skipped && ((r.payout&&r.payout>0)||r.change>0);
-  const bottom = win ? `<span style="color:#7dff7d;font-weight:900">🎯 当選 +${(r.payout||0).toLocaleString()}点</span>` : (r.skipped?'<span style="color:#aaa">見送り</span>':'<span style="color:#bbb">非当選</span>');
+  const netChange = (typeof r.change === 'number') ? r.change : ((r.payout||0) - (r.amount||0));
+  const sign = netChange > 0 ? '+' : (netChange < 0 ? '−' : '±');
+  const netCol = netChange > 0 ? '#7dff7d' : (netChange < 0 ? '#ff7d7d' : '#ccc');
+  const bottom = r.skipped
+    ? '<span style="color:#aaa">見送り</span>'
+    : `<span style="color:#ccc;font-weight:700">収支</span> <span style="color:${netCol};font-weight:900;font-size:1.05rem">${sign}${Math.abs(netChange).toLocaleString()}点</span>`;
   let inner;
   if(betObj.multiBets){
     // 各賭けの当選判定（r.betResults があればそれを使う）
@@ -4716,7 +4722,7 @@ function buildPlayerResultsHtml(playerResults){
   const orderedResults = sorted.map(x => x.r);
   const orderedSet = ['tansho','umatan','sanrentan','rentan'];
   const comboBadges = (sels, ordered) => (sels||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.68rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(ordered?'<span style="color:#888;font-size:0.72rem;margin:0 2px">→</span>':'<span style="color:#888;font-size:0.72rem;margin:0 2px">・</span>');
-  const html = orderedResults.map(r => {
+  const html = orderedResults.map((r, _ri) => {
     if(r.hitType === '🔴 オフライン'){
       const penalty = r.offlinePenalty || 0;
       const changeStr = r.change >= 0 ? `±0` : r.change.toLocaleString();
@@ -4739,16 +4745,34 @@ function buildPlayerResultsHtml(playerResults){
       winCombo = (r.selections||[]).slice(0, ({tansho:1,fukusho:1,umaren:2,umatan:2,wide:2,sanrenfuku:3,sanrentan:3,rentan:2}[r.betType]||r.selections?.length||0));
       winOdds = Number(r.odds || r.multiplier || 0);
     }
-    const multiHit = (Array.isArray(r.winningSubs) && r.winningSubs.length>1);
-    const comboHtml = comboBadges(winCombo, ordered);
-    const oddsHtml = winOdds>0 ? window.oddsChipHtml(winOdds, multiHit?'最高':'') : '';
     const payout = r.payout || 0;
+    // 当たった組み合わせを「すべて」1行ずつ表示（多いときは折りたたみ）
+    const subs = (Array.isArray(r.winningSubs) && r.winningSubs.length>0)
+      ? r.winningSubs.slice().sort((a,b)=>(Number(b.odds)||0)-(Number(a.odds)||0))
+      : [{ selection: winCombo, odds: winOdds, payout: payout }];
+    const lineOf = (s)=>{
+      const combo = comboBadges(s.selection, ordered);
+      const oc = (Number(s.odds)||0)>0 ? window.oddsChipHtml(Number(s.odds)||0, '') : '';
+      const pay = (s.payout!=null) ? `<span style="font-size:0.7rem;color:#1a7a1a;font-weight:900;white-space:nowrap">+${(s.payout||0).toLocaleString()}点</span>` : '';
+      return `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px"><span style="display:inline-flex;align-items:center">${combo}</span>${oc}${pay}</div>`;
+    };
+    let comboBlock;
+    if(subs.length <= 1){
+      comboBlock = subs.map(lineOf).join('');
+    } else {
+      // 先頭（最高オッズ）は常時表示、残りはタップで開閉
+      const uid = 'winmore-' + _ri + '-' + Math.random().toString(36).slice(2,7);
+      const firstLine = lineOf(subs[0]);
+      const restLines = subs.slice(1).map(lineOf).join('');
+      const restCount = subs.length - 1;
+      comboBlock = `${firstLine}`
+        + `<div id="${uid}" style="display:none">${restLines}</div>`
+        + `<div onclick="(function(b){var m=document.getElementById('${uid}');var open=m.style.display==='none';m.style.display=open?'block':'none';b.textContent=open?'▲ 閉じる':'▼ 他${restCount}通りを見る';})(this)" style="margin-top:5px;font-size:0.72rem;color:#1565c0;font-weight:800;cursor:pointer;display:inline-block">▼ 他${restCount}通りを見る</div>`;
+    }
     return `<div class="player-result hit"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:linear-gradient(135deg,#34b350,#1a7a1a);color:#fff;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px;box-shadow:0 1px 4px rgba(26,122,26,0.4)">🎯 当選</span></span><span class="player-result-change change-pos">+${payout.toLocaleString()}点</span></div>
-      <div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:5px">
-        <span style="background:var(--gold);color:#1a1a1a;font-size:0.68rem;font-weight:900;padding:2px 9px;border-radius:9px;white-space:nowrap">${betLabel}</span>
-        <span style="display:inline-flex;align-items:center">${comboHtml}</span>
-        ${oddsHtml}
-        ${multiHit?`<span style="font-size:0.66rem;color:#444;font-weight:700">他${r.winningSubs.length-1}通りも的中</span>`:''}
+      <div class="player-result-detail" style="margin-top:5px">
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:2px"><span style="background:var(--gold);color:#1a1a1a;font-size:0.68rem;font-weight:900;padding:2px 9px;border-radius:9px;white-space:nowrap">${betLabel}</span>${subs.length>1?`<span style="font-size:0.66rem;color:#444;font-weight:700">${subs.length}通り的中</span>`:''}</div>
+        ${comboBlock}
       </div></div>`;
   }).join('');
   return { html, orderedResults };
@@ -7372,11 +7396,12 @@ function setOnlineBetInputVal(v){
   const _start = (_game?.points && _game.points[window.online.playerId]) || 0;
   const _minRaw = window.online.settings?.minBet || 0;
   const _allin = _minRaw > 0 && _start < _minRaw && _start > 0;
+  const _topHint = `<div style="position:absolute;left:12px;top:6px;font-size:0.74rem;color:#5db0ff;font-weight:800;letter-spacing:0;text-align:left">👆 タップして数字を入力</div>`;
   if(_allin){
     v = String(_start);
     window.onlineBet.betInputVal = v;
     const d = document.getElementById('ob-bet-display');
-    if(d){ d.innerHTML = _start.toLocaleString() + ' 点' + `<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:var(--gold);font-weight:800;letter-spacing:0;opacity:0.95">所持 0点</div>`; d.style.color = '#ff5a5a'; }
+    if(d){ d.innerHTML = _topHint + _start.toLocaleString() + ' 点' + `<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:var(--gold);font-weight:800;letter-spacing:0;opacity:0.95">所持 0点</div>`; d.style.color = '#ff5a5a'; }
     if (typeof updateOnlineComboInfo === 'function') updateOnlineComboInfo();
     return;
   }
@@ -7402,7 +7427,7 @@ function setOnlineBetInputVal(v){
     } else {
       mainHtml = `<span style="font-size:0.5em;color:#bbb">1点あたり</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#555"> × ${points}通り = </span><br><span style="font-size:0.7em">合計 ${total.toLocaleString()}点</span>`;
     }
-    display.innerHTML = mainHtml + holdingHtml;
+    display.innerHTML = _topHint + mainHtml + holdingHtml;
     // 色判定: 合計が持ち点を超えたら警告色
     display.style.color = total > myPoints ? '#e74c3c' : num >= minBet ? '#2ecc71' : 'var(--gold)';
   } catch(e){}
@@ -7543,24 +7568,33 @@ function buildValidatedOnlineUnit(){
   const totalAmount = unitAmount * combinations.length;
   const stdMin = minBetRaw;
   // オンラインは賭けフェーズ中は持ち点が未減算なので myPoints がラウンド開始時の持ち点に相当
+  const already = onlineCartTotal();
+  const remaining = myPoints - already;
+  // オールイン（最低額未満で賭ける）が許されるのは「ラウンド開始時の持ち点が最低額未満」のときだけ。
+  // 他の馬券を買って残高が最低額を下回った場合は許されない。
   const allinAllowed = stdMin > 0 && myPoints < stdMin;
+  const spentDownBelowMin = stdMin > 0 && myPoints >= stdMin && already > 0 && remaining < stdMin;
   const minBet = allinAllowed ? myPoints : stdMin;
+  // 残高が最低額を下回るまで使った状態での少額ベット（＝ルール違反になりやすい）を明示的に警告
+  if (spentDownBelowMin) {
+    showNotif(`⚠️ 残り ${Math.max(0,remaining).toLocaleString()}点では賭けられません\n最低 ${stdMin.toLocaleString()}点必要です。他の馬券を買って残りが ${stdMin.toLocaleString()}点未満になった場合、その残りでのオールインはできません（カートを見直してください）。`, 'warn');
+    return null;
+  }
   if (unitAmount < minBet) {
     // パターンA: 最低ベット額未満
     if(!allinAllowed && stdMin > 0){
-      showNotif(`⚠️ 最低 ${stdMin.toLocaleString()}点から賭けられます（少額すぎます）`, 'warn');
+      showNotif(`⚠️ 最低 ${stdMin.toLocaleString()}点から賭けられます\n（少額すぎます）`, 'warn');
     } else {
       showNotif(method === 'simple' ? `⚠️ ${minBet.toLocaleString()}点以上を入力してください` : `⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`, 'warn');
     }
     return null;
   }
-  const already = onlineCartTotal();
   if (already + totalAmount > myPoints) {
     // パターンB: 持ち点オーバー
     if(already > 0 && !allinAllowed && stdMin > 0){
-      showNotif(`⚠️ 持ち点を超えています（残り ${Math.max(0,myPoints-already).toLocaleString()}点まで）`, 'warn');
+      showNotif(`⚠️ 持ち点を超えています\n（残り ${Math.max(0,remaining).toLocaleString()}点まで）`, 'warn');
     } else {
-      showNotif(`⚠️ 持ち点を超えています（所持 ${myPoints.toLocaleString()}点まで）`, 'warn');
+      showNotif(`⚠️ 持ち点を超えています\n（所持 ${myPoints.toLocaleString()}点まで）`, 'warn');
     }
     return null;
   }
