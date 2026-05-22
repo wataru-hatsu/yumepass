@@ -15,6 +15,14 @@
 <link rel="apple-touch-icon" id="pwa-icon" href="">
 <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;夢へのパスポート&quot;,&quot;short_name&quot;:&quot;夢パスポート&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#1a1a1a&quot;,&quot;theme_color&quot;:&quot;#c9960a&quot;}">
 <script>
+// グローバル escapeHtml（classic/offline からも使えるように先頭で定義）
+if (typeof window.escapeHtml !== 'function') {
+  window.escapeHtml = function(s){
+    if(s == null) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  };
+}
+var escapeHtml = window.escapeHtml;
 (function(){try{
   var c=document.createElement('canvas');c.width=512;c.height=512;
   var ctx=c.getContext('2d'),s=512,r=100;
