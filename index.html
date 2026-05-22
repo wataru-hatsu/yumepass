@@ -71,12 +71,12 @@ html.fx-active{background:#000;}
 #screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 12%,rgba(245,200,66,0.10),transparent 42%),radial-gradient(circle at 85% 80%,rgba(26,107,42,0.18),transparent 46%);}
 .screen>*{position:relative;z-index:1;}
-.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:14px 16px;text-align:center;border-bottom:3px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);}
+.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:10px 14px;text-align:center;border-bottom:3px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);}
 .header h1{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:1.8rem;letter-spacing:2px;text-shadow:0 0 14px rgba(245,200,66,0.5),0 2px 4px rgba(0,0,0,0.6);}
 .header .subtitle{color:#b9b9b9;font-size:0.7rem;letter-spacing:3px;}
-.panel{background:linear-gradient(160deg,rgba(253,248,237,0.93),rgba(250,243,225,0.88));backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1);border:1px solid rgba(201,150,10,0.55);border-radius:16px;padding:16px;margin:10px;box-shadow:0 8px 26px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.6);}
-.panel-title{font-size:0.66rem;letter-spacing:3px;color:var(--gold-dark);font-weight:900;text-transform:uppercase;margin-bottom:11px;padding-bottom:7px;border-bottom:1.5px solid rgba(201,150,10,0.45);}
-.btn{display:block;width:100%;padding:14px;border:none;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:transform 0.12s ease,box-shadow 0.12s ease,filter 0.12s ease;margin-top:8px;box-shadow:0 3px 8px rgba(0,0,0,0.22);}
+.panel{background:linear-gradient(160deg,rgba(253,248,237,0.93),rgba(250,243,225,0.88));backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1);border:1px solid rgba(201,150,10,0.55);border-radius:14px;padding:12px;margin:7px 10px;box-shadow:0 8px 26px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.6);}
+.panel-title{font-size:0.66rem;letter-spacing:3px;color:var(--gold-dark);font-weight:900;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1.5px solid rgba(201,150,10,0.45);}
+.btn{display:block;width:100%;padding:12px;border:none;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:transform 0.12s ease,box-shadow 0.12s ease,filter 0.12s ease;margin-top:6px;box-shadow:0 3px 8px rgba(0,0,0,0.22);}
 .btn:hover{filter:brightness(1.06);box-shadow:0 5px 14px rgba(0,0,0,0.3);}
 .btn:active{transform:translateY(1px) scale(0.985);box-shadow:0 2px 5px rgba(0,0,0,0.25);}
 .btn-primary{background:linear-gradient(135deg,#ffe07a 0%,var(--gold) 40%,var(--gold-dark) 100%);color:var(--dark);text-shadow:0 1px 0 rgba(255,255,255,0.3);}
@@ -100,7 +100,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .horse-card{background:white;border:2px solid #e0d8c0;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;position:relative;box-sizing:border-box;min-width:0;overflow:hidden;transition:transform 0.12s,border-color 0.12s,box-shadow 0.12s;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
 .horse-card:active{transform:scale(0.96);}
 .horse-card.selected-1{border-color:var(--gold);background:linear-gradient(135deg,#fffdf2,#fff3c8);box-shadow:0 0 0 2px rgba(245,200,66,0.4),0 2px 8px rgba(245,200,66,0.3);}
-.horse-card.selected-2{border-color:#888;background:#f0f0f0;box-shadow:0 0 0 2px rgba(136,136,136,0.3);}
+.horse-card.selected-2{border-color:#444;background:#f0f0f0;box-shadow:0 0 0 2px rgba(136,136,136,0.3);}
 .horse-card.selected-3{border-color:#cd7f32;background:#fdf0e0;box-shadow:0 0 0 2px rgba(205,127,50,0.3);}
 .horse-card .num-badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.9rem;margin:0 auto 4px;color:white;}
 .horse-card .horse-name{font-size:0.75rem;font-weight:700;line-height:1.2;word-break:break-word;overflow-wrap:anywhere;hyphens:auto;}
@@ -138,7 +138,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .player-result-name{font-weight:800;font-size:0.95rem;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .player-result-change{font-weight:900;font-size:1.05rem;white-space:nowrap;}
 .change-pos{color:var(--green-light);}.change-neg{color:var(--red);}.change-oya{color:var(--oya-light);}
-.player-result-detail{font-size:0.75rem;color:#777;margin-top:5px;}
+.player-result-detail{font-size:0.75rem;color:#444;margin-top:5px;}
 /* オッズチップ（金グラデで高揚感を演出） */
 .odds-chip{display:inline-flex;align-items:center;gap:1px;background:linear-gradient(135deg,#ffe9a8 0%,#f5c842 45%,#c9960a 100%);color:#5a3a00;font-weight:900;border-radius:6px;padding:1px 8px;font-size:0.82rem;box-shadow:0 1px 3px rgba(201,150,10,0.4);border:1px solid rgba(201,150,10,0.5);text-shadow:0 1px 0 rgba(255,255,255,0.4);}
 .odds-chip-big{background:linear-gradient(135deg,#fff2c0 0%,#ffd24a 35%,#ff8c1a 70%,#e0530a 100%);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);font-size:0.95rem;padding:2px 10px;box-shadow:0 0 12px rgba(255,140,0,0.6),0 2px 4px rgba(0,0,0,0.3);border-color:#ff8c1a;animation:oddsGlow 1.6s ease-in-out infinite;}
@@ -365,9 +365,11 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .sound-toggle:active{transform:scale(0.92);}
 .menu-toggle{position:fixed;top:12px;right:58px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;line-height:1;padding:0;}
 .rules-toggle{position:fixed;top:12px;right:104px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:100;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.score-toggle{position:fixed;top:12px;right:150px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:100;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.score-toggle:active{transform:scale(0.92);}
 .menu-toggle:active{transform:scale(0.92);}
 /* 一番下までスクロールする矢印（小さく半透明・邪魔にならない） */
-.scroll-down-fab{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;width:72px;height:36px;border-radius:18px;background:rgba(24,95,165,0.78);border:1px solid rgba(110,170,235,0.8);color:#eaf4ff;font-size:1.05rem;cursor:pointer;z-index:90;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(2px);box-shadow:0 2px 10px rgba(24,95,165,0.5);animation:scrollFabBounce 1.8s ease-in-out infinite;transition:opacity 0.3s;}
+.scroll-down-fab{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;min-width:78px;height:38px;padding:0 14px;border-radius:19px;background:rgba(24,95,165,0.82);border:1px solid rgba(110,170,235,0.8);color:#eaf4ff;cursor:pointer;z-index:90;display:none;align-items:center;justify-content:center;gap:5px;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(2px);box-shadow:0 2px 10px rgba(24,95,165,0.5);animation:scrollFabBounce 1.8s ease-in-out infinite;transition:opacity 0.3s;}
 .scroll-down-fab:active{transform:translateX(-50%) scale(0.9);}
 .scroll-down-fab.fab-green{background:rgba(20,90,55,0.62);border:1px solid rgba(90,180,120,0.7);color:#dff6e6;box-shadow:0 2px 10px rgba(20,90,55,0.45);}
 .scroll-down-fab.fab-yellow{background:rgba(200,150,10,0.72);border:1px solid rgba(245,200,66,0.85);color:#2a1c00;box-shadow:0 2px 10px rgba(200,150,10,0.45);}
@@ -383,7 +385,17 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 <button id="sound-toggle" class="sound-toggle" onclick="toggleSound()" title="サウンド切り替え">🔊</button>
 <button id="menu-toggle" class="menu-toggle" onclick="toggleGameMenu()" title="メニュー" style="display:none">⋮</button>
 <button id="rules-toggle" class="rules-toggle" onclick="openRulesDuringGame()" title="ルール確認">📖</button>
-<button id="scroll-down-fab" class="scroll-down-fab" onclick="scrollActiveScreenToBottom()" title="一番下へ">▼</button>
+<button id="score-toggle" class="score-toggle" onclick="openScorePopup()" title="現在の得点">📊</button>
+<div id="score-popup-overlay" class="uiconfirm-overlay hidden" onclick="if(event.target===this)closeScorePopup()">
+  <div style="background:linear-gradient(160deg,#fdf8ed,#f5edd8);border:2px solid var(--gold-dark);border-radius:16px;padding:16px;max-width:420px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,0.5)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:1.1rem;font-weight:900;color:#8a6500">📊 現在の得点</div>
+      <button onclick="closeScorePopup()" style="background:#e0d5b0;border:none;border-radius:50%;width:32px;height:32px;font-size:1.1rem;font-weight:900;color:#5a4a10;cursor:pointer">✕</button>
+    </div>
+    <table class="score-table" id="popup-score-table"></table>
+  </div>
+</div>
+<button id="scroll-down-fab" class="scroll-down-fab" onclick="scrollActiveScreenToBottom()" title="下へスクロール"><span style="font-size:0.78rem;font-weight:900;letter-spacing:1px">下へ</span><span style="font-size:0.9rem;line-height:1">▼</span></button>
 <div class="notif" id="notif"></div>
 <div id="celebration-overlay" class="hidden"></div>
 
@@ -577,7 +589,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     </div>
 
     <div class="panel">
-      <div class="panel-title">👥 参加者 <span id="lobby-player-count" style="color:#888;font-weight:400;font-size:0.85rem">(1)</span></div>
+      <div class="panel-title">👥 参加者 <span id="lobby-player-count" style="color:#444;font-weight:400;font-size:0.85rem">(1)</span></div>
       <div id="lobby-players-list"></div>
     </div>
 
@@ -586,24 +598,24 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         <div class="panel-title">⚙️ ゲーム設定（ホスト）</div>
 
         <div style="margin-top:10px">
-          <label style="font-size:0.8rem;color:#666;display:block;margin-bottom:4px">🎯 ラウンド数</label>
+          <label style="font-size:0.8rem;color:#333;display:block;margin-bottom:4px">🎯 ラウンド数</label>
           <input type="tel" id="online-rounds" value="5" min="1" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'');onlineSettingChanged()">
         </div>
 
         <div style="margin-top:10px">
-          <label style="font-size:0.8rem;color:#666;display:block;margin-bottom:4px">💰 初期点数</label>
+          <label style="font-size:0.8rem;color:#333;display:block;margin-bottom:4px">💰 初期点数</label>
           <input type="tel" id="online-initial" value="5000" min="1" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'');onlineSettingChanged()">
         </div>
 
         <div style="margin-top:10px">
-          <label style="font-size:0.8rem;color:#666;display:block;margin-bottom:4px">📉 最低ベット額</label>
+          <label style="font-size:0.8rem;color:#333;display:block;margin-bottom:4px">📉 最低ベット額</label>
           <input type="tel" id="online-minbet" value="250" min="0" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'');onlineSettingChanged()">
           <div id="online-minbet-warn" style="display:none;font-size:0.75rem;color:var(--red);margin-top:4px;padding:6px;background:#fff5f5;border-left:3px solid var(--red);border-radius:4px"></div>
-          <div style="font-size:0.7rem;color:#888;margin-top:3px">💡 初期持ち金の5%以上で設定してください</div>
+          <div style="font-size:0.7rem;color:#444;margin-top:3px">💡 初期持ち金の5%以上で設定してください</div>
         </div>
 
         <div style="margin-top:10px">
-          <label style="font-size:0.8rem;color:#666;display:block;margin-bottom:4px">👑 親ボーナス率（%）</label>
+          <label style="font-size:0.8rem;color:#333;display:block;margin-bottom:4px">👑 親ボーナス率（%）</label>
           <div style="display:flex;gap:4px;margin-bottom:6px" id="online-bonus-presets">
             <button type="button" class="bonus-preset-btn" onclick="onlineSetBonusPreset(0)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">0%</button>
             <button type="button" class="bonus-preset-btn" onclick="onlineSetBonusPreset(25)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">25%</button>
@@ -612,20 +624,20 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
             <button type="button" class="bonus-preset-btn" onclick="onlineSetBonusPreset(100)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">100%</button>
           </div>
           <input type="tel" id="online-bonus" value="50" min="0" max="100" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'');onlineBonusManualChanged();onlineSettingChanged()" placeholder="任意の値も入力できます">
-          <div id="online-bonus-n2-notice" style="display:none;font-size:0.75rem;color:#666;margin-top:4px;padding:6px;background:#f0f4ff;border-left:3px solid #1a5fcc;border-radius:4px">
+          <div id="online-bonus-n2-notice" style="display:none;font-size:0.75rem;color:#333;margin-top:4px;padding:6px;background:#f0f4ff;border-left:3px solid #1a5fcc;border-radius:4px">
             ℹ️ 2人プレイ時は親ボーナスが自動的に0%に固定されます（仕様）
           </div>
         </div>
 
         <div style="margin-top:10px">
-          <label style="font-size:0.8rem;color:#666;display:block;margin-bottom:4px">📝 お題選択方式</label>
+          <label style="font-size:0.8rem;color:#333;display:block;margin-bottom:4px">📝 お題選択方式</label>
           <select id="online-topic-mode" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box;background:white" onchange="onlineSettingChanged()">
             <option value="all">全員が1つ選ぶ→ランダム抽選</option>
             <option value="children">子だけが選ぶ（親は待機）→ランダム抽選</option>
           </select>
         </div>
 
-        <div style="margin-top:14px;padding:10px;background:rgba(245,200,66,0.1);border-radius:6px;font-size:0.75rem;color:#888">
+        <div style="margin-top:14px;padding:10px;background:rgba(245,200,66,0.1);border-radius:6px;font-size:0.75rem;color:#444">
           💡 設定はリアルタイムで参加者にも反映されます
         </div>
       </div>
@@ -636,7 +648,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div id="lobby-guest-info" style="display:none;margin:20px 10px">
       <div class="panel">
         <div class="panel-title">⚙️ ゲーム設定</div>
-        <div style="font-size:0.85rem;line-height:2;color:#666" id="lobby-settings-display">
+        <div style="font-size:0.85rem;line-height:2;color:#333" id="lobby-settings-display">
           ホストの設定を待っています...
         </div>
       </div>
@@ -655,7 +667,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
   <div class="scroll-content">
     <div class="panel" style="background:linear-gradient(135deg,#1a3d2a,#0d2a1a);border:2px solid #2a5a3a">
       <div style="text-align:center;color:#aef5a0;font-size:0.85rem;font-weight:700" id="online-topic-instruction">あなたの好きなお題を1つ選んでください</div>
-      <div style="text-align:center;color:#888;font-size:0.75rem;margin-top:6px" id="online-topic-waiting"></div>
+      <div style="text-align:center;color:#444;font-size:0.75rem;margin-top:6px" id="online-topic-waiting"></div>
     </div>
 
     <!-- カテゴリ選択ステップ（子用：最初に表示される） -->
@@ -733,7 +745,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div id="lottery-display" style="background:linear-gradient(135deg,#f5c842,#d4a020);color:#000;padding:30px 40px;border-radius:16px;font-size:1.3rem;font-weight:900;min-width:280px;max-width:90%;text-align:center;box-shadow:0 0 40px rgba(245,200,66,0.6);transition:all 0.1s">準備中...</div>
     <div id="lottery-result-info" style="display:none;margin-top:30px;text-align:center">
       <div style="color:#aef5a0;font-size:1.1rem;font-weight:700">🎉 決定！</div>
-      <div id="lottery-chosen-by" style="color:#888;font-size:0.85rem;margin-top:10px"></div>
+      <div id="lottery-chosen-by" style="color:#444;font-size:0.85rem;margin-top:10px"></div>
     </div>
   </div>
 </div>
@@ -763,13 +775,9 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 
     <!-- 子用 賭け入力エリア -->
     <div id="ob-ko-area">
-      <!-- 全員の得点 -->
-      <div class="panel" style="padding:10px 12px">
-        <div class="panel-title">📊 現在の得点</div>
-        <table class="score-table" id="ob-score-table"></table>
-      </div>
       <div class="panel">
         <div class="panel-title">🎰 賭けの種類</div>
+        <div style="font-size:0.85rem;color:#333;line-height:1.5;margin-bottom:8px;background:rgba(245,200,66,0.14);border-radius:6px;padding:7px 9px">💡 配当（倍率）は<strong>人気で変動</strong>。みんなが選ばない「穴」ほど当てると高配当。難しい賭けほど高倍率。</div>
         <div class="bet-types">
           <div class="bet-type-btn active" onclick="onlineSelectBetType('tansho',this)"><div class="bet-name">単勝</div><div class="bet-desc">1位をズバリ当てる</div></div>
           <div class="bet-type-btn" onclick="onlineSelectBetType('fukusho',this)"><div class="bet-name">複勝</div><div class="bet-desc">選んだ1頭が<br>3位以内ならOK</div></div>
@@ -784,14 +792,14 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div class="panel" id="ob-buymethod-panel" style="display:none">
         <div class="panel-title">🎯 買い方</div>
         <div id="ob-buymethod-tabs" style="display:flex;gap:6px;flex-wrap:wrap"></div>
-        <div style="font-size:0.75rem;color:#888;margin-top:6px" id="ob-buymethod-hint"></div>
+        <div style="font-size:0.75rem;color:#444;margin-top:6px" id="ob-buymethod-hint"></div>
       </div>
       <div class="panel"><div class="panel-title" id="ob-horse-title">🏇 馬を選ぶ（1頭）</div><div class="horse-grid" id="ob-horse-grid"></div></div>
       <!-- フォーメーション用UI: 各位ごとに馬を選ぶ -->
       <div class="panel" id="ob-formation-panel" style="display:none">
         <div class="panel-title">🎯 フォーメーション設定</div>
         <div id="ob-formation-positions"></div>
-        <div style="font-size:0.75rem;color:#888;margin-top:6px">各位に馬を選んでください（複数可）</div>
+        <div style="font-size:0.75rem;color:#444;margin-top:6px">各位に馬を選んでください（複数可）</div>
       </div>
       <!-- 流し用UI: 軸馬1頭 + 相手馬 -->
       <div class="panel" id="ob-nagashi-panel" style="display:none">
@@ -809,10 +817,12 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div id="ob-combo-info" style="display:none;font-size:0.85rem;color:#fff;background:rgba(245,200,66,0.15);border:1px solid var(--gold);border-radius:8px;padding:8px 12px;margin:8px 10px;text-align:center"></div>
       <div class="panel">
         <div class="panel-title">💴 ベット額</div>
-        <div id="ob-bet-hint" style="font-size:0.75rem;color:#888;margin-bottom:8px">最低500点 / 1点単位でOK</div>
-        <div id="ob-bet-display" style="background:#1a1a1a;border-radius:10px;padding:14px 16px;text-align:right;font-size:1.8rem;font-weight:900;color:var(--gold);letter-spacing:2px;min-height:58px;margin-bottom:10px">0</div>
+        <div id="ob-bet-hint" style="font-size:0.75rem;color:#444;margin-bottom:8px">最低500点 / 1点単位でOK</div>
+        <div id="ob-bet-display" onclick="focusOnlineBetInput()" style="background:#1a1a1a;border-radius:10px;padding:14px 16px;text-align:right;font-size:1.8rem;font-weight:900;color:var(--gold);letter-spacing:2px;min-height:58px;margin-bottom:6px;cursor:text">0</div>
+        <div style="text-align:center;font-size:0.72rem;color:#555;margin-bottom:8px">👆 上の枠をタップして数字を入力</div>
+        <input id="ob-bet-native-input" inputmode="numeric" pattern="[0-9]*" oninput="onOnlineBetNativeInput(this.value)" style="position:absolute;opacity:0;height:1px;width:1px;pointer-events:none;left:-9999px">
         <div id="ob-point-presets" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
-        <div id="ob-keypad" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
+        <div id="ob-keypad" style="display:none;grid-template-columns:repeat(3,1fr);gap:8px"></div>
       </div>
       <div style="margin:10px"><button class="btn btn-secondary" onclick="onlineAddBetToCart()" style="background:linear-gradient(135deg,#1a6a3a,#0d4a28);color:#fff;border:none;box-shadow:0 3px 8px rgba(26,106,58,0.4)">➕ この賭けをカートに追加</button></div>
       <!-- 複数券種カート -->
@@ -826,18 +836,13 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 
     <!-- 親用 順位入力エリア -->
     <div id="ob-oya-area" style="display:none">
-      <!-- 全員の持ち点（親も見れる） -->
-      <div class="panel" style="padding:10px 12px">
-        <div class="panel-title">📊 現在の得点</div>
-        <table class="score-table" id="ob-oya-score-table"></table>
-      </div>
       <div class="panel" style="background:linear-gradient(135deg,#1a3d2a,#0d2a1a);border:2px solid #7dff7d">
         <div style="color:#aef5a0;font-size:0.85rem;line-height:1.5">👑 <strong>あなた自身</strong>の順位（1位→2位→3位）を入力してください</div>
         <div style="color:#5dcc5d;font-size:0.75rem;margin-top:4px">他のプレイヤーには見えません</div>
       </div>
       <div class="panel">
         <div class="panel-title">🏆 あなたの順位を入力</div>
-        <div style="font-size:0.8rem;color:#888;margin-bottom:10px">タップして 1位→2位→3位 の順に選んでください</div>
+        <div style="font-size:0.8rem;color:#444;margin-bottom:10px">タップして 1位→2位→3位 の順に選んでください</div>
         <div class="horse-grid" id="ob-oya-horse-grid"></div>
       </div>
       <div class="panel"><div class="panel-title">📊 入力内容</div><div id="ob-oya-preview"><div class="empty">馬を選んでください</div></div></div>
@@ -914,7 +919,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         <div style="color:white;font-size:1.4rem;font-weight:900" id="osc-name">—</div>
         <div style="color:#aaa;font-size:0.8rem;margin-top:6px">持ち点 <span id="osc-points">5000</span> 点</div>
         <div style="margin:20px 0;color:#aaa;font-size:0.9rem">このラウンドは賭けずに見送ります</div>
-        <div style="color:#888;font-size:0.75rem">点数の増減はありません</div>
+        <div style="color:#444;font-size:0.75rem">点数の増減はありません</div>
       </div>
     </div>
     <div style="margin:10px">
@@ -1080,7 +1085,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px" id="playerCountBtns"></div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
         <input type="tel" id="custom-player-count" placeholder="2〜30人を直接入力も可" style="flex:1;margin-top:0;padding:10px" oninput="this.value=this.value.replace(/[^0-9]/g,'');handleCustomPlayerCount(this.value)">
-        <span style="font-size:0.85rem;color:#888;white-space:nowrap">人</span>
+        <span style="font-size:0.85rem;color:#444;white-space:nowrap">人</span>
       </div>
       <div id="player-count-error" style="display:none;color:#e74c3c;font-size:0.8rem;font-weight:700;margin-top:6px"></div>
     </div>
@@ -1094,7 +1099,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px" id="roundCountBtns"></div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
         <input type="tel" id="custom-rounds" placeholder="自由入力（例：12）" style="flex:1;margin-top:0;padding:10px" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-        <span style="font-size:0.85rem;color:#888;white-space:nowrap">R（1以上）</span>
+        <span style="font-size:0.85rem;color:#444;white-space:nowrap">R（1以上）</span>
       </div>
     </div>
     <div class="panel"><div class="panel-title">💰 初期点数</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px" id="initialPointBtns"></div></div>
@@ -1102,8 +1107,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <!-- 詳細設定 -->
     <div class="panel" style="border-color:#bbb;background:#f5f5f5">
       <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleAdvanced()">
-        <div style="font-size:0.8rem;font-weight:700;color:#666">⚙️ 詳細設定（任意）</div>
-        <div id="advanced-arrow" style="font-size:0.8rem;color:#999">▼</div>
+        <div style="font-size:0.8rem;font-weight:700;color:#333">⚙️ 詳細設定（任意）</div>
+        <div id="advanced-arrow" style="font-size:0.8rem;color:#555">▼</div>
       </div>
       <div id="advanced-panel" style="display:none;margin-top:12px">
         <div style="font-size:0.75rem;color:#aaa;margin-bottom:10px;background:#fff3cd;border-radius:6px;padding:8px;border:1px solid #ffc107">
@@ -1112,14 +1117,14 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         <label style="display:block;margin-bottom:4px">初期点数（自由入力）</label>
         <div style="display:flex;align-items:center;gap:8px">
           <input type="tel" id="custom-initial-points" placeholder="例：10000" style="flex:1;margin-top:0" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-          <span style="font-size:0.85rem;color:#888;white-space:nowrap">点（1以上）</span>
+          <span style="font-size:0.85rem;color:#444;white-space:nowrap">点（1以上）</span>
         </div>
         <label style="display:block;margin-top:12px;margin-bottom:4px">最低ベット額（自由入力）</label>
         <div style="display:flex;align-items:center;gap:8px">
           <input type="tel" id="custom-min-bet" placeholder="未入力で初期点数の5%（例:250）" style="flex:1;margin-top:0" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-          <span style="font-size:0.85rem;color:#888;white-space:nowrap">点（0以上）</span>
+          <span style="font-size:0.85rem;color:#444;white-space:nowrap">点（0以上）</span>
         </div>
-        <div style="font-size:0.7rem;color:#888;margin-top:3px">💡 初期持ち金の5%以上で設定してください（未入力なら自動で5%）</div>
+        <div style="font-size:0.7rem;color:#444;margin-top:3px">💡 初期持ち金の5%以上で設定してください（未入力なら自動で5%）</div>
         <label style="display:block;margin-top:12px;margin-bottom:4px">親ボーナス割合（プリセット + 自由入力）</label>
         <div style="display:flex;gap:4px;margin-bottom:6px">
           <button type="button" onclick="offlineSetBonusPreset(0)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">0%</button>
@@ -1130,12 +1135,12 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <input type="tel" id="custom-oya-bonus" placeholder="例：50" style="flex:1;margin-top:0" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-          <span style="font-size:0.85rem;color:#888;white-space:nowrap">%（0以上）</span>
+          <span style="font-size:0.85rem;color:#444;white-space:nowrap">%（0以上）</span>
         </div>
 
         <!-- 賭け方説明（パリミュチュエル方式） -->
         <div style="margin-top:14px;padding-top:12px;border-top:1px solid #ddd">
-          <div style="font-size:0.8rem;font-weight:700;color:#666;margin-bottom:8px">🎰 賭け方（7種類）</div>
+          <div style="font-size:0.8rem;font-weight:700;color:#333;margin-bottom:8px">🎰 賭け方（7種類）</div>
           <div style="background:#f9f5e8;border:1px solid var(--gold);border-radius:8px;padding:10px;font-size:0.75rem;line-height:1.6">
             <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px">
               <strong>単勝</strong><span>1位を当てる</span>
@@ -1199,7 +1204,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div style="color:#7dff7d;font-size:0.8rem;font-weight:900;margin-bottom:4px">🗳️ 子のみなさんへ</div>
       <div style="color:#5dcc5d;font-size:0.8rem;line-height:1.6" id="rs-ko-instruction">みんなで相談して、<strong style="color:white">親の〇〇さん</strong>へのお題を決めましょう！<br>代表者がタップして確定してください。<br><span style="color:#aaa;font-size:0.72rem">（親は見ているだけでOK）</span></div>
     </div>
-    <div class="panel"><div class="panel-title">📋 現在の得点</div><table class="score-table" id="rs-score-table"></table></div>
+    <div class="panel" style="display:none"><table class="score-table" id="rs-score-table"></table></div>
     <div class="panel">
       <div class="panel-title">🎯 お題を選ぶ（子で相談）</div>
       <div id="category-step">
@@ -1253,7 +1258,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         <button onclick="resetConfirmStep()" style="background:var(--gold);border:none;border-radius:6px;color:#1a1a1a;font-size:0.8rem;font-weight:900;cursor:pointer;padding:6px 14px;margin-top:10px">← お題を選び直す</button>
       </div>
 
-      <button style="margin-top:10px;background:none;border:1px solid #bbb;border-radius:6px;color:#888;font-size:0.75rem;font-weight:700;cursor:pointer;padding:5px 12px;display:inline-block;width:auto" onclick="goTo('screen-topics')">＋ お題を追加・管理する</button>
+      <button style="margin-top:10px;background:none;border:1px solid #bbb;border-radius:6px;color:#444;font-size:0.75rem;font-weight:700;cursor:pointer;padding:5px 12px;display:inline-block;width:auto" onclick="goTo('screen-topics')">＋ お題を追加・管理する</button>
     </div>
     <div style="margin:10px" id="betting-phase-btn" style="display:none">
     </div>
@@ -1283,13 +1288,13 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div style="color:#88ccff;font-size:0.95rem;font-weight:900;margin-bottom:4px" id="bet-role-banner">🎯 〇〇さんが予想！</div>
       <div style="color:#ffffff;font-size:0.9rem;font-weight:700;line-height:1.5" id="bet-role-sub">このお題の順位を予想して賭けてください</div>
     </div>
-    <!-- 全員の得点 -->
-    <div class="panel" style="padding:10px 12px">
-      <div class="panel-title">📊 現在の得点</div>
+    <!-- 全員の得点（📊ショートカットで表示） -->
+    <div class="panel" style="display:none">
       <table class="score-table" id="bet-score-table"></table>
     </div>
     <div class="panel">
       <div class="panel-title">🎰 賭けの種類</div>
+      <div style="font-size:0.85rem;color:#333;line-height:1.5;margin-bottom:8px;background:rgba(245,200,66,0.14);border-radius:6px;padding:7px 9px">💡 配当（倍率）は<strong>人気で変動</strong>。みんなが選ばない「穴」ほど当てると高配当。難しい賭けほど高倍率。</div>
       <div class="bet-types">
         <div class="bet-type-btn active" onclick="selectBetType('tansho',this)"><div class="bet-name">単勝</div><div class="bet-desc">1位をズバリ当てる</div></div>
         <div class="bet-type-btn" onclick="selectBetType('fukusho',this)"><div class="bet-name">複勝</div><div class="bet-desc">選んだ1頭が<br>3位以内ならOK</div></div>
@@ -1304,14 +1309,14 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div class="panel" id="off-buymethod-panel" style="display:none">
       <div class="panel-title">🎯 買い方</div>
       <div id="off-buymethod-tabs" style="display:flex;gap:6px;flex-wrap:wrap"></div>
-      <div style="font-size:0.75rem;color:#888;margin-top:6px" id="off-buymethod-hint"></div>
+      <div style="font-size:0.75rem;color:#444;margin-top:6px" id="off-buymethod-hint"></div>
     </div>
     <div class="panel" id="off-horse-panel"><div class="panel-title" id="horse-panel-title">🏇 馬を選ぶ（1頭）</div><div class="horse-grid" id="horse-grid"></div></div>
     <!-- フォーメーション用UI -->
     <div class="panel" id="off-formation-panel" style="display:none">
       <div class="panel-title">🎯 フォーメーション設定</div>
       <div id="off-formation-positions"></div>
-      <div style="font-size:0.75rem;color:#888;margin-top:6px">各位に馬を選んでください（複数可）</div>
+      <div style="font-size:0.75rem;color:#444;margin-top:6px">各位に馬を選んでください（複数可）</div>
     </div>
     <!-- 流し用UI -->
     <div class="panel" id="off-nagashi-panel" style="display:none">
@@ -1329,10 +1334,12 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div id="off-combo-info" style="display:none;font-size:0.85rem;background:rgba(245,200,66,0.15);border:1px solid var(--gold-dark);border-radius:8px;padding:8px 12px;margin:8px 0;text-align:center"></div>
     <div class="panel">
       <div class="panel-title">💴 ベット額</div>
-      <div id="bet-hint" style="font-size:0.75rem;color:#888;margin-bottom:8px">最低500点 / 1点単位でOK</div>
-      <div id="bet-display" style="background:#1a1a1a;border-radius:10px;padding:14px 16px;text-align:right;font-size:1.8rem;font-weight:900;color:var(--gold);letter-spacing:2px;min-height:58px;margin-bottom:10px">0</div>
+      <div id="bet-hint" style="font-size:0.75rem;color:#444;margin-bottom:8px">最低500点 / 1点単位でOK</div>
+      <div id="bet-display" onclick="focusBetInput()" style="background:#1a1a1a;border-radius:10px;padding:14px 16px;text-align:right;font-size:1.8rem;font-weight:900;color:var(--gold);letter-spacing:2px;min-height:58px;margin-bottom:6px;cursor:text">0</div>
+      <div style="text-align:center;font-size:0.72rem;color:#555;margin-bottom:8px">👆 上の枠をタップして数字を入力</div>
+      <input id="bet-native-input" inputmode="numeric" pattern="[0-9]*" oninput="onBetNativeInput(this.value)" style="position:absolute;opacity:0;height:1px;width:1px;pointer-events:none;left:-9999px">
       <div id="point-preset-btns" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
-      <div id="bet-keypad" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
+      <div id="bet-keypad" style="display:none;grid-template-columns:repeat(3,1fr);gap:8px"></div>
     </div>
     <div style="margin:10px"><button class="btn btn-secondary" onclick="addBetToCart()" style="background:linear-gradient(135deg,#1a6a3a,#0d4a28);color:#fff;border:none;box-shadow:0 3px 8px rgba(26,106,58,0.4)">➕ この賭けをカートに追加</button></div>
     <!-- 複数券種カート -->
@@ -1400,9 +1407,9 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         <div style="font-size:3.5rem;margin-bottom:12px;filter:grayscale(1)">🏇</div>
         <div style="color:#aaa;font-size:0.65rem;letter-spacing:3px;margin-bottom:6px">BETTOR</div>
         <div style="color:white;font-size:1.4rem;font-weight:900;margin-bottom:4px" id="sc-player-name">—</div>
-        <div style="color:#888;font-size:0.8rem;margin-bottom:20px">持ち点 <span id="sc-player-points" style="font-weight:700;color:#aaa">5000</span> 点</div>
+        <div style="color:#444;font-size:0.8rem;margin-bottom:20px">持ち点 <span id="sc-player-points" style="font-weight:700;color:#aaa">5000</span> 点</div>
         <div style="border-top:1px dashed #444;margin-bottom:20px"></div>
-        <div style="color:#888;font-size:0.85rem;line-height:1.8;margin-bottom:6px">
+        <div style="color:#444;font-size:0.85rem;line-height:1.8;margin-bottom:6px">
           賭け額が <span style="color:#e74c3c;font-weight:900;font-size:1.1rem">0点</span> です。<br>
           このレースは見送りますか？
         </div>
@@ -1447,7 +1454,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     </div>
     <div class="panel">
       <div class="panel-title">🏆 実際の順位を入力</div>
-      <div style="font-size:0.8rem;color:#888;margin-bottom:10px">タップして 1位→2位→3位 の順に選んでください</div>
+      <div style="font-size:0.8rem;color:#444;margin-bottom:10px">タップして 1位→2位→3位 の順に選んでください</div>
       <div class="horse-grid" id="result-horse-grid"></div>
     </div>
     <div class="panel"><div class="panel-title">📊 入力内容</div><div id="result-preview-content"><div class="empty">馬を選んでください</div></div></div>
@@ -1542,7 +1549,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div class="panel">
       <div class="panel-title">🔥 親と子ってなに？</div>
       <p style="font-size:0.86rem;line-height:1.85"><strong>親</strong>＝お題の順位を決める出題者。1人が親になる。<br><strong>子</strong>＝親の順位を予想して賭ける人。</p>
-      <p style="font-size:0.83rem;line-height:1.8;margin-top:6px;color:#666">毎ラウンド、親は順番に交代。みんなが順番に「<strong>読まれる側（予想される側）</strong>」になる。</p>
+      <p style="font-size:0.83rem;line-height:1.8;margin-top:6px;color:#333">毎ラウンド、親は順番に交代。みんなが順番に「<strong>読まれる側（予想される側）</strong>」になる。</p>
     </div>
 
     <div class="panel">
@@ -2876,12 +2883,12 @@ function renderRulesScreen(){
   if(bp){
     const note2p=`<div style="background:rgba(26,95,204,0.1);border-left:4px solid #1a5fcc;border-radius:0 8px 8px 0;padding:10px 13px;margin-top:8px;font-size:0.95rem;line-height:1.6;color:#0d3d7a">ℹ️ <strong>2人プレイは親ボーナスなし</strong>（一律0%）</div>`;
     if(r===0){
-      bp.innerHTML=`<p style="font-size:1rem;line-height:1.8"><strong>親ボーナスなし（0%）</strong>の設定です。</p><div style="font-size:0.9rem;color:#888;margin-top:6px">💡 詳細設定で割合を変更できます（初期50%）</div>${note2p}`;
+      bp.innerHTML=`<p style="font-size:1rem;line-height:1.8"><strong>親ボーナスなし（0%）</strong>の設定です。</p><div style="font-size:0.9rem;color:#444;margin-top:6px">💡 詳細設定で割合を変更できます（初期50%）</div>${note2p}`;
     } else {
       const bonus2500=Math.floor(1000*5*(r/100));
       bp.innerHTML=`<p style="font-size:1rem;line-height:1.8">子が的中すると、配当の<strong>${r}%が親にもボーナス</strong>。子は満額もらえます。</p>
       <div style="background:#f9eef9;border:1px solid var(--oya-light);border-radius:8px;padding:11px 13px;margin-top:8px;font-size:0.95rem;line-height:1.7">例）子が1000点で×5的中 → <strong style="color:var(--oya)">子：+5,000点</strong> / <strong style="color:var(--oya)">親：+${bonus2500.toLocaleString()}点</strong></div>
-      <div style="font-size:0.92rem;color:#7a5a8a;margin-top:8px;line-height:1.6">💡 親も「絶妙なお題選び」で稼げる<span style="color:#999">（割合は設定で変更可）</span></div>${note2p}`;
+      <div style="font-size:0.92rem;color:#7a5a8a;margin-top:8px;line-height:1.6">💡 親も「絶妙なお題選び」で稼げる<span style="color:#555">（割合は設定で変更可）</span></div>${note2p}`;
     }
   }
   // 賭け方カード（難易度色つき。説明＋オッズ範囲を BET_CONFIG / BET_DESCS から動的生成）
@@ -3036,11 +3043,11 @@ function pickRandom(){
       <div style="flex:1">
         <div style="font-size:0.65rem;background:${cat?.color||'#ddd'};color:${cat?.textColor||'#333'};display:inline-block;padding:2px 8px;border-radius:8px;font-weight:700;margin-bottom:4px">${cat?.label||''}</div>
         <div style="font-weight:900;font-size:1.05rem;color:#1a1a1a">${pick.title}</div>
-        <div style="font-size:0.7rem;color:#999;margin-top:4px">残り未使用 ${remaining} 問</div>
+        <div style="font-size:0.7rem;color:#555;margin-top:4px">残り未使用 ${remaining} 問</div>
       </div>
     </div>
     <div style="border-top:1px dashed #ddd;padding-top:8px">
-      <div style="font-size:0.7rem;color:#999;margin-bottom:6px">選択肢（中身を確認してから決めましょう）：</div>
+      <div style="font-size:0.7rem;color:#555;margin-bottom:6px">選択肢（中身を確認してから決めましょう）：</div>
       <div style="display:flex;flex-direction:column;gap:4px">${choicesHtml}</div>
     </div>
   </div>`;
@@ -3477,7 +3484,7 @@ function setBetInputVal(v){
     if(offBuyMethod==='simple'||points===0){
       display.textContent=num>0?num.toLocaleString()+' 点':'0';
     } else {
-      display.innerHTML=`<span style="font-size:0.5em;color:#bbb">1点あたり</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#999"> × ${points}通り = </span><br><span style="font-size:0.75em">合計 ${total.toLocaleString()}点</span>`;
+      display.innerHTML=`<span style="font-size:0.5em;color:#bbb">1点あたり</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#555"> × ${points}通り = </span><br><span style="font-size:0.75em">合計 ${total.toLocaleString()}点</span>`;
     }
     display.style.color=total>p.points?'#e74c3c':num>=minBet?'#2ecc71':'var(--gold)';
   }catch(e){}
@@ -3507,13 +3514,22 @@ function renderKeypad(max){
       hintEl.textContent=`【1点あたり】最低${minBet.toLocaleString()}点 / 持ち点 最大${max.toLocaleString()}点`;
     }
   }
-  keypadEl.style.display='grid';presetEl.style.display='flex';
+  keypadEl.style.display='none';presetEl.style.display='flex';
   const presets=minBet===0?[0,500,1000,2000,3000,5000]:[minBet,500,1000,2000,3000,5000];
   [...new Set(presets)].filter(n=>n<=max&&n>=0).forEach(n=>{const b=document.createElement('button');b.className='point-btn';b.textContent=n===0?'0点':n.toLocaleString();b.addEventListener('click',()=>setBetInputVal(String(n)));presetEl.appendChild(b);});
   const ai=document.createElement('button');ai.className='point-btn';ai.textContent='ALL IN';ai.style.cssText='background:#ffebee;border-color:#e57373;color:#c0392b;font-weight:900';ai.addEventListener('click',()=>setBetInputVal(String(max)));presetEl.appendChild(ai);
   ['1','2','3','4','5','6','7','8','9','00','0','DEL'].forEach(k=>{const b=document.createElement('button');b.textContent=k==='DEL'?'⌫':k;b.style.cssText=`padding:16px 4px;font-size:${k==='DEL'?'1.3rem':'1.2rem'};font-weight:700;border:2px solid #ddd;border-radius:10px;background:${k==='DEL'?'#fee':'white'};cursor:pointer;-webkit-tap-highlight-color:transparent;`;b.addEventListener('click',(e)=>{e.preventDefault();handleKey(k,max);});keypadEl.appendChild(b);});
 }
 function handleKey(k,max){try{if(k==='DEL')betInputVal=betInputVal.slice(0,-1);else if(k==='00'){if(betInputVal===''||betInputVal==='0')return;betInputVal+='00';}else{if(betInputVal==='0')betInputVal=k;else betInputVal+=k;}const num=parseInt(betInputVal)||0;if(num>max)betInputVal=String(max);betInputVal=betInputVal.replace(/^0+(\d)/,'$1');setBetInputVal(betInputVal);}catch(e){}}
+// ベット額：枠タップでスマホ標準キーボードを出す
+function focusBetInput(){ try{ const inp=document.getElementById('bet-native-input'); if(inp){ inp.value=(betInputVal&&betInputVal!=='0')?betInputVal:''; inp.focus(); inp.click(); } }catch(e){} }
+function onBetNativeInput(v){ try{
+  let max=Infinity; try{ const p=state.players[state.koPlayers[state.currentBetPlayerIndex]]; if(p){ const remaining=Math.max(0,p.points-(typeof offCartTotal==='function'?offCartTotal(state.koPlayers[state.currentBetPlayerIndex]):0)); max=remaining; } }catch(e){}
+  let digits=String(v).replace(/[^0-9]/g,'').replace(/^0+(\d)/,'$1');
+  let num=parseInt(digits)||0; if(num>max){ num=max; digits=String(max); const inp=document.getElementById('bet-native-input'); if(inp)inp.value=digits; }
+  setBetInputVal(digits===''?'0':digits);
+}catch(e){} }
+window.focusBetInput=focusBetInput; window.onBetNativeInput=onBetNativeInput;
 function validateBetAmount(){}
 function showBetConfirm(){
   const koIdx=state.koPlayers[state.currentBetPlayerIndex];
@@ -3583,10 +3599,10 @@ function showBetConfirm(){
     const joiner=isOrd?' → ':' - ';
     let html=`<div style="color:var(--gold);font-weight:700;margin-bottom:6px">${combinations.length}通りの組み合わせ:</div><div style="max-height:240px;overflow-y:auto">`;
     combinations.slice(0,40).forEach(combo=>{
-      const items=combo.map(hi=>`<span class="ibadge ${HC[hi]}" style="width:24px;height:24px;font-size:0.75rem;display:inline-flex;align-items:center;justify-content:center;margin:0 1px">${hi+1}</span>`).join(`<span style="color:#888;margin:0 2px">${joiner}</span>`);
+      const items=combo.map(hi=>`<span class="ibadge ${HC[hi]}" style="width:24px;height:24px;font-size:0.75rem;display:inline-flex;align-items:center;justify-content:center;margin:0 1px">${hi+1}</span>`).join(`<span style="color:#444;margin:0 2px">${joiner}</span>`);
       html+=`<div style="background:rgba(255,255,255,0.06);border-radius:6px;padding:5px 8px;margin-bottom:3px;display:flex;align-items:center;flex-wrap:wrap">${items}</div>`;
     });
-    if(combinations.length>40)html+=`<div style="color:#888;font-size:0.75rem;text-align:center;padding:6px">...他 ${combinations.length-40}点</div>`;
+    if(combinations.length>40)html+=`<div style="color:#444;font-size:0.75rem;text-align:center;padding:6px">...他 ${combinations.length-40}点</div>`;
     html+='</div>';
     document.getElementById('bc-horses').innerHTML=html;
   }
@@ -4222,7 +4238,7 @@ function renderRoundResultBody(){
     const oyaNm=oyaP?escapeHtml(oyaP.name):'親';
     rrActualTitle.innerHTML=`🏆 親（${oyaNm}）の実際の順位`;
   }
-  document.getElementById('rr-actual-result').innerHTML=state.actualResult.map((hi,i)=>`<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div><div style="font-weight:700">${t.horses[hi]}</div><div style="font-size:0.7rem;color:#888">${i+1}位</div></div></div>`).join('')+
+  document.getElementById('rr-actual-result').innerHTML=state.actualResult.map((hi,i)=>`<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div><div style="font-weight:700">${t.horses[hi]}</div><div style="font-size:0.7rem;color:#444">${i+1}位</div></div></div>`).join('')+
   `<div style="margin-top:10px;padding-top:10px;border-top:1px dashed #e0d8c0">
     <div style="font-size:0.7rem;color:#aaa;margin-bottom:6px">📋 全選択肢</div>
     ${t.horses.map((h,i)=>{
@@ -4252,13 +4268,13 @@ function renderRoundResultBody(){
         const sels=(br.selections||[]);
         const selBadges=sels.map((hi,si)=>`<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.62rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(ordered?'<span style="color:#bbb;font-size:0.7rem;margin:0 1px">→</span>':'<span style="color:#bbb;font-size:0.7rem;margin:0 2px">・</span>');
         const oddsTag=(br.hit&&br.odds>0)?oddsChipHtml(br.odds):'';
-        const methodInfo=(methodName)?`<span style="font-size:0.62rem;color:#888">${methodName} ${br.hitCount||0}/${br.totalCount||0}</span>`:'';
+        const methodInfo=(methodName)?`<span style="font-size:0.62rem;color:#444">${methodName} ${br.hitCount||0}/${br.totalCount||0}</span>`:'';
         const brPayout=br.payout||0;
         return `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:${brWin?'rgba(46,204,113,0.08)':'rgba(0,0,0,0.03)'};border:1px solid ${brWin?'rgba(46,204,113,0.25)':'#eee'};border-radius:6px;flex-wrap:wrap">
           <span style="background:var(--gold-dark);color:#fff;font-size:0.65rem;font-weight:900;padding:1px 7px;border-radius:9px;white-space:nowrap">${betNames[br.betType]||br.betType}</span>
           <span style="display:inline-flex;align-items:center">${selBadges}</span>
           ${methodInfo}
-          <span style="font-size:0.68rem;color:#888">${(br.amount||0).toLocaleString()}点</span>
+          <span style="font-size:0.68rem;color:#444">${(br.amount||0).toLocaleString()}点</span>
           ${oddsTag}
           <span style="margin-left:auto;font-weight:900;font-size:0.78rem;color:${brWin?'var(--green-light)':'#999'}">${brWin?'+'+brPayout.toLocaleString():'—'}</span>
         </div>`;
@@ -4269,7 +4285,7 @@ function renderRoundResultBody(){
           <span class="player-result-name">${r.name} <span class="ko-badge">子</span> <span style="background:#6a3aa0;color:#fff;font-size:0.6rem;font-weight:900;padding:1px 6px;border-radius:8px;margin-left:4px">複数券種</span> ${_rsM.badge}</span>
           ${_rsM.amountHtml}
         </div>
-        <div style="font-size:0.72rem;color:#888;margin:4px 0">合計 ${(r.amount||0).toLocaleString()}点賭け → 配当合計 ${(r.payout||0).toLocaleString()}点（${r.betResults.length}券種）</div>
+        <div style="font-size:0.72rem;color:#444;margin:4px 0">合計 ${(r.amount||0).toLocaleString()}点賭け → 配当合計 ${(r.payout||0).toLocaleString()}点（${r.betResults.length}券種）</div>
         <div style="display:flex;flex-direction:column;gap:4px;margin-top:4px">${unitCards}</div>
       </div>`;
     }
@@ -4280,7 +4296,7 @@ function renderRoundResultBody(){
     const selBadges=(r.selections||[]).map((hi,si)=>`
       <span style="display:inline-flex;align-items:center;gap:3px;margin-right:2px">
         <span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.7rem">${hi+1}</span>
-        ${isOrdered && si<3 && posLabels[si] ? `<span style="font-size:0.7rem;color:#666">${posLabels[si]}</span>` : ''}
+        ${isOrdered && si<3 && posLabels[si] ? `<span style="font-size:0.7rem;color:#333">${posLabels[si]}</span>` : ''}
       </span>
     `).join(isOrdered ? '<span style="color:#bbb;font-size:0.8rem;margin:0 2px">→</span>' : '<span style="color:#bbb;font-size:0.8rem;margin:0 4px">・</span>');
 
@@ -4290,7 +4306,7 @@ function renderRoundResultBody(){
     const actualBadges=state.actualResult.slice(0,actualCount).map((hi,si)=>`
       <span style="display:inline-flex;align-items:center;gap:3px;margin-right:2px">
         <span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.7rem">${hi+1}</span>
-        <span style="font-size:0.7rem;color:#666">${posLabels[si]||""}</span>
+        <span style="font-size:0.7rem;color:#333">${posLabels[si]||""}</span>
       </span>
     `).join('<span style="color:#bbb;font-size:0.8rem;margin:0 2px">→</span>');
 
@@ -4300,8 +4316,8 @@ function renderRoundResultBody(){
         <span class="player-result-name">${r.name} <span class="ko-badge">子</span> ${_rs.badge}</span>
         ${_rs.amountHtml}
       </div>
-      ${(r.buyMethod && r.buyMethod !== 'simple') ? `<div style="font-size:0.75rem;color:#888;margin-top:4px">${(typeof BUY_METHOD_NAMES !== 'undefined' && BUY_METHOD_NAMES[r.buyMethod]) || r.buyMethod} / <strong>${r.hitCount || 0}/${r.totalCount || 0}通り的中</strong> (1点あたり${(r.unitAmount||0).toLocaleString()}点×${r.totalCount||0}通り)</div>` : ''}
-      <div class="player-result-detail" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px">${betNames[r.betType]} / ${r.amount.toLocaleString()}点賭け${(r.odds||r.multiplier)>0?` ${oddsChipHtml(r.odds||r.multiplier)}`:''}${isWin&&r.payout?` <span style="font-size:0.75rem;color:#777;font-weight:700">配当 ${r.payout.toLocaleString()}点</span>`:''}</div>
+      ${(r.buyMethod && r.buyMethod !== 'simple') ? `<div style="font-size:0.75rem;color:#444;margin-top:4px">${(typeof BUY_METHOD_NAMES !== 'undefined' && BUY_METHOD_NAMES[r.buyMethod]) || r.buyMethod} / <strong>${r.hitCount || 0}/${r.totalCount || 0}通り的中</strong> (1点あたり${(r.unitAmount||0).toLocaleString()}点×${r.totalCount||0}通り)</div>` : ''}
+      <div class="player-result-detail" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px">${betNames[r.betType]} / ${r.amount.toLocaleString()}点賭け${(r.odds||r.multiplier)>0?` ${oddsChipHtml(r.odds||r.multiplier)}`:''}${isWin&&r.payout?` <span style="font-size:0.75rem;color:#444;font-weight:700">配当 ${r.payout.toLocaleString()}点</span>`:''}</div>
       <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;padding:6px 8px;background:${isWin?'rgba(245,200,66,0.08)':'rgba(0,0,0,0.03)'};border-radius:6px;border:1px solid ${isWin?'rgba(245,200,66,0.2)':'#eee'}">
         <div style="display:flex;align-items:center;gap:2px;flex-wrap:wrap">
           <span style="font-size:0.65rem;color:#aaa;margin-right:4px">予想</span>
@@ -4313,7 +4329,7 @@ function renderRoundResultBody(){
           ${actualBadges}
         </div>
       </div>
-      ${(r.buyMethod && r.buyMethod !== 'simple' && (r.winningSubs||[]).length > 0) ? `<div style="margin-top:6px;padding:6px 8px;background:rgba(46,204,113,0.06);border-radius:6px"><div style="font-size:0.65rem;color:#888;margin-bottom:2px">当たった${r.winningSubs.length}通りの明細:</div>${r.winningSubs.map(s=>{const isOrd=(r.betType==='umatan'||r.betType==='sanrentan');const joiner=isOrd?'→':'-';const combo=(s.selection||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:16px;height:16px;font-size:0.6rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#aaa;font-size:0.6rem;margin:0 1px">${joiner}</span>`);return `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(46,204,113,0.08);border-radius:5px;margin-top:3px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center">${combo}</span>${oddsChipHtml(s.odds, '', '0.7rem')}<span style="font-size:0.65rem;color:#777;font-weight:700">配当${(s.payout||0).toLocaleString()}</span></div>`;}).join('')}</div>` : ''}
+      ${(r.buyMethod && r.buyMethod !== 'simple' && (r.winningSubs||[]).length > 0) ? `<div style="margin-top:6px;padding:6px 8px;background:rgba(46,204,113,0.06);border-radius:6px"><div style="font-size:0.65rem;color:#444;margin-bottom:2px">当たった${r.winningSubs.length}通りの明細:</div>${r.winningSubs.map(s=>{const isOrd=(r.betType==='umatan'||r.betType==='sanrentan');const joiner=isOrd?'→':'-';const combo=(s.selection||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:16px;height:16px;font-size:0.6rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#aaa;font-size:0.6rem;margin:0 1px">${joiner}</span>`);return `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(46,204,113,0.08);border-radius:5px;margin-top:3px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center">${combo}</span>${oddsChipHtml(s.odds, '', '0.7rem')}<span style="font-size:0.65rem;color:#444;font-weight:700">配当${(s.payout||0).toLocaleString()}</span></div>`;}).join('')}</div>` : ''}
     </div>`;
   }).join('');
   // 各結果行に長押し/タップで「馬券＋当選ハイライト」詳細を付与
@@ -4512,7 +4528,7 @@ function resultStatusHtml(r){
     };
   }
   return {
-    badge:`<span style="background:rgba(120,120,120,0.25);color:#999;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px;border:1px solid rgba(120,120,120,0.4)">非当選</span>`,
+    badge:`<span style="background:rgba(120,120,120,0.25);color:#555;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px;border:1px solid rgba(120,120,120,0.4)">非当選</span>`,
     amountHtml:`<span class="player-result-change" style="color:#bbb;font-size:0.85rem">—</span>`
   };
 }
@@ -4810,7 +4826,29 @@ function nextRound(){
   }
 }
 
-function renderScoreTable(tid){const sorted=[...state.players].map((p,i)=>({...p,oi:i})).sort((a,b)=>b.points-a.points);document.getElementById(tid).innerHTML=`<tr><th>順位</th><th>プレイヤー</th><th>点数</th><th>役割</th></tr>${sorted.map((p,i)=>`<tr class="${i===0?'leader':''}"><td><span class="rank-badge rank-${i<3?i+1:'other'}">${i+1}</span></td><td style="text-align:left">${p.name}</td><td style="font-weight:700">${p.points.toLocaleString()}</td><td>${p.oi===state.oyaIndex?'<span class="oya-badge">親</span>':'<span class="ko-badge">子</span>'}</td></tr>`).join('')}`;}
+function renderScoreTable(tid){const el=document.getElementById(tid);if(!el)return;const sorted=[...state.players].map((p,i)=>({...p,oi:i})).sort((a,b)=>b.points-a.points);el.innerHTML=`<tr><th>順位</th><th>プレイヤー</th><th>点数</th><th>役割</th></tr>${sorted.map((p,i)=>`<tr class="${i===0?'leader':''}"><td><span class="rank-badge rank-${i<3?i+1:'other'}">${i+1}</span></td><td style="text-align:left">${p.name}</td><td style="font-weight:700">${p.points.toLocaleString()}</td><td>${p.oi===state.oyaIndex?'<span class="oya-badge">親</span>':'<span class="ko-badge">子</span>'}</td></tr>`).join('')}`;}
+
+// 📊 得点ポップアップ（音量ボタンの隣のショートカット）。オンライン/オフラインを自動判定
+function openScorePopup(){
+  try {
+    const ov=document.getElementById('score-popup-overlay');
+    if(!ov) return;
+    // オンライン画面が表示中か判定
+    const onlineScreens=['screen-online-betting','screen-online-bet-wait','screen-online-reveal','screen-online-roundresult','screen-online-final','screen-online-topic-select','screen-online-oya-confirm'];
+    const onOnline = onlineScreens.some(id=>{const el=document.getElementById(id);return el&&el.classList.contains('active');});
+    if(onOnline && window._lastOnlineGame && typeof renderOnlineScoreTable==='function'){
+      renderOnlineScoreTable('popup-score-table', window._lastOnlineGame);
+    } else if(state && Array.isArray(state.players) && state.players.length){
+      renderScoreTable('popup-score-table');
+    } else {
+      document.getElementById('popup-score-table').innerHTML='<tr><td style="padding:14px;color:#444">得点データがありません</td></tr>';
+    }
+    ov.classList.remove('hidden');
+  } catch(e){ console.error('score popup error:', e); }
+}
+function closeScorePopup(){ const ov=document.getElementById('score-popup-overlay'); if(ov) ov.classList.add('hidden'); }
+window.openScorePopup = openScorePopup;
+window.closeScorePopup = closeScorePopup;
 
 function renderFinalScreen(){
   const sorted=[...state.players].map((p,i)=>({...p,oi:i})).sort((a,b)=>b.points-a.points);
@@ -4840,7 +4878,7 @@ function renderFinalScreen(){
         ${topicObj?'<span style="font-size:0.65rem;color:#aaa;white-space:nowrap;margin-left:8px">長押し/右クリックで選択肢確認</span>':''}
       </div>
       <div class="history-round-body">
-        <div style="font-size:0.75rem;color:#888;margin-bottom:4px">結果：${r.result.map((n,i)=>`${i+1}位 ${n}`).join(' / ')}</div>
+        <div style="font-size:0.75rem;color:#444;margin-bottom:4px">結果：${r.result.map((n,i)=>`${i+1}位 ${n}`).join(' / ')}</div>
         <div style="font-size:0.66rem;color:#aaa;margin-bottom:4px">各行をタップで馬券の詳細</div>
         ${r.playerResults.map((p,pi)=>{const win=!p.skipped&&((p.payout&&p.payout>0)||p.change>0);const net=(typeof p.change==='number')?p.change:((p.payout||0)-(p.amount||0));const disp=p.skipped?'<span style="color:#aaa">見送り</span>':(win?`<span style="color:var(--green-light);font-weight:700">🎯 +${net.toLocaleString()}</span>`:`<span style="color:#c0392b;font-weight:700">当選なし ${net.toLocaleString()}</span>`);return `<div class="off-fin-pres-row" data-pi="${pi}" style="display:flex;justify-content:space-between;font-size:0.8rem;padding:4px 0;border-bottom:1px solid #f0e8d0;cursor:pointer"><span>${p.name} <span style="font-size:0.6rem;color:#bbb">👆</span></span>${disp}</div>`;}).join('')}
         ${r.oyaBonus>0&&state.oyaBonusRate>0?`<div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:2px 0;color:var(--oya-light)"><span>${r.oyaName}（親ボーナス）</span><span style="font-weight:700">+${r.oyaBonus.toLocaleString()}</span></div>`:''}
@@ -5411,7 +5449,7 @@ window.updateOfflineBonusLockState = function(playerCount){
     if (!noticeEl) {
       noticeEl = document.createElement('div');
       noticeEl.id = 'offline-bonus-n2-notice';
-      noticeEl.style.cssText = 'font-size:0.75rem;color:#666;margin-top:4px;padding:6px;background:#f0f4ff;border-left:3px solid #1a5fcc;border-radius:4px';
+      noticeEl.style.cssText = 'font-size:0.75rem;color:#333;margin-top:4px;padding:6px;background:#f0f4ff;border-left:3px solid #1a5fcc;border-radius:4px';
       noticeEl.innerHTML = 'ℹ️ 2人プレイ時は親ボーナスが自動的に0%に固定されます（仕様）';
       input.parentElement.appendChild(noticeEl);
     }
@@ -5941,7 +5979,7 @@ function updateTopicProgressList(selections){
     const opacity = isOffline ? '0.6' : '1';
     return `<div style="padding:8px 12px;border:1px solid #ddd;border-radius:8px;margin-bottom:6px;background:white;display:flex;align-items:center;opacity:${opacity}"><span style="flex:1;font-weight:700">${escapeHtml(p.name)}${meBadge}</span><span style="color:${color};font-weight:700;font-size:0.85rem">${status}</span></div>`;
   }).join('');
-  const summary = `<div style="text-align:center;font-size:0.85rem;color:#666;margin-bottom:8px">完了: <strong style="color:#2ecc71">${done}</strong> / ${total} 人</div>` + html;
+  const summary = `<div style="text-align:center;font-size:0.85rem;color:#333;margin-bottom:8px">完了: <strong style="color:#2ecc71">${done}</strong> / ${total} 人</div>` + html;
   // 子用
   const list1 = document.getElementById('topic-progress-list');
   if(list1) list1.innerHTML = summary;
@@ -5959,14 +5997,14 @@ function renderOnlineTopicListByCategory(category){
   listEl.innerHTML = '';
 
   if(filtered.length === 0){
-    listEl.innerHTML = '<div style="color:#888;font-size:0.85rem;padding:14px;text-align:center">このカテゴリーにはお題がありません</div>';
+    listEl.innerHTML = '<div style="color:#444;font-size:0.85rem;padding:14px;text-align:center">このカテゴリーにはお題がありません</div>';
     return;
   }
 
   function makeCard(t, parent){
     const d = document.createElement('div');
     d.style.cssText = 'padding:14px;border:2px solid #ddd;border-radius:10px;margin-bottom:8px;cursor:pointer;background:white;transition:all 0.15s;user-select:none';
-    d.innerHTML = `<div style="font-weight:700;font-size:0.95rem">${t.icon||''} ${escapeHtml(t.title)}</div><div style="font-size:0.7rem;color:#888;margin-top:4px">長押し/右クリックで選択肢を見る</div>`;
+    d.innerHTML = `<div style="font-weight:700;font-size:0.95rem">${t.icon||''} ${escapeHtml(t.title)}</div><div style="font-size:0.7rem;color:#444;margin-top:4px">長押し/右クリックで選択肢を見る</div>`;
 
     let pt = null;
     let longPressed = false;
@@ -7148,7 +7186,7 @@ function setOnlineBetInputVal(v){
     if (method === 'simple' || points === 0) {
       display.textContent = num > 0 ? num.toLocaleString() + ' 点' : '0';
     } else {
-      display.innerHTML = `<span style="font-size:0.5em;color:#bbb">1点あたり</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#999"> × ${points}通り = </span><br><span style="font-size:0.75em">合計 ${total.toLocaleString()}点</span>`;
+      display.innerHTML = `<span style="font-size:0.5em;color:#bbb">1点あたり</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#555"> × ${points}通り = </span><br><span style="font-size:0.75em">合計 ${total.toLocaleString()}点</span>`;
     }
     // 色判定: 合計が持ち点を超えたら警告色
     display.style.color = total > myPoints ? '#e74c3c' : num >= minBet ? '#2ecc71' : 'var(--gold)';
@@ -7188,7 +7226,7 @@ function renderOnlineKeypad(maxPoints){
       hintEl.textContent = `【1点あたり】最低${minBetRaw.toLocaleString()}点 / 持ち点 最大${maxPoints.toLocaleString()}点`;
     }
   }
-  keypadEl.style.display = 'grid';
+  keypadEl.style.display = 'none';
   presetEl.style.display = 'flex';
   const presets = minBetRaw === 0 ? [0, 500, 1000, 2000, 3000, 5000] : [minBetRaw, 500, 1000, 2000, 3000, 5000];
   [...new Set(presets)].filter(n => n <= maxPoints && n >= 0).forEach(n => {
@@ -7226,6 +7264,17 @@ function handleOnlineKey(k, max){
     setOnlineBetInputVal(v);
   } catch(e){}
 }
+// オンライン：枠タップでスマホ標準キーボードを出す
+window.focusOnlineBetInput = function(){ try{ const inp=document.getElementById('ob-bet-native-input'); if(inp){ const cur=window.onlineBet&&window.onlineBet.betInputVal; inp.value=(cur&&cur!=='0')?cur:''; inp.focus(); inp.click(); } }catch(e){} };
+window.onOnlineBetNativeInput = function(v){ try{
+  let max = Infinity;
+  try{ const g=window.online.game; const pts=(g&&g.points&&g.points[window.online.playerId])||0; const cart=(typeof onlineCartTotal==='function')?onlineCartTotal():0; max=Math.max(0, pts-cart); }catch(e){}
+  let digits=String(v).replace(/[^0-9]/g,'').replace(/^0+(\d)/,'$1');
+  let num=parseInt(digits)||0;
+  if(num>max){ num=max; digits=String(max); const inp=document.getElementById('ob-bet-native-input'); if(inp)inp.value=digits; }
+  window.onlineBet.betInputVal = (digits===''?'0':digits);
+  setOnlineBetInputVal(window.onlineBet.betInputVal);
+}catch(e){} };
 
 // 子が「確定」を押した
 // ============================================================
@@ -7623,10 +7672,10 @@ window.onlineSubmitKoBet = function(){
     combinations.slice(0, 30).forEach(combo => {
       const isOrd = (window.onlineBet.betType === 'umatan' || window.onlineBet.betType === 'sanrentan');
       const joiner = isOrd ? ' → ' : ' - ';
-      const items = combo.map(hi => `<span class="ibadge ${HC[hi]}" style="width:22px;height:22px;font-size:0.75rem;display:inline-flex;align-items:center;justify-content:center;margin:0 1px">${hi+1}</span>`).join(`<span style="color:#888;margin:0 2px">${joiner}</span>`);
+      const items = combo.map(hi => `<span class="ibadge ${HC[hi]}" style="width:22px;height:22px;font-size:0.75rem;display:inline-flex;align-items:center;justify-content:center;margin:0 1px">${hi+1}</span>`).join(`<span style="color:#444;margin:0 2px">${joiner}</span>`);
       horsesHtml += `<div style="background:rgba(245,200,66,0.08);border-radius:6px;padding:4px 8px;margin-bottom:3px;display:flex;align-items:center;flex-wrap:wrap">${items}</div>`;
     });
-    if (combinations.length > 30) horsesHtml += `<div style="color:#888;font-size:0.75rem;text-align:center;padding:6px">...他 ${combinations.length - 30}点</div>`;
+    if (combinations.length > 30) horsesHtml += `<div style="color:#444;font-size:0.75rem;text-align:center;padding:6px">...他 ${combinations.length - 30}点</div>`;
     horsesHtml += '</div>';
   }
   document.getElementById('obc-horses').innerHTML = horsesHtml;
@@ -8816,13 +8865,13 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
           const sels=(br.selections||[]);
           const selBadges=sels.map(hi=>`<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.62rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(ordered?'<span style="color:#aaa;font-size:0.7rem;margin:0 1px">→</span>':'<span style="color:#aaa;font-size:0.7rem;margin:0 2px">・</span>');
           const oddsTag=(br.hit&&br.odds>0)?window.oddsChipHtml(br.odds):'';
-          const mInfo=mName?`<span style="font-size:0.62rem;color:#888">${mName} ${br.hitCount||0}/${br.totalCount||0}</span>`:'';
+          const mInfo=mName?`<span style="font-size:0.62rem;color:#444">${mName} ${br.hitCount||0}/${br.totalCount||0}</span>`:'';
           const brPayout=br.payout||0;
           return `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:${brWin?'rgba(46,204,113,0.1)':'rgba(0,0,0,0.04)'};border:1px solid ${brWin?'rgba(46,204,113,0.3)':'rgba(255,255,255,0.08)'};border-radius:6px;flex-wrap:wrap">
             <span style="background:var(--gold);color:#1a1a1a;font-size:0.65rem;font-weight:900;padding:1px 7px;border-radius:9px;white-space:nowrap">${betNames[br.betType]||br.betType}</span>
             <span style="display:inline-flex;align-items:center">${selBadges}</span>
             ${mInfo}
-            <span style="font-size:0.68rem;color:#888">${(br.amount||0).toLocaleString()}点</span>
+            <span style="font-size:0.68rem;color:#444">${(br.amount||0).toLocaleString()}点</span>
             ${oddsTag}
             <span style="margin-left:auto;font-weight:900;font-size:0.78rem;color:${brWin?'#2ecc71':'#999'}">${brWin?'+'+brPayout.toLocaleString():'—'}</span>
           </div>`;
@@ -8831,7 +8880,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
         const _rsM = window.resultStatusHtml(r);
         return `<div class="player-result ${hitClass}">
           <div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:#6a3aa0;color:#fff;font-size:0.6rem;font-weight:900;padding:1px 6px;border-radius:8px;margin-left:4px">複数券種</span> ${_rsM.badge}</span>${_rsM.amountHtml}</div>
-          <div style="font-size:0.7rem;color:#888;margin:4px 0;display:flex;gap:6px;align-items:center;flex-wrap:wrap">合計 ${(r.amount||0).toLocaleString()}点 → 配当合計 ${(r.payout||0).toLocaleString()}点（${r.betResults.length}券種）<span style="color:#aaa">実際:</span>${actualBadgesM}</div>
+          <div style="font-size:0.7rem;color:#444;margin:4px 0;display:flex;gap:6px;align-items:center;flex-wrap:wrap">合計 ${(r.amount||0).toLocaleString()}点 → 配当合計 ${(r.payout||0).toLocaleString()}点（${r.betResults.length}券種）<span style="color:#aaa">実際:</span>${actualBadgesM}</div>
           <div style="display:flex;flex-direction:column;gap:4px;margin-top:4px">${unitCards}</div>
         </div>`;
       }
@@ -8862,12 +8911,12 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
         const joiner = isOrd ? '→' : '-';
         const rows = wsubs.map(s => {
           const combo = (s.selection || []).map(hi => `<span class="ibadge ${HC[hi]}" style="width:16px;height:16px;font-size:0.6rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#aaa;font-size:0.6rem;margin:0 1px">${joiner}</span>`);
-          return `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(46,204,113,0.08);border-radius:5px;margin-top:3px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center">${combo}</span>${window.oddsChipHtml(s.odds, "", "0.7rem")}<span style="font-size:0.65rem;color:#777;font-weight:700">配当${(s.payout||0).toLocaleString()}</span></div>`;
+          return `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(46,204,113,0.08);border-radius:5px;margin-top:3px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center">${combo}</span>${window.oddsChipHtml(s.odds, "", "0.7rem")}<span style="font-size:0.65rem;color:#444;font-weight:700">配当${(s.payout||0).toLocaleString()}</span></div>`;
         }).join('');
-        subDetailHtml = `<div style="margin-top:6px;padding:6px 8px;background:rgba(0,0,0,0.03);border-radius:6px"><div style="font-size:0.65rem;color:#888;margin-bottom:2px">当たった${wsubs.length}通りの明細:</div>${rows}</div>`;
+        subDetailHtml = `<div style="margin-top:6px;padding:6px 8px;background:rgba(0,0,0,0.03);border-radius:6px"><div style="font-size:0.65rem;color:#444;margin-bottom:2px">当たった${wsubs.length}通りの明細:</div>${rows}</div>`;
       }
       const _rsS = window.resultStatusHtml(r);
-      return `<div class="player-result ${hitClass}"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> ${r.skipped?'<span style="background:#999;color:#fff;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px">見送り</span>':_rsS.badge}</span>${r.skipped?'<span class="player-result-change" style="color:#aaa">±0</span>':_rsS.amountHtml}</div>${r.skipped?'':`<div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px">${betInfo}${(r.odds||r.multiplier)>0?`${window.oddsChipHtml(r.odds||r.multiplier, (buyMethod!=='simple'&&wsubs.length>1?'最高':''))}${r.payout?`<span style="font-size:0.7rem;color:#777;font-weight:700">配当 ${r.payout.toLocaleString()}</span>`:''}`:''}</div>${subDetailHtml}`}</div>`;
+      return `<div class="player-result ${hitClass}"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> ${r.skipped?'<span style="background:#999;color:#fff;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px">見送り</span>':_rsS.badge}</span>${r.skipped?'<span class="player-result-change" style="color:#aaa">±0</span>':_rsS.amountHtml}</div>${r.skipped?'':`<div class="player-result-detail" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px">${betInfo}${(r.odds||r.multiplier)>0?`${window.oddsChipHtml(r.odds||r.multiplier, (buyMethod!=='simple'&&wsubs.length>1?'最高':''))}${r.payout?`<span style="font-size:0.7rem;color:#444;font-weight:700">配当 ${r.payout.toLocaleString()}</span>`:''}`:''}</div>${subDetailHtml}`}</div>`;
     }).join('');
     // 各結果行に長押し/タップで「馬券＋当選ハイライト」詳細を付与
     (function(){
@@ -9042,6 +9091,7 @@ function triggerHitCelebration(hitType){
 
 function renderOnlineScoreTable(tableId, game, opts){
   opts = opts || {};
+  try { window._lastOnlineGame = game; } catch(e){}
   const players = getOnlinePlayersArray();
   const points = game.points || {};
   const oyaIdx = game.oyaIndex || 0;
@@ -9338,7 +9388,7 @@ function enterOnlineFinal(game){
               <div style="color:#aaa;font-size:0.7rem;margin-bottom:2px">親が選んだ順位</div>
               ${oyaRanking}
             </div>
-            <div style="text-align:right;margin-top:6px;font-size:0.64rem;color:#888;font-weight:600">👆 タップで子の結果</div>
+            <div style="text-align:right;margin-top:6px;font-size:0.64rem;color:#444;font-weight:600">👆 タップで子の結果</div>
           </div>`;
         }).join('');
         // 各ラウンドのタップで子の結果（当選/非当選＋収支）を表示。各行タップで馬券詳細
@@ -9352,10 +9402,10 @@ function enterOnlineFinal(game){
               const win=!p.skipped&&((p.payout&&p.payout>0)||p.change>0);
               const net=(typeof p.change==='number')?p.change:((p.payout||0)-(p.amount||0));
               const disp=p.skipped?'<span style="color:#aaa">見送り</span>':(win?`<span style="color:#7dff7d;font-weight:900">🎯 +${net.toLocaleString()}点</span>`:`<span style="color:#ff9a9a;font-weight:700">当選なし ${net.toLocaleString()}点</span>`);
-              return `<div class="uiconfirm-betline ofn-pres-row" data-round="${rnd}" data-pi="${pi}" style="justify-content:space-between;cursor:pointer"><span>${escapeHtml(p.name)} <span style="font-size:0.6rem;color:#999">👆</span></span>${disp}</div>`;
+              return `<div class="uiconfirm-betline ofn-pres-row" data-round="${rnd}" data-pi="${pi}" style="justify-content:space-between;cursor:pointer"><span>${escapeHtml(p.name)} <span style="font-size:0.6rem;color:#555">👆</span></span>${disp}</div>`;
             }).join('');
             const oyaB=(h.oyaBonus>0)?`<div class="uiconfirm-summary"><span style="color:#e0a0e0">👑 ${escapeHtml(h.oyaName)}（親ボーナス）+${h.oyaBonus.toLocaleString()}点</span></div>`:'';
-            uiConfirm({ icon:'📜', title:`ROUND ${h.round} の結果`, bodyHtml:`<div style="font-size:0.78rem;color:#c8bfa8;margin-bottom:6px">${h.topicIcon||'🎯'} ${escapeHtml(h.topic||'')}</div><div style="font-size:0.68rem;color:#888;margin-bottom:8px">各行をタップで馬券の詳細が見られます</div>${rows}${oyaB}`, okText:'閉じる', cancelText:null });
+            uiConfirm({ icon:'📜', title:`ROUND ${h.round} の結果`, bodyHtml:`<div style="font-size:0.78rem;color:#c8bfa8;margin-bottom:6px">${h.topicIcon||'🎯'} ${escapeHtml(h.topic||'')}</div><div style="font-size:0.68rem;color:#444;margin-bottom:8px">各行をタップで馬券の詳細が見られます</div>${rows}${oyaB}`, okText:'閉じる', cancelText:null });
             // ダイアログ描画後に各行へ詳細ハンドラを付与
             setTimeout(()=>{
               document.querySelectorAll('.ofn-pres-row').forEach(row=>{
@@ -9523,6 +9573,12 @@ function updateRulesButtonVisibility(onlineGameActive){
   const menuBtn = document.getElementById('menu-toggle');
   const menuShown = menuBtn && menuBtn.style.display !== 'none';
   rbtn.style.right = menuShown ? '104px' : '58px';
+  // 📊得点ショートカット：ルールボタンと同じ表示条件、ひとつ左に配置
+  const sbtn = document.getElementById('score-toggle');
+  if(sbtn){
+    sbtn.style.display = show ? 'flex' : 'none';
+    sbtn.style.right = menuShown ? '150px' : '104px';
+  }
   updateScrollFabVisibility();
 }
 
