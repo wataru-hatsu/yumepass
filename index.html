@@ -50,7 +50,7 @@ var toHalfDigits = window.toHalfDigits;
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Racing+Sans+One&display=swap');
-:root{--green:#1a6b2a;--green-light:#2d9e44;--gold:#f5c842;--gold-dark:#c9960a;--red:#c0392b;--white:#f9f5e8;--dark:#1a1a1a;--panel:#fdf8ed;--border:#c9960a;--oya:#8b1a8b;--oya-light:#c060c0;}
+:root{--green:#1a6b2a;--green-light:#2d9e44;--gold:#f5c842;--gold-dark:#c9960a;--red:#c0392b;--white:#f9f5e8;--dark:#1a1a1a;--panel:#fdf8ed;--border:#c9960a;--oya:#8b1a8b;--oya-light:#c060c0;--safe-top:env(safe-area-inset-top);--icon-d:40px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 html{background:#0a0f0d;min-height:100vh;overscroll-behavior:none;font-size:18px;}
 body{font-family:'Noto Sans JP',sans-serif;background:#0a0f0d;color:var(--dark);min-height:100vh;overflow-x:hidden;overscroll-behavior:none;}
@@ -79,8 +79,8 @@ html.fx-active{background:#000;}
 #screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 12%,rgba(245,200,66,0.10),transparent 42%),radial-gradient(circle at 85% 80%,rgba(26,107,42,0.18),transparent 46%);}
 .screen>*{position:relative;z-index:1;}
-.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:0 104px;padding-top:var(--band-pt,env(safe-area-inset-top));text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);height:var(--band-h,calc(40px + env(safe-area-inset-top)));min-height:var(--band-h,calc(40px + env(safe-area-inset-top)));box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;position:sticky;top:0;z-index:999;}
-.header::before,.round-header::before{content:'';position:absolute;top:0;left:0;right:0;height:var(--band-pt,env(safe-area-inset-top));background:#000;z-index:1;}
+.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);box-sizing:border-box;padding:0 104px;padding-top:var(--safe-top);text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);height:calc(var(--safe-top) + var(--icon-d) + 2px);min-height:calc(var(--safe-top) + var(--icon-d) + 2px);display:flex;flex-direction:column;align-items:center;justify-content:center;position:sticky;top:0;z-index:999;}
+.header::before,.round-header::before{content:'';position:absolute;top:0;left:0;right:0;height:var(--safe-top);background:#000;z-index:1;}
 .menu-toggle,.rules-toggle,.score-toggle,.sound-toggle{box-shadow:0 2px 5px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.14);}
 .menu-toggle:active,.rules-toggle:active,.score-toggle:active,.sound-toggle:active{box-shadow:0 1px 2px rgba(0,0,0,0.4),inset 0 1px 2px rgba(0,0,0,0.3);}
 .header h1{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:0.95rem;letter-spacing:1px;text-shadow:0 0 14px rgba(245,200,66,0.5),0 2px 4px rgba(0,0,0,0.6);}
@@ -180,7 +180,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .privacy-msg{color:#aaa;font-size:0.85rem;margin-bottom:30px;line-height:1.8;}
 .oya-badge{display:inline-block;background:var(--oya);color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
 .ko-badge{display:inline-block;background:#2a7a2a;color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
-.round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);text-align:center;padding:0 104px;padding-top:var(--band-pt,env(safe-area-inset-top));height:var(--band-h,calc(40px + env(safe-area-inset-top)));min-height:var(--band-h,calc(40px + env(safe-area-inset-top)));box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:0.74rem;letter-spacing:2px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.3);position:sticky;top:0;z-index:999;}
+.round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);box-sizing:border-box;text-align:center;padding:0 104px;padding-top:var(--safe-top);height:calc(var(--safe-top) + var(--icon-d) + 2px);min-height:calc(var(--safe-top) + var(--icon-d) + 2px);display:flex;align-items:center;justify-content:center;font-size:0.74rem;letter-spacing:2px;font-weight:800;border-bottom:2px solid var(--gold);position:sticky;top:0;z-index:999;}
 .flip-msg{background:#f5c842;color:#333;text-align:center;padding:8px;font-weight:700;font-size:0.85rem;border-top:2px solid #c9960a;}
 .oya-banner{background:linear-gradient(135deg,var(--oya) 0%,#5a005a 100%);color:white;text-align:center;padding:10px;font-size:0.85rem;font-weight:700;}
 .reveal-card{background:linear-gradient(160deg,rgba(255,255,255,0.96),rgba(252,248,238,0.92));border:1px solid rgba(201,150,10,0.3);border-radius:10px;padding:8px 10px;margin-bottom:6px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
@@ -390,11 +390,11 @@ body.modal-open{overflow:hidden !important;}
 @keyframes manbakenGold{0%{transform:translateY(0) scale(1);opacity:0;}10%{opacity:1;}100%{transform:translateY(110vh) scale(0.4);opacity:0;}}
 
 /* サウンドON/OFFボタン */
-.sound-toggle{position:fixed;top:env(safe-area-inset-top);right:12px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.sound-toggle{position:fixed;top:var(--safe-top);right:12px;width:var(--icon-d);height:var(--icon-d);border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .sound-toggle:active{transform:scale(0.92);}
-.menu-toggle{position:fixed;top:env(safe-area-inset-top);left:12px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;line-height:1;padding:0;}
-.rules-toggle{position:fixed;top:env(safe-area-inset-top);left:58px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
-.score-toggle{position:fixed;top:env(safe-area-inset-top);right:58px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.menu-toggle{position:fixed;top:var(--safe-top);left:12px;width:var(--icon-d);height:var(--icon-d);border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;line-height:1;padding:0;}
+.rules-toggle{position:fixed;top:var(--safe-top);left:58px;width:var(--icon-d);height:var(--icon-d);border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.score-toggle{position:fixed;top:var(--safe-top);right:58px;width:var(--icon-d);height:var(--icon-d);border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .score-toggle:active{transform:scale(0.92);}
 .menu-toggle:active{transform:scale(0.92);}
 /* 一番下までスクロールする矢印（小さく半透明・邪魔にならない） */
@@ -2805,29 +2805,7 @@ const BASE_TOPICS = [
   {id:'base55',category:'g3',title:"お金をかけるべき自己投資は？",icon:"💰",horses:["ジム", "歯列矯正", "マッチングアプリ", "良質な寝具", "旅行", "全身脱毛", "英会話教室", "人脈づくり（交流・会食）"]},
   {id:'base56',category:'g3',title:"人に言いたくないことは？",icon:"🤫",horses:["体重", "貯金額", "MBTI", "最寄り駅", "学歴", "推し", "家庭環境", "年齢"]},
 ];
-window.onload=()=>{const s=localStorage.getItem('sanrentan_topics');state.topics=s?JSON.parse(s):[];initSetupScreen();renderTopicsScreen();initNewTopicOptions();initCategoryBtns();alignHeadersToIcons();setTimeout(alignHeadersToIcons,150);setTimeout(alignHeadersToIcons,500);};
-// 帯（ヘッダー）の下辺（金色の線）を、固定アイコンの円の下端にぴったり合わせる。
-// env(safe-area)の解釈差による上下ズレを実測で吸収する。円の直径(40px)は変えない。
-function alignHeadersToIcons(){
-  try{
-    const icon=document.getElementById('menu-toggle')||document.getElementById('rules-toggle');
-    if(!icon) return;
-    // アイコンは display:none のことがあるので、一時的に可視化して計測
-    const prevDisp=icon.style.display;
-    if(getComputedStyle(icon).display==='none'){ icon.style.visibility='hidden'; icon.style.display='flex'; }
-    const r=icon.getBoundingClientRect();
-    icon.style.display=prevDisp; icon.style.visibility='';
-    const iconTop=r.top;          // 円の上端（=safe-area分）
-    const iconBottom=r.bottom;    // 円の下端
-    if(iconBottom<=0) return;
-    // 帯の高さ = 円の下端まで（線が円の下端に来る）。content-box計算のため border 2px を含める。
-    document.documentElement.style.setProperty('--band-h', iconBottom+'px');
-    document.documentElement.style.setProperty('--band-pt', iconTop+'px');
-  }catch(e){}
-}
-window.alignHeadersToIcons=alignHeadersToIcons;
-window.addEventListener('resize',()=>{ try{alignHeadersToIcons();}catch(e){} });
-window.addEventListener('orientationchange',()=>{ setTimeout(()=>{try{alignHeadersToIcons();}catch(e){}},200); });
+window.onload=()=>{const s=localStorage.getItem('sanrentan_topics');state.topics=s?JSON.parse(s):[];initSetupScreen();renderTopicsScreen();initNewTopicOptions();initCategoryBtns();};
 function saveTopics(){localStorage.setItem('sanrentan_topics',JSON.stringify(state.topics));}
 
 // 8択化対応: 7択のお題は8つ目をプレースホルダーで自動補完
@@ -2852,7 +2830,6 @@ try{
   const toTop=()=>{ try{ window.scrollTo(0,0); }catch(e){ window.scrollTo(0,0); } try{ if(document.scrollingElement)document.scrollingElement.scrollTop=0; }catch(e){} try{ _scr.querySelectorAll('.scroll-content').forEach(sc=>{sc.scrollTop=0;}); }catch(e){} };
   if(window.requestAnimationFrame) requestAnimationFrame(toTop);
   setTimeout(toTop,60); setTimeout(toTop,160);
-  try{ if(typeof alignHeadersToIcons==='function'){ alignHeadersToIcons(); setTimeout(alignHeadersToIcons,120); } }catch(e){}
 }catch(e){}
 if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}}
 function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
