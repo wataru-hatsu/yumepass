@@ -73,7 +73,7 @@ label{font-size:1rem !important;}
 /* 演出中はbody背景もダークに */
 body.fx-active{background:#000;}
 html.fx-active{background:#000;}
-.screen{display:none;min-height:100vh;flex-direction:column;background:linear-gradient(160deg,#0e1a14 0%,#0a0f0d 45%,#14110a 100%);}.screen.active{display:flex;}
+.screen{display:none;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;overflow:hidden;flex-direction:column;background:linear-gradient(160deg,#0e1a14 0%,#0a0f0d 45%,#14110a 100%);}.screen.active{display:flex;}
 #screen-online-oya-confirm,#screen-online-reveal{background:linear-gradient(160deg,#14110b 0%,#0c0c0e 100%);}
 #screen-online-roundresult{--result-accent:#3fd0c8;--result-accent-soft:rgba(63,208,200,0.4);--result-accent-dark:#0a4a44;--result-accent-bg:rgba(63,208,200,0.12);--result-panel1:#06302e;--result-panel2:#0a4a44;background:linear-gradient(160deg,#14110b 0%,#0c0c0e 100%);}
 #screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
@@ -172,7 +172,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 @keyframes oddsGlow{0%,100%{box-shadow:0 0 10px rgba(255,140,0,0.5),0 2px 4px rgba(0,0,0,0.3);}50%{box-shadow:0 0 20px rgba(255,170,30,0.95),0 2px 6px rgba(0,0,0,0.3);}}
 #screen-home{background:linear-gradient(180deg,#1a1a1a 0%,#0d3d1a 50%,var(--green) 100%);align-items:center;justify-content:center;padding:30px 20px;}
 .home-btns{width:100%;max-width:320px;}
-.scroll-content{flex:1;overflow-y:auto;padding-bottom:20px;}
+.scroll-content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:20px;}
 .privacy-cover{position:fixed;inset:0;background:#1a1a1a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9995;text-align:center;padding:20px;}
 .privacy-cover.hidden{display:none;}
 .privacy-icon{font-size:5rem;margin-bottom:20px;}
