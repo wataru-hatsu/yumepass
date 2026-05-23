@@ -159,7 +159,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .player-result.win{border-color:rgba(245,200,66,0.7);background:linear-gradient(135deg,#fffef7,#fff7da);box-shadow:0 2px 14px rgba(245,200,66,0.28);}
 .player-result.oya-bonus{border-color:var(--oya-light);background:linear-gradient(135deg,#fdf6fd,#f8eaf8);}
 .player-result-header{display:flex;justify-content:space-between;align-items:center;gap:8px;}
-.player-result-name{font-weight:800;font-size:0.88rem;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.player-result-name{font-weight:800;font-size:0.88rem;display:flex;align-items:center;gap:5px;flex-wrap:wrap;color:#c9960a;}
 .player-result-change{font-weight:900;font-size:0.92rem;white-space:nowrap;}
 .change-pos{color:var(--green-light);}.change-neg{color:var(--red);}.change-oya{color:var(--oya-light);}
 .player-result-detail{font-size:0.75rem;color:#444;margin-top:5px;}
@@ -1027,7 +1027,7 @@ body.modal-open{overflow:hidden !important;}
     </div>
     <!-- 全員揃ったら表示される公開ボタンエリア -->
     <div id="obw-reveal-area" style="display:none;margin:10px">
-      <button class="btn btn-primary" id="obw-reveal-btn" onclick="onlineReadyForReveal()" style="background:linear-gradient(135deg,#f5c842,#c9960a);font-size:1.1rem;padding:18px;box-shadow:0 0 20px rgba(245,200,66,0.5)">📢 賭け公開の準備OK！</button>
+      <button class="btn btn-primary" id="obw-reveal-btn" onclick="onlineReadyForReveal()" style="background:linear-gradient(135deg,#f5c842,#c9960a);font-size:1rem !important;padding:18px 10px;box-shadow:0 0 20px rgba(245,200,66,0.5);white-space:nowrap">📢 賭け公開の準備OK！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.8rem;font-weight:800;margin-left:7px">👆タップ</span></button>
       <div id="obw-reveal-status" style="text-align:center;color:#aef5a0;font-size:0.9rem;margin-top:10px;font-weight:700"></div>
     </div>
     <div class="panel" style="padding:8px 10px">
@@ -1059,7 +1059,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel" style="background:linear-gradient(135deg,#fdf8ed,#f5edd8);border:1px solid #e0c83a"><div class="panel-title" style="color:#8a6a10">🎯 子の賭け内容</div><div id="orv-bets-list"></div></div>
     <div style="color:#f5c842;text-align:center;padding:12px;font-size:0.85rem;font-weight:700">みんなで確認したら結果発表！</div>
     <div style="margin:10px">
-      <button class="btn btn-primary" id="orv-reveal-btn" onclick="onlineReadyForResult()">🎊 結果発表の準備完了！</button>
+      <button class="btn btn-primary" id="orv-reveal-btn" onclick="onlineReadyForResult()" style="font-size:1rem !important;padding:14px 10px;white-space:nowrap">🎊 結果発表の準備完了！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.8rem;font-weight:800;margin-left:7px">👆タップ</span></button>
       <div id="orv-ready-status" style="text-align:center;color:#f5c842;font-size:0.85rem;margin-top:8px"></div>
     </div>
   </div>
@@ -3607,7 +3607,11 @@ function renderKeypad(max){
 }
 function handleKey(k,max){try{if(k==='DEL')betInputVal=betInputVal.slice(0,-1);else if(k==='00'){if(betInputVal===''||betInputVal==='0')return;betInputVal+='00';}else{if(betInputVal==='0')betInputVal=k;else betInputVal+=k;}const num=parseInt(betInputVal)||0;if(num>max)betInputVal=String(max);betInputVal=betInputVal.replace(/^0+(\d)/,'$1');setBetInputVal(betInputVal);}catch(e){}}
 // ベット額：枠タップでスマホ標準キーボードを出す
-function focusBetInput(){ try{ const inp=document.getElementById('bet-native-input'); if(inp){ inp.value=(betInputVal&&betInputVal!=='0')?betInputVal:''; inp.focus(); inp.click(); } }catch(e){} }
+function focusBetInput(){ try{ const inp=document.getElementById('bet-native-input'); if(inp){ inp.value=(betInputVal&&betInputVal!=='0')?betInputVal:''; inp.focus(); inp.click(); }
+  // キーボードが上がってから、入力欄(ベット額の枠)が見える位置までスクロール
+  const scrollUp=()=>{ try{ const d=document.getElementById('bet-display'); if(d&&typeof d.scrollIntoView==='function') d.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} };
+  setTimeout(scrollUp,300); setTimeout(scrollUp,550);
+}catch(e){} }
 function onBetNativeInput(v){ try{
   let max=Infinity; try{ const p=state.players[state.koPlayers[state.currentBetPlayerIndex]]; if(p){ const remaining=Math.max(0,p.points-(typeof offCartTotal==='function'?offCartTotal(state.koPlayers[state.currentBetPlayerIndex]):0)); max=remaining; } }catch(e){}
   let digits=window.toHalfDigits(String(v)).replace(/^0+(\d)/,'$1');
@@ -6128,7 +6132,7 @@ window.onlinePickCategory = function(category){
   const titleEl = document.getElementById('online-topic-list-title');
   if(titleEl){
     const targetText = isOya ? 'あなた自身に向けたお題' : `${oyaName} さんに向けたお題`;
-    titleEl.innerHTML = `② ${targetText}を選ぼう <span style="font-size:0.78rem;color:#1a1a1a;font-weight:700">— ${categoryNames[category] || category}</span><div style="font-size:0.82rem;color:#1565c0;font-weight:800;margin-top:5px">👆 長押し/右クリックで選択肢を見る</div>`;
+    titleEl.innerHTML = `② ${targetText}を選ぼう<div style="font-size:0.95rem;color:#1a1a1a;font-weight:800;margin-top:4px">${categoryNames[category] || category}</div><div style="font-size:0.82rem;color:#1565c0;font-weight:800;margin-top:5px">👆 長押し/右クリックで選択肢を見る</div>`;
   }
 
   renderOnlineTopicListByCategory(category);
@@ -7541,7 +7545,11 @@ function handleOnlineKey(k, max){
   } catch(e){}
 }
 // オンライン：枠タップでスマホ標準キーボードを出す
-window.focusOnlineBetInput = function(){ try{ const inp=document.getElementById('ob-bet-native-input'); if(inp){ const cur=window.onlineBet&&window.onlineBet.betInputVal; inp.value=(cur&&cur!=='0')?cur:''; inp.focus(); inp.click(); } }catch(e){} };
+window.focusOnlineBetInput = function(){ try{ const inp=document.getElementById('ob-bet-native-input'); if(inp){ const cur=window.onlineBet&&window.onlineBet.betInputVal; inp.value=(cur&&cur!=='0')?cur:''; inp.focus(); inp.click(); }
+  // キーボードが上がってから、入力欄(ベット額の枠)が見える位置までスクロール
+  const scrollUp=()=>{ try{ const d=document.getElementById('ob-bet-display'); if(d&&typeof d.scrollIntoView==='function') d.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} };
+  setTimeout(scrollUp,300); setTimeout(scrollUp,550);
+}catch(e){} };
 window.onOnlineBetNativeInput = function(v){ try{
   let max = Infinity;
   try{ const g=window.online.game; const pts=(g&&g.points&&g.points[window.online.playerId])||0; const cart=(typeof onlineCartTotal==='function')?onlineCartTotal():0; max=Math.max(0, pts-cart); }catch(e){}
@@ -8460,7 +8468,7 @@ function updateBetWaitRevealButton(game){
     const btn = document.getElementById('obw-reveal-btn');
     if(btn){
       btn.disabled = myReady;
-      btn.textContent = myReady ? '✅ 準備完了済み — 他の人を待っています' : '📢 賭け公開の準備OK！';
+      btn.innerHTML = myReady ? '<span style="display:block;text-align:center;line-height:1.35">✅ 準備完了済み<br>他の人を待っています</span>' : '📢 賭け公開の準備OK！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.82rem;font-weight:800;margin-left:7px">👆タップ</span>';
       btn.style.opacity = myReady ? '0.6' : '1';
     }
     // 進捗表示
@@ -8557,7 +8565,7 @@ function enterOnlineReveal(game){
   const btn = document.getElementById('orv-reveal-btn');
   if(btn){
     btn.disabled = !!myReady;
-    btn.textContent = myReady ? '✅ 準備完了済み — 他の人を待っています' : '🎊 結果発表の準備完了！';
+    btn.innerHTML = myReady ? '<span style="display:block;text-align:center;line-height:1.35">✅ 準備完了済み<br>他の人を待っています</span>' : '🎊 結果発表の準備完了！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.82rem;font-weight:800;margin-left:7px">👆タップ</span>';
   }
   updateRevealReadyStatus(game);
 }
@@ -8575,7 +8583,7 @@ function updateRevealReadyStatus(game){
   const btn = document.getElementById('orv-reveal-btn');
   if(btn){
     btn.disabled = !!myReady;
-    btn.textContent = myReady ? '✅ 準備完了済み — 他の人を待っています' : '🎊 結果発表の準備完了！';
+    btn.innerHTML = myReady ? '<span style="display:block;text-align:center;line-height:1.35">✅ 準備完了済み<br>他の人を待っています</span>' : '🎊 結果発表の準備完了！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.82rem;font-weight:800;margin-left:7px">👆タップ</span>';
   }
 }
 
@@ -9154,7 +9162,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
     const btn = document.getElementById('orr-next-btn');
     if(btn){
       btn.disabled = !!myReady;
-      btn.textContent = myReady ? '✅ 準備完了 — 他の人を待っています' : '🔁 このラウンドをもう一度行う';
+      btn.innerHTML = myReady ? '<span style="display:block;text-align:center;line-height:1.35">✅ 準備完了<br>他の人を待っています</span>' : '🔁 このラウンドをもう一度行う';
     }
     updateNextReadyStatus(game);
     return;
@@ -9227,9 +9235,9 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
   const btn = document.getElementById('orr-next-btn');
   if(btn){
     btn.disabled = !!myReady;
-    const labelDone = isLast ? '✅ 最終結果待ち — 他の人を待っています' : '✅ 準備完了済み — 他の人を待っています';
+    const labelDone = isLast ? '<span style="display:block;text-align:center;line-height:1.35">✅ 最終結果待ち<br>他の人を待っています</span>' : '<span style="display:block;text-align:center;line-height:1.35">✅ 準備完了済み<br>他の人を待っています</span>';
     const labelTodo = isLast ? '🏆 最終結果を見る' : `次のラウンドへ (${(game.currentRound||1)+1}/${totalRounds}) →`;
-    btn.textContent = myReady ? labelDone : labelTodo;
+    btn.innerHTML = myReady ? labelDone : labelTodo;
   }
   updateNextReadyStatus(game);
   // === 高オッズ的中で結果画面をその賭け方の色に染める ===
@@ -9427,9 +9435,9 @@ function updateNextReadyStatus(game){
   const btn = document.getElementById('orr-next-btn');
   if(btn){
     btn.disabled = !!myReady;
-    const labelDone = isLast ? '✅ 最終結果待ち — 他の人を待っています' : '✅ 準備完了済み — 他の人を待っています';
+    const labelDone = isLast ? '<span style="display:block;text-align:center;line-height:1.35">✅ 最終結果待ち<br>他の人を待っています</span>' : '<span style="display:block;text-align:center;line-height:1.35">✅ 準備完了済み<br>他の人を待っています</span>';
     const labelTodo = isLast ? '🏆 最終結果を見る' : `次のラウンドへ (${(game.currentRound||1)+1}/${totalRounds}) →`;
-    btn.textContent = myReady ? labelDone : labelTodo;
+    btn.innerHTML = myReady ? labelDone : labelTodo;
   }
 }
 
@@ -9680,7 +9688,7 @@ function enterOnlineFinal(game){
             // 子の結果（ライブ結果画面と同じリッチ表示・当選ソート）
             const built = buildPlayerResultsHtml(h.playerResults);
             const oyaB=(h.oyaBonus>0)?`<div class="uiconfirm-summary"><span style="color:#9a4a9a;font-weight:800">👑 ${escapeHtml(h.oyaName)}（親ボーナス）+${h.oyaBonus.toLocaleString()}点</span></div>`:'';
-            const body = `<div style="font-size:0.85rem;color:#1a1a1a;font-weight:700;margin-bottom:8px">${h.topicIcon||'🎯'} ${escapeHtml(h.topic||'')}</div>${oyaBlock}<div style="font-size:0.72rem;color:#666;margin-bottom:6px">👆 各プレイヤーをタップで馬券の詳細</div><div id="ofn-arch-results">${built.html}</div>${oyaB}`;
+            const body = `<div style="font-size:0.85rem;color:#1a1a1a;font-weight:700;margin-bottom:8px">${h.topicIcon||'🎯'} ${escapeHtml(h.topic||'')}</div>${oyaBlock}<div style="font-size:0.78rem;color:#fff;font-weight:700;margin-bottom:6px">👆 各プレイヤーをタップで馬券の詳細</div><div id="ofn-arch-results">${built.html}</div>${oyaB}`;
             uiConfirm({ icon:'📜', title:`ROUND ${h.round} の結果`, bodyHtml: body, okText:'閉じる', cancelText:null });
             // ダイアログ描画後、各結果行に長押し/タップで馬券詳細を付与（並べ替え後の順序で対応）
             setTimeout(()=>{
@@ -10337,6 +10345,20 @@ window.showGachaRoundIntro = function(log, onDone){
   // ヒット度合いで色/絵文字/タイトル変える
   const priority = {'3連単的中🎊':7, '三連単的中🎊':7, '3連複的中':6, '馬単的中':5, '連単的中':5, '馬連的中':4, '連複的中':4, 'ワイド的中':3, '単勝的中':2, '複勝的中':1};
   let maxPriority = 0, maxHit = null;
+  // ① 実際に的中した券種から判定（買い方や複数券種でも確実に拾える。単勝などの取りこぼし防止）
+  try {
+    const extract = window.extractWinningBets;
+    if(typeof extract === 'function'){
+      (log.playerResults || []).forEach(r => {
+        extract(r).forEach(w => {
+          const ht = (window.effectHitTypeFor ? window.effectHitTypeFor(w.betType) : '') ;
+          const pr = priority[ht] || 0;
+          if(pr > maxPriority){ maxPriority = pr; maxHit = ht; }
+        });
+      });
+    }
+  } catch(e){}
+  // ② フォールバック：従来どおり hitType 文字列からも判定（①で拾えなかった場合に備える）
   (log.playerResults || []).forEach(r => {
     const pr = priority[r.hitType] || 0;
     if(pr > maxPriority){ maxPriority = pr; maxHit = r.hitType; }
@@ -10398,8 +10420,12 @@ window.showFinalCurtain = function(winnerName, winnerPts, onDismiss){
   if(window.updateSoundButtonVisibility)updateSoundButtonVisibility();
   fxStart();
 
-  // 紙吹雪/星をふんだんに撒く
-  spawnFinalConfetti(curtain);
+  // クラッカー音＋紙吹雪は、紫のトロフィー画面が出てから0.8秒後に発生させる
+  setTimeout(() => {
+    if(curtain.classList.contains('hidden')) return; // すでに閉じられていたら何もしない
+    try { window.SFX && window.SFX.cracker && window.SFX.cracker(); } catch(e){}
+    try { spawnFinalConfetti(curtain); } catch(e){}
+  }, 800);
 
   // 超盛大サウンド
   try { window.SFX.finale(); } catch(e){}
