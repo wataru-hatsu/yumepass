@@ -1160,14 +1160,14 @@ body.modal-open{overflow:hidden !important;}
         <label>初期点数（自由入力）</label>
         <div style="display:flex;align-items:center;gap:6px">
           <input type="tel" id="custom-initial-points" placeholder="例：5000" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value);offlineSyncMinBetHint()">
-          <span class="setup-unit">点（100以上）</span>
+          <span class="setup-unit" style="width:6em;text-align:left">点（100以上）</span>
         </div>
         <label>最低ベット額（自由入力）</label>
         <div style="display:flex;align-items:center;gap:6px">
           <input type="tel" id="custom-min-bet" placeholder="例：250" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
-          <span class="setup-unit">点</span>
+          <span class="setup-unit" style="width:6em;text-align:left"><span id="offline-minbet-5pct">250</span>点以上</span>
         </div>
-        <div id="offline-minbet-hint" style="font-size:0.9rem;color:#222;margin-top:4px;font-weight:600">💡 初期点数の5%（<span id="offline-minbet-5pct">250</span>点）以上で設定してください</div>
+        <div id="offline-minbet-hint" style="font-size:0.9rem;color:#222;margin-top:4px;font-weight:600">💡 初期点数の5%以上で設定してください</div>
         <div id="offline-bonus-controls">
           <label>親ボーナス割合</label>
           <div style="display:flex;gap:4px;margin-bottom:6px">
@@ -1199,7 +1199,7 @@ body.modal-open{overflow:hidden !important;}
             </div>
             <div style="margin-top:10px;padding-top:8px;border-top:1px dashed #ddd;color:#222">
               <strong>📊 オッズについて</strong><br>
-              人気が集まるほど低く、不人気なほど高くなります（上限・下限あり）。当たれば必ず利益が出ます。
+              人気が集まるほど低く、不人気なほど高くなります（上限・下限あり）。
             </div>
           </div>
         </div>
