@@ -8235,6 +8235,8 @@ function enterOnlineBetWait(){
   }
   updateBetWaitProgress(game);
   updateBetWaitRevealButton(game);
+  // 待機中画面に入ったら確実に一番上を表示（描画後にも補正）
+  try{ window.scrollTo(0,0); requestAnimationFrame(()=>{try{window.scrollTo(0,0);}catch(e){}}); setTimeout(()=>{try{window.scrollTo(0,0);}catch(e){}},80); }catch(e){}
 }
 
 function updateBetWaitProgress(game){
@@ -8578,6 +8580,8 @@ function enterOnlineReveal(game){
     btn.innerHTML = myReady ? '<span style="display:block;text-align:center;line-height:1.35">✅ 準備完了済み<br>他の人を待っています</span>' : '🎊 結果発表の準備完了！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.82rem;font-weight:800;margin-left:7px">👆タップ</span>';
   }
   updateRevealReadyStatus(game);
+  // 賭け公開画面に入ったら確実に一番上を表示（描画後にも補正）
+  try{ window.scrollTo(0,0); requestAnimationFrame(()=>{try{window.scrollTo(0,0);}catch(e){}}); setTimeout(()=>{try{window.scrollTo(0,0);}catch(e){}},80); setTimeout(()=>{try{window.scrollTo(0,0);}catch(e){}},220); }catch(e){}
 }
 
 function updateRevealReadyStatus(game){
