@@ -102,11 +102,16 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 #lobby-host-settings>summary::-webkit-details-marker{display:none;}
 #lobby-host-settings>summary{margin-bottom:0;}
 #lobby-host-settings[open]>summary{margin-bottom:8px;}
-#playerCountBtns .btn{padding:5px 9px !important;font-size:0.8rem !important;}
-#custom-player-count::placeholder,#custom-rounds::placeholder{color:#333;opacity:1;font-weight:700;}
-#advanced-panel label{font-size:1rem !important;color:#111 !important;font-weight:700;}
-#advanced-panel input[type="tel"]{padding:13px !important;font-size:1.15rem !important;color:#111 !important;font-weight:700;}
-#advanced-panel input::placeholder{color:#555;opacity:1;}
+#playerCountBtns .btn,#roundCountBtns .btn,#initialPointBtns .btn{padding:5px 9px !important;font-size:0.82rem !important;}
+#screen-setup .panel{padding:9px 11px;margin:6px 10px;}
+#screen-setup .panel-title{font-size:0.62rem;margin-bottom:5px;padding-bottom:4px;}
+#screen-setup input[type="tel"]{box-sizing:border-box;padding:9px 10px;font-size:1.05rem;color:#111;font-weight:700;margin-top:0;}
+#screen-setup input[type="tel"]::placeholder{color:#666;opacity:1;font-weight:600;}
+#screen-setup .setup-unit{font-size:0.82rem;color:#333;font-weight:700;white-space:nowrap;flex-shrink:0;}
+#advanced-panel label{font-size:0.95rem !important;color:#111 !important;font-weight:700;display:block;margin:8px 0 3px;}
+#advanced-panel input[type="tel"]{font-size:1rem;}
+#advanced-panel input:disabled{background:#e9eef7 !important;color:#111 !important;-webkit-text-fill-color:#111 !important;opacity:1 !important;}
+#advanced-panel button:disabled{opacity:1 !important;color:#888 !important;background:#eee !important;}
 .score-table{width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;}
 .score-table th{background:linear-gradient(135deg,#2d2d2d,#3a3a3a);color:var(--gold);padding:6px 6px;font-size:0.72rem;text-align:center;letter-spacing:1px;}
 .score-table td{padding:6px 6px;text-align:center;border-bottom:1px solid #e0d8c0;font-size:0.82rem;background:white;}
@@ -1124,9 +1129,9 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel">
       <div class="panel-title">👥 プレイヤー人数</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px" id="playerCountBtns"></div>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
-        <input type="tel" id="custom-player-count" placeholder="2〜100を直接入力" style="flex:1;margin-top:0;padding:14px;font-size:1.2rem;color:#111;font-weight:700" oninput="this.value=window.toHalfDigits(this.value);handleCustomPlayerCount(this.value)">
-        <span style="font-size:1rem;color:#111;font-weight:700;white-space:nowrap">人</span>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:8px">
+        <input type="tel" id="custom-player-count" placeholder="2〜100を入力" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value);handleCustomPlayerCount(this.value)">
+        <span class="setup-unit">人</span>
       </div>
       <div id="player-count-error" style="display:none;color:#e74c3c;font-size:0.8rem;font-weight:700;margin-top:6px"></div>
     </div>
@@ -1138,9 +1143,9 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel">
       <div class="panel-title">🎯 ラウンド数</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px" id="roundCountBtns"></div>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
-        <input type="tel" id="custom-rounds" placeholder="自由入力（例：12）" style="flex:1;margin-top:0;padding:14px;font-size:1.2rem;color:#111;font-weight:700" oninput="this.value=window.toHalfDigits(this.value)">
-        <span style="font-size:1rem;color:#111;font-weight:700;white-space:nowrap">R（1以上）</span>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:8px">
+        <input type="tel" id="custom-rounds" placeholder="例：12" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
+        <span class="setup-unit">R（1以上）</span>
       </div>
     </div>
     <div class="panel"><div class="panel-title">💰 初期点数</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px" id="initialPointBtns"></div></div>
@@ -1151,38 +1156,38 @@ body.modal-open{overflow:hidden !important;}
         <div style="font-size:1rem;font-weight:800;color:#111">⚙️ 詳細設定（任意）</div>
         <div id="advanced-arrow" style="font-size:1rem;color:#111">▼</div>
       </div>
-      <div id="advanced-panel" style="display:none;margin-top:12px">
-        <div style="font-size:0.95rem;color:#111;margin-bottom:10px;background:#fff3cd;border-radius:6px;padding:10px;border:1px solid #ffc107;line-height:1.6">
-          💡 変更しなくてもゲームは楽しめます。<br>デフォルト：初期点数5000点 / 最低ベット500点 / 親ボーナス50%<br>オッズは締切後にパリミュチュエル方式で自動計算（最低×1.1保証）
+      <div id="advanced-panel" style="display:none;margin-top:8px">
+        <div style="font-size:0.9rem;color:#111;margin-bottom:8px;background:#fff3cd;border-radius:6px;padding:8px;border:1px solid #ffc107;line-height:1.5">
+          💡 変更しなくてもOK。デフォルト：初期点数5000点 / 最低ベット500点 / 親ボーナス50%
         </div>
-        <label style="display:block;margin-bottom:4px">初期点数（自由入力）</label>
-        <div style="display:flex;align-items:center;gap:8px">
-          <input type="tel" id="custom-initial-points" placeholder="例：10000" style="flex:1;margin-top:0" oninput="this.value=window.toHalfDigits(this.value)">
-          <span style="font-size:0.85rem;color:#444;white-space:nowrap">点（1以上）</span>
+        <label>初期点数（自由入力）</label>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="tel" id="custom-initial-points" placeholder="例：10000" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
+          <span class="setup-unit">点（1以上）</span>
         </div>
-        <label style="display:block;margin-top:12px;margin-bottom:4px">最低ベット額（自由入力）</label>
-        <div style="display:flex;align-items:center;gap:8px">
-          <input type="tel" id="custom-min-bet" placeholder="未入力で初期点数の5%（例:250）" style="flex:1;margin-top:0" oninput="this.value=window.toHalfDigits(this.value)">
-          <span style="font-size:0.85rem;color:#444;white-space:nowrap">点（0以上）</span>
+        <label>最低ベット額（自由入力）</label>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="tel" id="custom-min-bet" placeholder="未入力で5%（例:250）" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
+          <span class="setup-unit">点（0以上）</span>
         </div>
-        <div style="font-size:0.95rem;color:#111;margin-top:4px;font-weight:600">💡 初期持ち金の5%以上で設定してください（未入力なら自動で5%）</div>
-        <label style="display:block;margin-top:12px;margin-bottom:4px">親ボーナス割合（プリセット + 自由入力）</label>
+        <div style="font-size:0.9rem;color:#111;margin-top:4px;font-weight:600">💡 初期持ち金の5%以上で（未入力なら自動5%）</div>
+        <label>親ボーナス割合（プリセット + 自由入力）</label>
         <div style="display:flex;gap:4px;margin-bottom:6px">
-          <button type="button" onclick="offlineSetBonusPreset(0)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">0%</button>
-          <button type="button" onclick="offlineSetBonusPreset(25)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">25%</button>
-          <button type="button" onclick="offlineSetBonusPreset(50)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">50%</button>
-          <button type="button" onclick="offlineSetBonusPreset(75)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">75%</button>
-          <button type="button" onclick="offlineSetBonusPreset(100)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">100%</button>
+          <button type="button" onclick="offlineSetBonusPreset(0)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">0%</button>
+          <button type="button" onclick="offlineSetBonusPreset(25)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">25%</button>
+          <button type="button" onclick="offlineSetBonusPreset(50)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">50%</button>
+          <button type="button" onclick="offlineSetBonusPreset(75)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">75%</button>
+          <button type="button" onclick="offlineSetBonusPreset(100)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">100%</button>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <input type="tel" id="custom-oya-bonus" placeholder="例：50" style="flex:1;margin-top:0" oninput="this.value=window.toHalfDigits(this.value)">
-          <span style="font-size:0.85rem;color:#444;white-space:nowrap">%（0以上）</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="tel" id="custom-oya-bonus" placeholder="例：50" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
+          <span class="setup-unit">%（0以上）</span>
         </div>
 
-        <!-- 賭け方説明（パリミュチュエル方式） -->
-        <div style="margin-top:14px;padding-top:12px;border-top:1px solid #ddd">
-          <div style="font-size:1rem;font-weight:800;color:#111;margin-bottom:8px">🎰 賭け方（7種類）</div>
-          <div style="background:#f9f5e8;border:1px solid var(--gold);border-radius:8px;padding:10px;font-size:0.92rem;line-height:1.7;color:#111">
+        <!-- 賭け方説明 -->
+        <div style="margin-top:10px;padding-top:9px;border-top:1px solid #ddd">
+          <div style="font-size:0.95rem;font-weight:800;color:#111;margin-bottom:6px">🎰 賭け方（7種類）</div>
+          <div style="background:#f9f5e8;border:1px solid var(--gold);border-radius:8px;padding:9px;font-size:0.9rem;line-height:1.55;color:#111">
             <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px">
               <strong>単勝</strong><span>1位を当てる</span>
               <strong>複勝</strong><span>1〜3位のどれか</span>
@@ -1193,8 +1198,7 @@ body.modal-open{overflow:hidden !important;}
               <strong>3連単</strong><span>1〜3位（順番通り）</span>
             </div>
             <div style="margin-top:10px;padding-top:8px;border-top:1px dashed #ddd;color:#111">
-              <strong>📊 オッズはパリミュチュエル方式</strong><br>
-              締切後に全プレイヤーの賭けから自動で計算されます（本物の競馬と同じ仕組み）。<br>
+              <strong>📊 オッズについて</strong><br>
               <strong>人気によって変動します</strong> — 人気が集まる（みんなが賭ける）ほどオッズは下がり、人気がないほど高くなります。<br>
               各賭け方には<strong>オッズの上限と下限</strong>が決まっています（例：単勝は約1.3〜4.9倍、3連単は約6〜100倍）。<br>
               最低オッズ ×1.1 を保証 — 当てれば必ず利益が出ます。
@@ -5657,12 +5661,12 @@ window.updateOfflineBonusLockState = function(playerCount){
     }
     input.value = '0';
     input.disabled = true;
-    input.style.background = '#eee';
-    input.style.color = '#999';
+    input.style.background = '#e9eef7';
+    input.style.color = '#111';
     input.style.cursor = 'not-allowed';
     presetBtns.forEach(btn => {
       btn.disabled = true;
-      btn.style.opacity = '0.4';
+      btn.style.opacity = '0.6';
       btn.style.cursor = 'not-allowed';
     });
     // 通知メッセージを動的に挿入
