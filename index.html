@@ -8017,6 +8017,7 @@ window.onlineSubmitKoBet = function(){
   };
 
   goTo('screen-online-bet-confirm');
+  try{ window.scrollTo(0,0); requestAnimationFrame(()=>{try{window.scrollTo(0,0);}catch(e){}}); setTimeout(()=>{try{window.scrollTo(0,0);}catch(e){}},80); }catch(e){}
 };
 
 // 馬券確定 → DBに保存
@@ -8100,6 +8101,8 @@ window.onlineSubmitOyaResult = function(){
     rankingEl.innerHTML = window.onlineBet.oyaSelections.map((hi, i) => `<div style="display:flex;align-items:center;gap:8px;background:rgba(90,200,140,0.1);border:1px solid rgba(90,200,140,0.4);border-radius:8px;padding:7px 10px"><div style="font-size:1.2rem;width:28px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}" style="width:26px;height:26px;font-size:0.85rem;flex-shrink:0">${hi+1}</div><div style="color:#e0f5e8;font-weight:700;font-size:0.95rem">${escapeHtml(topic.horses[hi] || '')}</div></div>`).join('');
   }
   goTo('screen-online-oya-confirm');
+  // 順位確認画面に入ったら確実に一番上を表示（描画後にも補正）
+  try{ window.scrollTo(0,0); requestAnimationFrame(()=>{try{window.scrollTo(0,0);}catch(e){}}); setTimeout(()=>{try{window.scrollTo(0,0);}catch(e){}},80); }catch(e){}
 };
 
 // 親の順位を実際にDB送信
