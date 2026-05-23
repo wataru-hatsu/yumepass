@@ -3014,9 +3014,7 @@ function startGame(){
   const names=[];
   for(let i=1;i<=count;i++){ names.push(document.getElementById('pname-'+i)?.value.trim()||('プレイヤー'+i)); }
   // 確認ダイアログ（設定の詳細を表示してから開始）
-  const bonusLine = (count===2)
-    ? '<strong>0%</strong> <span style="color:#1a5fcc">（2人プレイのため自動で0%）</span>'
-    : `<strong>${state.oyaBonusRate}%</strong>`;
+  const bonusLine = `<strong>${state.oyaBonusRate}%</strong>`;
   const namePreview = names.slice(0,8).map(n=>escapeHtml(n)).join('、') + (names.length>8?` …他${names.length-8}人`:'');
   const bodyHtml = `<div style="font-size:1rem;line-height:1.9;color:#f0e8d4">`
     + `👥 人数：<strong>${count}人</strong><br>`
