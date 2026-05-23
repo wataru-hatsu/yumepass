@@ -174,7 +174,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 @keyframes oddsGlow{0%,100%{box-shadow:0 0 10px rgba(255,140,0,0.5),0 2px 4px rgba(0,0,0,0.3);}50%{box-shadow:0 0 20px rgba(255,170,30,0.95),0 2px 6px rgba(0,0,0,0.3);}}
 #screen-home{background:transparent;align-items:center;justify-content:center;padding:30px 20px;}
 .home-btns{width:100%;max-width:320px;}
-.scroll-content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(var(--band-total) + 20px);padding-bottom:4px;scroll-padding-top:calc(var(--band-total) + 22px);}
+.scroll-content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(var(--band-total) + 20px);padding-bottom:4px;scroll-padding-top:calc(var(--band-total) + 22px);scrollbar-width:none;-ms-overflow-style:none;}
+.scroll-content::-webkit-scrollbar{display:none;width:0;height:0;}
 .privacy-cover{position:fixed;inset:0;background:#1a1a1a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9995;text-align:center;padding:20px;}
 .privacy-cover.hidden{display:none;}
 .privacy-icon{font-size:5rem;margin-bottom:20px;}
@@ -242,7 +243,7 @@ body.modal-open{overflow:hidden !important;}
 @keyframes st-pop{0%{transform:translate(0,0) scale(0) rotate(0deg);opacity:1;}60%{opacity:1;}100%{transform:translate(var(--tx),var(--ty)) scale(0.3) rotate(var(--rot,180deg));opacity:0;}}
 
 /* ガチャ風ラウンド結果オーバーレイ */
-#gacha-overlay{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;min-height:100vh;min-height:100dvh;z-index:9998;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#ff1493 0%,#c2185b 35%,#7b1fa2 70%,#311b92 100%);}
+#gacha-overlay{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100vh;min-height:100vh;min-height:100dvh;z-index:9998;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#ff1493 0%,#c2185b 35%,#7b1fa2 70%,#311b92 100%);}
 #gacha-overlay.hidden{display:none;}
 .gacha-rays{position:absolute;inset:-50%;background:conic-gradient(from 0deg,rgba(255,255,255,0.15) 0deg 8deg,transparent 8deg 30deg,rgba(255,255,255,0.18) 30deg 38deg,transparent 38deg 60deg,rgba(255,255,255,0.12) 60deg 68deg,transparent 68deg 90deg);animation:gachaRays 6s linear infinite;}
 @keyframes gachaRays{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
@@ -256,7 +257,7 @@ body.modal-open{overflow:hidden !important;}
 .gacha-title{font-size:2.2rem;font-weight:900;color:#fff;text-shadow:0 0 18px rgba(255,255,255,0.9),0 4px 12px rgba(0,0,0,0.3);letter-spacing:2px;margin-bottom:8px;line-height:1.2;}
 .gacha-sub{font-size:1rem;color:rgba(255,255,255,0.95);font-weight:700;text-shadow:0 2px 6px rgba(0,0,0,0.4);margin-top:6px;}
 /* 最終フィナーレ */
-#final-curtain{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;min-height:100vh;min-height:100dvh;z-index:9999;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;}
+#final-curtain{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100vh;min-height:100vh;min-height:100dvh;z-index:9999;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;}
 #final-curtain.hidden{display:none;}
 .final-bg{position:absolute;inset:0;background:radial-gradient(ellipse at center,#3a1f6a 0%,#1a0a2a 60%,#000 100%);}
 .final-rays{position:absolute;inset:-30%;background:conic-gradient(from 0deg,rgba(245,200,66,0.25) 0deg 6deg,transparent 6deg 24deg,rgba(245,200,66,0.18) 24deg 30deg,transparent 30deg 48deg,rgba(255,215,100,0.22) 48deg 54deg,transparent 54deg 72deg);animation:finalRays 10s linear infinite;}
@@ -276,7 +277,7 @@ body.modal-open{overflow:hidden !important;}
 /* ============================================================
    的中演出 (Hit Overlay) — 5段階
    ============================================================ */
-#hit-overlay{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;min-height:100vh;min-height:100dvh;z-index:9997;pointer-events:none;overflow:hidden;}
+#hit-overlay{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100vh;min-height:100vh;min-height:100dvh;z-index:9997;pointer-events:none;overflow:hidden;}
 #hit-overlay.hidden{display:none;}
 #hit-overlay-bg{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;opacity:0;}
 #hit-overlay-content{position:relative;width:100%;height:100%;}
