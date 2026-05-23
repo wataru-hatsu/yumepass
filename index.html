@@ -50,7 +50,7 @@ var toHalfDigits = window.toHalfDigits;
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Racing+Sans+One&display=swap');
-:root{--green:#1a6b2a;--green-light:#2d9e44;--gold:#f5c842;--gold-dark:#c9960a;--red:#c0392b;--white:#f9f5e8;--dark:#1a1a1a;--panel:#fdf8ed;--border:#c9960a;--oya:#8b1a8b;--oya-light:#c060c0;--safe-top:env(safe-area-inset-top);--icon-d:40px;--band-total:calc(var(--safe-top) + var(--icon-d) + 2px);}
+:root{--green:#1a6b2a;--green-light:#2d9e44;--gold:#f5c842;--gold-dark:#c9960a;--red:#c0392b;--white:#f9f5e8;--dark:#1a1a1a;--panel:#fdf8ed;--border:#c9960a;--oya:#8b1a8b;--oya-light:#c060c0;--safe-top:env(safe-area-inset-top);--icon-d:40px;--band-total:calc(var(--safe-top) + var(--icon-d) + 2px);--result-accent:#2d9e44;--result-accent-dark:#0d4d1f;--result-accent-soft:rgba(45,158,68,0.4);--result-accent-bg:rgba(45,158,68,0.12);}
 *{box-sizing:border-box;margin:0;padding:0;}
 html{background:#0a0f0d;min-height:100vh;overscroll-behavior:none;font-size:18px;}
 body{font-family:'Noto Sans JP',sans-serif;background:#0a0f0d;color:var(--dark);min-height:100vh;overflow-x:hidden;overscroll-behavior:none;}
@@ -81,7 +81,7 @@ html.fx-active{background:#000;}
 #screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 12%,rgba(245,200,66,0.10),transparent 42%),radial-gradient(circle at 85% 80%,rgba(26,107,42,0.18),transparent 46%);}
 .screen>*{position:relative;z-index:1;}
-.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);box-sizing:border-box;padding:0 104px;padding-top:var(--safe-top);text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);height:var(--band-total);min-height:var(--band-total);display:flex;flex-direction:column;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;z-index:999;}
+.header{background:linear-gradient(135deg,var(--result-accent-dark),var(--result-accent) 50%,var(--result-accent-dark));box-sizing:border-box;padding:0 104px;padding-top:var(--safe-top);text-align:center;border-bottom:2px solid var(--result-accent);box-shadow:0 2px 12px rgba(0,0,0,0.4);height:var(--band-total);min-height:var(--band-total);display:flex;flex-direction:column;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;z-index:999;}
 .header::before,.round-header::before{content:'';position:absolute;top:0;left:0;right:0;height:0;background:transparent;}
 .menu-toggle,.rules-toggle,.score-toggle,.sound-toggle{box-shadow:0 2px 5px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.14);}
 .menu-toggle:active,.rules-toggle:active,.score-toggle:active,.sound-toggle:active{box-shadow:0 1px 2px rgba(0,0,0,0.4),inset 0 1px 2px rgba(0,0,0,0.3);}
@@ -182,7 +182,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .privacy-msg{color:#aaa;font-size:0.85rem;margin-bottom:30px;line-height:1.8;}
 .oya-badge{display:inline-block;background:var(--oya);color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
 .ko-badge{display:inline-block;background:#2a7a2a;color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
-.round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);box-sizing:border-box;text-align:center;padding:0 104px;padding-top:var(--safe-top);height:var(--band-total);min-height:var(--band-total);display:flex;align-items:center;justify-content:center;font-size:0.74rem;letter-spacing:2px;font-weight:800;border-bottom:2px solid var(--gold);position:fixed;top:0;left:0;right:0;z-index:999;}
+.round-header{background:linear-gradient(135deg,var(--result-accent-dark),var(--result-accent) 50%,var(--result-accent-dark));color:#fff;box-sizing:border-box;text-align:center;padding:0 104px;padding-top:var(--safe-top);height:var(--band-total);min-height:var(--band-total);display:flex;align-items:center;justify-content:center;font-size:0.74rem;letter-spacing:2px;font-weight:800;border-bottom:2px solid var(--result-accent);position:fixed;top:0;left:0;right:0;z-index:999;text-shadow:0 1px 3px rgba(0,0,0,0.45);}
 .flip-msg{background:#f5c842;color:#333;text-align:center;padding:8px;font-weight:700;font-size:0.85rem;border-top:2px solid #c9960a;}
 .oya-banner{background:linear-gradient(135deg,var(--oya) 0%,#5a005a 100%);color:white;text-align:center;padding:10px;font-size:0.85rem;font-weight:700;}
 .reveal-card{background:linear-gradient(160deg,rgba(255,255,255,0.96),rgba(252,248,238,0.92));border:1px solid rgba(201,150,10,0.3);border-radius:10px;padding:8px 10px;margin-bottom:6px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
@@ -2848,18 +2848,49 @@ function getAllTopics(){
   return all.map(ensureEightChoices);
 }
 function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const _scr=document.getElementById(id);_scr.classList.add('active');
-// 背景レイヤー（ノッチ含む全画面）の色を、表示中の画面に合わせて切替
+// 背景レイヤー（ノッチ含む全画面）と帯の色を、フェーズに応じて統一して切替
 try{
   const bg=document.getElementById('app-bg-layer');
-  if(bg){
-    let c='linear-gradient(160deg,#0e1a14 0%,#0a0f0d 45%,#14110a 100%)'; // 既定
-    if(id==='screen-home') c='linear-gradient(180deg,#1a1a1a 0%,#0d3d1a 50%,#1a6b2a 100%)';
-    else if(id==='screen-online-topic-lottery') c='linear-gradient(180deg,#1a0a2a,#0a0520)';
-    else if(id==='screen-online-oya-confirm'||id==='screen-online-reveal') c='linear-gradient(160deg,#14110b 0%,#0c0c0e 100%)';
-    else if(id==='screen-online-roundresult'||id==='screen-roundresult'||id==='screen-reveal') c='linear-gradient(160deg,#1a1408 0%,#0c0c0e 100%)';
-    else if(id==='screen-online-final'||id==='screen-final') c='radial-gradient(ellipse at center,#3a1f6a 0%,#1a0a2a 60%,#000 100%)';
-    bg.style.background=c;
+  const rootS=document.documentElement.style;
+  // フェーズごとの配色（bg=全画面背景, accent/accentDark=帯の色）
+  // 帯のすぐ後ろ(ステータスバー領域)が帯と一体に見えるよう、bgの上端色=accentDarkに合わせる
+  let bgCss, accent, accentDark, soft, accBg;
+  if(id==='screen-home'){
+    bgCss='linear-gradient(180deg,#1a1a1a 0%,#0d3d1a 50%,#1a6b2a 100%)';
+    accent='#2d9e44'; accentDark='#0d4d1f';
+  } else if(id==='screen-online-topic-lottery'||id==='screen-online-topic-select'){
+    // お題（抽選・選択）：紫
+    bgCss='linear-gradient(180deg,#2a1248 0%,#1a0a2a 55%,#0a0520 100%)';
+    accent='#a060c0'; accentDark='#3a1f6a';
+  } else if(id==='screen-online-betting'||id==='screen-bet'||id==='screen-online-bet-confirm'||id==='screen-bet-confirm'||id==='screen-online-skip-confirm'||id==='screen-skip-confirm'){
+    // 賭けフェーズ：緑
+    bgCss='linear-gradient(180deg,#0d4d1f 0%,#0a2e14 45%,#06140a 100%)';
+    accent='#2d9e44'; accentDark='#0d4d1f';
+  } else if(id==='screen-online-oya-confirm'||id==='screen-online-reveal'||id==='screen-reveal'||id==='screen-online-bet-wait'){
+    // 順位確認・賭け公開・待機：青
+    bgCss='linear-gradient(180deg,#103a6b 0%,#0a2342 45%,#06101f 100%)';
+    accent='#3a78d0'; accentDark='#103a6b';
+  } else if(id==='screen-online-roundresult'){
+    // ラウンド結果：画面独自のティール配色に背景を合わせる（帯色は画面側の--result-accentが担当）
+    bgCss='linear-gradient(180deg,#0a4a44 0%,#06302e 45%,#021412 100%)';
+    accent='#3fd0c8'; accentDark='#0a4a44';
+  } else if(id==='screen-roundresult'||id==='screen-result'){
+    // 結果発表・結果入力：金
+    bgCss='linear-gradient(180deg,#7a5a0a 0%,#3a2c06 45%,#140f02 100%)';
+    accent='#c9960a'; accentDark='#5a3f05';
+  } else if(id==='screen-online-final'||id==='screen-final'){
+    // 最終結果：紫
+    bgCss='radial-gradient(ellipse at center,#3a1f6a 0%,#1a0a2a 60%,#000 100%)';
+    accent='#a060c0'; accentDark='#3a1f6a';
+  } else {
+    // 既定（ロビー・設定など）：落ち着いた緑
+    bgCss='linear-gradient(160deg,#0e1a14 0%,#0a0f0d 45%,#14110a 100%)';
+    accent='#2d9e44'; accentDark='#0d4d1f';
   }
+  if(bg) bg.style.background=bgCss;
+  // 帯（.round-header）の色を更新
+  rootS.setProperty('--result-accent', accent);
+  rootS.setProperty('--result-accent-dark', accentDark);
 }catch(e){}
 // 画面が変わる時は常に一番上を表示。実スクローラは各画面内の .scroll-content（overflow-y:auto）なので
 // window だけでなく .scroll-content の scrollTop も 0 に戻す。描画後のズレ対策で複数回補正。
