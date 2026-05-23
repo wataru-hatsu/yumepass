@@ -1165,7 +1165,7 @@ body.modal-open{overflow:hidden !important;}
         <label>最低ベット額（自由入力）</label>
         <div style="display:flex;align-items:center;gap:6px">
           <input type="tel" id="custom-min-bet" placeholder="例：250" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
-          <span class="setup-unit" style="width:6em;text-align:left"><span id="offline-minbet-5pct">250</span>点以上</span>
+          <span class="setup-unit" style="width:6em;text-align:left">点（<span id="offline-minbet-5pct">250</span>以上）</span>
         </div>
         <div id="offline-minbet-hint" style="font-size:0.9rem;color:#222;margin-top:4px;font-weight:600">💡 初期点数の5%以上で設定してください</div>
         <div id="offline-bonus-controls">
@@ -1182,7 +1182,7 @@ body.modal-open{overflow:hidden !important;}
             <span class="setup-unit">%（0以上）</span>
           </div>
         </div>
-        <div id="offline-bonus-n2-notice" style="display:none;font-size:0.95rem;color:#1a3a6a;font-weight:700;margin-top:4px;padding:9px;background:#eaf1ff;border-left:4px solid #1a5fcc;border-radius:4px">👑 二人プレイ時は親ボーナスは自動的に0%</div>
+        <div id="offline-bonus-n2-notice" style="display:none;font-size:0.95rem;color:#1a3a6a;font-weight:700;margin-top:4px;padding:9px;background:#eaf1ff;border-left:4px solid #1a5fcc;border-radius:4px">👑 二人プレイ時は親ボーナスはありません</div>
 
         <!-- 賭け方説明 -->
         <div style="margin-top:10px;padding-top:9px;border-top:1px solid #ddd">
@@ -1199,7 +1199,7 @@ body.modal-open{overflow:hidden !important;}
             </div>
             <div style="margin-top:10px;padding-top:8px;border-top:1px dashed #ddd;color:#222">
               <strong>📊 オッズについて</strong><br>
-              人気が集まるほど低く、不人気なほど高くなります（上限・下限あり）。
+              人気が集まるほど低く、不人気なほど高くなります（上限・下限あり）
             </div>
           </div>
         </div>
