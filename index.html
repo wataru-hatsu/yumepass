@@ -52,6 +52,11 @@ var toHalfDigits = window.toHalfDigits;
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Racing+Sans+One&display=swap');
 :root{--green:#1a6b2a;--green-light:#2d9e44;--gold:#f5c842;--gold-dark:#c9960a;--red:#c0392b;--white:#f9f5e8;--dark:#1a1a1a;--panel:#fdf8ed;--border:#c9960a;--oya:#8b1a8b;--oya-light:#c060c0;--safe-top:env(safe-area-inset-top);--icon-d:40px;--band-total:calc(var(--safe-top) + var(--icon-d) + 2px);--result-accent:#2d9e44;--result-accent-dark:#0d4d1f;--result-accent-soft:rgba(45,158,68,0.4);--result-accent-bg:rgba(45,158,68,0.12);--band-bg:#1a6b2a;}
 *{box-sizing:border-box;margin:0;padding:0;}
+/* タップ反応性の改善：iOS Safariの300ms遅延/誤判定を抑制し、押した瞬間に反応させる */
+button,.btn,.horse-card,[onclick],[role="button"],.icon-btn,.tab,.chip,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+.horse-card{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+.horse-card:active{transform:scale(0.95);transition:transform 0.05s ease;}
+[onclick]:active{opacity:0.85;}
 html{background:#000;min-height:100vh;overflow:hidden;overscroll-behavior:none;font-size:18px;}
 body{font-family:'Noto Sans JP',sans-serif;background:#000;color:var(--dark);min-height:100vh;overflow:hidden;overscroll-behavior:none;}
 /* 老眼配慮：極小フォントの底上げ＆主要テキスト拡大 */
@@ -89,9 +94,9 @@ html.fx-active{background:#000;}
 .header .subtitle{color:#b9b9b9;font-size:0.56rem;letter-spacing:2px;}
 .panel{background:linear-gradient(160deg,rgba(253,248,237,0.93),rgba(250,243,225,0.88));backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1);border:1px solid rgba(201,150,10,0.55);border-radius:14px;padding:12px;margin:7px 10px;box-shadow:0 8px 26px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.6);}
 .panel-title{font-size:0.66rem;letter-spacing:3px;color:var(--gold-dark);font-weight:900;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1.5px solid rgba(201,150,10,0.45);}
-.btn{display:block;width:100%;padding:12px;border:none;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:transform 0.12s ease,box-shadow 0.12s ease,filter 0.12s ease;margin-top:6px;box-shadow:0 3px 8px rgba(0,0,0,0.22);}
+.btn{display:block;width:100%;padding:12px;border:none;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:transform 0.08s ease,box-shadow 0.08s ease,filter 0.08s ease;margin-top:6px;box-shadow:0 3px 8px rgba(0,0,0,0.22);touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 .btn:hover{filter:brightness(1.06);box-shadow:0 5px 14px rgba(0,0,0,0.3);}
-.btn:active{transform:translateY(1px) scale(0.985);box-shadow:0 2px 5px rgba(0,0,0,0.25);}
+.btn:active{transform:translateY(1px) scale(0.96);filter:brightness(0.92);box-shadow:0 1px 4px rgba(0,0,0,0.3);}
 .btn-primary{background:linear-gradient(135deg,#ffe07a 0%,var(--gold) 40%,var(--gold-dark) 100%);color:var(--dark);text-shadow:0 1px 0 rgba(255,255,255,0.3);}
 .btn-secondary{background:linear-gradient(135deg,#33333a 0%,#4a4a52 100%);color:var(--white);border:1px solid #5a5a60;}
 .btn-danger{background:linear-gradient(135deg,#d6473a 0%,#922b21 100%);color:white;}
@@ -174,7 +179,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 @keyframes oddsGlow{0%,100%{box-shadow:0 0 10px rgba(255,140,0,0.5),0 2px 4px rgba(0,0,0,0.3);}50%{box-shadow:0 0 20px rgba(255,170,30,0.95),0 2px 6px rgba(0,0,0,0.3);}}
 #screen-home{background:transparent;align-items:center;justify-content:center;padding:30px 20px;}
 .home-btns{width:100%;max-width:320px;}
-.scroll-content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(var(--band-total) + 20px);padding-bottom:0;scroll-padding-top:calc(var(--band-total) + 22px);scrollbar-width:none;-ms-overflow-style:none;}
+.scroll-content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(var(--band-total) + 20px);padding-bottom:0;scroll-padding-top:calc(var(--band-total) + 22px);scrollbar-width:none;-ms-overflow-style:none;touch-action:pan-y;}
 .scroll-content::-webkit-scrollbar{display:none;width:0;height:0;}
 .privacy-cover{position:fixed;inset:0;background:#1a1a1a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9995;text-align:center;padding:20px;}
 .privacy-cover.hidden{display:none;}
@@ -5040,7 +5045,7 @@ function triggerOfflineEffects(log){
     betLabel: betLabel + methodLabel,
     isTopOdds: allWins.length > 1 // 複数当選がある中での最高オッズなら王冠
   };
-  // 画面遷移が完全に完了してから演出開始（300ms待つ）
+  // 画面遷移後すぐに演出開始（待ち時間なし）
   setTimeout(() => {
     try {
       if(typeof window.showGachaRoundIntro !== 'function'){
@@ -5057,7 +5062,7 @@ function triggerOfflineEffects(log){
     } catch(e){
       console.error('triggerOfflineEffects error:', e);
     }
-  }, 300);
+  }, 0);
 }
 
 // 演出関数群
@@ -6942,8 +6947,9 @@ function enterOnlineBetting(game){
   }
 
   if(isOya){
-    if((oyaResult && oyaResult.length === 3) || ((window.onlineBet && window.onlineBet.oyaSelections && window.onlineBet.oyaSelections.length === 3))){
-      // 既に親が順位を入力済み（DB反映前でも手元の3つが揃っていれば）→ 待機へ
+    if(oyaResult && oyaResult.length === 3){
+      // 親が順位を確定済み（Firebaseに反映済み）→ 待機へ
+      // ※ローカルの oyaSelections では判定しない（前ラウンドの選択が残っていると誤確定するため）
       enterOnlineBetWait();
       return;
     }
@@ -9332,8 +9338,8 @@ window.showRaceReveal = function(opts, done){
 
   function finishAll(){
     cleanup();
-    ov.style.transition='opacity 0.4s'; ov.style.opacity='0';
-    setTimeout(function(){ if(ov.parentNode) ov.remove(); if(typeof done==='function') done(); }, 420);
+    ov.style.transition='opacity 0.18s'; ov.style.opacity='0';
+    setTimeout(function(){ if(ov.parentNode) ov.remove(); if(typeof done==='function') done(); }, 180);
   }
 
   function startRace(){
@@ -9386,7 +9392,7 @@ window.showRaceReveal = function(opts, done){
         h.el.style.zIndex=5+Math.round(h.x/12);
       });
       if(!horses.every(function(h){return h.finished;})){ raf=requestAnimationFrame(frame); }
-      else { tmo(function(){ stopCrowd(); }, 500); tmo(finishAll, 1400); }
+      else { tmo(function(){ stopCrowd(); }, 500); tmo(finishAll, 900); }
     }
     raf=requestAnimationFrame(frame);
   }
@@ -9678,7 +9684,7 @@ function enterOnlineRoundResult(game){
             }
           });
         } catch(e){ console.error('online effect error:', e); }
-      }, 300);
+      }, 0);
     });
   }
 }
@@ -10145,6 +10151,8 @@ async function checkAllReadyForNext(){
     // 次ラウンドへ：bets, oyaResult, revealReady, nextReady, results, lotteryResult, selectedTopic, topicSelections をクリア
     const updates = {};
     const baseRoom = `rooms/${window.online.roomCode}/game`;
+    // ローカルの親選択も次ラウンドに持ち越さない（前ラウンドの選択での誤確定を防ぐ）
+    if(window.onlineBet){ window.onlineBet.oyaSelections = []; }
     updates[`${baseRoom}/currentRound`] = currentRound + 1;
     updates[`${baseRoom}/oyaIndex`] = nextOyaIdx;
     updates[`${baseRoom}/phase`] = 'topic-select';
