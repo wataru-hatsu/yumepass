@@ -73,11 +73,10 @@ label{font-size:1rem !important;}
 /* 演出中はbody背景もダークに */
 body.fx-active{background:#000;}
 html.fx-active{background:#000;}
-.screen{display:none;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;overflow:hidden;flex-direction:column;background:linear-gradient(160deg,#0e1a14 0%,#0a0f0d 45%,#14110a 100%);}.screen.active{display:flex;}
+#app-bg-layer{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;min-height:100vh;z-index:-1;pointer-events:none;background:linear-gradient(160deg,#0e1a14 0%,#0a0f0d 45%,#14110a 100%);transition:background 0.25s;}
+.screen{display:none;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;overflow:hidden;flex-direction:column;background:transparent;}.screen.active{display:flex;}
 #screen-online-oya-confirm,#screen-online-reveal{background:linear-gradient(160deg,#14110b 0%,#0c0c0e 100%);}
-#screen-online-topic-lottery{background:linear-gradient(180deg,#1a0a2a,#0a0520)!important;}
-#screen-online-topic-lottery::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;min-height:100vh;background:linear-gradient(180deg,#1a0a2a,#0a0520);z-index:0;pointer-events:none;}
-#screen-online-topic-lottery>*{position:relative;z-index:1;}
+#screen-online-topic-lottery{background:transparent!important;}
 #screen-online-roundresult{--result-accent:#3fd0c8;--result-accent-soft:rgba(63,208,200,0.4);--result-accent-dark:#0a4a44;--result-accent-bg:rgba(63,208,200,0.12);--result-panel1:#06302e;--result-panel2:#0a4a44;background:linear-gradient(160deg,#14110b 0%,#0c0c0e 100%);}
 #screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 12%,rgba(245,200,66,0.10),transparent 42%),radial-gradient(circle at 85% 80%,rgba(26,107,42,0.18),transparent 46%);}
@@ -414,6 +413,7 @@ body.modal-open{overflow:hidden !important;}
 </style>
 </head>
 <body>
+<div id="app-bg-layer" aria-hidden="true"></div>
 <button id="sound-toggle" class="sound-toggle" onclick="toggleSound()" title="サウンド切り替え">🔊</button>
 <button id="menu-toggle" class="menu-toggle" onclick="toggleGameMenu()" title="メニュー" style="display:none">⋮</button>
 <button id="rules-toggle" class="rules-toggle" onclick="openRulesDuringGame()" title="ルール確認">📖</button>
@@ -2848,6 +2848,18 @@ function getAllTopics(){
   return all.map(ensureEightChoices);
 }
 function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const _scr=document.getElementById(id);_scr.classList.add('active');
+// 背景レイヤー（ノッチ含む全画面）の色を、表示中の画面に合わせて切替
+try{
+  const bg=document.getElementById('app-bg-layer');
+  if(bg){
+    let c='linear-gradient(160deg,#0e1a14 0%,#0a0f0d 45%,#14110a 100%)'; // 既定
+    if(id==='screen-online-topic-lottery') c='linear-gradient(180deg,#1a0a2a,#0a0520)';
+    else if(id==='screen-online-oya-confirm'||id==='screen-online-reveal') c='linear-gradient(160deg,#14110b 0%,#0c0c0e 100%)';
+    else if(id==='screen-online-roundresult'||id==='screen-roundresult'||id==='screen-reveal') c='linear-gradient(160deg,#1a1408 0%,#0c0c0e 100%)';
+    else if(id==='screen-online-final'||id==='screen-final') c='radial-gradient(ellipse at center,#3a1f6a 0%,#1a0a2a 60%,#000 100%)';
+    bg.style.background=c;
+  }
+}catch(e){}
 // 画面が変わる時は常に一番上を表示。実スクローラは各画面内の .scroll-content（overflow-y:auto）なので
 // window だけでなく .scroll-content の scrollTop も 0 に戻す。描画後のズレ対策で複数回補正。
 window.scrollScreenTop(_scr);
