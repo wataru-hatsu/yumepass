@@ -1138,7 +1138,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel">
       <div class="panel-title">✏️ プレイヤー名</div>
       <div id="playerNameFields"></div>
-      <button class="btn btn-secondary" style="margin-top:10px;font-size:0.9rem" onclick="shufflePlayers()">🔀 順番をシャッフル</button>
+      <button class="btn btn-secondary" style="margin-top:8px;font-size:0.75rem;padding:5px 12px;width:auto;display:inline-block" onclick="shufflePlayers()">🔀 順番をシャッフル</button>
     </div>
     <div class="panel">
       <div class="panel-title">🎯 ラウンド数</div>
@@ -1159,27 +1159,30 @@ body.modal-open{overflow:hidden !important;}
       <div id="advanced-panel" style="display:none;margin-top:8px">
         <label>初期点数（自由入力）</label>
         <div style="display:flex;align-items:center;gap:6px">
-          <input type="tel" id="custom-initial-points" placeholder="例：10000" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
-          <span class="setup-unit">点（1以上）</span>
+          <input type="tel" id="custom-initial-points" placeholder="例：5000" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value);offlineSyncMinBetHint()">
+          <span class="setup-unit">点（100以上）</span>
         </div>
         <label>最低ベット額（自由入力）</label>
         <div style="display:flex;align-items:center;gap:6px">
-          <input type="tel" id="custom-min-bet" placeholder="未入力で5%（例:250）" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
-          <span class="setup-unit">点（0以上）</span>
+          <input type="tel" id="custom-min-bet" placeholder="例：250" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
+          <span class="setup-unit">点</span>
         </div>
-        <div style="font-size:0.9rem;color:#222;margin-top:4px;font-weight:600">💡 初期持ち金の5%以上で（未入力なら自動5%）</div>
-        <label>親ボーナス割合</label>
-        <div style="display:flex;gap:4px;margin-bottom:6px">
-          <button type="button" onclick="offlineSetBonusPreset(0)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">0%</button>
-          <button type="button" onclick="offlineSetBonusPreset(25)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">25%</button>
-          <button type="button" onclick="offlineSetBonusPreset(50)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">50%</button>
-          <button type="button" onclick="offlineSetBonusPreset(75)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">75%</button>
-          <button type="button" onclick="offlineSetBonusPreset(100)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">100%</button>
+        <div id="offline-minbet-hint" style="font-size:0.9rem;color:#222;margin-top:4px;font-weight:600">💡 初期点数の5%（<span id="offline-minbet-5pct">250</span>点）以上で設定してください</div>
+        <div id="offline-bonus-controls">
+          <label>親ボーナス割合</label>
+          <div style="display:flex;gap:4px;margin-bottom:6px">
+            <button type="button" onclick="offlineSetBonusPreset(0)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">0%</button>
+            <button type="button" onclick="offlineSetBonusPreset(25)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">25%</button>
+            <button type="button" onclick="offlineSetBonusPreset(50)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">50%</button>
+            <button type="button" onclick="offlineSetBonusPreset(75)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">75%</button>
+            <button type="button" onclick="offlineSetBonusPreset(100)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">100%</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <input type="tel" id="custom-oya-bonus" placeholder="例：50" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
+            <span class="setup-unit">%（0以上）</span>
+          </div>
         </div>
-        <div style="display:flex;align-items:center;gap:6px">
-          <input type="tel" id="custom-oya-bonus" placeholder="例：50" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
-          <span class="setup-unit">%（0以上）</span>
-        </div>
+        <div id="offline-bonus-n2-notice" style="display:none;font-size:0.95rem;color:#1a3a6a;font-weight:700;margin-top:4px;padding:9px;background:#eaf1ff;border-left:4px solid #1a5fcc;border-radius:4px">👑 二人プレイ時は親ボーナスは自動的に0%</div>
 
         <!-- 賭け方説明 -->
         <div style="margin-top:10px;padding-top:9px;border-top:1px solid #ddd">
@@ -1196,9 +1199,7 @@ body.modal-open{overflow:hidden !important;}
             </div>
             <div style="margin-top:10px;padding-top:8px;border-top:1px dashed #ddd;color:#222">
               <strong>📊 オッズについて</strong><br>
-              <strong>人気によって変動します</strong> — 人気が集まる（みんなが賭ける）ほどオッズは下がり、人気がないほど高くなります。<br>
-              各賭け方には<strong>オッズの上限と下限</strong>が決まっています（例：単勝は約1.3〜4.9倍、3連単は約6〜100倍）。<br>
-              最低オッズ ×1.1 を保証 — 当てれば必ず利益が出ます。
+              人気が集まるほど低く、不人気なほど高くなります（上限・下限あり）。当たれば必ず利益が出ます。
             </div>
           </div>
         </div>
@@ -2892,9 +2893,19 @@ function initSetupScreen(){
   [3,5,7,10].forEach((n,i)=>{const b=document.createElement('button');b.className='btn btn-sm '+(i===1?'btn-primary':'btn-secondary');b.textContent=n+'R';b.onclick=()=>{document.querySelectorAll('#roundCountBtns .btn').forEach(x=>x.className='btn btn-sm btn-secondary');b.className='btn btn-sm btn-primary';state.rounds=n;const cr=document.getElementById('custom-rounds');if(cr)cr.value='';};rcb.appendChild(b);});
   state.rounds=5;
   const ipb=document.getElementById('initialPointBtns');ipb.innerHTML='';
-  [3000,5000,10000].forEach((n,i)=>{const b=document.createElement('button');b.className='btn btn-sm '+(i===1?'btn-primary':'btn-secondary');b.textContent=n.toLocaleString()+'点';b.onclick=()=>{document.querySelectorAll('#initialPointBtns .btn').forEach(x=>x.className='btn btn-sm btn-secondary');b.className='btn btn-sm btn-primary';state.initialPoints=n;};ipb.appendChild(b);});
+  [3000,5000,10000].forEach((n,i)=>{const b=document.createElement('button');b.className='btn btn-sm '+(i===1?'btn-primary':'btn-secondary');b.textContent=n.toLocaleString()+'点';b.onclick=()=>{document.querySelectorAll('#initialPointBtns .btn').forEach(x=>x.className='btn btn-sm btn-secondary');b.className='btn btn-sm btn-primary';state.initialPoints=n;const ip=document.getElementById('custom-initial-points');if(ip)ip.value='';offlineSyncMinBetHint();};ipb.appendChild(b);});
   state.initialPoints=5000;
+  offlineSyncMinBetHint();
 }
+// 最低ベット額ヒントの「初期点数の5%（小数点以下切り捨て）」を最新の初期点数で更新
+function offlineSyncMinBetHint(){
+  const ipInput=parseInt(document.getElementById('custom-initial-points')?.value)||0;
+  const base = ipInput>=1 ? ipInput : (state.initialPoints||5000);
+  const fivePct = Math.floor(base * 0.05); // 小数点以下切り捨て
+  const el=document.getElementById('offline-minbet-5pct');
+  if(el) el.textContent = fivePct.toLocaleString();
+}
+window.offlineSyncMinBetHint = offlineSyncMinBetHint;
 function renderPlayerNameFields(count){const c=document.getElementById('playerNameFields');c.innerHTML='';for(let i=1;i<=count;i++){const d=document.createElement('div');d.style.marginBottom='6px';d.innerHTML=`<input type="text" id="pname-${i}" placeholder="プレイヤー${i}">`;c.appendChild(d);}
 // N=2の場合は親ボーナスUIをロック
 if (typeof updateOfflineBonusLockState === 'function') updateOfflineBonusLockState(count);
@@ -2977,16 +2988,16 @@ function startGame(){
   // 詳細設定の値を読み取る
   const customPts=parseInt(document.getElementById('custom-initial-points')?.value)||0;
   const customBet=document.getElementById('custom-min-bet')?.value;
-  if(customPts>=1) state.initialPoints=customPts;
-  else if(customPts===0&&document.getElementById('custom-initial-points')?.value!==''){
-    showNotif('⚠️ 初期点数は1以上を入力してください');return;
+  if(customPts>=100) state.initialPoints=customPts;
+  else if(document.getElementById('custom-initial-points')?.value!==''&&document.getElementById('custom-initial-points')?.value!=null){
+    showNotif('⚠️ 初期点数は100点以上を入力してください');return;
   }
   if(customBet!==''&&customBet!==null&&customBet!==undefined&&!isNaN(parseInt(customBet))) state.minBet=Math.max(0,parseInt(customBet));
-  else state.minBet=Math.ceil(state.initialPoints * 0.05); // 未入力時は初期持ち点の5%（例: 5000→250）
-  // 最低ベット額バリデーション: 初期持ち金の5%以上であること
-  const minRequired = Math.ceil(state.initialPoints * 0.05);
+  else state.minBet=Math.floor(state.initialPoints * 0.05); // 未入力時は初期持ち点の5%（小数点以下切り捨て）
+  // 最低ベット額バリデーション: 初期持ち金の5%（小数点以下切り捨て）以上であること
+  const minRequired = Math.floor(state.initialPoints * 0.05);
   if (state.minBet < minRequired) {
-    showNotif(`⚠️ 最低ベット額は初期持ち金の5%（${minRequired.toLocaleString()}点）以上に設定してください`);
+    showNotif(`⚠️ 最低ベット額は初期点数の5%（${minRequired.toLocaleString()}点）以上に設定してください`);
     return;
   }
   const customOya=document.getElementById('custom-oya-bonus')?.value;
@@ -5645,50 +5656,14 @@ window._lastSavedBonusValueOffline = null;
 window.updateOfflineBonusLockState = function(playerCount){
   const lock = (playerCount === 2);
   const input = document.getElementById('custom-oya-bonus');
-  if (!input) return;
-  // プリセットボタン群（オフライン版にはIDがないので、近接の親要素から探す）
-  const presetBtns = input.closest('.panel,.field,div')
-    ? input.parentElement.parentElement.querySelectorAll('button[onclick^="offlineSetBonusPreset"]')
-    : [];
-  let noticeEl = document.getElementById('offline-bonus-n2-notice');
-
+  const controls = document.getElementById('offline-bonus-controls');
+  const noticeEl = document.getElementById('offline-bonus-n2-notice');
   if (lock) {
-    if (window._lastSavedBonusValueOffline === null) {
-      window._lastSavedBonusValueOffline = input.value;
-    }
-    input.value = '0';
-    input.disabled = true;
-    input.style.background = '#e9eef7';
-    input.style.color = '#111';
-    input.style.cursor = 'not-allowed';
-    presetBtns.forEach(btn => {
-      btn.disabled = true;
-      btn.style.opacity = '0.6';
-      btn.style.cursor = 'not-allowed';
-    });
-    // 通知メッセージを動的に挿入
-    if (!noticeEl) {
-      noticeEl = document.createElement('div');
-      noticeEl.id = 'offline-bonus-n2-notice';
-      noticeEl.style.cssText = 'font-size:0.95rem;color:#111;font-weight:600;margin-top:4px;padding:8px;background:#f0f4ff;border-left:4px solid #1a5fcc;border-radius:4px';
-      noticeEl.innerHTML = 'ℹ️ 2人プレイ時は親ボーナスが自動的に0%に固定されます（仕様）';
-      input.parentElement.appendChild(noticeEl);
-    }
-    noticeEl.style.display = 'block';
+    if (input) input.value = '0';
+    if (controls) controls.style.display = 'none';
+    if (noticeEl) noticeEl.style.display = 'block';
   } else {
-    input.disabled = false;
-    input.style.background = '';
-    input.style.color = '';
-    input.style.cursor = '';
-    presetBtns.forEach(btn => {
-      btn.disabled = false;
-      btn.style.opacity = '';
-      btn.style.cursor = '';
-    });
-    if (window._lastSavedBonusValueOffline !== null) {
-      input.value = window._lastSavedBonusValueOffline;
-      window._lastSavedBonusValueOffline = null;
-    }
+    if (controls) controls.style.display = '';
     if (noticeEl) noticeEl.style.display = 'none';
   }
 };
