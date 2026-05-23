@@ -2877,7 +2877,7 @@ try{
   try{
     let tc=document.querySelector('meta[name="theme-color"]');
     if(!tc){ tc=document.createElement('meta'); tc.setAttribute('name','theme-color'); document.head.appendChild(tc); }
-    tc.setAttribute('content', '#1a6b2a');
+    tc.setAttribute('content', solid);
   }catch(_){}
   // 帯の色は固定（元の黒系）。背景色のみフェーズごとに変化。
   rootS.setProperty('--result-accent', accent);
