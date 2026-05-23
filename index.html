@@ -79,7 +79,7 @@ html.fx-active{background:#000;}
 #screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 12%,rgba(245,200,66,0.10),transparent 42%),radial-gradient(circle at 85% 80%,rgba(26,107,42,0.18),transparent 46%);}
 .screen>*{position:relative;z-index:1;}
-.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:5px 104px;padding-top:calc(5px + env(safe-area-inset-top));text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);min-height:46px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:5px 104px;padding-top:calc(5px + env(safe-area-inset-top));text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);min-height:46px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;position:sticky;top:0;z-index:999;}
 .header h1{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:0.95rem;letter-spacing:1px;text-shadow:0 0 14px rgba(245,200,66,0.5),0 2px 4px rgba(0,0,0,0.6);}
 .header .subtitle{color:#b9b9b9;font-size:0.56rem;letter-spacing:2px;}
 .panel{background:linear-gradient(160deg,rgba(253,248,237,0.93),rgba(250,243,225,0.88));backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1);border:1px solid rgba(201,150,10,0.55);border-radius:14px;padding:12px;margin:7px 10px;box-shadow:0 8px 26px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.6);}
@@ -93,7 +93,7 @@ html.fx-active{background:#000;}
 .btn-success{background:linear-gradient(135deg,#34b350 0%,var(--green) 100%);color:white;}
 .btn-oya{background:linear-gradient(135deg,var(--oya-light) 0%,var(--oya) 100%);color:white;}
 .btn-sm{padding:8px 14px;font-size:0.85rem;display:inline-block;width:auto;margin-top:0;box-shadow:0 2px 5px rgba(0,0,0,0.18);}
-input[type="text"],input[type="number"]{width:100%;padding:12px;border:2px solid #d8cba0;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:1rem;background:white;margin-top:6px;transition:border-color 0.12s,box-shadow 0.12s;}
+input[type="text"],input[type="number"],input[type="tel"]{width:100%;padding:12px;border:2px solid #d8cba0;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:1rem;background:white;margin-top:6px;transition:border-color 0.12s,box-shadow 0.12s;}
 input:focus{outline:none;border-color:var(--gold-dark);box-shadow:0 0 0 3px rgba(245,200,66,0.25);}
 label{font-size:0.85rem;font-weight:700;color:#555;}
 #screen-topics input[type="text"],#screen-topics input[type="number"]{padding:8px 10px;font-size:0.9rem;border-radius:8px;border-width:1.5px;margin-top:4px;}
@@ -177,7 +177,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .privacy-msg{color:#aaa;font-size:0.85rem;margin-bottom:30px;line-height:1.8;}
 .oya-badge{display:inline-block;background:var(--oya);color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
 .ko-badge{display:inline-block;background:#2a7a2a;color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
-.round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);text-align:center;padding:9px 104px;padding-top:calc(9px + env(safe-area-inset-top));min-height:50px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:0.74rem;letter-spacing:2px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.3);position:relative;z-index:1;}
+.round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);text-align:center;padding:9px 104px;padding-top:calc(9px + env(safe-area-inset-top));min-height:50px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:0.74rem;letter-spacing:2px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.3);position:sticky;top:0;z-index:999;}
 .flip-msg{background:#f5c842;color:#333;text-align:center;padding:8px;font-weight:700;font-size:0.85rem;border-top:2px solid #c9960a;}
 .oya-banner{background:linear-gradient(135deg,var(--oya) 0%,#5a005a 100%);color:white;text-align:center;padding:10px;font-size:0.85rem;font-weight:700;}
 .reveal-card{background:linear-gradient(160deg,rgba(255,255,255,0.96),rgba(252,248,238,0.92));border:1px solid rgba(201,150,10,0.3);border-radius:10px;padding:8px 10px;margin-bottom:6px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
@@ -2821,7 +2821,14 @@ function getAllTopics(){
   const all = [...BASE_TOPICS, ...state.topics];
   return all.map(ensureEightChoices);
 }
-function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const _scr=document.getElementById(id);_scr.classList.add('active');window.scrollTo(0,0);try{_scr.querySelectorAll('.scroll-content').forEach(sc=>{sc.scrollTop=0;});}catch(e){}if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}}
+function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const _scr=document.getElementById(id);_scr.classList.add('active');window.scrollTo(0,0);try{_scr.querySelectorAll('.scroll-content').forEach(sc=>{sc.scrollTop=0;});}catch(e){}
+// 画面が変わる時は常に一番上を表示（iOSのレイアウト確定後のズレ対策で遅延スクロールも実行）
+try{
+  const toTop=()=>{ try{ window.scrollTo(0,0); }catch(e){ window.scrollTo(0,0); } try{ if(document.scrollingElement)document.scrollingElement.scrollTop=0; }catch(e){} try{ _scr.querySelectorAll('.scroll-content').forEach(sc=>{sc.scrollTop=0;}); }catch(e){} };
+  if(window.requestAnimationFrame) requestAnimationFrame(toTop);
+  setTimeout(toTop,60); setTimeout(toTop,160);
+}catch(e){}
+if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}}
 function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
 // アクティブな画面を一番下までスムーズスクロール（実際のスクローラはwindow）
 function scrollActiveScreenToBottom(){
@@ -9862,8 +9869,8 @@ function updateRulesButtonVisibility(onlineGameActive){
   updateScrollFabVisibility();
 }
 
-// 🔊サウンドボタンの表示制御。対戦中の画面でのみ表示し、演出オーバーレイ表示中は隠す。
-// onGameScreen を渡さない呼び出し（演出の出入りからの再評価）では、画面状態を自前で判定する。
+// 🔊サウンドボタンの表示制御。他の3つ（メニュー/ルール/得点）と同じ条件で表示する。
+// onGameScreen を渡さない呼び出しでは、画面状態を自前で判定する。
 function updateSoundButtonVisibility(onGameScreen){
   const snd = document.getElementById('sound-toggle');
   if(!snd) return;
@@ -9878,10 +9885,8 @@ function updateSoundButtonVisibility(onGameScreen){
     const onRules = (document.getElementById('screen-rules')||{}).classList?.contains('active');
     onGameScreen = gameScreens.some(id=>{ const el=document.getElementById(id); return el && el.classList.contains('active'); }) && !onRules;
   }
-  // 演出オーバーレイ（ガチャ／的中／フィナーレ）が出ている間は隠す
-  const effectIds = ['gacha-overlay','hit-overlay','final-curtain'];
-  const effectActive = effectIds.some(id=>{ const el=document.getElementById(id); return el && !el.classList.contains('hidden'); });
-  snd.style.display = (onGameScreen && !effectActive) ? 'flex' : 'none';
+  // 他の3つと同条件（ゲーム画面で表示）。演出中も他ボタン同様に表示扱い（演出オーバーレイが上に被さるので実質見えない）
+  snd.style.display = onGameScreen ? 'flex' : 'none';
 }
 window.updateSoundButtonVisibility = updateSoundButtonVisibility;
 
