@@ -172,7 +172,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 @keyframes oddsGlow{0%,100%{box-shadow:0 0 10px rgba(255,140,0,0.5),0 2px 4px rgba(0,0,0,0.3);}50%{box-shadow:0 0 20px rgba(255,170,30,0.95),0 2px 6px rgba(0,0,0,0.3);}}
 #screen-home{background:linear-gradient(180deg,#1a1a1a 0%,#0d3d1a 50%,var(--green) 100%);align-items:center;justify-content:center;padding:30px 20px;}
 .home-btns{width:100%;max-width:320px;}
-.scroll-content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:var(--band-total);padding-bottom:20px;}
+.scroll-content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:var(--band-total);padding-bottom:20px;scroll-padding-top:calc(var(--band-total) + 8px);}
 .privacy-cover{position:fixed;inset:0;background:#1a1a1a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9995;text-align:center;padding:20px;}
 .privacy-cover.hidden{display:none;}
 .privacy-icon{font-size:5rem;margin-bottom:20px;}
@@ -3334,9 +3334,25 @@ function selectBetType(type,el){
   scrollOfflineBetTo(methods.length>1?'off-buymethod-panel':'off-horse-panel');
 }
 
-// オフライン賭け画面：指定パネルへスムーズスクロール
+// オフライン賭け画面：指定パネルへスムーズスクロール（固定帯の下に来るようにオフセット）
 function scrollOfflineBetTo(elId){
-  setTimeout(()=>{ const t=document.getElementById(elId); if(t&&typeof t.scrollIntoView==='function') t.scrollIntoView({behavior:'smooth',block:'start'}); },80);
+  setTimeout(()=>{
+    try{
+      const t=document.getElementById(elId);
+      if(!t) return;
+      const sc=t.closest('.scroll-content');
+      const bandEl=document.querySelector('.screen.active .round-header, .screen.active .header');
+      const bandPx=bandEl?bandEl.getBoundingClientRect().height:92;
+      if(sc){
+        const scRect=sc.getBoundingClientRect();
+        const tRect=t.getBoundingClientRect();
+        const top=sc.scrollTop+(tRect.top-scRect.top)-bandPx-8;
+        sc.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+      } else if(typeof t.scrollIntoView==='function'){
+        t.scrollIntoView({behavior:'smooth',block:'start'});
+      }
+    }catch(e){ const t=document.getElementById(elId); if(t&&t.scrollIntoView) t.scrollIntoView({behavior:'smooth',block:'start'}); }
+  },80);
 }
 
 // ========== オフライン版 買い方UI ==========
@@ -6985,9 +7001,25 @@ window.onlineSelectBetType = function(type, el){
 // 賭け画面内の指定パネルへスムーズスクロール
 function scrollOnlineBetTo(elId){
   setTimeout(() => {
-    const t = document.getElementById(elId);
-    if(t && typeof t.scrollIntoView === 'function'){
-      t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try{
+      const t = document.getElementById(elId);
+      if(!t) return;
+      const sc = t.closest('.scroll-content');
+      // 固定された帯の実際の高さを取得
+      const bandEl = document.querySelector('.screen.active .round-header, .screen.active .header');
+      const bandPx = bandEl ? bandEl.getBoundingClientRect().height : 92;
+      if(sc){
+        const scRect = sc.getBoundingClientRect();
+        const tRect = t.getBoundingClientRect();
+        // 対象を「帯の真下」に持ってくる：現在のスクロール量 + (対象の上端 - 領域の上端) - 帯の高さ - 余白
+        const top = sc.scrollTop + (tRect.top - scRect.top) - bandPx - 8;
+        sc.scrollTo({ top: Math.max(0, top), behavior:'smooth' });
+      } else if(typeof t.scrollIntoView === 'function'){
+        t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }catch(e){
+      const t=document.getElementById(elId);
+      if(t&&t.scrollIntoView) t.scrollIntoView({behavior:'smooth',block:'start'});
     }
   }, 80);
 }
