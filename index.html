@@ -612,7 +612,7 @@ body.modal-open{overflow:hidden !important;}
     <div id="join-room-form" style="display:none;margin:10px">
       <div class="panel">
         <div class="panel-title">🔑 ルームコード入力</div>
-        <input type="tel" id="join-room-code" placeholder="6桁の数字" maxlength="6" style="padding:14px;font-size:1.2rem;text-align:center;letter-spacing:6px;font-weight:900;width:100%;box-sizing:border-box" oninput="this.value=window.toHalfDigits(this.value)">
+        <input type="tel" id="join-room-code" placeholder="6桁の数字" maxlength="6" style="padding:14px;font-size:1.2rem;text-align:center;letter-spacing:6px;font-weight:900;width:100%;box-sizing:border-box" oninput="this.value=window.toHalfDigits(this.value)" onfocus="setTimeout(function(){try{document.getElementById('join-room-form').scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}},350)">
         <button class="btn btn-primary" onclick="joinRoom()" style="margin-top:10px">✅ 入室する</button>
       </div>
     </div>
@@ -646,8 +646,8 @@ body.modal-open{overflow:hidden !important;}
         </div>
 
         <div style="margin-top:10px">
-          <label style="font-size:0.8rem;color:#333;display:block;margin-bottom:4px">💰 初期点数</label>
-          <input type="tel" id="online-initial" value="5000" min="1" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=window.toHalfDigits(this.value);onlineSettingChanged()">
+          <label style="font-size:0.8rem;color:#333;display:block;margin-bottom:4px">💰 初期点数（100点以上）</label>
+          <input type="tel" id="online-initial" value="5000" min="100" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=window.toHalfDigits(this.value);onlineSettingChanged()">
         </div>
 
         <div style="margin-top:10px">
@@ -5456,7 +5456,20 @@ window.showJoinRoom = function(){
   const name = validatePlayerName();
   if(!name) return;
   document.getElementById('join-room-form').style.display = 'block';
-  document.getElementById('join-room-code').focus();
+  const input = document.getElementById('join-room-code');
+  input.focus();
+  // 入力欄と「入室する」ボタンがキーボードの上にしっかり見えるよう自動スクロール
+  // （iOSの自動スクロールは中途半端になりがちなので、フォーカス後に明示的に合わせる）
+  const scrollToForm = () => {
+    try {
+      const form = document.getElementById('join-room-form');
+      (form || input).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch(e){
+      try { input.scrollIntoView(); } catch(_){}
+    }
+  };
+  setTimeout(scrollToForm, 350);   // キーボード表示後に再調整
+  setTimeout(scrollToForm, 650);   // 念のためもう一度（端末差吸収）
 };
 
 // 部屋に入る（ゲスト）
@@ -5893,6 +5906,10 @@ window.startOnlineGame = async function(){
 
     // 最低ベット額バリデーション（5%以上）
     const initialPoints = parseInt(document.getElementById('online-initial')?.value) || 5000;
+    if (initialPoints < 100) {
+      showNotif('⚠️ 初期点数は100点以上に設定してください');
+      return;
+    }
     const minBet = parseInt(document.getElementById('online-minbet')?.value) || 0;
     const minRequired = Math.ceil(initialPoints * 0.05);
     if (minBet < minRequired) {
