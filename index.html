@@ -82,7 +82,7 @@ html.fx-active{background:#000;}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:transparent;}
 .screen>*{position:relative;z-index:1;}
 .header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);box-sizing:border-box;padding:0 104px;padding-top:var(--safe-top);text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);height:var(--band-total);min-height:var(--band-total);display:flex;flex-direction:column;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;z-index:999;}
-.header::before,.round-header::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:#1a1a1a;z-index:1;pointer-events:none;}
+.header::before,.round-header::before{content:'';position:fixed;top:0;left:0;right:0;height:calc(env(safe-area-inset-top) + 4px);background:#1a1a1a;z-index:998;pointer-events:none;}
 .menu-toggle,.rules-toggle,.score-toggle,.sound-toggle{box-shadow:0 2px 5px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.14);}
 .menu-toggle:active,.rules-toggle:active,.score-toggle:active,.sound-toggle:active{box-shadow:0 1px 2px rgba(0,0,0,0.4),inset 0 1px 2px rgba(0,0,0,0.3);}
 .header h1{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:0.95rem;letter-spacing:1px;text-shadow:0 0 14px rgba(245,200,66,0.5),0 2px 4px rgba(0,0,0,0.6);}
@@ -174,7 +174,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 @keyframes oddsGlow{0%,100%{box-shadow:0 0 10px rgba(255,140,0,0.5),0 2px 4px rgba(0,0,0,0.3);}50%{box-shadow:0 0 20px rgba(255,170,30,0.95),0 2px 6px rgba(0,0,0,0.3);}}
 #screen-home{background:transparent;align-items:center;justify-content:center;padding:30px 20px;}
 .home-btns{width:100%;max-width:320px;}
-.scroll-content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(var(--band-total) + 20px);padding-bottom:20px;scroll-padding-top:calc(var(--band-total) + 22px);}
+.scroll-content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(var(--band-total) + 20px);padding-bottom:4px;scroll-padding-top:calc(var(--band-total) + 22px);}
 .privacy-cover{position:fixed;inset:0;background:#1a1a1a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9995;text-align:center;padding:20px;}
 .privacy-cover.hidden{display:none;}
 .privacy-icon{font-size:5rem;margin-bottom:20px;}
