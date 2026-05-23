@@ -8,7 +8,7 @@
 <meta name="msapplication-navbutton-color" content="#0a0f0d">
 <title>夢へのパスポート</title>
 <meta name="google-site-verification" content="C0j93fE_uTKhmmuSnjRmJFzH4GKPL2CH7Ns0CJagK4E" />
-<meta name="description" content="競馬の三連単をモチーフにした価値観ゲーム。単勝・連単・三連単で友達・家族・カップルの価値観を読んで賭けよう！意外と身近な人の価値観は知らない？G1・G2・G3のお題で盛り上がる。2〜30人対応。飲み会・パーティーに最適。無料で今すぐ遊べる。">
+<meta name="description" content="競馬の三連単をモチーフにした価値観ゲーム。単勝・連単・三連単で友達・家族・カップルの価値観を読んで賭けよう！意外と身近な人の価値観は知らない？G1・G2・G3のお題で盛り上がる。2〜100人対応。飲み会・パーティーに最適。無料で今すぐ遊べる。">
 <meta name="keywords" content="価値観ゲーム,飲み会ゲーム,競馬,三連単,単勝,連単,G1,パーティーゲーム,心理ゲーム,盛り上がるゲーム,無料ゲーム,家族ゲーム,カップルゲーム,友達ゲーム,身近な人,価値観,知らない,夢へのパスポート,yumepass">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="夢パスポート">
@@ -79,7 +79,7 @@ html.fx-active{background:#000;}
 #screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 12%,rgba(245,200,66,0.10),transparent 42%),radial-gradient(circle at 85% 80%,rgba(26,107,42,0.18),transparent 46%);}
 .screen>*{position:relative;z-index:1;}
-.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:5px 104px;text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);}
+.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:5px 104px;padding-top:calc(5px + env(safe-area-inset-top));text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);min-height:46px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .header h1{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:0.95rem;letter-spacing:1px;text-shadow:0 0 14px rgba(245,200,66,0.5),0 2px 4px rgba(0,0,0,0.6);}
 .header .subtitle{color:#b9b9b9;font-size:0.56rem;letter-spacing:2px;}
 .panel{background:linear-gradient(160deg,rgba(253,248,237,0.93),rgba(250,243,225,0.88));backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1);border:1px solid rgba(201,150,10,0.55);border-radius:14px;padding:12px;margin:7px 10px;box-shadow:0 8px 26px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.6);}
@@ -96,6 +96,17 @@ html.fx-active{background:#000;}
 input[type="text"],input[type="number"]{width:100%;padding:12px;border:2px solid #d8cba0;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:1rem;background:white;margin-top:6px;transition:border-color 0.12s,box-shadow 0.12s;}
 input:focus{outline:none;border-color:var(--gold-dark);box-shadow:0 0 0 3px rgba(245,200,66,0.25);}
 label{font-size:0.85rem;font-weight:700;color:#555;}
+#screen-topics input[type="text"],#screen-topics input[type="number"]{padding:8px 10px;font-size:0.9rem;border-radius:8px;border-width:1.5px;margin-top:4px;}
+#screen-topics label{font-size:0.9rem !important;}
+#screen-topics #new-topic-options>div{margin-bottom:4px !important;}
+#lobby-host-settings>summary::-webkit-details-marker{display:none;}
+#lobby-host-settings>summary{margin-bottom:0;}
+#lobby-host-settings[open]>summary{margin-bottom:8px;}
+#playerCountBtns .btn{padding:5px 9px !important;font-size:0.8rem !important;}
+#custom-player-count::placeholder,#custom-rounds::placeholder{color:#333;opacity:1;font-weight:700;}
+#advanced-panel label{font-size:1rem !important;color:#111 !important;font-weight:700;}
+#advanced-panel input[type="tel"]{padding:13px !important;font-size:1.15rem !important;color:#111 !important;font-weight:700;}
+#advanced-panel input::placeholder{color:#555;opacity:1;}
 .score-table{width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;}
 .score-table th{background:linear-gradient(135deg,#2d2d2d,#3a3a3a);color:var(--gold);padding:6px 6px;font-size:0.72rem;text-align:center;letter-spacing:1px;}
 .score-table td{padding:6px 6px;text-align:center;border-bottom:1px solid #e0d8c0;font-size:0.82rem;background:white;}
@@ -161,7 +172,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .privacy-msg{color:#aaa;font-size:0.85rem;margin-bottom:30px;line-height:1.8;}
 .oya-badge{display:inline-block;background:var(--oya);color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
 .ko-badge{display:inline-block;background:#2a7a2a;color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
-.round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);text-align:center;padding:9px 104px;font-size:0.74rem;letter-spacing:2px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.3);position:relative;z-index:1;}
+.round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);text-align:center;padding:9px 104px;padding-top:calc(9px + env(safe-area-inset-top));min-height:50px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:0.74rem;letter-spacing:2px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.3);position:relative;z-index:1;}
 .flip-msg{background:#f5c842;color:#333;text-align:center;padding:8px;font-weight:700;font-size:0.85rem;border-top:2px solid #c9960a;}
 .oya-banner{background:linear-gradient(135deg,var(--oya) 0%,#5a005a 100%);color:white;text-align:center;padding:10px;font-size:0.85rem;font-weight:700;}
 .reveal-card{background:linear-gradient(160deg,rgba(255,255,255,0.96),rgba(252,248,238,0.92));border:1px solid rgba(201,150,10,0.3);border-radius:10px;padding:8px 10px;margin-bottom:6px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
@@ -189,16 +200,17 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .topic-popup-close{margin:10px 16px 14px;display:block;width:calc(100% - 32px);padding:12px;background:#2d2d2d;color:var(--gold);border:none;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;}
 
 /* おしゃれな確認モーダル（すりガラス風） */
-.uiconfirm-overlay{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,8,20,0.55);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);animation:ucFade 0.18s ease;}
+.uiconfirm-overlay{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,8,20,0.55);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);animation:ucFade 0.18s ease;overscroll-behavior:contain;}
+body.modal-open{overflow:hidden !important;}
 .uiconfirm-overlay.hidden{display:none;}
 @keyframes ucFade{from{opacity:0;}to{opacity:1;}}
-.uiconfirm-card{width:100%;max-width:380px;background:linear-gradient(160deg,rgba(38,32,25,0.96),rgba(20,17,13,0.97));border:1.5px solid rgba(245,200,66,0.55);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.08);overflow:hidden;animation:ucPop 0.2s cubic-bezier(0.2,1.3,0.4,1);}
+.uiconfirm-card{width:100%;max-width:380px;max-height:90vh;display:flex;flex-direction:column;background:linear-gradient(160deg,rgba(38,32,25,0.96),rgba(20,17,13,0.97));border:1.5px solid rgba(245,200,66,0.55);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.08);overflow:hidden;animation:ucPop 0.2s cubic-bezier(0.2,1.3,0.4,1);}
 @keyframes ucPop{from{transform:scale(0.9) translateY(10px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
-.uiconfirm-head{padding:16px 18px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(245,200,66,0.2);}
+.uiconfirm-head{padding:16px 18px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(245,200,66,0.2);flex-shrink:0;}
 .uiconfirm-icon{font-size:1.5rem;flex-shrink:0;}
 .uiconfirm-title{color:var(--gold);font-size:1.05rem;font-weight:900;letter-spacing:0.5px;}
-.uiconfirm-body{padding:14px 18px;color:#f0e8d4;font-size:0.9rem;line-height:1.7;}
-.uiconfirm-actions{display:flex;gap:10px;padding:6px 18px 18px;}
+.uiconfirm-body{padding:14px 18px;color:#f0e8d4;font-size:0.9rem;line-height:1.7;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;flex:1 1 auto;min-height:0;}
+.uiconfirm-actions{display:flex;gap:10px;padding:6px 18px 18px;flex-shrink:0;}
 .uiconfirm-btn{flex:1;padding:13px;border-radius:10px;font-size:0.95rem;font-weight:900;cursor:pointer;border:none;transition:transform 0.12s,filter 0.12s;}
 .uiconfirm-btn:active{transform:scale(0.96);}
 .uiconfirm-cancel{background:rgba(255,255,255,0.1);color:#ddd;border:1px solid rgba(255,255,255,0.2);}
@@ -370,11 +382,11 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 @keyframes manbakenGold{0%{transform:translateY(0) scale(1);opacity:0;}10%{opacity:1;}100%{transform:translateY(110vh) scale(0.4);opacity:0;}}
 
 /* サウンドON/OFFボタン */
-.sound-toggle{position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.sound-toggle{position:fixed;top:max(8px,calc(env(safe-area-inset-top) + 3px));right:12px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .sound-toggle:active{transform:scale(0.92);}
-.menu-toggle{position:fixed;top:max(12px,env(safe-area-inset-top));left:12px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;line-height:1;padding:0;}
-.rules-toggle{position:fixed;top:max(12px,env(safe-area-inset-top));left:58px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
-.score-toggle{position:fixed;top:max(12px,env(safe-area-inset-top));right:58px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.menu-toggle{position:fixed;top:max(8px,calc(env(safe-area-inset-top) + 3px));left:12px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;line-height:1;padding:0;}
+.rules-toggle{position:fixed;top:max(8px,calc(env(safe-area-inset-top) + 3px));left:58px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.score-toggle{position:fixed;top:max(8px,calc(env(safe-area-inset-top) + 3px));right:58px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .score-toggle:active{transform:scale(0.92);}
 .menu-toggle:active{transform:scale(0.92);}
 /* 一番下までスクロールする矢印（小さく半透明・邪魔にならない） */
@@ -501,9 +513,9 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         </div>
         <div style="flex:1;text-align:center">
           <div style="color:rgba(245,200,66,0.6);font-size:0.6rem;letter-spacing:4px;margin-bottom:2px">DREAM PASSPORT</div>
-          <div style="color:#f5c842;font-size:1.5rem;font-weight:900;letter-spacing:2px;text-shadow:0 0 10px rgba(245,200,66,0.8);font-family:'Racing Sans One',cursive">夢へのパスポート</div>
-          <div style="color:rgba(255,255,255,0.7);font-size:0.65rem;margin-top:4px">〜人の価値観を読んだ者が勝つ〜</div>
-          <div style="font-size:2.2rem;margin:8px 0">🏇</div>
+          <div style="color:#f5c842;font-size:1.5rem;font-weight:900;letter-spacing:0.5px;text-shadow:0 0 10px rgba(245,200,66,0.8);font-family:'Racing Sans One',cursive;white-space:nowrap">夢へのパスポート</div>
+          <div style="color:rgba(255,255,255,0.7);font-size:0.85rem;margin-top:4px;white-space:nowrap">〜人の価値観を読んだ者が勝つ〜</div>
+          <div style="font-size:3rem;margin:8px 0">🏇</div>
           <div style="display:flex;justify-content:center;gap:6px;margin-top:4px">
             <span style="background:rgba(245,200,66,0.15);border:1px solid rgba(245,200,66,0.4);color:#f5c842;font-size:0.6rem;font-weight:700;padding:2px 8px;border-radius:4px">三連単</span>
             <span style="background:rgba(245,200,66,0.15);border:1px solid rgba(245,200,66,0.4);color:#f5c842;font-size:0.6rem;font-weight:700;padding:2px 8px;border-radius:4px">連単</span>
@@ -527,7 +539,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
   </div>
   <div class="home-btns">
     <button class="btn btn-primary" onclick="goTo('screen-setup')">🐎 1台で遊ぶ（端末回す）</button>
-    <button class="btn btn-primary" onclick="goTo('screen-online-menu');checkRejoinAvailable();" style="background:linear-gradient(135deg,#1a5fcc,#0d3d7a)">🌐 オンライン対戦</button>
+    <button class="btn btn-primary" onclick="goTo('screen-online-menu');checkRejoinAvailable();">🌐 オンライン対戦</button>
     <button class="btn btn-secondary" onclick="goTo('screen-topics')">📝 お題を管理する</button>
     <button class="btn btn-secondary" onclick="goTo('screen-rules')">📖 ルール確認</button>
   </div>
@@ -564,14 +576,14 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       </div>
     </div>
 
-    <div class="panel">
-      <div class="panel-title">✏️ あなたの名前</div>
+    <div class="panel" style="padding-top:8px;padding-bottom:8px">
+      <div class="panel-title" style="margin-bottom:4px;padding-bottom:3px">✏️ あなたの名前</div>
       <input type="text" id="online-player-name" placeholder="名前を入力（例：たろう）" maxlength="10" style="padding:12px;font-size:1rem">
     </div>
 
-    <div style="margin:20px 10px;display:flex;flex-direction:column;gap:12px">
-      <button class="btn btn-primary" onclick="createRoom()" style="background:linear-gradient(135deg,#1a5fcc,#0d3d7a);color:white">🏠 部屋を作る</button>
-      <button class="btn btn-primary" onclick="showJoinRoom()" style="background:linear-gradient(135deg,#1a5fcc,#0d3d7a);color:white">🔑 部屋に入る</button>
+    <div style="margin:10px;display:flex;flex-direction:column;gap:6px">
+      <button class="btn btn-primary" onclick="createRoom()" style="background:linear-gradient(135deg,#1a5fcc,#0d3d7a);color:white;padding:8px;margin-top:0">🏠 部屋を作る</button>
+      <button class="btn btn-primary" onclick="showJoinRoom()" style="background:linear-gradient(135deg,#1a5fcc,#0d3d7a);color:white;padding:8px;margin-top:0">🔑 部屋に入る</button>
     </div>
 
     <!-- 部屋に入るフォーム -->
@@ -583,7 +595,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       </div>
     </div>
 
-    <div style="margin:10px"><button class="btn btn-secondary" onclick="goTo('screen-home')">← 戻る</button></div>
+    <div style="margin:6px 10px 10px"><button class="btn btn-secondary" onclick="goTo('screen-home')" style="padding:8px;margin-top:0">← 戻る</button></div>
   </div>
 </div>
 
@@ -594,7 +606,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <div class="panel" style="background:linear-gradient(135deg,#2a1a00,#5a3a00);border:2px solid var(--gold)">
       <div style="color:var(--gold);font-size:0.7rem;letter-spacing:3px;text-align:center;margin-bottom:8px">ROOM CODE</div>
       <div id="lobby-room-code" style="color:var(--gold);font-size:2.5rem;font-weight:900;text-align:center;letter-spacing:12px;font-family:monospace">------</div>
-      <div style="text-align:center;color:#aaa;font-size:0.75rem;margin-top:8px">このコードを参加者に伝えてください</div>
+      <div style="text-align:center;color:#ccc;font-size:0.95rem;margin-top:8px">このコードを参加者に伝えてください</div>
     </div>
 
     <div class="panel">
@@ -603,8 +615,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     </div>
 
     <div id="lobby-host-controls" style="display:none;margin:20px 10px">
-      <div class="panel">
-        <div class="panel-title">⚙️ ゲーム設定（ホスト）</div>
+      <details class="panel" id="lobby-host-settings">
+        <summary class="panel-title" style="cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px">⚙️ ゲーム設定（ホスト）<span style="margin-left:auto;font-size:0.7rem;color:#888;font-weight:700">タップで開閉 ▾</span></summary>
 
         <div style="margin-top:10px">
           <label style="font-size:0.8rem;color:#333;display:block;margin-bottom:4px">🎯 ラウンド数</label>
@@ -620,7 +632,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
           <label style="font-size:0.8rem;color:#333;display:block;margin-bottom:4px">📉 最低ベット額</label>
           <input type="tel" id="online-minbet" value="250" min="0" style="width:100%;padding:10px;font-size:1rem;box-sizing:border-box" oninput="this.value=window.toHalfDigits(this.value);onlineSettingChanged()">
           <div id="online-minbet-warn" style="display:none;font-size:0.75rem;color:var(--red);margin-top:4px;padding:6px;background:#fff5f5;border-left:3px solid var(--red);border-radius:4px"></div>
-          <div style="font-size:0.7rem;color:#444;margin-top:3px">💡 初期持ち金の5%以上で設定してください</div>
+          <div style="font-size:0.85rem;color:#444;margin-top:3px">💡 初期持ち金の5%以上で設定してください</div>
         </div>
 
         <div style="margin-top:10px">
@@ -649,7 +661,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
         <div style="margin-top:14px;padding:10px;background:rgba(245,200,66,0.1);border-radius:6px;font-size:0.75rem;color:#444">
           💡 設定はリアルタイムで参加者にも反映されます
         </div>
-      </div>
+      </details>
 
       <button class="btn btn-primary" onclick="startOnlineGame()" style="background:linear-gradient(135deg,#1a5fcc,#0d3d7a);color:white;margin-top:10px">🎮 ゲームを開始（2人以上で）</button>
     </div>
@@ -1113,8 +1125,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div class="panel-title">👥 プレイヤー人数</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px" id="playerCountBtns"></div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
-        <input type="tel" id="custom-player-count" placeholder="2〜30人を直接入力も可" style="flex:1;margin-top:0;padding:10px" oninput="this.value=window.toHalfDigits(this.value);handleCustomPlayerCount(this.value)">
-        <span style="font-size:0.85rem;color:#444;white-space:nowrap">人</span>
+        <input type="tel" id="custom-player-count" placeholder="2〜100を直接入力" style="flex:1;margin-top:0;padding:14px;font-size:1.2rem;color:#111;font-weight:700" oninput="this.value=window.toHalfDigits(this.value);handleCustomPlayerCount(this.value)">
+        <span style="font-size:1rem;color:#111;font-weight:700;white-space:nowrap">人</span>
       </div>
       <div id="player-count-error" style="display:none;color:#e74c3c;font-size:0.8rem;font-weight:700;margin-top:6px"></div>
     </div>
@@ -1127,8 +1139,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <div class="panel-title">🎯 ラウンド数</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px" id="roundCountBtns"></div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
-        <input type="tel" id="custom-rounds" placeholder="自由入力（例：12）" style="flex:1;margin-top:0;padding:10px" oninput="this.value=window.toHalfDigits(this.value)">
-        <span style="font-size:0.85rem;color:#444;white-space:nowrap">R（1以上）</span>
+        <input type="tel" id="custom-rounds" placeholder="自由入力（例：12）" style="flex:1;margin-top:0;padding:14px;font-size:1.2rem;color:#111;font-weight:700" oninput="this.value=window.toHalfDigits(this.value)">
+        <span style="font-size:1rem;color:#111;font-weight:700;white-space:nowrap">R（1以上）</span>
       </div>
     </div>
     <div class="panel"><div class="panel-title">💰 初期点数</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px" id="initialPointBtns"></div></div>
@@ -1136,11 +1148,11 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
     <!-- 詳細設定 -->
     <div class="panel" style="border-color:#bbb;background:#f5f5f5">
       <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleAdvanced()">
-        <div style="font-size:0.8rem;font-weight:700;color:#333">⚙️ 詳細設定（任意）</div>
-        <div id="advanced-arrow" style="font-size:0.8rem;color:#555">▼</div>
+        <div style="font-size:1rem;font-weight:800;color:#111">⚙️ 詳細設定（任意）</div>
+        <div id="advanced-arrow" style="font-size:1rem;color:#111">▼</div>
       </div>
       <div id="advanced-panel" style="display:none;margin-top:12px">
-        <div style="font-size:0.75rem;color:#aaa;margin-bottom:10px;background:#fff3cd;border-radius:6px;padding:8px;border:1px solid #ffc107">
+        <div style="font-size:0.95rem;color:#111;margin-bottom:10px;background:#fff3cd;border-radius:6px;padding:10px;border:1px solid #ffc107;line-height:1.6">
           💡 変更しなくてもゲームは楽しめます。<br>デフォルト：初期点数5000点 / 最低ベット500点 / 親ボーナス50%<br>オッズは締切後にパリミュチュエル方式で自動計算（最低×1.1保証）
         </div>
         <label style="display:block;margin-bottom:4px">初期点数（自由入力）</label>
@@ -1153,7 +1165,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
           <input type="tel" id="custom-min-bet" placeholder="未入力で初期点数の5%（例:250）" style="flex:1;margin-top:0" oninput="this.value=window.toHalfDigits(this.value)">
           <span style="font-size:0.85rem;color:#444;white-space:nowrap">点（0以上）</span>
         </div>
-        <div style="font-size:0.7rem;color:#444;margin-top:3px">💡 初期持ち金の5%以上で設定してください（未入力なら自動で5%）</div>
+        <div style="font-size:0.95rem;color:#111;margin-top:4px;font-weight:600">💡 初期持ち金の5%以上で設定してください（未入力なら自動で5%）</div>
         <label style="display:block;margin-top:12px;margin-bottom:4px">親ボーナス割合（プリセット + 自由入力）</label>
         <div style="display:flex;gap:4px;margin-bottom:6px">
           <button type="button" onclick="offlineSetBonusPreset(0)" style="flex:1;padding:8px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">0%</button>
@@ -1169,8 +1181,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 
         <!-- 賭け方説明（パリミュチュエル方式） -->
         <div style="margin-top:14px;padding-top:12px;border-top:1px solid #ddd">
-          <div style="font-size:0.8rem;font-weight:700;color:#333;margin-bottom:8px">🎰 賭け方（7種類）</div>
-          <div style="background:#f9f5e8;border:1px solid var(--gold);border-radius:8px;padding:10px;font-size:0.75rem;line-height:1.6">
+          <div style="font-size:1rem;font-weight:800;color:#111;margin-bottom:8px">🎰 賭け方（7種類）</div>
+          <div style="background:#f9f5e8;border:1px solid var(--gold);border-radius:8px;padding:10px;font-size:0.92rem;line-height:1.7;color:#111">
             <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px">
               <strong>単勝</strong><span>1位を当てる</span>
               <strong>複勝</strong><span>1〜3位のどれか</span>
@@ -1180,9 +1192,11 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
               <strong>3連複</strong><span>1〜3位（順不同）</span>
               <strong>3連単</strong><span>1〜3位（順番通り）</span>
             </div>
-            <div style="margin-top:10px;padding-top:8px;border-top:1px dashed #ddd;color:#555">
+            <div style="margin-top:10px;padding-top:8px;border-top:1px dashed #ddd;color:#111">
               <strong>📊 オッズはパリミュチュエル方式</strong><br>
               締切後に全プレイヤーの賭けから自動で計算されます（本物の競馬と同じ仕組み）。<br>
+              <strong>人気によって変動します</strong> — 人気が集まる（みんなが賭ける）ほどオッズは下がり、人気がないほど高くなります。<br>
+              各賭け方には<strong>オッズの上限と下限</strong>が決まっています（例：単勝は約1.3〜4.9倍、3連単は約6〜100倍）。<br>
               最低オッズ ×1.1 を保証 — 当てれば必ず利益が出ます。
             </div>
           </div>
@@ -1542,7 +1556,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
       <label style="margin-top:10px;display:block">絵文字アイコン</label><input type="text" id="new-topic-icon" placeholder="例：🍕" style="width:80px">
       <label style="margin-top:10px;display:block">カテゴリー</label>
       <div style="display:flex;gap:8px;margin-top:6px" id="new-topic-category-btns"></div>
-      <label style="margin-top:10px;display:block">選択肢（3〜7個）</label>
+      <label style="margin-top:10px;display:block">選択肢（3〜8個）</label>
       <div id="new-topic-options"></div>
       <button class="btn btn-success" style="margin-top:8px" onclick="addTopic()">✅ お題を追加する</button>
     </div>
@@ -2854,9 +2868,11 @@ function uiConfirm(opts){
     cancelBtn.textContent=opts.cancelText||'キャンセル';
     if(opts.cancelText===null){ cancelBtn.style.display='none'; } else { cancelBtn.style.display=''; }
     ov.classList.remove('hidden');
+    document.body.classList.add('modal-open');
     try{ window.SFX && window.SFX.notify && window.SFX.notify(); }catch(e){}
     const cleanup=(val)=>{
       ov.classList.add('hidden');
+      document.body.classList.remove('modal-open');
       okBtn.onclick=null; cancelBtn.onclick=null; ov.onclick=null;
       resolve(val);
     };
@@ -2884,7 +2900,7 @@ if (typeof updateOfflineBonusLockState === 'function') updateOfflineBonusLockSta
 }
 function getSelectedPlayerCount(){
   const custom=parseInt(document.getElementById('custom-player-count')?.value)||0;
-  if(custom>=9&&custom<=30)return custom;
+  if(custom>=9&&custom<=100)return custom;
   const a=document.querySelector('#playerCountBtns .btn-primary');return a?parseInt(a.textContent):3;
 }
 function shufflePlayers(){const count=getSelectedPlayerCount();const names=[];for(let i=1;i<=count;i++)names.push(document.getElementById('pname-'+i)?.value.trim()||('プレイヤー'+i));for(let i=names.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[names[i],names[j]]=[names[j],names[i]];}for(let i=1;i<=count;i++){const inp=document.getElementById('pname-'+i);if(inp)inp.value=names[i-1];}showNotif('🔀 順番をシャッフルしました！');}
@@ -2893,7 +2909,7 @@ function handleCustomPlayerCount(val){
   const n=parseInt(val)||0;
   const err=document.getElementById('player-count-error');
   if(val===''){if(err)err.style.display='none';return;}
-  if(n>=2&&n<=30){
+  if(n>=2&&n<=100){
     // ボタンの選択を解除
     document.querySelectorAll('#playerCountBtns .btn').forEach(x=>x.className='btn btn-sm btn-secondary');
     // 対応するボタンがあればハイライト
@@ -2901,7 +2917,7 @@ function handleCustomPlayerCount(val){
     renderPlayerNameFields(n);
     if(err)err.style.display='none';
   } else {
-    if(err){err.textContent='⚠️ 2〜30人の範囲で入力してください';err.style.display='block';}
+    if(err){err.textContent='⚠️ 2〜100人の範囲で入力してください';err.style.display='block';}
   }
 }
 
@@ -2975,13 +2991,35 @@ function startGame(){
   const customOya=document.getElementById('custom-oya-bonus')?.value;
   if(customOya!==''&&customOya!==null&&customOya!==undefined&&!isNaN(parseInt(customOya))) state.oyaBonusRate=Math.max(0,parseInt(customOya));
   else state.oyaBonusRate=50;
+  // 2人プレイは親ボーナス強制0%
+  if(count===2) state.oyaBonusRate=0;
   // ラウンド数（自由入力優先）
   const customRounds=parseInt(document.getElementById('custom-rounds')?.value)||0;
   if(customRounds>=1) state.rounds=customRounds;
   // オッズ（v2.0 パリミュチュエル方式では未使用、後方互換のためのみ保持）
   state.odds = {tansho:2, fukusho:1.5, umaren:5, umatan:10, wide:3, sanrenfuku:7, sanrentan:30, rentan:10, renfuku:5};
-  for(let i=1;i<=count;i++){const name=document.getElementById('pname-'+i)?.value.trim()||('プレイヤー'+i);state.players.push({name,points:state.initialPoints,history:[]});}
-  state.currentRound=0;state.history=[];state.oyaIndex=0;state.usedTopicIds=[];goToRoundStart();
+  // プレイヤー名を先に集める（確認画面に表示するため）
+  const names=[];
+  for(let i=1;i<=count;i++){ names.push(document.getElementById('pname-'+i)?.value.trim()||('プレイヤー'+i)); }
+  // 確認ダイアログ（設定の詳細を表示してから開始）
+  const bonusLine = (count===2)
+    ? '<strong>0%</strong> <span style="color:#1a5fcc">（2人プレイのため自動で0%）</span>'
+    : `<strong>${state.oyaBonusRate}%</strong>`;
+  const namePreview = names.slice(0,8).map(n=>escapeHtml(n)).join('、') + (names.length>8?` …他${names.length-8}人`:'');
+  const bodyHtml = `<div style="font-size:1rem;line-height:1.9;color:#f0e8d4">`
+    + `👥 人数：<strong>${count}人</strong><br>`
+    + `🎯 ラウンド数：<strong>${state.rounds}</strong>R<br>`
+    + `💰 初期点数：<strong>${state.initialPoints.toLocaleString()}</strong>点<br>`
+    + `📉 最低ベット額：<strong>${state.minBet.toLocaleString()}</strong>点<br>`
+    + `👑 親ボーナス：${bonusLine}<br>`
+    + `<span style="color:#c8bfa8;font-size:0.85rem">参加者：${namePreview}</span>`
+    + `</div>`;
+  uiConfirm({ icon:'🏁', title:'この設定で始めますか？', bodyHtml, okText:'🏁 開始する', cancelText:'設定に戻る' }).then(ok=>{
+    if(!ok) return;
+    state.players=[];
+    for(let i=1;i<=count;i++){ state.players.push({name:names[i-1],points:state.initialPoints,history:[]}); }
+    state.currentRound=0;state.history=[];state.oyaIndex=0;state.usedTopicIds=[];goToRoundStart();
+  });
 }
 
 function goToRoundStart(){
@@ -3903,8 +3941,13 @@ function renderOfflineCart(){
     let selDisp;
     if(u.buyMethod==='simple'){
       selDisp=(u.selections||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#555;margin:0 1px">${joiner}</span>`);
+    } else if(u.buyMethod==='box'){
+      // ボックスは通り数が自明なので「N通り」は出さず馬番を丸バッジで表示
+      selDisp=(u.selections||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#888;margin:0 1px">・</span>`);
     } else {
-      selDisp=`<span style="color:#333;font-size:0.8rem;font-weight:600">${u.combinations.length}通り（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
+      // フォーメーション・流しは通り数を残す。馬番は丸バッジ表示
+      const badges=(u.selections||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#888;margin:0 1px">・</span>`);
+      selDisp=`<span style="color:#333;font-size:0.8rem;font-weight:600;margin-right:4px">${u.combinations.length}通り</span>${badges}`;
     }
     return `<div style="background:#fff;border:1px solid #d8c98a;border-radius:8px;padding:9px 11px">
       <div class="off-cart-tap" data-cart-idx="${i}" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0;cursor:pointer">
@@ -4521,7 +4564,7 @@ function bakenHtml(bet, horses, opts){
     body = renderGroups(groups, labels);
   } else if(struct && struct.kind==='box'){
     const hs=struct.horses||bet.selections||[];
-    body = `<div style="background:${groupBg};border:1px solid ${dark?'rgba(245,200,66,0.25)':'#e0d5b0'};border-radius:8px;padding:6px 8px"><div style="font-size:0.82rem;color:${subTxt};font-weight:700;margin-bottom:4px">ボックス（選んだ馬の全組み合わせ）</div><div style="display:flex;flex-wrap:wrap;gap:4px">${hs.map(hi=>badge(hi)).join('')}</div></div>`;
+    body = `<div style="background:${groupBg};border:1px solid ${dark?'rgba(245,200,66,0.25)':'#e0d5b0'};border-radius:8px;padding:6px 8px"><div style="display:flex;flex-wrap:wrap;gap:4px">${hs.map(hi=>badge(hi)).join('')}</div></div>`;
   } else if(method==='simple'){
     // シンプル：1点を着順付きで
     const sel=bet.selections||[];
@@ -4642,7 +4685,7 @@ function attachResultLongPress(el, r, horses){
   const winCombos = winningCombosFromResult(r);
   const netChange = (typeof r.change === 'number') ? r.change : ((r.payout||0) - (r.amount||0));
   const sign = netChange > 0 ? '+' : (netChange < 0 ? '−' : '±');
-  const netCol = netChange > 0 ? '#7dff7d' : (netChange < 0 ? '#ff7d7d' : '#ccc');
+  const netCol = netChange > 0 ? '#5db0ff' : (netChange < 0 ? '#ff7d7d' : '#ccc');
   const bottom = r.skipped
     ? '<span style="color:#aaa">見送り</span>'
     : `<span style="color:#ccc;font-weight:700">収支</span> <span style="color:${netCol};font-weight:900;font-size:1.05rem">${sign}${Math.abs(netChange).toLocaleString()}点</span>`;
@@ -4757,17 +4800,21 @@ function buildPlayerResultsHtml(playerResults){
       return `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px"><span style="display:inline-flex;align-items:center">${combo}</span>${oc}${pay}</div>`;
     };
     let comboBlock;
-    if(subs.length <= 1){
+    if(subs.length <= 3){
+      // 当選パターンが3通りまでは折りたたまず全件そのまま表示
       comboBlock = subs.map(lineOf).join('');
     } else {
-      // 先頭（最高オッズ）は常時表示、残りはタップで開閉
+      // 4通り以上ある時のみ、先頭（最高オッズ）を常時表示し残りはボタンで開閉
       const uid = 'winmore-' + _ri + '-' + Math.random().toString(36).slice(2,7);
       const firstLine = lineOf(subs[0]);
       const restLines = subs.slice(1).map(lineOf).join('');
       const restCount = subs.length - 1;
+      // 開閉トグルはボタン要素で実装し、カードの「詳細」タップに伝播しないよう stopPropagation する。
+      // 開閉は onclick のみで行い、touch系は伝播を止めるだけにする（二重発火防止）。
+      const toggleFn = `(function(e,b){if(e){e.stopPropagation();}var m=document.getElementById('${uid}');var op=m.style.display==='none';m.style.display=op?'block':'none';b.textContent=op?'▲ 閉じる':'▼ 他${restCount}通りの当選を見る';})`;
       comboBlock = `${firstLine}`
         + `<div id="${uid}" style="display:none">${restLines}</div>`
-        + `<div onclick="(function(b){var m=document.getElementById('${uid}');var open=m.style.display==='none';m.style.display=open?'block':'none';b.textContent=open?'▲ 閉じる':'▼ 他${restCount}通りを見る';})(this)" style="margin-top:5px;font-size:0.72rem;color:#1565c0;font-weight:800;cursor:pointer;display:inline-block">▼ 他${restCount}通りを見る</div>`;
+        + `<button type="button" onclick="${toggleFn}(event,this)" ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()" style="margin-top:7px;font-size:0.78rem;color:#0d47a1;font-weight:800;background:#e8f0fe;border:1px solid #90b4f0;border-radius:9px;padding:5px 14px;cursor:pointer;display:inline-block;-webkit-tap-highlight-color:transparent">▼ 他${restCount}通りの当選を見る</button>`;
     }
     return `<div class="player-result hit"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:linear-gradient(135deg,#34b350,#1a7a1a);color:#fff;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px;box-shadow:0 1px 4px rgba(26,122,26,0.4)">🎯 当選</span></span><span class="player-result-change change-pos">+${payout.toLocaleString()}点</span></div>
       <div class="player-result-detail" style="margin-top:5px">
@@ -5016,9 +5063,10 @@ function openScorePopup(){
       tbl.innerHTML='<tr><td style="padding:14px;color:#444">まだ得点がありません</td></tr>';
     }
     ov.classList.remove('hidden');
+    document.body.classList.add('modal-open');
   } catch(e){ console.error('score popup error:', e); }
 }
-function closeScorePopup(){ const ov=document.getElementById('score-popup-overlay'); if(ov) ov.classList.add('hidden'); }
+function closeScorePopup(){ const ov=document.getElementById('score-popup-overlay'); if(ov) ov.classList.add('hidden'); document.body.classList.remove('modal-open'); }
 window.openScorePopup = openScorePopup;
 window.closeScorePopup = closeScorePopup;
 
@@ -5114,8 +5162,8 @@ function restartWithSamePlayers(){
 
 let newTopicCategory='g3';
 function initCategoryBtns(){const c=document.getElementById('new-topic-category-btns');if(!c)return;c.innerHTML='';CATEGORIES.filter(cat=>cat.id!=='all').forEach(cat=>{const b=document.createElement('button');b.className='btn btn-sm';b.textContent=cat.label;b.style.cssText=`background:${cat.id===newTopicCategory?cat.color:'#eee'};color:${cat.id===newTopicCategory?cat.textColor:'#555'};border:none;border-radius:6px;padding:8px 16px;font-weight:700;cursor:pointer;`;b.addEventListener('click',()=>{newTopicCategory=cat.id;initCategoryBtns();});c.appendChild(b);});}
-function initNewTopicOptions(){const c=document.getElementById('new-topic-options');c.innerHTML='';for(let i=1;i<=7;i++){const d=document.createElement('div');d.style.marginBottom='6px';d.innerHTML=`<input type="text" id="opt-${i}" placeholder="選択肢${i}">`;c.appendChild(d);}}
-function addTopic(){const title=document.getElementById('new-topic-title').value.trim();const icon=document.getElementById('new-topic-icon').value.trim()||'🎯';if(!title){showNotif('⚠️ タイトルを入力してください');return;}const horses=[];for(let i=1;i<=7;i++){const v=document.getElementById('opt-'+i)?.value.trim();if(v)horses.push(v);}if(horses.length<3){showNotif('⚠️ 選択肢を3つ以上入力してください');return;}while(horses.length<7)horses.push(`選択肢${horses.length+1}`);state.topics.push({id:'custom-'+Date.now(),category:newTopicCategory,title,icon,horses});saveTopics();document.getElementById('new-topic-title').value='';document.getElementById('new-topic-icon').value='';for(let i=1;i<=7;i++){const inp=document.getElementById('opt-'+i);if(inp)inp.value='';}renderTopicsScreen();showNotif('✅ お題を追加しました');}
+function initNewTopicOptions(){const c=document.getElementById('new-topic-options');c.innerHTML='';for(let i=1;i<=8;i++){const d=document.createElement('div');d.style.marginBottom='6px';d.innerHTML=`<input type="text" id="opt-${i}" placeholder="選択肢${i}">`;c.appendChild(d);}}
+function addTopic(){const title=document.getElementById('new-topic-title').value.trim();const icon=document.getElementById('new-topic-icon').value.trim()||'🎯';if(!title){showNotif('⚠️ タイトルを入力してください');return;}const horses=[];for(let i=1;i<=8;i++){const v=document.getElementById('opt-'+i)?.value.trim();if(v)horses.push(v);}if(horses.length<3){showNotif('⚠️ 選択肢を3つ以上入力してください');return;}while(horses.length<8)horses.push(`選択肢${horses.length+1}`);state.topics.push({id:'custom-'+Date.now(),category:newTopicCategory,title,icon,horses});saveTopics();document.getElementById('new-topic-title').value='';document.getElementById('new-topic-icon').value='';for(let i=1;i<=8;i++){const inp=document.getElementById('opt-'+i);if(inp)inp.value='';}renderTopicsScreen();showNotif('✅ お題を追加しました');}
 function renderTopicsScreen(){
   const c=document.getElementById('topics-list');
   const base=BASE_TOPICS;const user=state.topics;
@@ -5621,7 +5669,7 @@ window.updateOfflineBonusLockState = function(playerCount){
     if (!noticeEl) {
       noticeEl = document.createElement('div');
       noticeEl.id = 'offline-bonus-n2-notice';
-      noticeEl.style.cssText = 'font-size:0.75rem;color:#333;margin-top:4px;padding:6px;background:#f0f4ff;border-left:3px solid #1a5fcc;border-radius:4px';
+      noticeEl.style.cssText = 'font-size:0.95rem;color:#111;font-weight:600;margin-top:4px;padding:8px;background:#f0f4ff;border-left:4px solid #1a5fcc;border-radius:4px';
       noticeEl.innerHTML = 'ℹ️ 2人プレイ時は親ボーナスが自動的に0%に固定されます（仕様）';
       input.parentElement.appendChild(noticeEl);
     }
@@ -7768,8 +7816,13 @@ function renderOnlineCart(){
     let selDisp;
     if (u.buyMethod === 'simple') {
       selDisp = (u.selections || []).map(hi => `<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#ddd;margin:0 1px">${joiner}</span>`);
+    } else if (u.buyMethod === 'box') {
+      // ボックスは選んだ頭数で通り数が自明なので「N通り」は出さず、馬番を丸バッジで表示
+      selDisp = (u.selections || []).map(hi => `<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#ddd;margin:0 1px">・</span>`);
     } else {
-      selDisp = `<span style="color:#f0e8d0;font-size:0.82rem;font-weight:700">${u.combinations.length}通り（${(u.selections||[]).map(hi=>hi+1).join(',')}）</span>`;
+      // フォーメーション・流しは組合せ数が自明でないので通り数を残す。馬番は丸バッジ表示
+      const badges = (u.selections || []).map(hi => `<span class="ibadge ${HC[hi]}" style="width:20px;height:20px;font-size:0.65rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#ddd;margin:0 1px">・</span>`);
+      selDisp = `<span style="color:#f0e8d0;font-size:0.82rem;font-weight:700;margin-right:4px">${u.combinations.length}通り</span>${badges}`;
     }
     return `<div style="background:linear-gradient(135deg,#1a1a1a,#262019);border:1px solid rgba(245,200,66,0.45);border-radius:8px;padding:9px 11px">
       <div class="ob-cart-tap" data-cart-idx="${i}" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0;cursor:pointer">
@@ -9822,8 +9875,33 @@ function updateRulesButtonVisibility(onlineGameActive){
   if(sbtn){
     sbtn.style.display = show ? 'flex' : 'none';
   }
+  // 🔊サウンドボタン：対戦中の画面でのみ表示（演出中は隠す）
+  updateSoundButtonVisibility(show);
   updateScrollFabVisibility();
 }
+
+// 🔊サウンドボタンの表示制御。対戦中の画面でのみ表示し、演出オーバーレイ表示中は隠す。
+// onGameScreen を渡さない呼び出し（演出の出入りからの再評価）では、画面状態を自前で判定する。
+function updateSoundButtonVisibility(onGameScreen){
+  const snd = document.getElementById('sound-toggle');
+  if(!snd) return;
+  if(typeof onGameScreen === 'undefined'){
+    const gameScreens = [
+      'screen-online-topic-select','screen-online-topic-lottery','screen-online-betting',
+      'screen-online-bet-confirm','screen-online-skip-confirm','screen-online-oya-confirm',
+      'screen-online-bet-wait','screen-online-reveal','screen-online-roundresult','screen-online-final',
+      'screen-roundstart','screen-bet','screen-bet-confirm','screen-skip-confirm',
+      'screen-result','screen-reveal','screen-roundresult','screen-final'
+    ];
+    const onRules = (document.getElementById('screen-rules')||{}).classList?.contains('active');
+    onGameScreen = gameScreens.some(id=>{ const el=document.getElementById(id); return el && el.classList.contains('active'); }) && !onRules;
+  }
+  // 演出オーバーレイ（ガチャ／的中／フィナーレ）が出ている間は隠す
+  const effectIds = ['gacha-overlay','hit-overlay','final-curtain'];
+  const effectActive = effectIds.some(id=>{ const el=document.getElementById(id); return el && !el.classList.contains('hidden'); });
+  snd.style.display = (onGameScreen && !effectActive) ? 'flex' : 'none';
+}
+window.updateSoundButtonVisibility = updateSoundButtonVisibility;
 
 // ▼下までスクロール矢印：賭け公開・結果発表・お題選択などで、まだ下に隠れた要素があるとき表示
 function updateScrollFabVisibility(){
@@ -9990,6 +10068,7 @@ window.showHitEffect = function(hitType, onDone, extraInfo){
   content.innerHTML = '';
   bg.className = '';
   overlay.classList.remove('hidden');
+  if(window.updateSoundButtonVisibility)updateSoundButtonVisibility();
   fxStart();
   // プレイヤー名・オッズのバナーを演出に重ねて表示する関数
   const showPlayerBanner = () => {
@@ -10265,6 +10344,7 @@ window.showHitEffect = function(hitType, onDone, extraInfo){
       content.innerHTML = '';
       bg.className = '';
       fxEnd();
+      if(window.updateSoundButtonVisibility)updateSoundButtonVisibility();
       if(onDone) onDone();
     }, 400);
   }, duration);
@@ -10313,6 +10393,7 @@ window.showGachaRoundIntro = function(log, onDone){
   document.getElementById('gacha-title').textContent = title;
   document.getElementById('gacha-sub').textContent = sub;
   overlay.classList.remove('hidden');
+  if(window.updateSoundButtonVisibility)updateSoundButtonVisibility();
   fxStart();
   try { window.SFX.roundIntro(); } catch(e){}
 
@@ -10325,6 +10406,7 @@ window.showGachaRoundIntro = function(log, onDone){
       overlay.style.opacity = '';
       overlay.style.transition = '';
       // 注：的中演出が続けて始まるのでfxEndはそちらに任せる
+      if(window.updateSoundButtonVisibility)updateSoundButtonVisibility();
       if(onDone) onDone();
     }, 400);
   }, 1800);
@@ -10339,6 +10421,7 @@ window.showFinalCurtain = function(winnerName, winnerPts, onDismiss){
   document.getElementById('final-curtain-winner').textContent = winnerName;
   document.getElementById('final-curtain-points').textContent = winnerPts;
   curtain.classList.remove('hidden');
+  if(window.updateSoundButtonVisibility)updateSoundButtonVisibility();
   fxStart();
 
   // 紙吹雪/星をふんだんに撒く
@@ -10377,6 +10460,7 @@ window.showFinalCurtain = function(winnerName, winnerPts, onDismiss){
       // 紙吹雪クリーンアップ
       curtain.querySelectorAll('.final-confetti').forEach(n => n.remove());
       fxEnd();
+      if(window.updateSoundButtonVisibility)updateSoundButtonVisibility();
       if(onDismiss) onDismiss();
     }, 500);
   };
