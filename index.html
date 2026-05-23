@@ -102,15 +102,15 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 #lobby-host-settings>summary::-webkit-details-marker{display:none;}
 #lobby-host-settings>summary{margin-bottom:0;}
 #lobby-host-settings[open]>summary{margin-bottom:8px;}
-#playerCountBtns .btn,#roundCountBtns .btn,#initialPointBtns .btn{padding:5px 9px !important;font-size:0.82rem !important;}
-#screen-setup .panel{padding:9px 11px;margin:6px 10px;}
+#playerCountBtns .btn,#roundCountBtns .btn,#initialPointBtns .btn{padding:4px 8px !important;font-size:0.78rem !important;}
+#screen-setup .panel{padding:8px 11px;margin:6px 10px;}
 #screen-setup .panel-title{font-size:0.62rem;margin-bottom:5px;padding-bottom:4px;}
-#screen-setup input[type="tel"]{box-sizing:border-box;padding:9px 10px;font-size:1.05rem;color:#111;font-weight:700;margin-top:0;}
-#screen-setup input[type="tel"]::placeholder{color:#666;opacity:1;font-weight:600;}
+#screen-setup input[type="tel"],#screen-setup input[type="text"]{box-sizing:border-box;padding:8px 10px;font-size:1rem;color:#222;font-weight:700;margin-top:0;}
+#screen-setup input::placeholder{color:#666;opacity:1;font-weight:600;}
 #screen-setup .setup-unit{font-size:0.82rem;color:#333;font-weight:700;white-space:nowrap;flex-shrink:0;}
-#advanced-panel label{font-size:0.95rem !important;color:#111 !important;font-weight:700;display:block;margin:8px 0 3px;}
-#advanced-panel input[type="tel"]{font-size:1rem;}
-#advanced-panel input:disabled{background:#e9eef7 !important;color:#111 !important;-webkit-text-fill-color:#111 !important;opacity:1 !important;}
+#advanced-panel label{font-size:0.95rem !important;color:#222 !important;font-weight:700;display:block;margin:8px 0 3px;}
+#advanced-panel input[type="tel"]{font-size:0.95rem;color:#444 !important;}
+#advanced-panel input:disabled{background:#e9eef7 !important;color:#444 !important;-webkit-text-fill-color:#444 !important;opacity:1 !important;}
 #advanced-panel button:disabled{opacity:1 !important;color:#888 !important;background:#eee !important;}
 .score-table{width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;}
 .score-table th{background:linear-gradient(135deg,#2d2d2d,#3a3a3a);color:var(--gold);padding:6px 6px;font-size:0.72rem;text-align:center;letter-spacing:1px;}
@@ -1157,9 +1157,6 @@ body.modal-open{overflow:hidden !important;}
         <div id="advanced-arrow" style="font-size:1rem;color:#111">▼</div>
       </div>
       <div id="advanced-panel" style="display:none;margin-top:8px">
-        <div style="font-size:0.9rem;color:#111;margin-bottom:8px;background:#fff3cd;border-radius:6px;padding:8px;border:1px solid #ffc107;line-height:1.5">
-          💡 変更しなくてもOK。デフォルト：初期点数5000点 / 最低ベット500点 / 親ボーナス50%
-        </div>
         <label>初期点数（自由入力）</label>
         <div style="display:flex;align-items:center;gap:6px">
           <input type="tel" id="custom-initial-points" placeholder="例：10000" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
@@ -1170,8 +1167,8 @@ body.modal-open{overflow:hidden !important;}
           <input type="tel" id="custom-min-bet" placeholder="未入力で5%（例:250）" style="flex:1;min-width:0" oninput="this.value=window.toHalfDigits(this.value)">
           <span class="setup-unit">点（0以上）</span>
         </div>
-        <div style="font-size:0.9rem;color:#111;margin-top:4px;font-weight:600">💡 初期持ち金の5%以上で（未入力なら自動5%）</div>
-        <label>親ボーナス割合（プリセット + 自由入力）</label>
+        <div style="font-size:0.9rem;color:#222;margin-top:4px;font-weight:600">💡 初期持ち金の5%以上で（未入力なら自動5%）</div>
+        <label>親ボーナス割合</label>
         <div style="display:flex;gap:4px;margin-bottom:6px">
           <button type="button" onclick="offlineSetBonusPreset(0)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">0%</button>
           <button type="button" onclick="offlineSetBonusPreset(25)" style="flex:1;padding:7px 4px;border:1px solid #ddd;background:white;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer">25%</button>
@@ -1186,8 +1183,8 @@ body.modal-open{overflow:hidden !important;}
 
         <!-- 賭け方説明 -->
         <div style="margin-top:10px;padding-top:9px;border-top:1px solid #ddd">
-          <div style="font-size:0.95rem;font-weight:800;color:#111;margin-bottom:6px">🎰 賭け方（7種類）</div>
-          <div style="background:#f9f5e8;border:1px solid var(--gold);border-radius:8px;padding:9px;font-size:0.9rem;line-height:1.55;color:#111">
+          <div style="font-size:0.95rem;font-weight:800;color:#222;margin-bottom:6px">🎰 賭け方（7種類）</div>
+          <div style="background:#f9f5e8;border:1px solid var(--gold);border-radius:8px;padding:9px;font-size:0.9rem;line-height:1.55;color:#222">
             <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px">
               <strong>単勝</strong><span>1位を当てる</span>
               <strong>複勝</strong><span>1〜3位のどれか</span>
@@ -1197,7 +1194,7 @@ body.modal-open{overflow:hidden !important;}
               <strong>3連複</strong><span>1〜3位（順不同）</span>
               <strong>3連単</strong><span>1〜3位（順番通り）</span>
             </div>
-            <div style="margin-top:10px;padding-top:8px;border-top:1px dashed #ddd;color:#111">
+            <div style="margin-top:10px;padding-top:8px;border-top:1px dashed #ddd;color:#222">
               <strong>📊 オッズについて</strong><br>
               <strong>人気によって変動します</strong> — 人気が集まる（みんなが賭ける）ほどオッズは下がり、人気がないほど高くなります。<br>
               各賭け方には<strong>オッズの上限と下限</strong>が決まっています（例：単勝は約1.3〜4.9倍、3連単は約6〜100倍）。<br>
@@ -2898,7 +2895,7 @@ function initSetupScreen(){
   [3000,5000,10000].forEach((n,i)=>{const b=document.createElement('button');b.className='btn btn-sm '+(i===1?'btn-primary':'btn-secondary');b.textContent=n.toLocaleString()+'点';b.onclick=()=>{document.querySelectorAll('#initialPointBtns .btn').forEach(x=>x.className='btn btn-sm btn-secondary');b.className='btn btn-sm btn-primary';state.initialPoints=n;};ipb.appendChild(b);});
   state.initialPoints=5000;
 }
-function renderPlayerNameFields(count){const c=document.getElementById('playerNameFields');c.innerHTML='';for(let i=1;i<=count;i++){const d=document.createElement('div');d.style.marginBottom='8px';d.innerHTML=`<label>プレイヤー${i}</label><input type="text" id="pname-${i}" placeholder="プレイヤー${i}" value="プレイヤー${i}">`;c.appendChild(d);}
+function renderPlayerNameFields(count){const c=document.getElementById('playerNameFields');c.innerHTML='';for(let i=1;i<=count;i++){const d=document.createElement('div');d.style.marginBottom='6px';d.innerHTML=`<input type="text" id="pname-${i}" placeholder="プレイヤー${i}">`;c.appendChild(d);}
 // N=2の場合は親ボーナスUIをロック
 if (typeof updateOfflineBonusLockState === 'function') updateOfflineBonusLockState(count);
 }
