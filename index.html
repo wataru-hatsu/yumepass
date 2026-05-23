@@ -79,7 +79,7 @@ html.fx-active{background:#000;}
 #screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 18% 12%,rgba(245,200,66,0.10),transparent 42%),radial-gradient(circle at 85% 80%,rgba(26,107,42,0.18),transparent 46%);}
 .screen>*{position:relative;z-index:1;}
-.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:5px 104px;padding-top:calc(5px + env(safe-area-inset-top));text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);min-height:46px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;position:sticky;top:0;z-index:999;}
+.header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);padding:0 104px;padding-top:env(safe-area-inset-top);text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);height:calc(40px + env(safe-area-inset-top));min-height:calc(40px + env(safe-area-inset-top));box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;position:sticky;top:0;z-index:999;}
 .header h1{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:0.95rem;letter-spacing:1px;text-shadow:0 0 14px rgba(245,200,66,0.5),0 2px 4px rgba(0,0,0,0.6);}
 .header .subtitle{color:#b9b9b9;font-size:0.56rem;letter-spacing:2px;}
 .panel{background:linear-gradient(160deg,rgba(253,248,237,0.93),rgba(250,243,225,0.88));backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1);border:1px solid rgba(201,150,10,0.55);border-radius:14px;padding:12px;margin:7px 10px;box-shadow:0 8px 26px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.6);}
@@ -177,7 +177,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .privacy-msg{color:#aaa;font-size:0.85rem;margin-bottom:30px;line-height:1.8;}
 .oya-badge{display:inline-block;background:var(--oya);color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
 .ko-badge{display:inline-block;background:#2a7a2a;color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
-.round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);text-align:center;padding:9px 104px;padding-top:calc(9px + env(safe-area-inset-top));min-height:50px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:0.74rem;letter-spacing:2px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.3);position:sticky;top:0;z-index:999;}
+.round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);text-align:center;padding:0 104px;padding-top:env(safe-area-inset-top);height:calc(40px + env(safe-area-inset-top));min-height:calc(40px + env(safe-area-inset-top));box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:0.74rem;letter-spacing:2px;font-weight:800;border-bottom:1px solid rgba(245,200,66,0.3);position:sticky;top:0;z-index:999;}
 .flip-msg{background:#f5c842;color:#333;text-align:center;padding:8px;font-weight:700;font-size:0.85rem;border-top:2px solid #c9960a;}
 .oya-banner{background:linear-gradient(135deg,var(--oya) 0%,#5a005a 100%);color:white;text-align:center;padding:10px;font-size:0.85rem;font-weight:700;}
 .reveal-card{background:linear-gradient(160deg,rgba(255,255,255,0.96),rgba(252,248,238,0.92));border:1px solid rgba(201,150,10,0.3);border-radius:10px;padding:8px 10px;margin-bottom:6px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
@@ -387,11 +387,11 @@ body.modal-open{overflow:hidden !important;}
 @keyframes manbakenGold{0%{transform:translateY(0) scale(1);opacity:0;}10%{opacity:1;}100%{transform:translateY(110vh) scale(0.4);opacity:0;}}
 
 /* サウンドON/OFFボタン */
-.sound-toggle{position:fixed;top:max(8px,calc(env(safe-area-inset-top) + 3px));right:12px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.sound-toggle{position:fixed;top:env(safe-area-inset-top);right:12px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .sound-toggle:active{transform:scale(0.92);}
-.menu-toggle{position:fixed;top:max(8px,calc(env(safe-area-inset-top) + 3px));left:12px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;line-height:1;padding:0;}
-.rules-toggle{position:fixed;top:max(8px,calc(env(safe-area-inset-top) + 3px));left:58px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
-.score-toggle{position:fixed;top:max(8px,calc(env(safe-area-inset-top) + 3px));right:58px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.menu-toggle{position:fixed;top:env(safe-area-inset-top);left:12px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.4rem;font-weight:900;cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;line-height:1;padding:0;}
+.rules-toggle{position:fixed;top:env(safe-area-inset-top);left:58px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.score-toggle{position:fixed;top:env(safe-area-inset-top);right:58px;width:40px;height:40px;border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .score-toggle:active{transform:scale(0.92);}
 .menu-toggle:active{transform:scale(0.92);}
 /* 一番下までスクロールする矢印（小さく半透明・邪魔にならない） */
@@ -788,7 +788,7 @@ body.modal-open{overflow:hidden !important;}
 
 <!-- ONLINE: BETTING (子=賭け入力 / 親=順位入力) -->
 <div class="screen" id="screen-online-betting">
-  <div class="round-header" id="ob-round-header">ROUND 1 — 賭けフェーズ</div>
+  <div class="round-header" id="ob-round-header"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND 1</span><span style="font-size:0.95rem;letter-spacing:1px">🎯 賭けフェーズ</span></div></div>
   <div class="scroll-content">
     <!-- お題表示（タップで選択肢） -->
     <div id="ob-topic-panel" style="margin:8px 10px;background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:9px 12px;cursor:pointer;user-select:none">
@@ -1312,7 +1312,7 @@ body.modal-open{overflow:hidden !important;}
 
 <!-- BET INPUT -->
 <div class="screen" id="screen-bet">
-  <div class="round-header" id="bet-round-header">ROUND 1 — 賭けフェーズ</div>
+  <div class="round-header" id="bet-round-header"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND 1</span><span style="font-size:0.9rem;letter-spacing:1px">🎯 賭けフェーズ</span></div></div>
   <div class="flip-msg" id="bet-flip-msg"></div>
   <div class="scroll-content">
     <!-- お題表示（タップで選択肢） -->
@@ -3251,7 +3251,7 @@ function renderBetScreen(){
   // 買い方の状態をリセット
   offBuyMethod='simple';offFormationPositions=[[],[],[]];offNagashiAxis=null;offNagashiPosition=1;offNagashiOpponents=[];
   const disp=document.getElementById('bet-display');if(disp){disp.textContent='0';disp.style.color='var(--gold)';}
-  document.getElementById('bet-round-header').textContent=`ROUND ${state.currentRound} — 賭けフェーズ (子 ${state.currentBetPlayerIndex+1}/${state.koPlayers.length}人目)`;
+  document.getElementById('bet-round-header').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND ${state.currentRound}</span><span style="font-size:0.9rem;letter-spacing:1px">🎯 賭けフェーズ（子 ${state.currentBetPlayerIndex+1}/${state.koPlayers.length}人目）</span></div>`;
   document.getElementById('bet-player-name').textContent=p.name;
   document.getElementById('bet-player-points').textContent=p.points.toLocaleString();
   // お題パネル更新
@@ -5074,9 +5074,10 @@ function openScorePopup(){
     const hasOffline = (typeof state==='object' && state && Array.isArray(state.players) && state.players.length>0);
 
     if(canShowOnline){
-      // 賭けフェーズ系の画面なら自分の賭け額を引いて表示
+      // 賭けフェーズ中なら自分の賭け額を引いて表示（画面判定に加え、フェーズでも判定して取りこぼし防止）
       const bettingScreens=['screen-online-betting','screen-online-bet-wait','screen-online-bet-confirm','screen-online-skip-confirm','screen-online-oya-confirm'];
-      const inBetting = bettingScreens.some(id=>{const el=document.getElementById(id);return el&&el.classList.contains('active');});
+      const onBettingScreen = bettingScreens.some(id=>{const el=document.getElementById(id);return el&&el.classList.contains('active');});
+      const inBetting = onBettingScreen || (og && og.phase === 'betting');
       renderOnline('popup-score-table', og, { showBetDeduction: inBetting });
     } else if(hasOffline){
       renderScoreTable('popup-score-table');
@@ -6855,7 +6856,7 @@ function enterOnlineBetting(game){
 
   const myPoints = (game.points && game.points[window.online.playerId]) || (window.online.settings?.initialPoints || 5000);
 
-  document.getElementById('ob-round-header').textContent = `ROUND ${game.currentRound || 1} — 賭けフェーズ`;
+  document.getElementById('ob-round-header').innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND ${game.currentRound || 1}</span><span style="font-size:0.95rem;letter-spacing:1px">🎯 賭けフェーズ</span></div>`;
   document.getElementById('ob-my-name').textContent = myPlayer ? myPlayer.name : '—';
   document.getElementById('ob-my-points').textContent = myPoints.toLocaleString();
 
