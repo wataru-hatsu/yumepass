@@ -3336,23 +3336,26 @@ function selectBetType(type,el){
 
 // オフライン賭け画面：指定パネルへスムーズスクロール（固定帯の下に来るようにオフセット）
 function scrollOfflineBetTo(elId){
-  setTimeout(()=>{
+  const doScroll=()=>{
     try{
       const t=document.getElementById(elId);
       if(!t) return;
       const sc=t.closest('.scroll-content');
       const bandEl=document.querySelector('.screen.active .round-header, .screen.active .header');
-      const bandPx=bandEl?bandEl.getBoundingClientRect().height:92;
+      let bandPx=bandEl?bandEl.getBoundingClientRect().height:0;
+      if(!bandPx || bandPx<40){ bandPx=92; }
       if(sc){
         const scRect=sc.getBoundingClientRect();
         const tRect=t.getBoundingClientRect();
-        const top=sc.scrollTop+(tRect.top-scRect.top)-bandPx-8;
+        const top=sc.scrollTop+(tRect.top-scRect.top)-bandPx-10;
         sc.scrollTo({top:Math.max(0,top),behavior:'smooth'});
       } else if(typeof t.scrollIntoView==='function'){
         t.scrollIntoView({behavior:'smooth',block:'start'});
       }
     }catch(e){ const t=document.getElementById(elId); if(t&&t.scrollIntoView) t.scrollIntoView({behavior:'smooth',block:'start'}); }
-  },80);
+  };
+  setTimeout(()=>{ if(window.requestAnimationFrame) requestAnimationFrame(doScroll); else doScroll(); },90);
+  setTimeout(doScroll,260);
 }
 
 // ========== オフライン版 買い方UI ==========
@@ -7000,19 +7003,19 @@ window.onlineSelectBetType = function(type, el){
 
 // 賭け画面内の指定パネルへスムーズスクロール
 function scrollOnlineBetTo(elId){
-  setTimeout(() => {
+  const doScroll=()=>{
     try{
       const t = document.getElementById(elId);
       if(!t) return;
       const sc = t.closest('.scroll-content');
-      // 固定された帯の実際の高さを取得
       const bandEl = document.querySelector('.screen.active .round-header, .screen.active .header');
-      const bandPx = bandEl ? bandEl.getBoundingClientRect().height : 92;
+      let bandPx = bandEl ? bandEl.getBoundingClientRect().height : 0;
+      if(!bandPx || bandPx < 40){ bandPx = 92; } // 念のための下限
       if(sc){
         const scRect = sc.getBoundingClientRect();
         const tRect = t.getBoundingClientRect();
-        // 対象を「帯の真下」に持ってくる：現在のスクロール量 + (対象の上端 - 領域の上端) - 帯の高さ - 余白
-        const top = sc.scrollTop + (tRect.top - scRect.top) - bandPx - 8;
+        // 対象の上端が「帯の真下＋余白」に来るようスクロール
+        const top = sc.scrollTop + (tRect.top - scRect.top) - bandPx - 10;
         sc.scrollTo({ top: Math.max(0, top), behavior:'smooth' });
       } else if(typeof t.scrollIntoView === 'function'){
         t.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -7021,7 +7024,10 @@ function scrollOnlineBetTo(elId){
       const t=document.getElementById(elId);
       if(t&&t.scrollIntoView) t.scrollIntoView({behavior:'smooth',block:'start'});
     }
-  }, 80);
+  };
+  // 描画が落ち着いてから実行し、レイアウト変化に備えて複数回補正
+  setTimeout(()=>{ if(window.requestAnimationFrame) requestAnimationFrame(doScroll); else doScroll(); }, 90);
+  setTimeout(doScroll, 260);
 }
 
 // 買い方タブを描画
