@@ -2824,13 +2824,29 @@ function getAllTopics(){
   const all = [...BASE_TOPICS, ...state.topics];
   return all.map(ensureEightChoices);
 }
-function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const _scr=document.getElementById(id);_scr.classList.add('active');window.scrollTo(0,0);try{_scr.querySelectorAll('.scroll-content').forEach(sc=>{sc.scrollTop=0;});}catch(e){}
-// 画面が変わる時は一番上を表示（レイアウト確定直後に1回だけ補正）
-try{
-  if(window.requestAnimationFrame) requestAnimationFrame(()=>{ try{ window.scrollTo(0,0); }catch(e){} });
-  setTimeout(()=>{ try{ window.scrollTo(0,0); }catch(e){} },0);
-}catch(e){}
-if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}}
+function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const _scr=document.getElementById(id);_scr.classList.add('active');
+// 画面が変わる時は常に一番上を表示。実スクローラは各画面内の .scroll-content（overflow-y:auto）なので
+// window だけでなく .scroll-content の scrollTop も 0 に戻す。描画後のズレ対策で複数回補正。
+window.scrollScreenTop(_scr);
+if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}
+// renderの後にもう一度（中身が増えて高さが変わるケースに対応）
+window.scrollScreenTop(_scr);
+}
+// 指定画面（または現在のアクティブ画面）を確実に一番上へ。window と .scroll-content の両方をリセットし、
+// レイアウト確定後の遅延ぶんも複数回実行する。
+window.scrollScreenTop=function(scr){
+  try{
+    const target = scr || document.querySelector('.screen.active');
+    const reset=()=>{
+      try{ window.scrollTo(0,0); }catch(e){}
+      try{ if(document.scrollingElement) document.scrollingElement.scrollTop=0; }catch(e){}
+      try{ if(target) target.querySelectorAll('.scroll-content').forEach(sc=>{ sc.scrollTop=0; }); }catch(e){}
+    };
+    reset();
+    if(window.requestAnimationFrame) requestAnimationFrame(reset);
+    setTimeout(reset,0); setTimeout(reset,80); setTimeout(reset,200);
+  }catch(e){}
+};
 function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
 // アクティブな画面を一番下までスムーズスクロール（実際のスクローラはwindow）
 function scrollActiveScreenToBottom(){
@@ -8017,7 +8033,7 @@ window.onlineSubmitKoBet = function(){
   };
 
   goTo('screen-online-bet-confirm');
-  try{ window.scrollTo(0,0); requestAnimationFrame(()=>{try{window.scrollTo(0,0);}catch(e){}}); setTimeout(()=>{try{window.scrollTo(0,0);}catch(e){}},80); }catch(e){}
+  try{ window.scrollScreenTop(); }catch(e){}
 };
 
 // 馬券確定 → DBに保存
@@ -8102,7 +8118,7 @@ window.onlineSubmitOyaResult = function(){
   }
   goTo('screen-online-oya-confirm');
   // 順位確認画面に入ったら確実に一番上を表示（描画後にも補正）
-  try{ window.scrollTo(0,0); requestAnimationFrame(()=>{try{window.scrollTo(0,0);}catch(e){}}); setTimeout(()=>{try{window.scrollTo(0,0);}catch(e){}},80); }catch(e){}
+  try{ window.scrollScreenTop(); }catch(e){}
 };
 
 // 親の順位を実際にDB送信
@@ -8239,7 +8255,7 @@ function enterOnlineBetWait(){
   updateBetWaitProgress(game);
   updateBetWaitRevealButton(game);
   // 待機中画面に入ったら確実に一番上を表示（描画後にも補正）
-  try{ window.scrollTo(0,0); requestAnimationFrame(()=>{try{window.scrollTo(0,0);}catch(e){}}); setTimeout(()=>{try{window.scrollTo(0,0);}catch(e){}},80); }catch(e){}
+  try{ window.scrollScreenTop(); }catch(e){}
 }
 
 function updateBetWaitProgress(game){
@@ -8584,7 +8600,7 @@ function enterOnlineReveal(game){
   }
   updateRevealReadyStatus(game);
   // 賭け公開画面に入ったら確実に一番上を表示（描画後にも補正）
-  try{ window.scrollTo(0,0); requestAnimationFrame(()=>{try{window.scrollTo(0,0);}catch(e){}}); setTimeout(()=>{try{window.scrollTo(0,0);}catch(e){}},80); setTimeout(()=>{try{window.scrollTo(0,0);}catch(e){}},220); }catch(e){}
+  try{ window.scrollScreenTop(); }catch(e){}
 }
 
 function updateRevealReadyStatus(game){
