@@ -9466,7 +9466,19 @@ function renderOnlineScoreTable(tableId, game, opts){
   const confirmedBet = (showDeduct && bets[myId]) ? (Number(bets[myId].amount) || 0) : 0;
   // カートに入れただけ（未確定）の分も引く
   const cartPending = (showDeduct && typeof window.onlineCartTotal==='function') ? (Number(window.onlineCartTotal()) || 0) : 0;
-  const myBetAmt = confirmedBet + cartPending;
+  // まだカートに入れていない「入力中」の点数も引く（組み合わせ数ぶん）
+  let inputPending = 0;
+  try{
+    if(showDeduct && window.onlineBet){
+      const raw = parseInt(window.onlineBet.betInputVal) || 0;
+      if(raw > 0){
+        let combos = 1;
+        try{ if(typeof computeCurrentCombinations==='function'){ const c=computeCurrentCombinations(); combos = (Array.isArray(c)&&c.length)?c.length:1; } }catch(e){}
+        inputPending = raw * combos;
+      }
+    }
+  }catch(e){}
+  const myBetAmt = confirmedBet + cartPending + inputPending;
   const arr = players.map((p, i) => {
     let pts = (points[p.id] != null) ? points[p.id] : initPts;
     let deducted = false;
