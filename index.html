@@ -2805,7 +2805,27 @@ const BASE_TOPICS = [
   {id:'base55',category:'g3',title:"お金をかけるべき自己投資は？",icon:"💰",horses:["ジム", "歯列矯正", "マッチングアプリ", "良質な寝具", "旅行", "全身脱毛", "英会話教室", "人脈づくり（交流・会食）"]},
   {id:'base56',category:'g3',title:"人に言いたくないことは？",icon:"🤫",horses:["体重", "貯金額", "MBTI", "最寄り駅", "学歴", "推し", "家庭環境", "年齢"]},
 ];
-window.onload=()=>{const s=localStorage.getItem('sanrentan_topics');state.topics=s?JSON.parse(s):[];initSetupScreen();renderTopicsScreen();initNewTopicOptions();initCategoryBtns();};
+window.onload=()=>{const s=localStorage.getItem('sanrentan_topics');state.topics=s?JSON.parse(s):[];initSetupScreen();renderTopicsScreen();initNewTopicOptions();initCategoryBtns();syncSafeTop();};
+// env(safe-area-inset-top) の解釈差を吸収するため、実際の数値を計測して --safe-top に固定値で入れる。
+// これで帯のpadding-topとアイコンのtopが必ず同じ値になり、テキストとアイコンが同じ高さの帯に収まる。
+function syncSafeTop(){
+  try{
+    let probe=document.getElementById('__safetop_probe');
+    if(!probe){
+      probe=document.createElement('div');
+      probe.id='__safetop_probe';
+      probe.style.cssText='position:fixed;top:env(safe-area-inset-top);left:0;width:1px;height:1px;pointer-events:none;opacity:0;visibility:hidden;';
+      document.body.appendChild(probe);
+    }
+    const v=Math.round(probe.getBoundingClientRect().top);
+    if(v>=0 && v<200){ document.documentElement.style.setProperty('--safe-top', v+'px'); }
+  }catch(e){}
+}
+window.syncSafeTop=syncSafeTop;
+window.addEventListener('resize',()=>{ try{syncSafeTop();}catch(e){} });
+window.addEventListener('orientationchange',()=>{ setTimeout(()=>{try{syncSafeTop();}catch(e){}},250); });
+if(document.readyState!=='loading'){ try{syncSafeTop();}catch(e){} } else { document.addEventListener('DOMContentLoaded',()=>{try{syncSafeTop();}catch(e){}}); }
+if(window.requestAnimationFrame) requestAnimationFrame(()=>{try{syncSafeTop();}catch(e){}});
 function saveTopics(){localStorage.setItem('sanrentan_topics',JSON.stringify(state.topics));}
 
 // 8択化対応: 7択のお題は8つ目をプレースホルダーで自動補完
@@ -2828,6 +2848,7 @@ function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id|
 // 画面が変わる時は常に一番上を表示。実スクローラは各画面内の .scroll-content（overflow-y:auto）なので
 // window だけでなく .scroll-content の scrollTop も 0 に戻す。描画後のズレ対策で複数回補正。
 window.scrollScreenTop(_scr);
+try{ if(typeof window.syncSafeTop==='function') window.syncSafeTop(); }catch(e){}
 if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}
 // renderの後にもう一度（中身が増えて高さが変わるケースに対応）
 window.scrollScreenTop(_scr);
