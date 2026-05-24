@@ -59,7 +59,8 @@ button:active{filter:brightness(0.93);}
 .horse-card:active{transform:scale(0.95);transition:transform 0.05s ease;}
 [onclick]:active{opacity:0.85;}
 html{background:#000;min-height:100vh;overflow:hidden;overscroll-behavior:none;font-size:18px;}
-body{font-family:'Noto Sans JP',sans-serif;background:#000;color:var(--dark);min-height:100vh;overflow:hidden;overscroll-behavior:none;}
+body{font-family:'Noto Sans JP',sans-serif;background:#000;color:var(--dark);min-height:100vh;overflow:hidden;overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:text;}
 /* 老眼配慮：極小フォントの底上げ＆主要テキスト拡大 */
 .panel-title{font-size:0.82rem !important;}
 .btn{font-size:1.12rem !important;}
@@ -2090,6 +2091,7 @@ window.SFX = (function(){
   document.addEventListener('touchend', clearActive, { passive: true });
   document.addEventListener('touchcancel', clearActive, { passive: true });
   document.addEventListener('touchmove', clearActive, { passive: true });
+  document.addEventListener('scroll', clearActive, { passive: true, capture: true });
   // マウス（PC）でも同様に
   document.addEventListener('pointerdown', (e) => {
     if(e.pointerType === 'touch') return;
@@ -2976,23 +2978,13 @@ window.scrollScreenTop=function(scr){
       try{ if(target) target.querySelectorAll('.scroll-content').forEach(sc=>{ sc.scrollTop=0; }); }catch(e){}
     };
     // iPad/iOS Safari対策：画面切替直後はタッチのヒット判定がレイアウト確定前の位置に
-    // ずれ、少しスクロール/ズームするまで反応しないことがある。リフロー強制と微小スクロールで判定を更新する。
+    // ずれることがある。軽いリフローだけで判定を更新する（重いGPU再合成は行わない＝スクロールを妨げない）。
     const nudge=()=>{
-      try{
-        if(target){
-          void target.offsetHeight; // リフロー強制
-          target.querySelectorAll('.scroll-content').forEach(sc=>{ void sc.offsetHeight; sc.scrollTop=1; sc.scrollTop=0; });
-          // GPU合成レイヤーを再生成してヒットテスト領域を更新（iPad対策）
-          const prev = target.style.transform;
-          target.style.transform = 'translateZ(0)';
-          void target.offsetHeight;
-          target.style.transform = prev || '';
-        }
-      }catch(e){}
+      try{ if(target){ void target.offsetHeight; } }catch(e){}
     };
     reset();
     if(window.requestAnimationFrame) requestAnimationFrame(()=>{ reset(); nudge(); });
-    setTimeout(reset,0); setTimeout(()=>{reset();nudge();},80); setTimeout(()=>{reset();nudge();},200); setTimeout(reset,400); setTimeout(reset,700);
+    setTimeout(reset,0); setTimeout(()=>{reset();nudge();},120); setTimeout(reset,400);
   }catch(e){}
 };
 function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
@@ -5574,7 +5566,8 @@ function renderFinalScreen(){
     }).join('');
     // 各ラウンドカードのタップで子の結果ポップアップ（オンラインと同じリッチ表示）
     histContainer.querySelectorAll('.off-fin-round-card').forEach(card=>{
-      card.addEventListener('click', ()=>{
+      card.addEventListener('click', (ev)=>{
+        if(ev){ ev.stopPropagation(); }
         const rnd=parseInt(card.getAttribute('data-round'));
         const h=state.history.find(x=>x.round===rnd);
         if(!h || !Array.isArray(h.playerResults)) return;
