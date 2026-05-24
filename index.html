@@ -102,7 +102,14 @@ html.fx-active{background:#000;}
 .btn{display:block;width:100%;padding:15px 12px;min-height:54px;border:none;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:transform 0.08s ease,box-shadow 0.08s ease,filter 0.08s ease;margin-top:10px;box-shadow:0 3px 8px rgba(0,0,0,0.22);touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;position:relative;}
 .btn > *{pointer-events:none;}
 .btn:hover{filter:brightness(1.06);box-shadow:0 5px 14px rgba(0,0,0,0.3);}
-.btn:active{transform:translateY(1px) scale(0.96);filter:brightness(0.92);box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.btn:active{transform:translateY(1px) scale(0.96);filter:brightness(0.92);box-shadow:0 1px 4px rgba(0,0,0,0.3);transition:none;}
+.tap-active{transition:none !important;}
+.btn.tap-active{transform:translateY(1px) scale(0.96)!important;filter:brightness(0.9)!important;box-shadow:0 1px 4px rgba(0,0,0,0.3)!important;}
+.point-btn.tap-active{transform:scale(0.94)!important;background:#fff7d6!important;}
+.bet-type-btn.tap-active{transform:scale(0.95)!important;filter:brightness(0.95)!important;}
+.horse-card.tap-active{transform:scale(0.95)!important;}
+.uiconfirm-btn.tap-active{transform:scale(0.95)!important;filter:brightness(0.92)!important;}
+.btn-sm.tap-active,.icon-btn.tap-active,.tab.tap-active,.chip.tap-active{transform:scale(0.94)!important;filter:brightness(0.92)!important;}
 .btn-primary{background:linear-gradient(135deg,#ffe07a 0%,var(--gold) 40%,var(--gold-dark) 100%);color:var(--dark);text-shadow:0 1px 0 rgba(255,255,255,0.3);}
 .btn-secondary{background:linear-gradient(135deg,#33333a 0%,#4a4a52 100%);color:var(--white);border:1px solid #5a5a60;}
 .btn-danger{background:linear-gradient(135deg,#d6473a 0%,#922b21 100%);color:white;}
@@ -2067,6 +2074,30 @@ window.SFX = (function(){
   const initOnce = () => { try { SFX.init(); } catch(e){} document.removeEventListener('click', initOnce); document.removeEventListener('touchstart', initOnce); };
   document.addEventListener('click', initOnce);
   document.addEventListener('touchstart', initOnce);
+})();
+
+// タッチした瞬間に押下フィードバック（.tap-active）を付与して「すぐ反応した」感触を出す。
+// 発火（onclick）は既存のまま。指が触れた瞬間に見た目だけ即反応させる。
+(function(){
+  const SEL = 'button,.btn,.btn-sm,.point-btn,.bet-type-btn,.btn-oya,.horse-card,.uiconfirm-btn,.icon-btn,.tab,.chip,[role="button"]';
+  let activeEl = null;
+  const setActive = (el) => { if(el){ el.classList.add('tap-active'); activeEl = el; } };
+  const clearActive = () => { if(activeEl){ activeEl.classList.remove('tap-active'); activeEl = null; } };
+  document.addEventListener('touchstart', (e) => {
+    const el = e.target && e.target.closest ? e.target.closest(SEL) : null;
+    if(el) setActive(el);
+  }, { passive: true });
+  document.addEventListener('touchend', clearActive, { passive: true });
+  document.addEventListener('touchcancel', clearActive, { passive: true });
+  document.addEventListener('touchmove', clearActive, { passive: true });
+  // マウス（PC）でも同様に
+  document.addEventListener('pointerdown', (e) => {
+    if(e.pointerType === 'touch') return;
+    const el = e.target && e.target.closest ? e.target.closest(SEL) : null;
+    if(el) setActive(el);
+  });
+  document.addEventListener('pointerup', clearActive);
+  document.addEventListener('pointercancel', clearActive);
 })();
 
 // ============================================================
