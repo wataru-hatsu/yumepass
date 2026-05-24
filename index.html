@@ -148,7 +148,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .c1{background:#7ec8f0;color:#0a3a55;border:1px solid #4aa8d8}.c2{background:#222;color:white}.c3{background:var(--red);color:white}
 .c4{background:#2a72e0;color:white}.c5{background:#e0b800;color:#333}.c6{background:#1a7a1a;color:white}.c7{background:#8b1a8b;color:white}.c8{background:#ff7f3f;color:white}
 .bet-types{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;}
-.bet-type-btn{padding:14px 4px 8px;border:2px solid #ddd;border-radius:10px;background:white;cursor:pointer;text-align:center;min-width:0;position:relative;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s,background 0.15s;overflow:hidden;}
+.bet-type-btn{padding:14px 4px 8px;border:2px solid #ddd;border-radius:10px;background:white;cursor:pointer;text-align:center;min-width:0;position:relative;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s,background 0.15s;overflow:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .bet-type-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:#ccc;}
 /* 券種カラー: 演出（的中エフェクト）の色と揃える。馬連とワイドは別色に */
 .bet-type-btn.bt-tansho::before{background:linear-gradient(90deg,#ffc107,#e0a800);} /* 単勝=金・琥珀（弓矢） */
@@ -178,7 +178,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .player-result-name{font-weight:800;font-size:0.88rem;display:flex;align-items:center;gap:5px;flex-wrap:wrap;color:#c9960a;}
 .player-result-change{font-weight:900;font-size:0.92rem;white-space:nowrap;}
 .change-pos{color:var(--green-light);}.change-neg{color:var(--red);}.change-oya{color:var(--oya-light);}
-.player-result-detail{font-size:0.75rem;color:#444;margin-top:5px;}
+.player-result-detail{font-size:0.78rem;color:#1a1a1a;font-weight:700;margin-top:5px;}
 /* オッズチップ（金グラデで高揚感を演出） */
 .odds-chip{display:inline-flex;align-items:center;gap:1px;background:linear-gradient(135deg,#ffe9a8 0%,#f5c842 45%,#c9960a 100%);color:#5a3a00;font-weight:900;border-radius:6px;padding:1px 8px;font-size:0.82rem;box-shadow:0 1px 3px rgba(201,150,10,0.4);border:1px solid rgba(201,150,10,0.5);text-shadow:0 1px 0 rgba(255,255,255,0.4);}
 .odds-chip-big{background:linear-gradient(135deg,#fff2c0 0%,#ffd24a 35%,#ff8c1a 70%,#e0530a 100%);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);font-size:0.95rem;padding:2px 10px;box-shadow:0 0 12px rgba(255,140,0,0.6),0 2px 4px rgba(0,0,0,0.3);border-color:#ff8c1a;animation:oddsGlow 1.6s ease-in-out infinite;}
@@ -1335,7 +1335,7 @@ body.modal-open{overflow:hidden !important;}
     <!-- 子の情報（コンパクト）-->
     <div style="margin:6px 10px;background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:7px 12px;display:flex;align-items:center;justify-content:space-between">
       <div style="color:white;font-size:1rem;font-weight:900"><span class="ko-badge">子</span> <span id="bet-player-name">—</span></div>
-      <div style="color:#aaa;font-size:0.8rem">持ち点 <span id="bet-player-points" style="color:var(--gold);font-weight:700">5000</span>点</div>
+      <div style="color:white;font-size:0.95rem;font-weight:700">持ち点 <span id="bet-player-points" style="color:var(--gold);font-weight:900;font-size:1.1rem">5000</span><span style="color:white">点</span></div>
     </div>
     <!-- 全員の得点（📊ショートカットで表示） -->
     <div class="panel" style="display:none">
@@ -3382,10 +3382,8 @@ function renderTopicList(){
 }
 function openTopicPopup(t, opts){
   document.getElementById('popupIcon').textContent=t.icon;document.getElementById('popupTitle').textContent=t.title;
-  const nums=['①','②','③','④','⑤','⑥','⑦'];
   document.getElementById('popupBody').innerHTML=t.horses.map((h,i)=>`
     <div class="topic-popup-horse" style="align-items:flex-start">
-      <div style="font-size:0.7rem;color:#aaa;width:20px;text-align:center;flex-shrink:0;padding-top:3px">${nums[i]||i+1+'.'}</div>
       <div class="ibadge ${HC[i]}" style="width:26px;height:26px;font-size:0.8rem;flex-shrink:0">${i+1}</div>
       <div style="font-size:1rem;font-weight:700;line-height:1.45;flex:1">${h}</div>
     </div>`).join('');
@@ -3432,7 +3430,7 @@ function startBetting(){
   const first=state.players[state.koPlayers[0]];
   showPrivacyCover(first.name,false,()=>{renderBetScreen();goTo('screen-bet');});
 }
-function showPrivacyCover(name,isOya,cb){document.getElementById('privacyIcon').textContent=isOya?'👑':'🙈';document.getElementById('privacyName').textContent=name+' さんの番！';document.getElementById('privacyMsg').innerHTML=isOya?'👑 親の番です<br>端末を受け取って結果を入力してください':'端末を渡してください<br>画面を下に向けて渡してね';document.getElementById('privacyCover').classList.remove('hidden');window._cb=cb;}
+function showPrivacyCover(name,isOya,cb){document.getElementById('privacyIcon').textContent=isOya?'👑':'🙈';document.getElementById('privacyName').textContent=name+' さんの番！';document.getElementById('privacyMsg').innerHTML=isOya?'👑 親の番です<br>端末を受け取って結果を入力してね':'端末を渡してください<br>画面を下に向けて渡してね';document.getElementById('privacyCover').classList.remove('hidden');window._cb=cb;}
 function revealPlayer(){document.getElementById('privacyCover').classList.add('hidden');if(window._cb){window._cb();window._cb=null;}}
 function renderBetScreen(){
   const koIdx=state.koPlayers[state.currentBetPlayerIndex];const p=state.players[koIdx];currentBetType='tansho';selectedHorses=[];betInputVal='';
@@ -3470,6 +3468,16 @@ function renderBetScreen(){
   const ni=state.currentBetPlayerIndex+1;
   if(ni<state.koPlayers.length)document.getElementById('bet-flip-msg').textContent=`📱 入力後、${state.players[state.koPlayers[ni]].name} さんに渡してください`;
   else document.getElementById('bet-flip-msg').textContent=`📱 入力後、親の ${state.players[state.oyaIndex].name} さんに渡してください`;
+  // iOS Safari対策：画面表示直後はタッチのヒット判定がレイアウト確定前の位置にずれることがある
+  // （券種ボタンが少しスクロールするまで反応しない症状）。リフローと微小スクロールで判定を更新する。
+  try{
+    const sc=document.querySelector('#screen-bet .scroll-content');
+    if(sc){
+      const nudge=()=>{ try{ void sc.offsetHeight; sc.scrollTop=1; sc.scrollTop=0; }catch(e){} };
+      requestAnimationFrame(()=>{ requestAnimationFrame(nudge); });
+      setTimeout(nudge,60); setTimeout(nudge,200);
+    }
+  }catch(e){}
 }
 function selectBetType(type,el){
   currentBetType=type;selectedHorses=[];
@@ -4664,7 +4672,7 @@ function renderRoundResultBody(){
           <span class="player-result-name">${r.name} <span class="ko-badge">子</span> <span style="background:#6a3aa0;color:#fff;font-size:0.6rem;font-weight:900;padding:1px 6px;border-radius:8px;margin-left:4px">複数券種</span> ${_rsM.badge}</span>
           ${_rsM.amountHtml}
         </div>
-        <div style="font-size:0.72rem;color:#444;margin:4px 0">合計 ${(r.amount||0).toLocaleString()}点賭け → 配当合計 ${(r.payout||0).toLocaleString()}点（${r.betResults.length}券種）</div>
+        <div style="font-size:0.75rem;color:#1a1a1a;font-weight:700;margin:4px 0">合計 ${(r.amount||0).toLocaleString()}点賭け → 配当合計 ${(r.payout||0).toLocaleString()}点（${r.betResults.length}券種）</div>
         <div style="display:flex;flex-direction:column;gap:4px;margin-top:4px">${unitCards}</div>
       </div>`;
     }
@@ -4699,12 +4707,12 @@ function renderRoundResultBody(){
       <div class="player-result-detail" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px">${betNames[r.betType]} / ${r.amount.toLocaleString()}点賭け${(r.odds||r.multiplier)>0?` ${oddsChipHtml(r.odds||r.multiplier)}`:''}${isWin&&r.payout?` <span style="font-size:0.75rem;color:#444;font-weight:700">配当 ${r.payout.toLocaleString()}点</span>`:''}</div>
       <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;padding:6px 8px;background:${isWin?'rgba(245,200,66,0.08)':'rgba(0,0,0,0.03)'};border-radius:6px;border:1px solid ${isWin?'rgba(245,200,66,0.2)':'#eee'}">
         <div style="display:flex;align-items:center;gap:2px;flex-wrap:wrap">
-          <span style="font-size:0.65rem;color:#aaa;margin-right:4px">予想</span>
+          <span style="font-size:0.72rem;color:#1a1a1a;font-weight:700;margin-right:4px">予想</span>
           ${selBadges}
         </div>
         <span style="color:#ccc;font-size:0.8rem">｜</span>
         <div style="display:flex;align-items:center;gap:2px;flex-wrap:wrap">
-          <span style="font-size:0.65rem;color:#aaa;margin-right:4px">結果</span>
+          <span style="font-size:0.72rem;color:#1a1a1a;font-weight:700;margin-right:4px">結果</span>
           ${actualBadges}
         </div>
       </div>
@@ -5340,6 +5348,7 @@ function renderScoreTable(tid, opts){
   const el=document.getElementById(tid);if(!el)return;
   opts=opts||{};
   const showDeduct=!!opts.showBetDeduction;
+  const showAllDeduct=!!opts.showAllBetsDeducted;
   let curKoIdx=-1, myBetAmt=0;
   if(showDeduct){
     try{
@@ -5355,9 +5364,17 @@ function renderScoreTable(tid, opts){
       myBetAmt=cartT+inputPending;
     }catch(e){ myBetAmt=0; }
   }
+  // 賭け公開モード：全プレイヤーの確定済み賭け額を集計
+  let betByPlayer={};
+  if(showAllDeduct){
+    try{
+      (state.currentBets||[]).forEach(b=>{ const pi=b.playerIndex; betByPlayer[pi]=(betByPlayer[pi]||0)+(b.amount||0); });
+    }catch(e){ betByPlayer={}; }
+  }
   const sorted=[...state.players].map((p,i)=>{
     let pts=p.points; let deducted=false;
     if(showDeduct && i===curKoIdx && myBetAmt>0){ pts=Math.max(0,pts-myBetAmt); deducted=true; }
+    else if(showAllDeduct && betByPlayer[i]>0){ pts=Math.max(0,pts-betByPlayer[i]); deducted=true; }
     return {...p,oi:i,dispPts:pts,deducted};
   }).sort((a,b)=>b.dispPts-a.dispPts);
   el.innerHTML='<tr><th>\u9806\u4f4d</th><th>\u30d7\u30ec\u30a4\u30e4\u30fc</th><th>\u70b9\u6570</th><th>\u5f79\u5272</th></tr>'+sorted.map((p,i)=>'<tr class="'+(i===0?'leader':'')+'"><td><span class="rank-badge rank-'+(i<3?i+1:'other')+'">'+(i+1)+'</span></td><td style="text-align:left">'+p.name+'</td><td style="font-weight:700">'+p.dispPts.toLocaleString()+(p.deducted?' <span style="color:#c0392b;font-size:0.62rem;font-weight:700">(\u8ced\u3051\u5f8c)</span>':'')+'</td><td>'+(p.oi===state.oyaIndex?'<span class="oya-badge">\u89aa</span>':'<span class="ko-badge">\u5b50</span>')+'</td></tr>').join('');
@@ -5369,6 +5386,9 @@ function renderScoreTable(tid, opts){
     } else {
       note.innerHTML='\u{1F4A1} \u8ced\u3051\u308b\u3068\u3001\u305d\u306e\u5206\u3060\u3051\u3042\u306a\u305f\u306e\u5f97\u70b9\u304b\u3089\u5f15\u304b\u308c\u307e\u3059\u3002<br>\u4ed6\u306e\u4eba\u306e\u8ced\u3051\u984d\u306f\u300c\u8ced\u3051\u516c\u958b\u300d\u307e\u3067\u5206\u304b\u308a\u307e\u305b\u3093\u3002';
     }
+  } else if(showAllDeduct){
+    if(!note){ note=document.createElement('div'); note.id=tid+'-note'; note.style.cssText='font-size:0.72rem;color:#8a6500;margin-top:8px;line-height:1.5'; if(el.parentElement) el.parentElement.appendChild(note); }
+    note.innerHTML='\u{1F4A1} \u5404\u30d7\u30ec\u30a4\u30e4\u30fc\u306e\u8ced\u3051\u984d\u3092\u5f15\u3044\u305f\u73fe\u5728\u306e\u6240\u6301\u70b9\u3067\u3059\u3002<br>\u914d\u5f53\u306f\u7d50\u679c\u767a\u8868\u3067\u52a0\u7b97\u3055\u308c\u307e\u3059\u3002';
   } else if(note){ note.innerHTML=''; }
 }
 
@@ -5399,7 +5419,8 @@ function openScorePopup(){
       renderOnline('popup-score-table', og, { showBetDeduction: inBetting });
     } else if(hasOffline){
       const offBetting = (function(){ const el=document.getElementById('screen-bet'); return el && el.classList.contains('active'); })();
-      renderScoreTable('popup-score-table', { showBetDeduction: offBetting });
+      const offReveal = (function(){ const el=document.getElementById('screen-reveal'); return el && el.classList.contains('active'); })();
+      renderScoreTable('popup-score-table', { showBetDeduction: offBetting, showAllBetsDeducted: offReveal });
     } else if(tbl){
       tbl.innerHTML='<tr><td style="padding:14px;color:#444">まだ得点がありません</td></tr>';
     }
