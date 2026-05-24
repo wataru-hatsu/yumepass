@@ -2054,7 +2054,7 @@ window.SFX = (function(){
   }
 
   return {
-    init, setEnabled, isEnabled,
+    init, setEnabled, isEnabled, getCtx,
     tap, click, select, confirm, notify, warn, whoosh,
     lottery, lotteryDecide, reveal, roundIntro,
     hitTansho, hitRenfuku, hitRentan, hitSanrenfuku, hitSanrentan, hitManbaken,
@@ -9974,7 +9974,20 @@ window.showNoWinnerEffect = function(opts, done){
   var timers=[]; function tmo(fn,ms){ var id=setTimeout(fn,ms); timers.push(id); return id; }
   var AC=null;
   function soundOn(){ try{ return (window.SFX && typeof window.SFX.isEnabled==='function') ? !!window.SFX.isEnabled() : true; }catch(e){ return true; } }
-  function ac(){ if(!soundOn()) return null; if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return AC; }
+  function ac(){
+    if(!soundOn()) return null;
+    // ユーザー操作で起動済みの共有AudioContext（window.SFX）を優先的に使う。
+    // これにより、外れ演出が遅延発火（ユーザー操作の文脈外）でも音が鳴る。
+    try{
+      if(window.SFX && typeof window.SFX.getCtx==='function'){
+        var sc=window.SFX.getCtx();
+        if(sc){ if(sc.state==='suspended'){ try{ sc.resume(); }catch(e){} } return sc; }
+      }
+    }catch(e){}
+    if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+    if(AC && AC.state==='suspended'){ try{ AC.resume(); }catch(e){} }
+    return AC;
+  }
   // ノイズ生成（紙が舞う音・風の音に使用）
   function noiseBurst(t,dur,gain,freq,ftype){ var a=ac(); if(!a) return;
     var n=Math.floor(a.sampleRate*dur); var buf=a.createBuffer(1,n,a.sampleRate); var d=buf.getChannelData(0);
