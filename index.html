@@ -3691,7 +3691,7 @@ function updateOffComboInfo(){
   const total=combos.length*minBet;
   if(combos.length===0||offBuyMethod==='simple'){ el.style.display='none'; return; }
   el.style.display='';
-  el.innerHTML=`<span style="color:var(--gold);font-weight:700"><strong>${combos.length}通り</strong> × 1通りあたり ${minBet.toLocaleString()}点 = <strong>合計 ${total.toLocaleString()}点</strong></span>`;
+  el.innerHTML=`<span style="color:var(--gold);font-weight:700"><strong>${combos.length}通り</strong> × 1通りあたり ${minBet.toLocaleString()}点 = <strong>合計 ${total.toLocaleString()}点</strong></span><br><span style="color:var(--gold);font-weight:700;font-size:0.78rem;opacity:0.9">（最低価格で賭けた場合）</span>`;
 }
 function computeOffCombinations(){
   if(offBuyMethod==='simple'){
@@ -7634,7 +7634,7 @@ function updateOnlineComboInfo(){
     return;
   }
   el.style.display = '';
-  el.innerHTML = `<span style="color:var(--gold);font-weight:700"><strong>${combos.length}通り</strong> × 1通りあたり ${unit.toLocaleString()}点 = <strong>合計 ${total.toLocaleString()}点</strong></span>`;
+  el.innerHTML = `<span style="color:var(--gold);font-weight:700"><strong>${combos.length}通り</strong> × 1通りあたり ${unit.toLocaleString()}点 = <strong>合計 ${total.toLocaleString()}点</strong></span><br><span style="color:var(--gold);font-weight:700;font-size:0.78rem;opacity:0.9">（最低価格で賭けた場合）</span>`;
 }
 
 // 現在の入力から組み合わせを生成
