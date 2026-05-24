@@ -3691,7 +3691,7 @@ function updateOffComboInfo(){
   const total=combos.length*minBet;
   if(combos.length===0||offBuyMethod==='simple'){ el.style.display='none'; return; }
   el.style.display='';
-  el.innerHTML=`<strong>${combos.length}通り</strong> × 1点あたり ${minBet.toLocaleString()}点 = <strong style="color:var(--gold-dark)">合計 ${total.toLocaleString()}点</strong>`;
+  el.innerHTML=`<span style="color:var(--gold);font-weight:700"><strong>${combos.length}通り</strong> × 1点あたり ${minBet.toLocaleString()}点 = <strong>合計 ${total.toLocaleString()}点</strong></span>`;
 }
 function computeOffCombinations(){
   if(offBuyMethod==='simple'){
@@ -4374,7 +4374,7 @@ function _doGoToReveal(){
     if(bet.skipped||bet.amount===0){
       return`<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;
     }
-    const hint = `<span style="font-size:0.78rem;color:#f0e8d4;font-weight:700;white-space:nowrap">👆 詳細</span>`;
+    const hint = `<span style="font-size:0.92rem;color:#1a1a1a;font-weight:900;white-space:nowrap">👆 詳細</span>`;
     // コンパクト表示（券種チップ＋点数）。詳細は長押し。
     let summaryChips;
     if(Array.isArray(bet.multiBets) && bet.multiBets.length>1){
@@ -4383,7 +4383,7 @@ function _doGoToReveal(){
       const single = Array.isArray(bet.multiBets)&&bet.multiBets[0] ? bet.multiBets[0] : bet;
       summaryChips = `<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${compactBetLine(single)}</div>`;
     }
-    return`<div class="reveal-card" data-bet-idx="${idx}"><div class="reveal-card-header" style="gap:8px"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span>${hint}</div><div style="display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;margin-top:6px"><div style="flex:1;min-width:0">${summaryChips}</div><span style="color:#8a6500;font-weight:900;font-size:0.82rem;white-space:nowrap">${bet.amount.toLocaleString()}点</span></div></div>`;
+    return`<div class="reveal-card" data-bet-idx="${idx}"><div class="reveal-card-header" style="gap:8px"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span>${hint}</div><div style="display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;margin-top:6px"><div style="flex:1;min-width:0">${summaryChips}</div><span style="color:#1a1a1a;font-weight:900;font-size:1rem;white-space:nowrap">${bet.amount.toLocaleString()}点</span></div></div>`;
   }).join('');
   // 長押し/タップで詳細（写真形式の馬券）
   rvListEl.querySelectorAll('[data-bet-idx]').forEach(el=>{
@@ -4732,7 +4732,7 @@ function renderRoundResultBody(){
         const hdr=el.querySelector('.player-result-header');
         if(hdr && !hdr.querySelector('.baken-hint')){
           const h=document.createElement('span');
-          h.className='baken-hint'; h.style.cssText='font-size:0.78rem;color:#222;font-weight:700;margin-left:4px';
+          h.className='baken-hint'; h.style.cssText='font-size:0.9rem;color:#1a1a1a;font-weight:900;margin-left:4px';
           h.textContent='👆詳細';
           const nameEl=hdr.querySelector('.player-result-name'); if(nameEl) nameEl.appendChild(h);
         }
@@ -7627,7 +7627,7 @@ function updateOnlineComboInfo(){
     return;
   }
   el.style.display = '';
-  el.innerHTML = `<strong>${combos.length}通り</strong> × 1点あたり ${unit.toLocaleString()}点 = <strong style="color:var(--gold)">合計 ${total.toLocaleString()}点</strong>`;
+  el.innerHTML = `<span style="color:var(--gold);font-weight:700"><strong>${combos.length}通り</strong> × 1点あたり ${unit.toLocaleString()}点 = <strong>合計 ${total.toLocaleString()}点</strong></span>`;
 }
 
 // 現在の入力から組み合わせを生成
@@ -10158,7 +10158,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
         const hdr=el.querySelector('.player-result-header');
         if(hdr && !hdr.querySelector('.baken-hint')){
           const h=document.createElement('span');
-          h.className='baken-hint'; h.style.cssText='font-size:0.78rem;color:#222;font-weight:700;margin-left:4px';
+          h.className='baken-hint'; h.style.cssText='font-size:0.9rem;color:#1a1a1a;font-weight:900;margin-left:4px';
           h.textContent='👆詳細';
           const nameEl=hdr.querySelector('.player-result-name'); if(nameEl) nameEl.appendChild(h);
         }
