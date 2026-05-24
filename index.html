@@ -85,6 +85,8 @@ html.fx-active{background:#000;}
 #screen-online-topic-lottery{background:transparent!important;}
 #screen-online-roundresult{--result-accent:#3fd0c8;--result-accent-soft:rgba(63,208,200,0.4);--result-accent-dark:#0a4a44;--result-accent-bg:rgba(63,208,200,0.12);--result-panel1:#06302e;--result-panel2:#0a4a44;background:transparent;}
 #screen-online-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
+#screen-roundresult{--result-accent:#3fd0c8;--result-accent-soft:rgba(63,208,200,0.4);--result-accent-dark:#0a4a44;--result-accent-bg:rgba(63,208,200,0.12);--result-panel1:#06302e;--result-panel2:#0a4a44;background:transparent;}
+#screen-roundresult .round-header{background:linear-gradient(120deg,var(--result-accent-dark),var(--result-accent) 55%,var(--result-accent-dark));color:#fff;border-bottom:2px solid var(--result-accent);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
 .screen::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:transparent;}
 .screen>*{position:relative;z-index:1;}
 .header{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);box-sizing:border-box;padding:0 104px;padding-top:var(--safe-top);text-align:center;border-bottom:2px solid var(--gold);box-shadow:0 2px 12px rgba(0,0,0,0.4);height:var(--band-total);min-height:var(--band-total);display:flex;flex-direction:column;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;z-index:999;}
@@ -1530,9 +1532,20 @@ body.modal-open{overflow:hidden !important;}
 
 <!-- ROUND RESULT -->
 <div class="screen" id="screen-roundresult">
-  <div class="header"><div class="subtitle" id="rr-round-label">ROUND 1 RESULT</div><h1>🎊 ラウンド結果</h1></div>
+  <div class="round-header" id="rr-round-label">ROUND 1 RESULT</div>
   <div class="scroll-content">
-    <div class="panel"><div class="panel-title" id="rr-actual-title">🏆 今回の順位</div><div id="rr-actual-result"></div></div>
+    <!-- お題パネル（賭け方の色ベース） -->
+    <div class="panel" style="background:linear-gradient(135deg,var(--result-panel1),var(--result-panel2));border:1px solid var(--result-accent-soft)">
+      <div style="text-align:center;color:var(--result-accent);font-size:0.65rem;letter-spacing:2px;margin-bottom:4px;font-weight:700">TOPIC</div>
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center">
+        <div style="font-size:1.4rem" id="rr-topic-icon">🎯</div>
+        <div style="color:var(--result-accent);font-size:1.1rem;font-weight:900" id="rr-topic-title">—</div>
+      </div>
+      <div id="rr-topic-horses" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
+    </div>
+    <!-- 高オッズ的中バナー（該当時のみJSで表示） -->
+    <div id="rr-jackpot-banner" style="display:none;margin:10px;border-radius:12px;padding:12px 14px;text-align:center;font-weight:900;box-shadow:0 0 18px rgba(0,0,0,0.35)"></div>
+    <div class="panel" style="background:linear-gradient(135deg,var(--result-panel1),var(--result-panel2));border:1px solid var(--result-accent-soft)"><div class="panel-title" id="rr-actual-title" style="color:var(--result-accent)">🏆 親の実際の順位</div><div id="rr-actual-result"></div></div>
     <div class="panel"><div class="panel-title">💰 子の結果</div><div id="rr-player-results"></div></div>
     <div class="panel" id="rr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="rr-oya-summary"></div></div>
     <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="rr-score-table"></table></div>
@@ -1544,11 +1557,16 @@ body.modal-open{overflow:hidden !important;}
 <div class="screen" id="screen-final">
   <div class="header"><div class="subtitle">GAME OVER</div><h1>🏆 最終結果</h1></div>
   <div class="scroll-content">
-    <div class="panel" style="text-align:center;padding:20px">
-      <div style="font-size:3rem;margin-bottom:8px">🥇</div>
-      <div style="font-size:0.75rem;letter-spacing:3px;color:var(--gold-dark);margin-bottom:4px">WINNER</div>
-      <div style="font-size:2rem;font-weight:900" id="final-winner"></div>
-      <div style="font-size:1.2rem;color:var(--gold-dark);font-weight:700;margin-top:4px" id="final-winner-pts"></div>
+    <!-- 王冠グランドフィナーレパネル -->
+    <div class="panel ofn-grand-panel" style="text-align:center;padding:30px 20px;background:linear-gradient(135deg,#1a0a2a 0%,#2a1a4a 50%,#1a0a2a 100%);border:3px solid var(--gold);box-shadow:0 0 40px rgba(245,200,66,0.5);position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(245,200,66,0.25) 0%,transparent 60%);pointer-events:none"></div>
+      <div style="position:relative;z-index:1">
+        <div style="font-size:0.7rem;letter-spacing:6px;color:var(--gold);margin-bottom:10px">★ ★ ★ CHAMPION ★ ★ ★</div>
+        <div style="font-size:4rem;margin-bottom:8px;animation:trophyBounce 1.5s ease-in-out infinite">🏆</div>
+        <div style="font-size:0.7rem;letter-spacing:4px;color:#f5c842;margin-bottom:8px">WINNER</div>
+        <div style="font-size:2.2rem;font-weight:900;color:white;text-shadow:0 0 20px rgba(245,200,66,0.8);margin-bottom:6px" id="final-winner">—</div>
+        <div style="font-size:1.4rem;color:var(--gold);font-weight:900;text-shadow:0 0 12px rgba(245,200,66,0.6)" id="final-winner-pts">—</div>
+      </div>
     </div>
     <div class="panel"><div class="panel-title">📊 最終得点表</div><table class="score-table" id="final-score-table"></table></div>
     <div class="panel"><div class="panel-title">📜 ラウンド履歴</div><div id="final-history"></div></div>
@@ -4525,48 +4543,93 @@ function renderRoundResult(){
   if(log) triggerOfflineEffects(log);
 }
 
+// オフライン版：そのラウンドの最高オッズ的中の券種色に結果画面を染める（オンラインと同等）
+function applyJackpotDyeOffline(log){
+  const screen=document.getElementById('screen-roundresult');
+  const banner=document.getElementById('rr-jackpot-banner');
+  if(!screen) return;
+  const BET_COLOR={ tansho:'#e0a800', fukusho:'#2ea93f', wide:'#ff7a1a', umaren:'#a86fe0', umatan:'#ff3399', sanrenfuku:'#13b8b2', sanrentan:'#ff5ea0' };
+  const BET_LABEL={ tansho:'単勝', fukusho:'複勝', wide:'ワイド', umaren:'馬連', umatan:'馬単', sanrenfuku:'3連複', sanrentan:'3連単' };
+  const BET_COLOR_DARK={ tansho:'#9a7110', fukusho:'#1a6a26', wide:'#b04e0a', umaren:'#6a3aa8', umatan:'#b01e6a', sanrenfuku:'#0a7a76', sanrentan:'#a83a6a' };
+  const BET_PANEL={ tansho:['#2e2406','#3e3008'], fukusho:['#0a2e16','#0e3e1e'], wide:['#2e1606','#3e1e08'], umaren:['#241038','#301450'], umatan:['#2e0e22','#3e1230'], sanrenfuku:['#06302e','#0a4244'], sanrentan:['#2e1024','#3e1432'] };
+  let best=null;
+  ((log&&log.playerResults)||[]).forEach(r=>{
+    if(r.skipped) return;
+    if(Array.isArray(r.betResults)){
+      r.betResults.forEach(br=>{ if(br&&br.hit&&(br.odds||0)>0){ if(!best||br.odds>best.odds) best={odds:br.odds,betType:br.betType}; } });
+    } else if((r.multiplier||0)>0 && r.betType){
+      const od=(r.odds&&r.odds>0)?r.odds:(r.multiplier||0);
+      if(od>0&&(!best||od>best.odds)) best={odds:od,betType:r.betType};
+    }
+  });
+  const RAINBOW='linear-gradient(120deg,#ff5e5e,#ffd65a 30%,#5ad07a 55%,#5aa0ff 78%,#c060ff)';
+  const RAINBOW_PANEL='linear-gradient(135deg,#2a1024,#1a1430 45%,#102a2e 75%,#0a1a30)';
+  const PANEL_BG='linear-gradient(135deg,var(--result-panel1),var(--result-panel2))';
+  const tPanel=document.getElementById('rr-topic-icon')?document.getElementById('rr-topic-icon').closest('.panel'):null;
+  const aPanel=document.getElementById('rr-actual-title')?document.getElementById('rr-actual-title').closest('.panel'):null;
+  const headerEl=screen.querySelector('.round-header');
+  if(best && BET_COLOR[best.betType]){
+    const col=BET_COLOR[best.betType], colDark=BET_COLOR_DARK[best.betType]||col, panel=BET_PANEL[best.betType]||['#06302e','#0a4244'];
+    const isRainbow=best.betType==='sanrentan';
+    screen.style.setProperty('--result-accent',col);
+    screen.style.setProperty('--result-accent-soft',col+'66');
+    screen.style.setProperty('--result-accent-dark',colDark);
+    screen.style.setProperty('--result-accent-bg',col+'22');
+    screen.style.setProperty('--result-panel1',panel[0]);
+    screen.style.setProperty('--result-panel2',panel[1]);
+    if(headerEl) headerEl.style.background=isRainbow?RAINBOW:'';
+    [tPanel,aPanel].forEach(p=>{ if(!p)return; if(isRainbow){ p.style.background=RAINBOW_PANEL; p.style.borderImage=RAINBOW+' 1'; } else { p.style.background=PANEL_BG; p.style.borderImage=''; } });
+    const titleEl=document.getElementById('rr-topic-title');
+    const labelEl=tPanel?tPanel.querySelector('div'):null;
+    [titleEl,document.getElementById('rr-actual-title'),labelEl].forEach(el=>{ if(!el)return; if(isRainbow){ el.style.background=RAINBOW; el.style.webkitBackgroundClip='text'; el.style.backgroundClip='text'; el.style.color='transparent'; } else { el.style.background=''; el.style.webkitBackgroundClip=''; el.style.backgroundClip=''; el.style.color='var(--result-accent)'; } });
+    const chipEls=screen.querySelectorAll('#rr-topic-horses > span, #rr-actual-result > .result-horse');
+    chipEls.forEach(ch=>{ if(isRainbow){ ch.style.background='linear-gradient(120deg,rgba(255,94,94,0.18),rgba(255,214,90,0.18),rgba(90,208,122,0.18),rgba(90,160,255,0.18),rgba(192,96,255,0.18))'; ch.style.borderImage=RAINBOW+' 1'; } else { ch.style.background='var(--result-accent-bg)'; ch.style.borderImage=''; } });
+    if(banner){
+      const bg=isRainbow?RAINBOW:`linear-gradient(120deg,${col},${col})`;
+      banner.style.display='block';
+      banner.style.background=bg;
+      banner.style.color=(best.betType==='tansho'||best.betType==='fukusho'||best.betType==='wide'||best.betType==='sanrenfuku')?'#2a1500':'#fff';
+      banner.style.border='1px solid rgba(255,255,255,0.4)';
+      const tail=best.odds>=5?' の高配当！':(best.odds>=2?' 的中！':'');
+      banner.innerHTML=`🎉 ${BET_LABEL[best.betType]||best.betType} 的中！ <span style="font-size:0.85em">×${best.odds.toFixed(1)}${tail}</span>`;
+    }
+  } else {
+    // 的中なし：落ち着いたゴールド
+    screen.style.setProperty('--result-accent','#f5d65a');
+    screen.style.setProperty('--result-accent-soft','rgba(245,214,90,0.4)');
+    screen.style.setProperty('--result-accent-dark','#9a7a10');
+    screen.style.setProperty('--result-accent-bg','rgba(245,214,90,0.12)');
+    screen.style.setProperty('--result-panel1','#2e2406');
+    screen.style.setProperty('--result-panel2','#3e3008');
+    if(headerEl) headerEl.style.background='';
+    [tPanel,aPanel].forEach(p=>{ if(p){ p.style.background=PANEL_BG; p.style.borderImage=''; } });
+    const labelEl=tPanel?tPanel.querySelector('div'):null;
+    [document.getElementById('rr-topic-title'),document.getElementById('rr-actual-title'),labelEl].forEach(el=>{ if(el){ el.style.background=''; el.style.webkitBackgroundClip=''; el.style.backgroundClip=''; el.style.color='var(--result-accent)'; } });
+    const chipEls=screen.querySelectorAll('#rr-topic-horses > span, #rr-actual-result > .result-horse');
+    chipEls.forEach(ch=>{ ch.style.background='var(--result-accent-bg)'; ch.style.borderImage=''; });
+    if(banner) banner.style.display='none';
+  }
+}
+
 // 結果画面の描画のみ（演出なし）
 function renderRoundResultBody(){
   const log=state.history[state.history.length-1];const t=state.selectedTopic;
   document.getElementById('rr-round-label').textContent=`ROUND ${state.currentRound} RESULT`;
-  // お題タイトルをヘッダーの下に表示
-  let topicHeader=document.getElementById('rr-topic-header');
-  if(!topicHeader){
-    topicHeader=document.createElement('div');
-    topicHeader.id='rr-topic-header';
-    topicHeader.style.cssText='background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:10px 14px;margin:8px 10px;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none';
-    const resultPanel=document.getElementById('rr-actual-result')?.closest('.panel');
-    if(resultPanel)resultPanel.parentNode.insertBefore(topicHeader,resultPanel);
+  // お題パネル（オンラインと同じ固定パネルに描画）
+  const tiEl=document.getElementById('rr-topic-icon'); if(tiEl) tiEl.textContent=t.icon||'🎯';
+  const ttEl=document.getElementById('rr-topic-title'); if(ttEl) ttEl.textContent=t.title||'';
+  const thEl=document.getElementById('rr-topic-horses');
+  if(thEl){
+    thEl.innerHTML=(t.horses||[]).map((name,i)=>`<span style="display:inline-flex;align-items:center;gap:4px;background:var(--result-accent-bg);border:1px solid var(--result-accent-soft);padding:4px 9px;border-radius:14px;font-size:0.75rem;color:#fff;font-weight:700"><span class="ibadge ${HC[i]}" style="width:18px;height:18px;font-size:0.65rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
   }
-  topicHeader.innerHTML=`<div style="font-size:1.4rem">${t.icon}</div><div><div style="color:var(--gold);font-size:0.95rem;font-weight:900">${t.title}</div></div><div style="margin-left:auto;font-size:0.65rem;color:#aaa">長押し/右クリックで選択肢</div>`;
-  // 長押し・右クリックで選択肢ポップアップ
-  let pt=null;
-  topicHeader.addEventListener('contextmenu',(e)=>{e.preventDefault();openTopicPopup(t);});
-  topicHeader.addEventListener('touchstart',()=>{pt=setTimeout(()=>openTopicPopup(t),400);},{passive:true});
-  topicHeader.addEventListener('touchend',()=>clearTimeout(pt));
-  topicHeader.addEventListener('touchmove',()=>clearTimeout(pt));
-  topicHeader.addEventListener('mousedown',(e)=>{if(e.button===0)pt=setTimeout(()=>openTopicPopup(t),600);});
-  topicHeader.addEventListener('mouseup',()=>clearTimeout(pt));
-  // 親の名前を「今回の順位」見出しに表示
+  // 親の名前を「実際の順位」見出しに表示
   const rrActualTitle=document.getElementById('rr-actual-title');
   if(rrActualTitle){
     const oyaP=state.players[state.oyaIndex];
     const oyaNm=oyaP?escapeHtml(oyaP.name):'親';
     rrActualTitle.innerHTML=`🏆 親（${oyaNm}）の実際の順位`;
   }
-  document.getElementById('rr-actual-result').innerHTML=state.actualResult.map((hi,i)=>`<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div><div style="font-weight:700">${t.horses[hi]}</div><div style="font-size:0.7rem;color:#444">${i+1}位</div></div></div>`).join('')+
-  `<div style="margin-top:10px;padding-top:10px;border-top:1px dashed #e0d8c0">
-    <div style="font-size:0.7rem;color:#aaa;margin-bottom:6px">📋 全選択肢</div>
-    ${t.horses.map((h,i)=>{
-      const rank=state.actualResult.indexOf(i);
-      const rankLabel=rank===0?'🥇':rank===1?'🥈':rank===2?'🥉':'';
-      return`<div style="display:flex;align-items:center;gap:8px;padding:5px 4px;border-bottom:1px solid #f0e8d0;${rank>=0&&rank<3?'background:#fffbe6;border-radius:4px;':''}">
-        <span class="ibadge ${HC[i]}" style="width:22px;height:22px;font-size:0.75rem;flex-shrink:0">${i+1}</span>
-        <span style="font-size:0.82rem;flex:1">${h}</span>
-        <span style="font-size:1rem">${rankLabel}</span>
-      </div>`;
-    }).join('')}
-  </div>`;
+  document.getElementById('rr-actual-result').innerHTML=state.actualResult.map((hi,i)=>`<div class="result-horse" style="background:var(--result-accent-bg);border:1px solid var(--result-accent-soft)"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700;color:#fff">${t.horses[hi]}</div></div>`).join('');
   const betNames = (typeof BET_NAMES !== 'undefined') ? BET_NAMES : {tansho:'単勝',rentan:'馬単',sanrentan:'3連単'};
   const posLabels=['1位','2位','3位'];
   document.getElementById('rr-player-results').innerHTML=log.playerResults.map(r=>{
@@ -4679,6 +4742,7 @@ function renderRoundResultBody(){
     else oyaSum.innerHTML=`<div style="text-align:center;color:#aaa;padding:12px;font-size:0.85rem">子が全員外れたため、ボーナスなし 😞<br><span style="font-size:0.75rem">(${log.oyaName})</span></div>`;
   }
   renderScoreTable('rr-score-table');
+  try { applyJackpotDyeOffline(log); } catch(e){ console.error('offline dye error', e); }
   document.getElementById('rr-next-btn').innerHTML=state.currentRound>=state.rounds?'🏆 最終結果を見る':`<span style="display:inline-flex;align-items:center;gap:8px;justify-content:center">次のラウンド (${state.currentRound+1}/${state.rounds}) へ<span style="background:#1a1a1a;color:#ffe07a;font-size:0.82rem;font-weight:900;padding:3px 12px;border-radius:14px;letter-spacing:0">👆 タップ</span></span>`;
 }
 
