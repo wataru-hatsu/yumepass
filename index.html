@@ -1264,60 +1264,43 @@ body.modal-open{overflow:hidden !important;}
     <!-- 子へのお題選択指示バナー -->
     <div style="margin:0 10px;background:#0d2a1a;border:2px solid var(--green-light);border-radius:10px;padding:12px 14px">
       <div style="color:#7dff7d;font-size:0.8rem;font-weight:900;margin-bottom:4px">🗳️ 子のみなさんへ</div>
-      <div style="color:#5dcc5d;font-size:0.8rem;line-height:1.6" id="rs-ko-instruction">みんなで相談して、<strong style="color:white">親の〇〇さん</strong>へのお題を決めましょう！<br>代表者がタップして確定してください。<br><span style="color:#aaa;font-size:0.72rem">（親は見ているだけでOK）</span></div>
+      <div style="color:#5dcc5d;font-size:0.8rem;line-height:1.6" id="rs-ko-instruction">みんなで相談して、<strong style="color:white">親の〇〇さん</strong>へのお題を決めましょう！<br>代表者がタップして確定してください。<br><span style="color:#aaa;font-size:0.72rem">（親は相談に入っても、見ているだけでもOK）</span></div>
     </div>
     <div class="panel" style="display:none"><table class="score-table" id="rs-score-table"></table></div>
     <div class="panel">
       <div class="panel-title">🎯 お題を選ぶ（子で相談）</div>
-      <div id="category-step">
-        <div style="font-size:0.85rem;font-weight:700;color:#555;margin-bottom:8px">① カテゴリーを選ぶ</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="category-btns"></div>
+      <!-- ① カテゴリー選択（オンライン版と同じ見た目） -->
+      <div id="off-category-step">
+        <div style="font-size:0.78rem;color:#000;margin-bottom:10px;font-weight:700">どのレベルのお題にしますか？</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn btn-category" onclick="offPickCategory('g1')" style="background:linear-gradient(135deg,#4a3a0a,#5a4a0a);border:2px solid var(--gold);color:var(--gold);padding:18px 14px;text-align:left">
+            <div style="font-size:1.05rem;font-weight:900">🏆 G1（難）</div>
+            <div style="font-size:0.78rem;color:#fff;margin-top:4px;font-weight:600">本音と価値観に踏み込む重いお題</div>
+          </button>
+          <button class="btn btn-category" onclick="offPickCategory('g2')" style="background:linear-gradient(135deg,#2a2a3a,#3a3a4a);border:2px solid #aaaaaa;color:white;padding:18px 14px;text-align:left">
+            <div style="font-size:1.05rem;font-weight:900">🥈 G2（中）</div>
+            <div style="font-size:0.78rem;color:#fff;margin-top:4px;font-weight:600">バランスの取れた、ほどよい難易度のお題</div>
+          </button>
+          <button class="btn btn-category" onclick="offPickCategory('g3')" style="background:linear-gradient(135deg,#3a2010,#4a3010);border:2px solid #cc8855;color:#ffcc99;padding:18px 14px;text-align:left">
+            <div style="font-size:1.05rem;font-weight:900">🥉 G3（易）</div>
+            <div style="font-size:0.78rem;color:#fff;margin-top:4px;font-weight:600">話しやすい身近なお題</div>
+          </button>
+          <button class="btn btn-category" onclick="offPickRandomAll()" style="background:linear-gradient(135deg,#3a1a4a,#4a2a5a);border:2px solid #c060c0;color:#f0c0f0;padding:18px 14px;text-align:left">
+            <div style="font-size:1.05rem;font-weight:900">🎲 完全ランダム（大穴）</div>
+            <div style="font-size:0.78rem;color:#fff;margin-top:4px;font-weight:600">G1〜G3すべてからランダムで1問！何が出るかはお楽しみ</div>
+          </button>
+        </div>
       </div>
-      <div id="method-step" style="display:none;margin-top:12px">
-        <div style="font-size:0.85rem;font-weight:700;color:#555;margin-bottom:8px">② 出題方法を選ぶ</div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-primary" style="margin-top:0;flex:1;padding:12px 4px;font-size:0.9rem" onclick="pickRandom()">🎲 ランダム</button>
-          <button class="btn btn-secondary" style="margin-top:0;flex:1;padding:12px 4px;font-size:0.9rem" onclick="showTopicList()">📋 自分で選ぶ</button>
+      <!-- ② お題リスト（カテゴリ選択後に表示） -->
+      <div id="off-topic-list-step" style="display:none">
+        <div style="margin-bottom:8px">
+          <button class="btn btn-secondary" onclick="offBackToCategory()" style="margin-top:0;font-size:0.85rem;padding:8px 14px;width:auto;display:inline-block">← カテゴリ選択に戻る</button>
         </div>
-        <button onclick="resetCategoryStep()" style="background:var(--gold);border:none;border-radius:6px;color:#1a1a1a;font-size:0.8rem;font-weight:900;cursor:pointer;padding:6px 14px;margin-top:10px">← 戻る</button>
-      </div>
-      <div id="random-step" style="display:none;margin-top:12px">
-        <div style="font-size:0.85rem;font-weight:700;color:#555;margin-bottom:8px">③ このお題でいきますか？</div>
-        <div id="random-topic-card"></div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn btn-success" style="margin-top:0;flex:1;padding:12px 4px;font-size:0.9rem" onclick="confirmRandomTopic()">⭕ はい、これでいく</button>
-          <button class="btn btn-secondary" style="margin-top:0;flex:1;padding:12px 4px;font-size:0.9rem" onclick="pickRandom()">❌ いいえ、引き直す</button>
+        <div class="panel-title" id="off-topic-list-title" style="border:none;padding:0;margin-bottom:8px">② お題を選ぼう</div>
+        <div id="off-topic-list"></div>
+        <div style="margin-top:12px">
+          <button class="btn btn-secondary" onclick="offBackToCategory()" style="margin-top:0;font-size:0.85rem;padding:8px 14px;width:auto;display:inline-block">← カテゴリ選択に戻る</button>
         </div>
-        <button onclick="resetMethodStep()" style="background:var(--gold);border:none;border-radius:6px;color:#1a1a1a;font-size:0.8rem;font-weight:900;cursor:pointer;padding:6px 14px;margin-top:10px">← 戻る</button>
-      </div>
-      <div id="list-step" style="display:none;margin-top:12px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <div style="font-size:0.85rem;font-weight:700;color:#555">③ お題を選ぶ</div>
-          <button onclick="resetMethodStep()" style="background:var(--gold);border:none;border-radius:6px;color:#1a1a1a;font-size:0.8rem;font-weight:900;cursor:pointer;padding:6px 14px">← 戻る</button>
-        </div>
-        <div style="font-size:0.7rem;color:#aaa;margin-bottom:8px">スマホ：長押し　PC：右クリックで選択肢を確認</div>
-        <div id="topic-list"></div>
-        <div style="margin-top:12px"><button onclick="resetMethodStep()" style="background:var(--gold);border:none;border-radius:6px;color:#1a1a1a;font-size:0.8rem;font-weight:900;cursor:pointer;padding:8px 16px">← カテゴリ選択に戻る</button></div>
-      </div>
-
-      <!-- ④ お題確定確認 -->
-      <div id="confirm-step" style="display:none;margin-top:12px">
-        <div style="font-size:0.85rem;font-weight:700;color:#555;margin-bottom:8px">④ このお題で確定します</div>
-        <div style="background:#fffdf5;border-radius:10px;border:2px solid var(--gold);padding:14px;margin-bottom:10px">
-          <div style="color:#8a6d00;font-size:0.65rem;letter-spacing:2px;margin-bottom:6px;font-weight:700">FINAL TOPIC</div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-            <div style="font-size:1.8rem" id="confirm-topic-icon">🎯</div>
-            <div style="color:#1a1a1a;font-size:1.1rem;font-weight:900" id="confirm-topic-title">—</div>
-          </div>
-          <div style="border-top:1px dashed rgba(201,150,10,0.35);padding-top:10px">
-            <div style="color:#1a1a1a;font-size:0.7rem;margin-bottom:6px;font-weight:700">選択肢：</div>
-            <div id="confirm-topic-horses" style="display:flex;flex-direction:column;gap:4px"></div>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-primary" style="margin-top:0;flex:1;background:linear-gradient(135deg,#ffe07a,#f5c842 45%,#c9960a);color:#1a1a1a;text-shadow:0 1px 0 rgba(255,255,255,0.3);box-shadow:0 4px 12px rgba(201,150,10,0.5)" onclick="finalConfirmTopic()">🏁 これで確定！賭けへ</button>
-        </div>
-        <button onclick="resetConfirmStep()" style="background:var(--gold);border:none;border-radius:6px;color:#1a1a1a;font-size:0.8rem;font-weight:900;cursor:pointer;padding:6px 14px;margin-top:10px">← お題を選び直す</button>
       </div>
 
       <button style="margin-top:10px;background:none;border:1px solid #bbb;border-radius:6px;color:#444;font-size:0.75rem;font-weight:700;cursor:pointer;padding:5px 12px;display:inline-block;width:auto" onclick="goTo('screen-topics')">＋ お題を追加・管理する</button>
@@ -3190,13 +3173,87 @@ let selectedCategory=null;
 function getTopicsByCategory(catId){const all=getAllTopics();if(catId==='all')return all;return all.filter(t=>(t.category||'g3')===catId);}
 function renderCategoryStep(){
   selectedCategory=null;state.selectedTopic=null;
-  document.getElementById('category-step').style.display='block';document.getElementById('method-step').style.display='none';document.getElementById('random-step').style.display='none';document.getElementById('list-step').style.display='none';
-  const c=document.getElementById('category-btns');c.innerHTML='';
-  CATEGORIES.forEach(cat=>{const pool=getTopicsByCategory(cat.id);const total=pool.length;const unused=pool.filter(t=>!state.usedTopicIds.includes(t.id)).length;const b=document.createElement('button');b.style.cssText=`background:${cat.color};color:${cat.textColor};border:none;border-radius:10px;padding:12px 8px;cursor:pointer;text-align:left;`;b.innerHTML=`<div style="font-size:1.2rem">${cat.icon}</div><div style="font-weight:900;font-size:1rem;margin-top:4px">${cat.label}</div><div style="font-size:0.65rem;opacity:0.85;margin-top:2px;line-height:1.4">${cat.sub}</div><div style="font-size:0.7rem;margin-top:6px;opacity:0.9">未使用 ${unused} / ${total} 問</div>`;b.addEventListener('click',()=>selectCategory(cat.id));c.appendChild(b);});
+  const catStep=document.getElementById('off-category-step');
+  const listStep=document.getElementById('off-topic-list-step');
+  if(catStep) catStep.style.display='block';
+  if(listStep) listStep.style.display='none';
 }
-function selectCategory(catId){selectedCategory=catId;document.getElementById('category-step').style.display='none';document.getElementById('method-step').style.display='block';}
+function offPickCategory(category){
+  selectedCategory=category;
+  const catStep=document.getElementById('off-category-step');
+  const listStep=document.getElementById('off-topic-list-step');
+  if(catStep) catStep.style.display='none';
+  if(listStep) listStep.style.display='';
+  const categoryNames={ g1:'\u{1F3C6} G1\uff08\u96e3\uff09', g2:'\u{1F948} G2\uff08\u4e2d\uff09', g3:'\u{1F949} G3\uff08\u6613\uff09' };
+  const titleEl=document.getElementById('off-topic-list-title');
+  if(titleEl){
+    titleEl.innerHTML='\u2461 \u304a\u984c\u3092\u9078\u307c\u3046<div style="font-size:0.95rem;color:#1a1a1a;font-weight:800;margin-top:4px">'+(categoryNames[category]||category)+'</div><div style="font-size:0.82rem;color:#1565c0;font-weight:800;margin-top:5px">\u{1F446} \u9577\u62bc\u3057/\u53f3\u30af\u30ea\u30c3\u30af\u3067\u9078\u629e\u80a2\u3092\u898b\u308b</div>';
+  }
+  renderOffTopicListByCategory(category);
+  if(typeof updateScrollFabVisibility==='function'){setTimeout(updateScrollFabVisibility,80);setTimeout(updateScrollFabVisibility,400);}
+}
+function offBackToCategory(){
+  const catStep=document.getElementById('off-category-step');
+  const listStep=document.getElementById('off-topic-list-step');
+  if(catStep) catStep.style.display='';
+  if(listStep) listStep.style.display='none';
+  if(typeof updateScrollFabVisibility==='function')setTimeout(updateScrollFabVisibility,80);
+}
+function offPickRandomAll(){
+  const all=getTopicsByCategory('all');
+  if(!all || all.length===0){ showNotif('\u26a0\ufe0f \u304a\u984c\u304c\u3042\u308a\u307e\u305b\u3093'); return; }
+  let unused=all.filter(t=>!state.usedTopicIds.includes(t.id));
+  if(unused.length===0){ state.usedTopicIds=[]; unused=all; }
+  const pick=unused[Math.floor(Math.random()*unused.length)];
+  if(!pick){ showNotif('\u26a0\ufe0f \u304a\u984c\u306e\u62bd\u9078\u306b\u5931\u6557\u3057\u307e\u3057\u305f'); return; }
+  openTopicPopup(pick, {
+    hideClose:true, noWrapButtons:true,
+    buttons:[
+      { label:'\u2190 \u623b\u308b', cls:'btn-secondary', onClick:()=>{} },
+      { label:'\u2b55 \u6c7a\u5b9a', cls:'btn-success', onClick:()=>offSelectTopicConfirmed(pick.id) },
+      { label:'\u{1F3B2} \u5f15\u304d\u76f4\u3059', cls:'btn-secondary', onClick:()=>offPickRandomAll() }
+    ]
+  });
+}
+function renderOffTopicListByCategory(category){
+  const pool=getTopicsByCategory(category);
+  const listEl=document.getElementById('off-topic-list');
+  if(!listEl) return;
+  listEl.innerHTML='';
+  if(pool.length===0){
+    listEl.innerHTML='<div style="color:#444;font-size:0.85rem;padding:14px;text-align:center">\u3053\u306e\u30ab\u30c6\u30b4\u30ea\u30fc\u306b\u306f\u304a\u984c\u304c\u3042\u308a\u307e\u305b\u3093</div>';
+    return;
+  }
+  function makeCard(t){
+    const used=state.usedTopicIds.includes(t.id);
+    const d=document.createElement('div');
+    d.style.cssText='padding:14px;border:2px solid '+(used?'#e0d8c0':'#ddd')+';border-radius:10px;margin-bottom:8px;cursor:pointer;background:'+(used?'#f3eedd':'white')+';transition:all 0.15s;user-select:none;-webkit-user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent';
+    d.innerHTML='<div style="font-weight:700;font-size:0.95rem;color:#1a1a1a">'+(t.icon||'')+' '+escapeHtml(t.title)+(used?'<span style="font-size:0.7rem;color:#a08c50;font-weight:700;margin-left:6px">\uff08\u4f7f\u7528\u6e08\u307f\uff09</span>':'')+'</div>';
+    let pt=null, longPressed=false;
+    d.addEventListener('touchstart',()=>{ longPressed=false; pt=setTimeout(()=>{ longPressed=true; openTopicPopup(t); },400); },{passive:true});
+    d.addEventListener('touchend',()=>clearTimeout(pt));
+    d.addEventListener('touchmove',()=>clearTimeout(pt));
+    d.addEventListener('mousedown',(e)=>{ if(e.button===0){ longPressed=false; pt=setTimeout(()=>{ longPressed=true; openTopicPopup(t); },600); } });
+    d.addEventListener('mouseup',()=>clearTimeout(pt));
+    d.addEventListener('contextmenu',(e)=>{ e.preventDefault(); longPressed=true; openTopicPopup(t); });
+    d.addEventListener('click',()=>{ if(longPressed){ longPressed=false; return; } offSelectTopic(t.id); });
+    listEl.appendChild(d);
+  }
+  pool.forEach(makeCard);
+}
+function offSelectTopic(topicId){
+  const all=getAllTopics();
+  const t=all.find(x=>x.id===topicId);
+  if(!t){ showNotif('\u26a0\ufe0f \u304a\u984c\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093'); return; }
+  state.selectedTopic=t;
+  if(!state.usedTopicIds.includes(t.id)) state.usedTopicIds.push(t.id);
+  startBetting();
+}
+function offSelectTopicConfirmed(topicId){
+  if(typeof closeTopicPopup==='function') closeTopicPopup();
+  offSelectTopic(topicId);
+}
 function resetCategoryStep(){renderCategoryStep();if(typeof updateScrollFabVisibility==='function')setTimeout(updateScrollFabVisibility,80);}
-function resetMethodStep(){document.getElementById('method-step').style.display='block';document.getElementById('random-step').style.display='none';document.getElementById('list-step').style.display='none';state.selectedTopic=null;if(typeof updateScrollFabVisibility==='function')setTimeout(updateScrollFabVisibility,80);}
 function pickRandom(){
   const pool=getTopicsByCategory(selectedCategory);if(pool.length===0){showNotif('⚠️ このカテゴリーにお題がありません');return;}
   let unused=pool.filter(t=>!state.usedTopicIds.includes(t.id));
@@ -9374,7 +9431,7 @@ window.showRaceReveal = function(opts, done){
     var last=null, startT=null, lastLevel=0, placeCount=0, done3=false;
     // 各馬の「ゴール時刻ターゲット」を着順に応じて決める（最終着順を保証）
     // finalRank 1が最速、N が最遅。基準時間に着順差で広げる。
-    var baseTime=4.0; // 1着の想定到達秒
+    var baseTime=5.5; // 1着の想定到達秒
     horses.forEach(function(h){
       var gapSec = (h.finalRank-1) * (tight?0.06:0.14) + Math.random()*(tight?0.03:0.05);
       h.targetTime = baseTime + gapSec;
