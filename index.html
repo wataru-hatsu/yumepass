@@ -1340,8 +1340,18 @@ body.modal-open{overflow:hidden !important;}
       <table class="score-table" id="bet-score-table"></table>
     </div>
     <div class="panel" id="off-bettype-panel">
-      <div class="panel-title">🎰 賭けの種類</div>
-      <div style="font-size:0.85rem;color:#333;line-height:1.5;margin-bottom:8px;background:rgba(245,200,66,0.14);border-radius:6px;padding:7px 9px">💡 配当（倍率）は<strong>人気で変動</strong>。みんなが選ばない「穴」ほど当てると高配当。難しい賭けほど高倍率。</div>
+      <div class="panel-title" style="display:flex;align-items:center;gap:8px">🎰 賭けの種類 <span onclick="var d=document.getElementById('off-bettype-detail');d.style.display=(d.style.display==='none'?'block':'none')" style="margin-left:auto;background:var(--gold);color:#1a1a1a;font-size:0.62rem;font-weight:900;padding:3px 9px;border-radius:10px;cursor:pointer;letter-spacing:0;text-transform:none">👆 賭け方の詳細</span></div>
+      <div style="font-size:0.85rem;color:#333;line-height:1.5;margin-bottom:8px;background:rgba(245,200,66,0.14);border-radius:6px;padding:7px 9px">💡 オッズは人気で変動します。</div>
+      <!-- 賭け方の詳細（タップで開閉）-->
+      <div id="off-bettype-detail" style="display:none;margin-bottom:8px;background:rgba(0,0,0,0.04);border-radius:8px;padding:8px 10px;font-size:0.78rem;color:#222;line-height:1.7">
+        <div><strong>単勝</strong>：1位をズバリ当てる</div>
+        <div><strong>複勝</strong>：選んだ1頭が3位以内ならOK</div>
+        <div><strong>馬連</strong>：1・2位の2頭・順番自由</div>
+        <div><strong>馬単</strong>：1・2位を順番通り</div>
+        <div><strong>ワイド</strong>：選んだ2頭が3位以内ならOK</div>
+        <div><strong>3連複</strong>：1〜3位の3頭・順番自由</div>
+        <div><strong>3連単</strong>：1〜3位を順番通り</div>
+      </div>
       <div class="bet-types">
         <div class="bet-type-btn active" onclick="selectBetType('tansho',this)"><div class="bet-name">単勝</div></div>
         <div class="bet-type-btn" onclick="selectBetType('fukusho',this)"><div class="bet-name">複勝</div></div>
@@ -1380,7 +1390,7 @@ body.modal-open{overflow:hidden !important;}
     <!-- 点数表示 -->
     <div id="off-combo-info" style="display:none;font-size:0.85rem;background:rgba(245,200,66,0.15);border:1px solid var(--gold-dark);border-radius:8px;padding:8px 12px;margin:8px 0;text-align:center"></div>
     <div class="panel" id="off-betamount-panel">
-      <div class="panel-title">💴 ベット額</div>
+      <div class="panel-title" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">💴 ベット額 <button onclick="openScorePopup()" style="margin-left:auto;flex-shrink:0;background:rgba(15,15,18,0.9);border:1px solid rgba(245,200,66,0.6);color:#f5c842;font-size:0.74rem;font-weight:800;border-radius:14px;padding:4px 10px;cursor:pointer;white-space:nowrap;letter-spacing:0;text-transform:none">📊 得点</button></div>
       <div id="bet-hint" style="font-size:0.75rem;color:#444;margin-bottom:8px">最低500点 / 1点単位でOK</div>
       <div id="bet-display" onclick="focusBetInput()" style="background:#1a1a1a;border-radius:10px;padding:14px 16px;text-align:right;font-size:1.8rem;font-weight:900;color:var(--gold);letter-spacing:2px;min-height:58px;margin-bottom:6px;cursor:text">0</div>
       <div style="text-align:center;font-size:0.72rem;color:#555;margin-bottom:8px">👆 上の枠をタップして数字を入力</div>
@@ -1395,7 +1405,10 @@ body.modal-open{overflow:hidden !important;}
       <div id="off-cart-list" style="display:flex;flex-direction:column;gap:6px"></div>
       <div id="off-cart-total" style="margin-top:8px;padding:8px 12px;background:rgba(245,200,66,0.12);border-radius:8px;text-align:right;font-weight:900;color:#7a5a00"></div>
     </div>
-    <div style="margin:10px"><button class="btn btn-primary" id="off-finalize-btn" onclick="finalizeOfflineCart()" style="display:none;background:linear-gradient(135deg,#ffe07a,#f5c842 45%,#c9960a);color:#2a1c00;text-shadow:0 1px 0 rgba(255,255,255,0.3);box-shadow:0 4px 12px rgba(201,150,10,0.5)">🏁 この内容で勝負する</button></div>
+    <div id="off-finalize-btn" style="display:none;margin:10px"><div style="display:flex;gap:8px">
+      <button class="btn" onclick="offContinueBuying()" style="flex:1;background:linear-gradient(135deg,#5db0ff,#2f8fe0);color:#fff;border:none;font-weight:900;box-shadow:0 3px 8px rgba(47,143,224,0.4)">➕ 購入を続ける</button>
+      <button class="btn" onclick="finalizeOfflineCart()" style="flex:1;background:linear-gradient(135deg,#3a8fe0,#1565c0);color:#fff;border:none;font-weight:900;box-shadow:0 3px 8px rgba(21,101,192,0.45)">次へ →</button>
+    </div></div>
   </div>
 </div>
 
@@ -4094,6 +4107,11 @@ function _reviewOfflineCartItemConfirmed(idx){
   const sc=document.querySelector('#screen-bet .scroll-content'); if(sc) sc.scrollTo({top:0,behavior:'smooth'});
 }
 
+function offContinueBuying(){
+  resetOffBetBuilder();
+  const panel=document.getElementById('off-bettype-panel');
+  if(panel && typeof panel.scrollIntoView==='function') panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
 function resetOffBetBuilder(){
   currentBetType='tansho';selectedHorses=[];betInputVal='';
   offBuyMethod='simple';offFormationPositions=[[],[],[]];offNagashiAxis=null;offNagashiPosition=1;offNagashiOpponents=[];
