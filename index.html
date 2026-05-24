@@ -2944,9 +2944,24 @@ window.scrollScreenTop=function(scr){
       try{ if(document.scrollingElement) document.scrollingElement.scrollTop=0; }catch(e){}
       try{ if(target) target.querySelectorAll('.scroll-content').forEach(sc=>{ sc.scrollTop=0; }); }catch(e){}
     };
+    // iPad/iOS Safari対策：画面切替直後はタッチのヒット判定がレイアウト確定前の位置に
+    // ずれ、少しスクロール/ズームするまで反応しないことがある。リフロー強制と微小スクロールで判定を更新する。
+    const nudge=()=>{
+      try{
+        if(target){
+          void target.offsetHeight; // リフロー強制
+          target.querySelectorAll('.scroll-content').forEach(sc=>{ void sc.offsetHeight; sc.scrollTop=1; sc.scrollTop=0; });
+          // GPU合成レイヤーを再生成してヒットテスト領域を更新（iPad対策）
+          const prev = target.style.transform;
+          target.style.transform = 'translateZ(0)';
+          void target.offsetHeight;
+          target.style.transform = prev || '';
+        }
+      }catch(e){}
+    };
     reset();
-    if(window.requestAnimationFrame) requestAnimationFrame(reset);
-    setTimeout(reset,0); setTimeout(reset,80); setTimeout(reset,200); setTimeout(reset,400); setTimeout(reset,700);
+    if(window.requestAnimationFrame) requestAnimationFrame(()=>{ reset(); nudge(); });
+    setTimeout(reset,0); setTimeout(()=>{reset();nudge();},80); setTimeout(()=>{reset();nudge();},200); setTimeout(reset,400); setTimeout(reset,700);
   }catch(e){}
 };
 function goBack(){const prev=state.prevScreen||'screen-home';goTo(prev);if(prev==='screen-roundstart')renderCategoryStep();}
@@ -5141,6 +5156,29 @@ function buildPlayerResultsHtml(playerResults){
       comboBlock = `${firstLine}`
         + `<div id="${uid}" style="display:none">${restLines}</div>`
         + `<button type="button" onclick="${toggleFn}(event,this)" ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()" style="margin-top:7px;font-size:0.78rem;color:#0d47a1;font-weight:800;background:#e8f0fe;border:1px solid #90b4f0;border-radius:9px;padding:5px 14px;cursor:pointer;display:inline-block;-webkit-tap-highlight-color:transparent">▼ 他${restCount}通りの当選を見る</button>`;
+    }
+    // ===== 複数券種（multiBets）：券種ごとに分けて表示 =====
+    if(r.isMulti && Array.isArray(r.betResults) && r.betResults.length > 0){
+      const unitBlocks = r.betResults.map(br => {
+        const brOrdered = orderedSet.includes(br.betType);
+        const brLabel = betNames[br.betType] || br.betType;
+        const brMethod = (br.buyMethod && br.buyMethod !== 'simple' && typeof BUY_METHOD_NAMES!=='undefined') ? (BUY_METHOD_NAMES[br.buyMethod]||'') : '';
+        const brWin = br.hit || (br.change||0) > 0 || (br.payout||0) > 0;
+        // 当たった組み合わせ（なければ selections）
+        const brSubs = (Array.isArray(br.winningSubs) && br.winningSubs.length>0)
+          ? br.winningSubs.slice().sort((a,b)=>(Number(b.odds)||0)-(Number(a.odds)||0))
+          : (brWin ? [{ selection:(br.selections||[]).slice(0,({tansho:1,fukusho:1,umaren:2,umatan:2,wide:2,sanrenfuku:3,sanrentan:3,rentan:2}[br.betType]||(br.selections||[]).length)), odds:(Number(br.odds||br.multiplier)||0), payout:(br.payout||0) }] : []);
+        const labelRow = `<div style="display:flex;gap:6px;align-items:center;margin-bottom:2px;margin-top:6px"><span style="background:${brWin?'var(--gold)':'#ccc'};color:#1a1a1a;font-size:0.72rem;font-weight:900;padding:2px 9px;border-radius:9px;white-space:nowrap">${brLabel}${brMethod?' '+brMethod:''}</span>${brWin?(brSubs.length>1?`<span style="font-size:0.72rem;color:#1a1a1a;font-weight:700">${brSubs.length}通り的中</span>`:''):'<span style="font-size:0.72rem;color:#999;font-weight:700">非当選</span>'}</div>`;
+        const lines = brSubs.map(s=>{
+          const combo = comboBadges(s.selection, brOrdered);
+          const oc = (Number(s.odds)||0)>0 ? window.oddsChipHtml(Number(s.odds)||0, '') : '';
+          const pay = (s.payout!=null) ? `<span style="font-size:0.78rem;color:#1a7a1a;font-weight:900;white-space:nowrap">+${(s.payout||0).toLocaleString()}点</span>` : '';
+          return `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:3px"><span style="display:inline-flex;align-items:center">${combo}</span>${oc}${pay}</div>`;
+        }).join('');
+        return labelRow + lines;
+      }).join('');
+      return `<div class="player-result hit"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:#6a3aa0;color:#fff;font-size:0.62rem;font-weight:900;padding:2px 7px;border-radius:8px;margin-left:2px">複数券種</span> <span style="background:linear-gradient(135deg,#34b350,#1a7a1a);color:#fff;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px;box-shadow:0 1px 4px rgba(26,122,26,0.4)">🎯 当選</span></span><span class="player-result-change change-pos">+${(r.payout||0).toLocaleString()}点</span></div>
+        <div class="player-result-detail" style="margin-top:5px">${unitBlocks}</div></div>`;
     }
     return `<div class="player-result hit"><div class="player-result-header"><span class="player-result-name">${escapeHtml(r.name)} <span class="ko-badge">子</span> <span style="background:linear-gradient(135deg,#34b350,#1a7a1a);color:#fff;font-size:0.66rem;font-weight:900;padding:2px 9px;border-radius:9px;box-shadow:0 1px 4px rgba(26,122,26,0.4)">🎯 当選</span></span><span class="player-result-change change-pos">+${payout.toLocaleString()}点</span></div>
       <div class="player-result-detail" style="margin-top:5px">
@@ -10679,7 +10717,7 @@ function enterOnlineFinal(game){
             return `<div style="margin-bottom:12px;padding:10px;background:#1f1f1f;border:1px solid #555;border-radius:8px;opacity:0.7">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
                 <div style="color:var(--gold);font-weight:900;font-size:0.85rem">ROUND ${h.round}</div>
-                <div style="color:#aaa;font-size:0.85rem">親：<strong style="color:var(--gold)">${escapeHtml(h.oyaName || '')}</strong></div>
+                <div style="color:#fff;font-size:0.85rem;font-weight:700">親：<strong style="color:#fff">${escapeHtml(h.oyaName || '')}</strong></div>
               </div>
               <div style="color:white;font-weight:700;font-size:0.95rem;margin-bottom:4px">${topicIcon} ${escapeHtml(h.topic || '')}</div>
               ${horseTags ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${horseTags}</div>` : ''}
@@ -10693,7 +10731,7 @@ function enterOnlineFinal(game){
           return `<div class="ofn-round-card" data-round="${h.round}" style="margin-bottom:12px;padding:10px;background:#1f1f1f;border:1px solid #444;border-radius:8px;cursor:pointer">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
               <div style="color:var(--gold);font-weight:900;font-size:0.85rem">ROUND ${h.round}</div>
-              <div style="color:#aaa;font-size:0.85rem">親：<strong style="color:var(--gold)">${escapeHtml(h.oyaName || '')}</strong></div>
+              <div style="color:#fff;font-size:0.85rem;font-weight:700">親：<strong style="color:#fff">${escapeHtml(h.oyaName || '')}</strong></div>
             </div>
             <div style="color:white;font-weight:700;font-size:0.95rem;margin-bottom:4px">${topicIcon} ${escapeHtml(h.topic || '')}</div>
             <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${horseTags}</div>
