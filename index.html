@@ -9473,8 +9473,18 @@ window.showRaceReveal = function(opts, done){
   // ゴール（チェッカー）＋テープ＋直線ハイライト
   var boardH=Math.min(170, 54+N*0+ (N>=7?150:130));
   // 掲示板高さ：着順3行ぶん固定
-  boardH=150;
+  boardH=178;
   var trackBottom=boardH+18;
+  // 馬の縦間隔：画面高さに合わせて均等に広げる（最後の馬が掲示板に重ならないよう計算）。
+  // 利用可能なトラック高さ ÷ (頭数-1) を間隔とし、広げすぎ・詰めすぎを上下限で抑える。
+  try{
+    var vh = window.innerHeight || document.documentElement.clientHeight || 720;
+    var horseH = 44; // 馬1頭の高さ（拡大後）
+    var safeTop = 36; // safe-area + タイトルぶんの余白
+    var usableH = vh - (lanesTop + safeTop) - trackBottom - horseH;
+    var dynGap = (N > 1) ? Math.floor(usableH / (N - 1)) : 0;
+    laneGap = Math.max(46, Math.min(74, dynGap)); // 間隔広め（下限46/上限74）
+  }catch(e){ laneGap = Math.max(46, Math.min(74, Math.floor(470/N))); }
   var fin=document.createElement('div');
   fin.style.cssText='position:absolute;top:'+ (lanesTop-6) +'px;bottom:'+ (trackBottom+8) +'px;right:40px;width:6px;background:repeating-linear-gradient(180deg,#fff 0 9px,#111 9px 18px);z-index:3;';
   ov.appendChild(fin);
@@ -9529,8 +9539,8 @@ window.showRaceReveal = function(opts, done){
     var row=document.createElement('div');
     row.id='rr-brow'+r;
     row.style.cssText='display:flex;align-items:center;gap:16px;font-family:monospace;opacity:0.18;transition:opacity 0.1s;';
-    row.innerHTML='<span style="color:#ffae00;font-size:21px;font-weight:700;width:54px;text-shadow:0 0 6px rgba(255,174,0,0.6)">'+r+'着</span>'+
-      '<span class="rr-bnum" style="color:#444;font-size:24px;font-weight:900;width:30px;text-align:center">--</span>';
+    row.innerHTML='<span style="color:#ffae00;font-size:24px;font-weight:700;width:58px;text-shadow:0 0 6px rgba(255,174,0,0.6)">'+r+'着</span>'+
+      '<span class="rr-bnum" style="color:#444;font-size:28px;font-weight:900;width:34px;text-align:center">--</span>';
     boardRows.appendChild(row);
   }
 
@@ -9591,7 +9601,7 @@ window.showRaceReveal = function(opts, done){
 
   function runnerHTML(color){
     var dk=darken(color), skin='#ffe0c0';
-    var jk='<svg width="27" height="32" viewBox="0 0 54 64" style="position:absolute;left:4px;top:-1px;z-index:3;overflow:visible;transform:scaleX(-1);transform-origin:center;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,0.3))">'
+    var jk='<svg width="30" height="35" viewBox="0 0 54 64" style="position:absolute;left:5px;top:-1px;z-index:3;overflow:visible;transform:scaleX(-1);transform-origin:center;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,0.3))">'
       +'<g class="rr-legB" style="transform-origin:24px 42px"><path d="M22 40 Q18 48 22 55 L26 54 Q24 47 27 41 Z" fill="'+dk+'"/><ellipse cx="22" cy="56" rx="4.4" ry="2.8" fill="#241810"/></g>'
       +'<g class="rr-legA" style="transform-origin:30px 42px"><path d="M28 40 Q30 50 27 58 L32 58 Q34 49 33 41 Z" fill="'+color+'"/><ellipse cx="29" cy="59" rx="4.6" ry="2.9" fill="#3a2616"/></g>'
       +'<ellipse cx="26" cy="36" rx="11" ry="9" fill="'+color+'" stroke="rgba(255,255,255,0.55)" stroke-width="1" transform="rotate(-8 26 36)"/>'
@@ -9605,7 +9615,7 @@ window.showRaceReveal = function(opts, done){
       +'<path d="M32 23.6 Q34.5 25.8 37 23.6" stroke="#c0604a" stroke-width="1.1" fill="none" stroke-linecap="round"/>'
       +'<path d="M25 18 Q26 10 34 10 Q42 10 42 18 Q34 15.5 25 18 Z" fill="'+color+'" stroke="#fff" stroke-width="1.1"/>'
       +'<ellipse cx="32" cy="12.5" rx="3" ry="1.6" fill="rgba(255,255,255,0.35)"/><rect x="39" y="16.5" width="6" height="2.5" rx="1.25" fill="'+dk+'"/></svg>';
-    return '<div style="position:relative;width:38px;height:40px;transform:scaleX(-1)"><div style="position:absolute;left:0;bottom:0;font-size:30px;line-height:1">🐎</div>'+jk+'</div>';
+    return '<div style="position:relative;width:42px;height:44px;transform:scaleX(-1)"><div style="position:absolute;left:0;bottom:0;font-size:33px;line-height:1">🐎</div>'+jk+'</div>';
   }
 
   // ---- 馬の生成 ----
@@ -9636,7 +9646,7 @@ window.showRaceReveal = function(opts, done){
     else { h.early=0.8; h.lateBoost=1.35; }
     var row=document.createElement('div');
     row.style.cssText='position:absolute;left:'+startLeft+'px;top:'+(lanesTop+i*laneGap)+'px;display:flex;align-items:center;gap:3px;will-change:left;';
-    var badge='<div class="rr-badge" style="opacity:0;transition:opacity 0.3s;width:19px;height:19px;border-radius:50%;background:'+color+';color:#fff;font-family:sans-serif;font-weight:900;font-size:11px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);flex-shrink:0">'+(i+1)+'</div>';
+    var badge='<div class="rr-badge" style="opacity:0;transition:opacity 0.3s;width:21px;height:21px;border-radius:50%;background:'+color+';color:#fff;font-family:sans-serif;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);flex-shrink:0">'+(i+1)+'</div>';
     var dust='<div class="rr-dust" style="font-size:11px;opacity:0;margin-left:-3px">💨</div>';
     row.innerHTML=dust+'<div class="rr-run">'+runnerHTML(color)+'</div>'+badge;
     track.appendChild(row);
