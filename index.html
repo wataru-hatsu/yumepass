@@ -190,7 +190,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .privacy-cover.hidden{display:none;}
 .privacy-icon{font-size:5rem;margin-bottom:20px;}
 .privacy-name{font-size:1.5rem;font-weight:900;color:white;margin-bottom:8px;}
-.privacy-msg{color:#aaa;font-size:0.85rem;margin-bottom:30px;line-height:1.8;}
+.privacy-msg{color:#f0e8d4;font-size:1.05rem;font-weight:700;margin-bottom:30px;line-height:1.9;}
 .oya-badge{display:inline-block;background:var(--oya);color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
 .ko-badge{display:inline-block;background:#2a7a2a;color:white;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;}
 .round-header{background:linear-gradient(135deg,#1a1a1a,#2a2418);color:var(--gold);box-sizing:border-box;text-align:center;padding:0 104px;padding-top:var(--safe-top);height:var(--band-total);min-height:var(--band-total);display:flex;align-items:center;justify-content:center;font-size:0.84rem;letter-spacing:2px;font-weight:800;border-bottom:2px solid var(--gold);position:fixed;top:0;left:0;right:0;z-index:999;}
@@ -1391,9 +1391,9 @@ body.modal-open{overflow:hidden !important;}
     <div id="off-combo-info" style="display:none;font-size:0.85rem;background:rgba(245,200,66,0.15);border:1px solid var(--gold-dark);border-radius:8px;padding:8px 12px;margin:8px 0;text-align:center"></div>
     <div class="panel" id="off-betamount-panel">
       <div class="panel-title" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">💴 ベット額 <button onclick="openScorePopup()" style="margin-left:auto;flex-shrink:0;background:rgba(15,15,18,0.9);border:1px solid rgba(245,200,66,0.6);color:#f5c842;font-size:0.74rem;font-weight:800;border-radius:14px;padding:4px 10px;cursor:pointer;white-space:nowrap;letter-spacing:0;text-transform:none">📊 得点</button></div>
-      <div id="bet-hint" style="font-size:0.75rem;color:#444;margin-bottom:8px">最低500点 / 1点単位でOK</div>
+      <div id="bet-hint" style="font-size:0.9rem;color:#1a1a1a;font-weight:700;margin-bottom:8px">最低500点 / 1点単位でOK</div>
       <div id="bet-display" onclick="focusBetInput()" style="background:#1a1a1a;border-radius:10px;padding:14px 16px;text-align:right;font-size:1.8rem;font-weight:900;color:var(--gold);letter-spacing:2px;min-height:58px;margin-bottom:6px;cursor:text">0</div>
-      <div style="text-align:center;font-size:0.72rem;color:#555;margin-bottom:8px">👆 上の枠をタップして数字を入力</div>
+      <div style="text-align:center;font-size:0.86rem;color:#1a1a1a;font-weight:700;margin-bottom:8px">👆 上の枠をタップして数字を入力</div>
       <input id="bet-native-input" inputmode="numeric" pattern="[0-9]*" oninput="onBetNativeInput(this.value)" style="position:absolute;opacity:0;height:1px;width:1px;pointer-events:none;left:-9999px">
       <div id="point-preset-btns" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
       <div id="bet-keypad" style="display:none;grid-template-columns:repeat(3,1fr);gap:8px"></div>
@@ -4142,6 +4142,9 @@ function renderOfflineCart(){
   if(cart.length===0){
     panel.style.display='none';
     if(finBtn) finBtn.style.display='none';
+    // カートが空＝控除なし。持ち点を満額表示に戻す
+    const ppEl0=document.getElementById('bet-player-points');
+    if(ppEl0) ppEl0.textContent=p.points.toLocaleString();
     return;
   }
   panel.style.display='';
@@ -4169,7 +4172,7 @@ function renderOfflineCart(){
         <span style="background:var(--gold-dark);color:#fff;font-size:0.75rem;font-weight:900;padding:2px 9px;border-radius:10px;white-space:nowrap">${betNames[u.betType]||u.betType}${methodName}</span>
         <span style="display:inline-flex;align-items:center">${selDisp}</span>
         <span style="color:#8a6500;font-weight:900;font-size:0.85rem;white-space:nowrap">${u.totalAmount.toLocaleString()}点</span>
-        <span style="font-size:0.6rem;color:#aaa;font-weight:600;margin-left:auto">👆詳細</span>
+        <span style="font-size:0.78rem;color:#1a1a1a;font-weight:700;margin-left:auto">👆詳細</span>
       </div>
       <div style="display:flex;gap:6px;margin-top:7px">
         <button onclick="reviewOfflineCartItem(${i})" style="flex:1;background:#fff7e0;border:1px solid #d8b84a;color:#8a6500;border-radius:6px;padding:6px 10px;font-size:0.78rem;font-weight:900;cursor:pointer">✏️ 見直し</button>
@@ -4187,7 +4190,10 @@ function renderOfflineCart(){
   });
   const total=offCartTotal(koIdx);
   const remaining=p.points-total;
-  if(totalEl) totalEl.innerHTML=`<span style="color:#5a4500">合計 ${total.toLocaleString()}点 / 持ち点 ${p.points.toLocaleString()}点</span>　<span style="color:${remaining<0?'#c0392b':'#1a7a1a'}">残り ${remaining.toLocaleString()}点</span>`;
+  if(totalEl) totalEl.innerHTML=`<span style="color:#5a4500">合計 ${total.toLocaleString()}点</span>　/　<span style="color:${remaining<0?'#c0392b':'#1a7a1a'}">残り ${remaining.toLocaleString()}点</span>`;
+  // 子情報パネルの持ち点表示も、カート分を引いた「残り」に（他の人の賭けは公開まで見えない）
+  const ppEl=document.getElementById('bet-player-points');
+  if(ppEl) ppEl.textContent=Math.max(0,remaining).toLocaleString();
 }
 
 // カート確定 → multiBets として currentBets に積み、次のプレイヤーへ
@@ -4300,7 +4306,7 @@ function showOyaResultScreen(){
   updateResultPreview();goTo('screen-result');
 }
 function selectHorseForResult(idx){const p=resultSelections.indexOf(idx);if(p>=0)resultSelections.splice(p,1);else{if(resultSelections.length>=3)return;resultSelections.push(idx);}renderHorseGrid('result-horse-grid',resultSelections,selectHorseForResult);updateResultPreview();if(resultSelections.length>=3){setTimeout(()=>{const t=document.getElementById('result-confirm-wrap');if(t&&typeof t.scrollIntoView==='function')t.scrollIntoView({behavior:'smooth',block:'center'});},80);}}
-function updateResultPreview(){const c=document.getElementById('result-preview-content');const btn=document.getElementById('result-confirm-btn');const t=state.selectedTopic;if(!resultSelections.length){c.innerHTML='<div class="empty">1位・2位・3位の3つを選んでください</div>';btn.disabled=true;btn.textContent='上位3つを選んでください';return;}c.innerHTML=resultSelections.map((hi,i)=>`<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]||''}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700">${t.horses[hi]}</div></div>`).join('');if(resultSelections.length<3){btn.disabled=true;const remaining=3-resultSelections.length;const positions=['1位','2位','3位'];const needed=positions.slice(resultSelections.length).join('・');btn.innerHTML=`あと${remaining}つ選んでください<br>（${needed}）`;}else{btn.disabled=false;btn.textContent='順位を決定する';}}
+function updateResultPreview(){const c=document.getElementById('result-preview-content');const btn=document.getElementById('result-confirm-btn');const t=state.selectedTopic;if(!resultSelections.length){c.innerHTML='<div style="text-align:center;color:#1a1a1a;font-weight:700;padding:24px 10px;font-size:1rem">1位・2位・3位の3つを選んでください</div>';btn.disabled=true;btn.textContent='上位3つを選んでください';return;}c.innerHTML=resultSelections.map((hi,i)=>`<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]||''}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700">${t.horses[hi]}</div></div>`).join('');if(resultSelections.length<3){btn.disabled=true;const remaining=3-resultSelections.length;const positions=['1位','2位','3位'];const needed=positions.slice(resultSelections.length).join('・');btn.innerHTML=`あと${remaining}つ選んでください<br>（${needed}）`;}else{btn.disabled=false;btn.textContent='順位を決定する';}}
 
 function goToReveal(){
   try {
@@ -4342,7 +4348,7 @@ function _doGoToReveal(){
     if(bet.skipped||bet.amount===0){
       return`<div class="reveal-card" style="opacity:0.5"><div class="reveal-card-header"><span class="reveal-card-name">${p.name} <span class="ko-badge">子</span></span><span style="color:#aaa;font-size:0.85rem;font-weight:700">— 見送り</span></div></div>`;
     }
-    const hint = `<span style="font-size:0.62rem;color:#aaa;font-weight:600;white-space:nowrap">👆 詳細</span>`;
+    const hint = `<span style="font-size:0.78rem;color:#f0e8d4;font-weight:700;white-space:nowrap">👆 詳細</span>`;
     // コンパクト表示（券種チップ＋点数）。詳細は長押し。
     let summaryChips;
     if(Array.isArray(bet.multiBets) && bet.multiBets.length>1){
@@ -4361,10 +4367,14 @@ function _doGoToReveal(){
     const betObj = (Array.isArray(bet.multiBets)) ? bet : { betType:bet.betType, buyMethod:bet.buyMethod||'simple', selections:bet.selections, combinations:bet.combinations, unitAmount:bet.unitAmount, amount:bet.amount, structure:bet.structure||null };
     attachBakenLongPress(el, betObj, rvHorses, p.name, { bottomHtml:`合計賭け金：<strong style="color:var(--gold)">${bet.amount.toLocaleString()}点</strong>` });
   });
-  goTo('screen-reveal');
-}
-
-function calculateResults(){
+  // 賭け公開の前にパドック＋締め切り演出を挟む
+  if(typeof window.showPaddockClosing === 'function'){
+    const hc=(state.selectedTopic && state.selectedTopic.horses) ? state.selectedTopic.horses.length : 6;
+    window.showPaddockClosing({ horseCount: hc }, function(){ goTo('screen-reveal'); });
+  } else {
+    goTo('screen-reveal');
+  }
+}function calculateResults(){
   const [r1,r2,r3] = state.actualResult;
   const oya = state.players[state.oyaIndex];
   const oyaBonusRate = state.oyaBonusRate || 0;
@@ -5262,7 +5272,41 @@ function nextRound(){
   }
 }
 
-function renderScoreTable(tid){const el=document.getElementById(tid);if(!el)return;const sorted=[...state.players].map((p,i)=>({...p,oi:i})).sort((a,b)=>b.points-a.points);el.innerHTML=`<tr><th>順位</th><th>プレイヤー</th><th>点数</th><th>役割</th></tr>${sorted.map((p,i)=>`<tr class="${i===0?'leader':''}"><td><span class="rank-badge rank-${i<3?i+1:'other'}">${i+1}</span></td><td style="text-align:left">${p.name}</td><td style="font-weight:700">${p.points.toLocaleString()}</td><td>${p.oi===state.oyaIndex?'<span class="oya-badge">親</span>':'<span class="ko-badge">子</span>'}</td></tr>`).join('')}`;}
+function renderScoreTable(tid, opts){
+  const el=document.getElementById(tid);if(!el)return;
+  opts=opts||{};
+  const showDeduct=!!opts.showBetDeduction;
+  let curKoIdx=-1, myBetAmt=0;
+  if(showDeduct){
+    try{
+      curKoIdx=state.koPlayers[state.currentBetPlayerIndex];
+      const cartT=(typeof offCartTotal==='function')?offCartTotal(curKoIdx):0;
+      let inputPending=0;
+      const raw=parseInt(typeof betInputVal!=='undefined'?betInputVal:'0')||0;
+      if(raw>0){
+        let combos=1;
+        try{ if(typeof computeOffCombinations==='function'){ const c=computeOffCombinations(); combos=(Array.isArray(c)&&c.length)?c.length:1; } }catch(e){}
+        inputPending=raw*combos;
+      }
+      myBetAmt=cartT+inputPending;
+    }catch(e){ myBetAmt=0; }
+  }
+  const sorted=[...state.players].map((p,i)=>{
+    let pts=p.points; let deducted=false;
+    if(showDeduct && i===curKoIdx && myBetAmt>0){ pts=Math.max(0,pts-myBetAmt); deducted=true; }
+    return {...p,oi:i,dispPts:pts,deducted};
+  }).sort((a,b)=>b.dispPts-a.dispPts);
+  el.innerHTML='<tr><th>\u9806\u4f4d</th><th>\u30d7\u30ec\u30a4\u30e4\u30fc</th><th>\u70b9\u6570</th><th>\u5f79\u5272</th></tr>'+sorted.map((p,i)=>'<tr class="'+(i===0?'leader':'')+'"><td><span class="rank-badge rank-'+(i<3?i+1:'other')+'">'+(i+1)+'</span></td><td style="text-align:left">'+p.name+'</td><td style="font-weight:700">'+p.dispPts.toLocaleString()+(p.deducted?' <span style="color:#c0392b;font-size:0.62rem;font-weight:700">(\u8ced\u3051\u5f8c)</span>':'')+'</td><td>'+(p.oi===state.oyaIndex?'<span class="oya-badge">\u89aa</span>':'<span class="ko-badge">\u5b50</span>')+'</td></tr>').join('');
+  let note=document.getElementById(tid+'-note');
+  if(showDeduct){
+    if(!note){ note=document.createElement('div'); note.id=tid+'-note'; note.style.cssText='font-size:0.72rem;color:#8a6500;margin-top:8px;line-height:1.5'; if(el.parentElement) el.parentElement.appendChild(note); }
+    if(myBetAmt>0){
+      note.innerHTML='\u{1F4A1} \u3042\u306a\u305f\u306e\u5f97\u70b9\u306f\u4eca\u56de\u306e\u8ced\u3051\u984d\uff08'+myBetAmt.toLocaleString()+'\u70b9\uff09\u3092\u5f15\u3044\u305f\u5024\u3067\u3059\u3002<br>\u4ed6\u306e\u4eba\u306e\u8ced\u3051\u984d\u306f\u300c\u8ced\u3051\u516c\u958b\u300d\u307e\u3067\u5206\u304b\u3089\u306a\u3044\u305f\u3081\u3001\u307e\u3060\u5f15\u304b\u308c\u3066\u3044\u307e\u305b\u3093\u3002';
+    } else {
+      note.innerHTML='\u{1F4A1} \u8ced\u3051\u308b\u3068\u3001\u305d\u306e\u5206\u3060\u3051\u3042\u306a\u305f\u306e\u5f97\u70b9\u304b\u3089\u5f15\u304b\u308c\u307e\u3059\u3002<br>\u4ed6\u306e\u4eba\u306e\u8ced\u3051\u984d\u306f\u300c\u8ced\u3051\u516c\u958b\u300d\u307e\u3067\u5206\u304b\u308a\u307e\u305b\u3093\u3002';
+    }
+  } else if(note){ note.innerHTML=''; }
+}
 
 // 📊 得点ポップアップ（音量ボタンの隣のショートカット）。オンライン/オフラインを自動判定
 function openScorePopup(){
@@ -5290,7 +5334,8 @@ function openScorePopup(){
       const inBetting = onBettingScreen || (og && og.phase === 'betting');
       renderOnline('popup-score-table', og, { showBetDeduction: inBetting });
     } else if(hasOffline){
-      renderScoreTable('popup-score-table');
+      const offBetting = (function(){ const el=document.getElementById('screen-bet'); return el && el.classList.contains('active'); })();
+      renderScoreTable('popup-score-table', { showBetDeduction: offBetting });
     } else if(tbl){
       tbl.innerHTML='<tr><td style="padding:14px;color:#444">まだ得点がありません</td></tr>';
     }
@@ -7646,7 +7691,7 @@ function updateOyaPreview(){
   if(!c || !topic) return;
   const sel = window.onlineBet.oyaSelections;
   if(!sel.length){
-    c.innerHTML = '<div class="empty">1位・2位・3位の3つを選んでください</div>';
+    c.innerHTML = '<div style="text-align:center;color:#1a1a1a;font-weight:700;padding:24px 10px;font-size:1rem">1位・2位・3位の3つを選んでください</div>';
     if(btn){
       btn.disabled = true;
       btn.textContent = '📢 上位3つを選んでください';
@@ -8748,6 +8793,21 @@ function updateBetWaitRevealButton(game){
 // ============================================================
 
 function enterOnlineReveal(game){
+  // 演出中は二重処理を防ぐ
+  if(window.online._paddockShowing) return;
+  // 賭け公開の前にパドック＋締め切り演出（このラウンドで初回だけ）
+  const padKey = `r${game.currentRound || 1}_paddock`;
+  if(window.online._lastPaddockKey !== padKey && typeof window.showPaddockClosing === 'function'){
+    window.online._lastPaddockKey = padKey;
+    window.online._paddockShowing = true;
+    const topic = game.selectedTopic;
+    const hc = (topic && topic.horses) ? topic.horses.length : 6;
+    window.showPaddockClosing({ horseCount: hc }, function(){ window.online._paddockShowing = false; _enterOnlineRevealBody(game); });
+    return;
+  }
+  _enterOnlineRevealBody(game);
+}
+function _enterOnlineRevealBody(game){
   goTo('screen-online-reveal');
   document.getElementById('orv-round-label').textContent = `ROUND ${game.currentRound || 1} REVEAL`;
   // 初回遷移時のみ音
@@ -9524,6 +9584,129 @@ window.showRaceReveal = function(opts, done){
 };
 
 /* ===================== 全員ハズレ演出（的中馬券なし） ===================== */
+
+/* window.showPaddockClosing(opts, done)
+   opts = { horseCount } パドック周回＋「ただいまをもちまして 勝負を締め切りました」演出。
+   「賭け公開へ」ボタンを押すと done() を呼ぶ。
+*/
+window.showPaddockClosing = function(opts, done){
+ try{
+  opts = opts || {};
+  var N = Math.max(2, Math.min(8, parseInt(opts.horseCount) || 6));
+  var colors=['#c0392b','#3498db','#27ae60','#f39c12','#9b59b6','#16a085','#e84393','#7f8c8d'];
+  function darken(hex){var c=hex.replace('#','');var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return 'rgb('+Math.round(r*0.62)+','+Math.round(g*0.62)+','+Math.round(b*0.62)+')';}
+  function runnerHTML(color){
+    var dk=darken(color), skin='#ffe0c0';
+    var jk='<svg width="25" height="30" viewBox="0 0 54 64" style="position:absolute;left:5px;top:-2px;z-index:3;overflow:visible;transform:scaleX(-1);transform-origin:center;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,0.3))">'
+      +'<g class="legB" style="transform-origin:24px 42px"><path d="M22 40 Q18 48 22 55 L26 54 Q24 47 27 41 Z" fill="'+dk+'"/><ellipse cx="22" cy="56" rx="4.4" ry="2.8" fill="#241810"/></g>'
+      +'<g class="legA" style="transform-origin:30px 42px"><path d="M28 40 Q30 50 27 58 L32 58 Q34 49 33 41 Z" fill="'+color+'"/><ellipse cx="29" cy="59" rx="4.6" ry="2.9" fill="#3a2616"/></g>'
+      +'<ellipse cx="26" cy="36" rx="11" ry="9" fill="'+color+'" stroke="rgba(255,255,255,0.55)" stroke-width="1" transform="rotate(-8 26 36)"/>'
+      +'<rect x="32" y="29" width="11" height="4.6" rx="2.3" fill="'+color+'" transform="rotate(16 32 31)"/><circle cx="43" cy="34" r="2.5" fill="'+skin+'"/>'
+      +'<path d="M45 34 Q51 38 54 44" stroke="#3a2a18" stroke-width="1.2" fill="none"/>'
+      +'<circle cx="33" cy="20" r="8.6" fill="'+skin+'"/><circle cx="28.5" cy="22.5" r="2.4" fill="rgba(255,150,150,0.6)"/><circle cx="38" cy="22" r="2.2" fill="rgba(255,150,150,0.55)"/>'
+      +'<ellipse cx="31" cy="19" rx="2.3" ry="2.9" fill="#fff"/><ellipse cx="37" cy="19" rx="2.3" ry="2.9" fill="#fff"/>'
+      +'<circle cx="31.4" cy="19.6" r="1.7" fill="#3a2418"/><circle cx="37.4" cy="19.6" r="1.7" fill="#3a2418"/>'
+      +'<circle cx="32" cy="18.7" r="0.7" fill="#fff"/><circle cx="38" cy="18.7" r="0.7" fill="#fff"/>'
+      +'<path d="M32 23.6 Q34.5 25.8 37 23.6" stroke="#c0604a" stroke-width="1.1" fill="none" stroke-linecap="round"/>'
+      +'<path d="M25 18 Q26 10 34 10 Q42 10 42 18 Q34 15.5 25 18 Z" fill="'+color+'" stroke="#fff" stroke-width="1.1"/>'
+      +'<ellipse cx="32" cy="12.5" rx="3" ry="1.6" fill="rgba(255,255,255,0.35)"/><rect x="39" y="16.5" width="6" height="2.5" rx="1.25" fill="'+dk+'"/></svg>';
+    return '<div class="runner-inner" style="position:relative;width:38px;height:40px;transform:scaleX(-1)"><div style="position:absolute;left:0;bottom:0;font-size:28px;line-height:1">\uD83D\uDC0E</div>'+jk+'</div>';
+  }
+
+  // オーバーレイ生成
+  var ov=document.createElement('div');
+  ov.id='paddock-closing-ov';
+  ov.style.cssText='position:fixed;inset:0;z-index:9994;overflow:hidden;background:radial-gradient(ellipse at center,#3a8a3e 0%,#2f7d36 55%,#1f5a26 100%);';
+  ov.innerHTML=''
+    +'<div style="position:absolute;inset:0;background-image:repeating-radial-gradient(circle at center, rgba(255,255,255,0.04) 0 18px, rgba(0,0,0,0.04) 18px 36px);pointer-events:none;"></div>'
+    +'<div id="pc-ring" style="position:absolute;top:50%;left:50%;width:min(86vw,360px);height:min(74vh,420px);border:14px solid rgba(180,140,70,0.35);border-radius:50%;transform:translate(-50%,-50%);box-shadow:inset 0 0 30px rgba(0,0,0,0.25);"></div>'
+    +'<div id="pc-ring2" style="position:absolute;top:50%;left:50%;width:min(80vw,330px);height:min(68vh,388px);border:2px dashed rgba(255,255,255,0.25);border-radius:50%;transform:translate(-50%,-50%);"></div>'
+    +'<div id="pc-msg" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.6);width:min(64vw,230px);text-align:center;z-index:20;opacity:0;transition:opacity 0.6s, transform 0.6s;">'
+      +'<div style="background:rgba(10,8,4,0.82);border:2px solid #f5c842;border-radius:12px;padding:11px 12px;box-shadow:0 0 24px rgba(245,200,66,0.4);">'
+        +'<div style="font-size:0.82rem;color:#ffe8a0;font-weight:700;line-height:1.5;letter-spacing:0.5px;white-space:nowrap;">\u305F\u3060\u3044\u307E\u3092\u3082\u3061\u307E\u3057\u3066</div>'
+        +'<div style="font-size:1.02rem;color:#fff;font-weight:900;line-height:1.4;letter-spacing:0.5px;margin-top:4px;text-shadow:0 0 10px rgba(245,200,66,0.6);white-space:nowrap;">\u52DD\u8CA0\u3092\u7DE0\u3081\u5207\u308A\u307E\u3057\u305F</div>'
+      +'</div>'
+    +'</div>'
+    +'<div id="pc-horses" style="position:absolute;inset:0;z-index:10;"></div>'
+    +'<div id="pc-btn-wrap" style="position:absolute;right:16px;bottom:calc(env(safe-area-inset-bottom) + 28px);z-index:25;opacity:0;transform:translateY(10px);transition:opacity 0.5s, transform 0.5s;pointer-events:none;">'
+      +'<button id="pc-btn" style="background:linear-gradient(135deg, rgba(255,255,255,0.28), rgba(180,240,190,0.14));color:#fff;border:1.5px solid rgba(255,255,255,0.55);border-radius:16px;font-weight:800;font-size:1rem;padding:14px 24px;box-shadow:0 6px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);text-shadow:0 1px 4px rgba(0,0,0,0.4);cursor:pointer;letter-spacing:0.5px;">\u8CED\u3051\u516C\u958B\u3078 \u2192</button>'
+    +'</div>';
+  document.body.appendChild(ov);
+
+  var layer=ov.querySelector('#pc-horses');
+  var centerMsg=ov.querySelector('#pc-msg');
+  var btnWrap=ov.querySelector('#pc-btn-wrap');
+  var btn=ov.querySelector('#pc-btn');
+  var raf=null; var timers=[];
+  function clearAll(){ timers.forEach(clearTimeout); timers=[]; if(raf){cancelAnimationFrame(raf);raf=null;} }
+
+  // 音（締め切りゴング＋ファンファーレ）。サウンドOFFなら鳴らさない
+  function soundOn(){ try{ return (window.SFX && typeof window.SFX.isEnabled==='function') ? !!window.SFX.isEnabled() : true; }catch(e){ return true; } }
+  var AC=null;
+  function ac(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return AC; }
+  function gong(){ var a=ac(); if(!a) return; var t0=a.currentTime; [160,240,327,480].forEach(function(f,i){ var o=a.createOscillator(),g=a.createGain(); o.type='sine'; o.frequency.value=f; var amp=0.22/(i+1); g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(amp,t0+0.012); g.gain.exponentialRampToValueAtTime(0.0001,t0+1.6); o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0+1.7); }); }
+  function fanfare(){ var a=ac(); if(!a) return; var t0=a.currentTime+0.18; [{f:523,t:0,d:0.16},{f:659,t:0.14,d:0.16},{f:784,t:0.28,d:0.16},{f:1047,t:0.44,d:0.5}].forEach(function(n){ var o=a.createOscillator(),g=a.createGain(); var st=t0+n.t; o.type='triangle'; o.frequency.value=n.f; g.gain.setValueAtTime(0.0001,st); g.gain.exponentialRampToValueAtTime(0.2,st+0.02); g.gain.exponentialRampToValueAtTime(0.0001,st+n.d); o.connect(g); g.connect(a.destination); o.start(st); o.stop(st+n.d+0.05); }); }
+  function closingSound(){ if(!soundOn()) return; try{ var a=ac(); if(a&&a.state==='suspended'){a.resume();} }catch(e){} gong(); fanfare(); }
+
+  var horses=[];
+  function build(){
+    layer.innerHTML=''; horses=[];
+    var W=ov.clientWidth||window.innerWidth, H=ov.clientHeight||window.innerHeight;
+    var cx=W/2, cy=H/2 - 16;
+    var rx=Math.min(W*0.39,140), ry=Math.min(H*0.28,150);
+    for(var i=0;i<N;i++){
+      var color=colors[i%8];
+      var el=document.createElement('div');
+      el.style.cssText='position:absolute;left:0;top:0;will-change:transform;';
+      el.innerHTML='<div style="position:relative">'+runnerHTML(color)
+        +'<div style="position:absolute;left:50%;top:-14px;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:'+color+';color:#fff;font-weight:900;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.4)">'+(i+1)+'</div></div>';
+      layer.appendChild(el);
+      horses.push({ el:el, phase:(i/N)*Math.PI*2, cx:cx, cy:cy, rx:rx, ry:ry,
+        legA:el.querySelector('.legA'), legB:el.querySelector('.legB'), inner:el.querySelector('.runner-inner') });
+    }
+    centerMsg.style.top=(cy+10)+'px';
+  }
+  function animate(){
+    var startT=null; var speed=0.5;
+    function frame(ts){
+      if(startT===null) startT=ts;
+      var elapsed=(ts-startT)/1000;
+      horses.forEach(function(h,i){
+        var ang=h.phase+elapsed*speed;
+        var x=h.cx+Math.cos(ang)*h.rx;
+        var y=h.cy+Math.sin(ang)*h.ry;
+        var dxdt=-Math.sin(ang)*h.rx;
+        var faceLeft=dxdt<0;
+        var g=elapsed*7+i;
+        var sw=Math.sin(g*1.6)*12;
+        if(h.legA) h.legA.style.transform='rotate('+sw+'deg)';
+        if(h.legB) h.legB.style.transform='rotate('+(-sw)+'deg)';
+        var bob=Math.sin(g)*2;
+        h.el.style.transform='translate('+(x-19)+'px,'+(y-20+bob)+'px)';
+        h.el.style.zIndex=10+Math.round(y);
+        if(h.inner) h.inner.style.transform=faceLeft?'scaleX(1)':'scaleX(-1)';
+      });
+      raf=requestAnimationFrame(frame);
+    }
+    raf=requestAnimationFrame(frame);
+  }
+
+  var finished=false;
+  function finish(){
+    if(finished) return; finished=true;
+    clearAll();
+    try{ if(ov && ov.parentNode) ov.parentNode.removeChild(ov); }catch(e){}
+    if(typeof done==='function'){ try{ done(); }catch(e){ console.error('paddock done error',e); } }
+  }
+  btn.onclick=finish;
+
+  build();
+  animate();
+  timers.push(setTimeout(function(){ centerMsg.style.opacity='1'; centerMsg.style.transform='translate(-50%,-50%) scale(1)'; closingSound(); }, 1500));
+  timers.push(setTimeout(function(){ btnWrap.style.opacity='1'; btnWrap.style.transform='translateY(0)'; btnWrap.style.pointerEvents='auto'; }, 2500));
+ }catch(e){ console.error('showPaddockClosing error', e); if(typeof done==='function') done(); }
+};
+
 /* window.showNoWinnerEffect(opts, done)
    opts = { raceNo, order:[r1,r2,r3], horseColors? }  着順を掲示板に確定表示した状態から波乱演出
 */
