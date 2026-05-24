@@ -4476,8 +4476,10 @@ function _doGoToReveal(){
   const roundLog = {
     round: state.currentRound,
     topic: state.selectedTopic.title,
+    topicIcon: state.selectedTopic.icon || '🎯',
     topicHorses: (state.selectedTopic.horses||[]).slice(),
     oyaName: oya.name,
+    oyaResult: (state.actualResult||[]).slice(),
     result: state.actualResult.map(i => state.selectedTopic.horses[i]),
     playerResults: [],
     oyaBonus: 0,
@@ -5258,10 +5260,15 @@ function triggerOfflineEffects(log){
     // 誰か実際に賭けた人がいて、的中ゼロ＝全員ハズレ演出
     const anyBet = (log.playerResults || []).some(r => !r.skipped && r.hitType !== '親' && (r.amount || 0) > 0);
     if(anyBet && typeof window.showNoWinnerEffect === 'function'){
-      window.showNoWinnerEffect({
-        raceNo: log.round,
-        order: (state.actualResult || []).slice(0,3)
-      });
+      // レース演出が完全に消えてから出すため、当たり演出と同様に遅延発火する
+      setTimeout(() => {
+        try{
+          window.showNoWinnerEffect({
+            raceNo: log.round,
+            order: (state.actualResult || []).slice(0,3)
+          });
+        }catch(e){ console.error('showNoWinnerEffect call error:', e); }
+      }, 0);
     }
     return;
   }
@@ -5511,47 +5518,54 @@ function renderFinalScreen(){
 
   const histContainer=document.getElementById('final-history');
   histContainer.innerHTML='';
-  state.history.forEach(r=>{
-    // お題オブジェクトを取得（長押し用）
-    const topicObj=getAllTopics().find(t=>t.title===r.topic);
-    const div=document.createElement('div');
-    div.className='history-round';
-    div.innerHTML=`
-      <div class="history-round-header" style="cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center">
-        <span>Round ${r.round}：${r.topic}（親：${r.oyaName}）</span>
-        ${topicObj?'<span style="font-size:0.65rem;color:#aaa;white-space:nowrap;margin-left:8px">長押し/右クリックで選択肢確認</span>':''}
-      </div>
-      <div class="history-round-body">
-        <div style="font-size:0.75rem;color:#444;margin-bottom:4px">結果：${r.result.map((n,i)=>`${i+1}位 ${n}`).join(' / ')}</div>
-        <div style="font-size:0.66rem;color:#aaa;margin-bottom:4px">各行をタップで馬券の詳細</div>
-        ${r.playerResults.map((p,pi)=>{const win=!p.skipped&&((p.payout&&p.payout>0)||p.change>0);const net=(typeof p.change==='number')?p.change:((p.payout||0)-(p.amount||0));const disp=p.skipped?'<span style="color:#aaa">見送り</span>':(win?`<span style="color:var(--green-light);font-weight:700">🎯 +${net.toLocaleString()}</span>`:`<span style="color:#c0392b;font-weight:700">当選なし ${net.toLocaleString()}</span>`);return `<div class="off-fin-pres-row" data-pi="${pi}" style="display:flex;justify-content:space-between;font-size:0.8rem;padding:4px 0;border-bottom:1px solid #f0e8d0;cursor:pointer"><span>${p.name} <span style="font-size:0.6rem;color:#bbb">👆</span></span>${disp}</div>`;}).join('')}
-        ${r.oyaBonus>0&&state.oyaBonusRate>0?`<div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:2px 0;color:var(--oya-light)"><span>${r.oyaName}（親ボーナス）</span><span style="font-weight:700">+${r.oyaBonus.toLocaleString()}</span></div>`:''}
-      </div>
-    `;
-    // 各プレイヤー行タップ → 馬券詳細（当選分のみ＋収支）
-    const rhorses=(r.topicHorses&&r.topicHorses.length)?r.topicHorses:((topicObj&&topicObj.horses)||[]);
-    div.querySelectorAll('.off-fin-pres-row').forEach(row=>{
-      row.addEventListener('click',(e)=>{
-        e.stopPropagation();
-        const pi=parseInt(row.getAttribute('data-pi'));
-        const pr=r.playerResults[pi];
-        if(!pr) return;
-        uiConfirm({ icon:'🎫', title:`${pr.name||''} さんの結果`, bodyHtml: resultDetailHtml(pr, rhorses), okText:'閉じる', cancelText:null });
+  if(!state.history.length){
+    histContainer.innerHTML='<div style="text-align:center;color:#aaa;padding:14px;font-size:0.85rem">履歴がありません</div>';
+  } else {
+    histContainer.innerHTML = state.history.map(h=>{
+      const topicIcon = h.topicIcon || '🎯';
+      const horses = h.topicHorses || [];
+      const horseTags = horses.map((name,i)=>`<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);padding:2px 7px;border-radius:10px;font-size:0.8rem;color:#fff"><span class="ibadge ${HC[i]}" style="width:17px;height:17px;font-size:0.62rem">${i+1}</span>${escapeHtml(name)}</span>`).join('');
+      const oyaResult = (h.oyaResult||[]);
+      const oyaRanking = oyaResult.map((hi,i)=>`<div style="display:flex;align-items:center;gap:6px;padding:4px 0"><span style="font-size:0.95rem;width:24px">${['🥇','🥈','🥉'][i]}</span><span class="ibadge ${HC[hi]}" style="width:23px;height:23px;font-size:0.78rem">${hi+1}</span><span style="color:white;font-weight:700;font-size:0.92rem">${escapeHtml(horses[hi]||'')}</span></div>`).join('');
+      return `<div class="off-fin-round-card" data-round="${h.round}" style="margin-bottom:12px;padding:10px;background:#1f1f1f;border:1px solid #444;border-radius:8px;cursor:pointer">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div style="color:var(--gold);font-weight:900;font-size:0.85rem">ROUND ${h.round}</div>
+          <div style="color:#fff;font-size:0.85rem;font-weight:700">親：<strong style="color:#fff">${escapeHtml(h.oyaName||'')}</strong></div>
+        </div>
+        <div style="color:white;font-weight:700;font-size:0.95rem;margin-bottom:4px">${topicIcon} ${escapeHtml(h.topic||'')}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${horseTags}</div>
+        <div style="background:#0f0f0f;border-radius:6px;padding:6px 10px">
+          <div style="color:var(--gold);font-size:0.8rem;font-weight:700;margin-bottom:2px">親が選んだ順位</div>
+          ${oyaRanking}
+        </div>
+        <div style="text-align:right;margin-top:6px;font-size:0.78rem;color:var(--gold);font-weight:700">👆 タップで子の結果</div>
+      </div>`;
+    }).join('');
+    // 各ラウンドカードのタップで子の結果ポップアップ（オンラインと同じリッチ表示）
+    histContainer.querySelectorAll('.off-fin-round-card').forEach(card=>{
+      card.addEventListener('click', ()=>{
+        const rnd=parseInt(card.getAttribute('data-round'));
+        const h=state.history.find(x=>x.round===rnd);
+        if(!h || !Array.isArray(h.playerResults)) return;
+        const horses=(h.topicHorses)||[];
+        const oyaRank=(h.oyaResult||[]).map((hi,i)=>`<div style="display:flex;align-items:center;gap:6px;padding:3px 0"><span style="font-size:0.95rem;width:24px">${['🥇','🥈','🥉'][i]}</span><span class="ibadge ${HC[hi]}" style="width:22px;height:22px;font-size:0.75rem">${hi+1}</span><span style="color:#1a1a1a;font-weight:700;font-size:0.9rem">${escapeHtml(horses[hi]||'')}</span></div>`).join('');
+        const oyaBlock=oyaRank?`<div style="background:#f4eeda;border:1px solid #e0d5b0;border-radius:8px;padding:8px 10px;margin-bottom:10px"><div style="color:#8a6500;font-size:0.8rem;font-weight:800;margin-bottom:3px">👑 親が選んだ順位</div>${oyaRank}</div>`:'';
+        const built=buildPlayerResultsHtml(h.playerResults);
+        const oyaB=(h.oyaBonus>0)?`<div class="uiconfirm-summary"><span style="color:#9a4a9a;font-weight:800">👑 ${escapeHtml(h.oyaName)}（親ボーナス）+${h.oyaBonus.toLocaleString()}点</span></div>`:'';
+        const body=`<div style="font-size:0.95rem;color:#fff;font-weight:800;margin-bottom:8px">${h.topicIcon||'🎯'} ${escapeHtml(h.topic||'')}</div>${oyaBlock}<div style="font-size:0.78rem;color:#fff;font-weight:700;margin-bottom:6px">👆 各プレイヤーをタップで馬券の詳細</div><div id="off-fin-arch-results">${built.html}</div>${oyaB}`;
+        uiConfirm({ icon:'📜', title:`ROUND ${h.round} の結果`, bodyHtml: body, okText:'閉じる', cancelText:null });
+        setTimeout(()=>{
+          const cont=document.getElementById('off-fin-arch-results');
+          if(!cont) return;
+          const rows=cont.querySelectorAll('.player-result');
+          built.orderedResults.forEach((pr,i)=>{
+            const el=rows[i];
+            if(el && typeof attachResultLongPress==='function') attachResultLongPress(el, pr, horses);
+          });
+        }, 60);
       });
     });
-    // ヘッダーに長押し・右クリック
-    if(topicObj){
-      const header=div.querySelector('.history-round-header');
-      let pt=null;
-      header.addEventListener('touchstart',()=>{pt=setTimeout(()=>openTopicPopup(topicObj),400);},{passive:true});
-      header.addEventListener('touchend',()=>clearTimeout(pt));
-      header.addEventListener('touchmove',()=>clearTimeout(pt));
-      header.addEventListener('mousedown',(e)=>{if(e.button===0)pt=setTimeout(()=>openTopicPopup(topicObj),600);});
-      header.addEventListener('mouseup',()=>clearTimeout(pt));
-      header.addEventListener('contextmenu',(e)=>{e.preventDefault();openTopicPopup(topicObj);});
-    }
-    histContainer.appendChild(div);
-  });
+  }
   if(typeof updateScrollFabVisibility==='function'){ setTimeout(updateScrollFabVisibility,100); setTimeout(updateScrollFabVisibility,500); }
 }
 function updateBetTypeLabels(){
