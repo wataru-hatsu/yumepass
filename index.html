@@ -9935,7 +9935,29 @@ window.showNoWinnerEffect = function(opts, done){
   document.body.appendChild(ov);
 
   var timers=[]; function tmo(fn,ms){ var id=setTimeout(fn,ms); timers.push(id); return id; }
-  var AC=null; function ac(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return AC; }
+  var AC=null;
+  function soundOn(){ try{ return (window.SFX && typeof window.SFX.isEnabled==='function') ? !!window.SFX.isEnabled() : true; }catch(e){ return true; } }
+  function ac(){ if(!soundOn()) return null; if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return AC; }
+  // ノイズ生成（紙が舞う音・風の音に使用）
+  function noiseBurst(t,dur,gain,freq,ftype){ var a=ac(); if(!a) return;
+    var n=Math.floor(a.sampleRate*dur); var buf=a.createBuffer(1,n,a.sampleRate); var d=buf.getChannelData(0);
+    for(var i=0;i<n;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/n,1.5); }
+    var src=a.createBufferSource(); src.buffer=buf;
+    var f=a.createBiquadFilter(); f.type=ftype||'bandpass'; f.frequency.value=freq||3000;
+    var g=a.createGain(); g.gain.setValueAtTime(gain||0.08,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    src.connect(f); f.connect(g); g.connect(a.destination); src.start(t); src.stop(t+dur); }
+  // 和太鼓のドン！（波乱の決着！）
+  function taiko(){ var a=ac(); if(!a) return; var t=a.currentTime;
+    var o=a.createOscillator(), g=a.createGain();
+    o.type='sine'; o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(45,t+0.18);
+    g.gain.setValueAtTime(0.55,t); g.gain.exponentialRampToValueAtTime(0.0001,t+0.32);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+0.34);
+    noiseBurst(t,0.06,0.22,1800,'lowpass'); }
+  // 紙（外れ馬券）が舞う音
+  function paperFlutter(){ var a=ac(); if(!a) return; var t=a.currentTime;
+    for(var i=0;i<6;i++){ noiseBurst(t+i*0.18,0.14,0.06,3500,'bandpass'); } }
+  // 寂しい風（締めのテロップ）
+  function sadWind(){ var a=ac(); if(!a) return; var t=a.currentTime; noiseBurst(t,1.1,0.06,500,'lowpass'); }
   function sadTrombone(){ var a=ac(); if(!a) return; var t0=a.currentTime; var notes=[392,370,349,294];
     notes.forEach(function(f,i){ var o=a.createOscillator(), g=a.createGain(); var t=t0+i*0.28;
       o.type='sawtooth'; o.frequency.setValueAtTime(f,t); o.frequency.linearRampToValueAtTime(f*0.96,t+0.26);
@@ -9967,10 +9989,10 @@ window.showNoWinnerEffect = function(opts, done){
   var a=ac(); if(a && a.state==='suspended'){ try{ a.resume(); }catch(e){} }
   tmo(function(){ darkenEl.style.opacity='0.35'; }, 200);
   tmo(function(){ flashBoardRed(); }, 300);
-  tmo(function(){ haran.style.opacity='1'; haran.style.transform='scale(1)'; }, 1300);
+  tmo(function(){ haran.style.opacity='1'; haran.style.transform='scale(1)'; taiko(); }, 1300);
   tmo(function(){ noWin.style.opacity='1'; sadTrombone(); }, 1700);
-  tmo(function(){ dropTickets(); }, 1900);
-  tmo(function(){ telop.style.opacity='1'; }, 2600);
+  tmo(function(){ dropTickets(); paperFlutter(); }, 1900);
+  tmo(function(){ telop.style.opacity='1'; sadWind(); }, 2600);
   tmo(function(){ tapHint.style.opacity='1'; }, 3400);
   // タップで閉じる（自動でも閉じる）
   ov.addEventListener('click', finishNow);
@@ -10755,7 +10777,7 @@ function enterOnlineFinal(game){
             // 子の結果（ライブ結果画面と同じリッチ表示・当選ソート）
             const built = buildPlayerResultsHtml(h.playerResults);
             const oyaB=(h.oyaBonus>0)?`<div class="uiconfirm-summary"><span style="color:#9a4a9a;font-weight:800">👑 ${escapeHtml(h.oyaName)}（親ボーナス）+${h.oyaBonus.toLocaleString()}点</span></div>`:'';
-            const body = `<div style="font-size:0.85rem;color:#1a1a1a;font-weight:700;margin-bottom:8px">${h.topicIcon||'🎯'} ${escapeHtml(h.topic||'')}</div>${oyaBlock}<div style="font-size:0.78rem;color:#fff;font-weight:700;margin-bottom:6px">👆 各プレイヤーをタップで馬券の詳細</div><div id="ofn-arch-results">${built.html}</div>${oyaB}`;
+            const body = `<div style="font-size:0.95rem;color:#fff;font-weight:800;margin-bottom:8px">${h.topicIcon||'🎯'} ${escapeHtml(h.topic||'')}</div>${oyaBlock}<div style="font-size:0.78rem;color:#fff;font-weight:700;margin-bottom:6px">👆 各プレイヤーをタップで馬券の詳細</div><div id="ofn-arch-results">${built.html}</div>${oyaB}`;
             uiConfirm({ icon:'📜', title:`ROUND ${h.round} の結果`, bodyHtml: body, okText:'閉じる', cancelText:null });
             // ダイアログ描画後、各結果行に長押し/タップで馬券詳細を付与（並べ替え後の順序で対応）
             setTimeout(()=>{
