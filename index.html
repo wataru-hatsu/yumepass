@@ -808,7 +808,7 @@ body.modal-open{overflow:hidden !important;}
 
 <!-- ONLINE: BETTING (子=賭け入力 / 親=順位入力) -->
 <div class="screen" id="screen-online-betting">
-  <div class="round-header" id="ob-round-header"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND 1</span><span style="font-size:0.95rem;letter-spacing:1px">🎯 賭けフェーズ</span></div></div>
+  <div class="round-header" id="ob-round-header"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND 1</span><span style="font-size:0.95rem;letter-spacing:1px">賭け</span></div></div>
   <div class="scroll-content">
     <!-- お題表示（タップで選択肢） -->
     <div id="ob-topic-panel" style="margin:8px 10px;background:linear-gradient(135deg,#2a1a00,#3a2a00);border:2px solid var(--gold-dark);border-radius:10px;padding:9px 12px;cursor:pointer;user-select:none">
@@ -1314,7 +1314,7 @@ body.modal-open{overflow:hidden !important;}
 
 <!-- BET INPUT -->
 <div class="screen" id="screen-bet">
-  <div class="round-header" id="bet-round-header"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND 1</span><span style="font-size:0.9rem;letter-spacing:1px">🎯 賭けフェーズ</span></div></div>
+  <div class="round-header" id="bet-round-header"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND 1</span><span style="font-size:0.9rem;letter-spacing:1px">賭け</span></div></div>
   <div class="flip-msg" id="bet-flip-msg"></div>
   <div class="scroll-content">
     <!-- お題表示（タップで選択肢） -->
@@ -1511,7 +1511,7 @@ body.modal-open{overflow:hidden !important;}
       <div class="horse-grid" id="result-horse-grid"></div>
     </div>
     <div class="panel"><div class="panel-title">📊 入力内容</div><div id="result-preview-content"><div class="empty">馬を選んでください</div></div></div>
-    <div style="margin:10px" id="result-confirm-wrap"><button class="btn btn-oya" id="result-confirm-btn" onclick="goToReveal()" disabled>📢 賭けを公開して結果へ</button></div>
+    <div style="margin:10px" id="result-confirm-wrap"><button class="btn btn-oya" id="result-confirm-btn" onclick="goToReveal()" disabled>順位を決定する</button></div>
   </div>
 </div>
 
@@ -3421,7 +3421,7 @@ function renderBetScreen(){
   // 買い方の状態をリセット
   offBuyMethod='simple';offFormationPositions=[[],[],[]];offNagashiAxis=null;offNagashiPosition=1;offNagashiOpponents=[];
   const disp=document.getElementById('bet-display');if(disp){disp.textContent='0';disp.style.color='var(--gold)';}
-  document.getElementById('bet-round-header').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND ${state.currentRound}</span><span style="font-size:0.9rem;letter-spacing:1px">🎯 賭けフェーズ（子 ${state.currentBetPlayerIndex+1}/${state.koPlayers.length}人目）</span></div>`;
+  document.getElementById('bet-round-header').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND ${state.currentRound}</span><span style="font-size:0.9rem;letter-spacing:1px">賭け（子 ${state.currentBetPlayerIndex+1}/${state.koPlayers.length}人目）</span></div>`;
   document.getElementById('bet-player-name').textContent=p.name;
   document.getElementById('bet-player-points').textContent=p.points.toLocaleString();
   // お題パネル更新
@@ -4300,7 +4300,7 @@ function showOyaResultScreen(){
   updateResultPreview();goTo('screen-result');
 }
 function selectHorseForResult(idx){const p=resultSelections.indexOf(idx);if(p>=0)resultSelections.splice(p,1);else{if(resultSelections.length>=3)return;resultSelections.push(idx);}renderHorseGrid('result-horse-grid',resultSelections,selectHorseForResult);updateResultPreview();if(resultSelections.length>=3){setTimeout(()=>{const t=document.getElementById('result-confirm-wrap');if(t&&typeof t.scrollIntoView==='function')t.scrollIntoView({behavior:'smooth',block:'center'});},80);}}
-function updateResultPreview(){const c=document.getElementById('result-preview-content');const btn=document.getElementById('result-confirm-btn');const t=state.selectedTopic;if(!resultSelections.length){c.innerHTML='<div class="empty">1位・2位・3位の3つを選んでください</div>';btn.disabled=true;btn.textContent='📢 上位3つを選んでください';return;}c.innerHTML=resultSelections.map((hi,i)=>`<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]||''}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700">${t.horses[hi]}</div></div>`).join('');if(resultSelections.length<3){btn.disabled=true;const remaining=3-resultSelections.length;const positions=['1位','2位','3位'];const needed=positions.slice(resultSelections.length).join('・');btn.textContent=`📢 あと${remaining}つ選んでください（${needed}）`;}else{btn.disabled=false;btn.textContent='📢 賭けを公開して結果へ';}}
+function updateResultPreview(){const c=document.getElementById('result-preview-content');const btn=document.getElementById('result-confirm-btn');const t=state.selectedTopic;if(!resultSelections.length){c.innerHTML='<div class="empty">1位・2位・3位の3つを選んでください</div>';btn.disabled=true;btn.textContent='上位3つを選んでください';return;}c.innerHTML=resultSelections.map((hi,i)=>`<div class="result-horse"><div style="font-size:1.2rem;width:30px;text-align:center">${['🥇','🥈','🥉'][i]||''}</div><div class="ibadge ${HC[hi]}">${hi+1}</div><div style="font-weight:700">${t.horses[hi]}</div></div>`).join('');if(resultSelections.length<3){btn.disabled=true;const remaining=3-resultSelections.length;const positions=['1位','2位','3位'];const needed=positions.slice(resultSelections.length).join('・');btn.innerHTML=`あと${remaining}つ選んでください<br>（${needed}）`;}else{btn.disabled=false;btn.textContent='順位を決定する';}}
 
 function goToReveal(){
   try {
@@ -4309,8 +4309,8 @@ function goToReveal(){
     if(t0 && Array.isArray(resultSelections) && resultSelections.length>=3){
       const posL=['1位','2位','3位'];
       const rankLines=resultSelections.slice(0,3).map((hi,i)=>`<div class="uiconfirm-betline"><span class="ibadge ${HC[resultSelections[i]]}" style="width:22px;height:22px;font-size:0.72rem">${resultSelections[i]+1}</span><span style="font-weight:700">${posL[i]}</span><span>${escapeHtml(t0.horses[hi])}</span></div>`).join('');
-      const bodyHtml=`${rankLines}<div class="uiconfirm-summary"><span style="color:#c8bfa8;font-size:0.82rem">※公開すると変更できません</span></div>`;
-      Promise.resolve(uiConfirm({ icon:'👑', title:'親の順位はこれで決定しますか？', bodyHtml, okText:'📢 公開する', cancelText:'戻る' }))
+      const bodyHtml=`${rankLines}<div class="uiconfirm-summary"><span style="color:#c8bfa8;font-size:0.82rem">※確定すると変更できません</span></div>`;
+      Promise.resolve(uiConfirm({ icon:'👑', title:'順位はこれで確定しますか？', bodyHtml, okText:'確定する', cancelText:'戻る' }))
         .then(ok=>{ if(ok) _doGoToReveal(); })
         .catch(err=>{ console.error('uiConfirm失敗、直接遷移:',err); _doGoToReveal(); });
       return;
@@ -7084,7 +7084,7 @@ function enterOnlineBetting(game){
 
   const myPoints = (game.points && game.points[window.online.playerId]) || (window.online.settings?.initialPoints || 5000);
 
-  document.getElementById('ob-round-header').innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND ${game.currentRound || 1}</span><span style="font-size:0.95rem;letter-spacing:1px">🎯 賭けフェーズ</span></div>`;
+  document.getElementById('ob-round-header').innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND ${game.currentRound || 1}</span><span style="font-size:0.95rem;letter-spacing:1px">賭け</span></div>`;
   document.getElementById('ob-my-name').textContent = myPlayer ? myPlayer.name : '—';
   document.getElementById('ob-my-points').textContent = myPoints.toLocaleString();
 
@@ -7660,7 +7660,7 @@ function updateOyaPreview(){
       const remaining = 3 - sel.length;
       const positions = ['1位','2位','3位'];
       const needed = positions.slice(sel.length).join('・');
-      btn.textContent = `📢 あと${remaining}つ選んでください（${needed}）`;
+      btn.innerHTML = `📢 あと${remaining}つ選んでください<br>（${needed}）`;
     } else {
       btn.disabled = false;
       btn.textContent = '📢 順位を確認する';
