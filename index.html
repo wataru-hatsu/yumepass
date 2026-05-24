@@ -456,11 +456,13 @@ body.modal-open{overflow:hidden !important;}
 </div>
 
 <!-- プレイ中の簡潔ルールモーダル -->
-<div id="quick-rules-modal" class="game-menu-modal hidden" onclick="if(!event.target.closest('.game-menu-content'))closeQuickRules()">
-  <div class="game-menu-content" style="max-width:440px;max-height:84vh;overflow-y:auto;text-align:left">
-    <div class="game-menu-title">📖 かんたんルール</div>
-    <div id="quick-rules-body" style="color:#f0e8d4;font-size:0.86rem;line-height:1.75"></div>
-    <button class="btn btn-secondary" onclick="closeQuickRules()" style="margin-top:14px">閉じる</button>
+<div id="quick-rules-modal" class="game-menu-modal hidden" style="align-items:flex-start;padding:0;overflow-y:auto;-webkit-overflow-scrolling:touch" onclick="if(!event.target.closest('.game-menu-content'))closeQuickRules()">
+  <div style="width:100%;min-height:100%;display:flex;align-items:flex-start;justify-content:center;padding:max(54px,env(safe-area-inset-top)) 16px 24px;box-sizing:border-box">
+    <div class="game-menu-content" style="max-width:440px;max-height:none;text-align:left">
+      <div class="game-menu-title">📖 かんたんルール</div>
+      <div id="quick-rules-body" style="color:#f0e8d4;font-size:0.86rem;line-height:1.75"></div>
+      <button class="btn btn-secondary" onclick="closeQuickRules()" style="margin-top:14px">閉じる</button>
+    </div>
   </div>
 </div>
 
