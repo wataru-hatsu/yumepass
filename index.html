@@ -1394,7 +1394,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel" id="off-betamount-panel">
       <div class="panel-title" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">💴 ベット額 <button onclick="openScorePopup()" style="margin-left:auto;flex-shrink:0;background:rgba(15,15,18,0.9);border:1px solid rgba(245,200,66,0.6);color:#f5c842;font-size:0.74rem;font-weight:800;border-radius:14px;padding:4px 10px;cursor:pointer;white-space:nowrap;letter-spacing:0;text-transform:none">📊 得点</button></div>
       <div id="bet-hint" style="font-size:0.9rem;color:#1a1a1a;font-weight:700;margin-bottom:8px">最低500点 / 1点単位でOK</div>
-      <div id="bet-display" onclick="focusBetInput()" style="background:#1a1a1a;border-radius:10px;padding:14px 16px;text-align:right;font-size:1.8rem;font-weight:900;color:var(--gold);letter-spacing:2px;min-height:58px;margin-bottom:6px;cursor:text">0</div>
+      <div id="bet-display" onclick="focusBetInput()" style="position:relative;background:#1a1a1a;border-radius:10px;padding:24px 16px 22px;text-align:right;font-size:1.8rem;font-weight:900;color:var(--gold);letter-spacing:2px;min-height:58px;margin-bottom:6px;cursor:text"><div style="position:absolute;left:12px;top:6px;font-size:0.74rem;color:#5db0ff;font-weight:800;letter-spacing:0;text-align:left">👆 タップして数字を入力</div>0<div id="bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:var(--gold);font-weight:800;letter-spacing:0;opacity:0.95"></div></div>
       <div style="text-align:center;font-size:0.86rem;color:#1a1a1a;font-weight:700;margin-bottom:8px">👆 上の枠をタップして数字を入力</div>
       <input id="bet-native-input" inputmode="numeric" pattern="[0-9]*" oninput="onBetNativeInput(this.value)" style="position:absolute;opacity:0;height:1px;width:1px;pointer-events:none;left:-9999px">
       <div id="point-preset-btns" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
@@ -3436,7 +3436,7 @@ function renderBetScreen(){
   const koIdx=state.koPlayers[state.currentBetPlayerIndex];const p=state.players[koIdx];currentBetType='tansho';selectedHorses=[];betInputVal='';
   // 買い方の状態をリセット
   offBuyMethod='simple';offFormationPositions=[[],[],[]];offNagashiAxis=null;offNagashiPosition=1;offNagashiOpponents=[];
-  const disp=document.getElementById('bet-display');if(disp){disp.textContent='0';disp.style.color='var(--gold)';}
+  const disp=document.getElementById('bet-display');if(disp){disp.style.color='var(--gold)';} if(typeof setBetInputVal==='function'){ try{ setBetInputVal(''); }catch(e){} }
   document.getElementById('bet-round-header').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15"><span style="font-size:0.62rem;letter-spacing:2px;opacity:0.85">ROUND ${state.currentRound}</span><span style="font-size:0.9rem;letter-spacing:1px">賭け（子 ${state.currentBetPlayerIndex+1}/${state.koPlayers.length}人目）</span></div>`;
   document.getElementById('bet-player-name').textContent=p.name;
   document.getElementById('bet-player-points').textContent=p.points.toLocaleString();
@@ -3788,11 +3788,18 @@ function setBetInputVal(v){
   const points=combos.length;
   const total=(offBuyMethod==='simple')?num:(num*points);
   try{const p=state.players[state.koPlayers[state.currentBetPlayerIndex]];if(!p)return;const minBet=p.points<=state.minBet?p.points:state.minBet;
+    const koIdx=state.koPlayers[state.currentBetPlayerIndex];
+    const cartT=(typeof offCartTotal==='function')?offCartTotal(koIdx):0;
+    const _topHint='<div style="position:absolute;left:12px;top:6px;font-size:0.74rem;color:#5db0ff;font-weight:800;letter-spacing:0;text-align:left">👆 タップして数字を入力</div>';
+    const remaining=Math.max(0, p.points - cartT - total);
+    const holdingHtml=`<div id="bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:${(cartT+total)>p.points?'#ff8a8a':'var(--gold)'};font-weight:800;letter-spacing:0;opacity:0.95">所持 ${remaining.toLocaleString()}点</div>`;
+    let mainHtml;
     if(offBuyMethod==='simple'||points===0){
-      display.textContent=num>0?num.toLocaleString()+' 点':'0';
+      mainHtml=num>0?num.toLocaleString()+' 点':'0';
     } else {
-      display.innerHTML=`<span style="font-size:0.5em;color:#bbb">1点あたり</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#555"> × ${points}通り = </span><br><span style="font-size:0.75em">合計 ${total.toLocaleString()}点</span>`;
+      mainHtml=`<span style="font-size:0.5em;color:#fff">1通りあたり</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#fff"> × ${points}通り = </span><br><span style="font-size:0.75em">合計 ${total.toLocaleString()}点</span>`;
     }
+    display.innerHTML=_topHint+mainHtml+holdingHtml;
     display.style.color=total>p.points?'#e74c3c':num>=minBet?'#2ecc71':'var(--gold)';
   }catch(e){}
   if(typeof updateOffComboInfo==='function')updateOffComboInfo();
@@ -3878,7 +3885,7 @@ function showBetConfirm(){
   const totalAmount=unitAmount*combinations.length;
   // 最低ベット: 1点あたりが minBet 以上
   if(unitAmount<minBet){
-    showNotif(offBuyMethod==='simple'?`⚠️ ${minBet.toLocaleString()}点以上を入力してください`:`⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`);
+    showNotif(offBuyMethod==='simple'?`⚠️ ${minBet.toLocaleString()}点以上を入力してください`:`⚠️ 1通りあたり ${minBet.toLocaleString()}点以上を入力してください`);
     return;
   }
   if(totalAmount>p.points){showNotif(`⚠️ 持ち点が足りません（必要: ${totalAmount.toLocaleString()}点）`);return;}
@@ -3992,7 +3999,7 @@ function buildValidatedOffUnit(){
     if(!allinAllowed){
       showNotif(`⚠️ 最低 ${stdMin.toLocaleString()}点から賭けられます\n（少額すぎます）`, 'warn');
     } else {
-      showNotif(offBuyMethod==='simple'?`⚠️ ${minBet.toLocaleString()}点以上を入力してください`:`⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`, 'warn');
+      showNotif(offBuyMethod==='simple'?`⚠️ ${minBet.toLocaleString()}点以上を入力してください`:`⚠️ 1通りあたり ${minBet.toLocaleString()}点以上を入力してください`, 'warn');
     }
     return null;
   }
@@ -4141,7 +4148,7 @@ function offContinueBuying(){
 function resetOffBetBuilder(){
   currentBetType='tansho';selectedHorses=[];betInputVal='';
   offBuyMethod='simple';offFormationPositions=[[],[],[]];offNagashiAxis=null;offNagashiPosition=1;offNagashiOpponents=[];
-  const disp=document.getElementById('bet-display');if(disp){disp.textContent='0';disp.style.color='var(--gold)';}
+  const disp=document.getElementById('bet-display');if(disp){disp.style.color='var(--gold)';} if(typeof setBetInputVal==='function'){ try{ setBetInputVal(''); }catch(e){} }
   document.querySelectorAll('#screen-bet .bet-type-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
   updateHorsePanelTitle();renderHorseGrid('horse-grid',selectedHorses,selectHorseForBet);
   renderOffBuyMethodTabs();updateOffBuyMethodUI();
@@ -4655,13 +4662,13 @@ function renderRoundResultBody(){
         const sels=(br.selections||[]);
         const selBadges=sels.map((hi,si)=>`<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.62rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(ordered?'<span style="color:#bbb;font-size:0.7rem;margin:0 1px">→</span>':'<span style="color:#bbb;font-size:0.7rem;margin:0 2px">・</span>');
         const oddsTag=(br.hit&&br.odds>0)?oddsChipHtml(br.odds):'';
-        const methodInfo=(methodName)?`<span style="font-size:0.62rem;color:#444">${methodName} ${br.hitCount||0}/${br.totalCount||0}</span>`:'';
+        const methodInfo=(methodName)?`<span style="font-size:0.78rem;color:#1a1a1a;font-weight:700">${methodName} ${br.hitCount||0}/${br.totalCount||0}</span>`:'';
         const brPayout=br.payout||0;
         return `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:${brWin?'rgba(46,204,113,0.08)':'rgba(0,0,0,0.03)'};border:1px solid ${brWin?'rgba(46,204,113,0.25)':'#eee'};border-radius:6px;flex-wrap:wrap">
           <span style="background:var(--gold-dark);color:#fff;font-size:0.65rem;font-weight:900;padding:1px 7px;border-radius:9px;white-space:nowrap">${betNames[br.betType]||br.betType}</span>
           <span style="display:inline-flex;align-items:center">${selBadges}</span>
           ${methodInfo}
-          <span style="font-size:0.68rem;color:#444">${(br.amount||0).toLocaleString()}点</span>
+          <span style="font-size:0.82rem;color:#1a1a1a;font-weight:700">${(br.amount||0).toLocaleString()}点</span>
           ${oddsTag}
           <span style="margin-left:auto;font-weight:900;font-size:0.78rem;color:${brWin?'var(--green-light)':'#999'}">${brWin?'+'+brPayout.toLocaleString():'—'}</span>
         </div>`;
@@ -8000,7 +8007,7 @@ function buildValidatedOnlineUnit(){
     if(!allinAllowed && stdMin > 0){
       showNotif(`⚠️ 最低 ${stdMin.toLocaleString()}点から賭けられます\n（少額すぎます）`, 'warn');
     } else {
-      showNotif(method === 'simple' ? `⚠️ ${minBet.toLocaleString()}点以上を入力してください` : `⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`, 'warn');
+      showNotif(method === 'simple' ? `⚠️ ${minBet.toLocaleString()}点以上を入力してください` : `⚠️ 1通りあたり ${minBet.toLocaleString()}点以上を入力してください`, 'warn');
     }
     return null;
   }
@@ -8321,7 +8328,7 @@ window.onlineSubmitKoBet = function(){
   } else {
     // 複数賭けは「1点あたり」が minBet 以上
     if(unitAmount < minBet){
-      showNotif(`⚠️ 1点あたり ${minBet.toLocaleString()}点以上を入力してください`);
+      showNotif(`⚠️ 1通りあたり ${minBet.toLocaleString()}点以上を入力してください`);
       return;
     }
   }
