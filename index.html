@@ -4710,20 +4710,20 @@ function renderRoundResultBody(){
         <span class="player-result-name">${r.name} <span class="ko-badge">子</span> ${_rs.badge}</span>
         ${_rs.amountHtml}
       </div>
-      ${(r.buyMethod && r.buyMethod !== 'simple') ? `<div style="font-size:0.75rem;color:#444;margin-top:4px">${(typeof BUY_METHOD_NAMES !== 'undefined' && BUY_METHOD_NAMES[r.buyMethod]) || r.buyMethod} / <strong>${r.hitCount || 0}/${r.totalCount || 0}通り的中</strong> (1点あたり${(r.unitAmount||0).toLocaleString()}点×${r.totalCount||0}通り)</div>` : ''}
-      <div class="player-result-detail" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px">${betNames[r.betType]} / ${r.amount.toLocaleString()}点賭け${(r.odds||r.multiplier)>0?` ${oddsChipHtml(r.odds||r.multiplier)}`:''}${isWin&&r.payout?` <span style="font-size:0.9rem;color:#1a1a1a;font-weight:900">配当 ${r.payout.toLocaleString()}点</span>`:''}</div>
-      <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;padding:6px 8px;background:${isWin?'rgba(245,200,66,0.08)':'rgba(0,0,0,0.03)'};border-radius:6px;border:1px solid ${isWin?'rgba(245,200,66,0.2)':'#eee'}">
+      ${(r.buyMethod && r.buyMethod !== 'simple') ? `<div style="font-size:0.82rem;color:#1a1a1a;font-weight:700;margin-top:4px">${(typeof BUY_METHOD_NAMES !== 'undefined' && BUY_METHOD_NAMES[r.buyMethod]) || r.buyMethod} ${r.totalCount||0}通り（${r.hitCount || 0}通り的中）</div>` : ''}
+      <div class="player-result-detail" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px">${betNames[r.betType]} / ${r.amount.toLocaleString()}点賭け${(r.odds||r.multiplier)>0?` ${oddsChipHtml(r.odds||r.multiplier)}`:''}${isWin&&r.payout?` <span style="color:#1a1a1a;font-weight:900">配当 ${r.payout.toLocaleString()}点</span>`:''}</div>
+      ${(!r.buyMethod || r.buyMethod === 'simple') ? `<div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;padding:6px 8px;background:${isWin?'rgba(245,200,66,0.08)':'rgba(0,0,0,0.03)'};border-radius:6px;border:1px solid ${isWin?'rgba(245,200,66,0.2)':'#eee'}">
         <div style="display:flex;align-items:center;gap:2px;flex-wrap:wrap">
-          <span style="font-size:0.72rem;color:#1a1a1a;font-weight:700;margin-right:4px">予想</span>
+          <span style="font-size:0.82rem;color:#1a1a1a;font-weight:700;margin-right:4px">予想</span>
           ${selBadges}
         </div>
         <span style="color:#ccc;font-size:0.8rem">｜</span>
         <div style="display:flex;align-items:center;gap:2px;flex-wrap:wrap">
-          <span style="font-size:0.72rem;color:#1a1a1a;font-weight:700;margin-right:4px">結果</span>
+          <span style="font-size:0.82rem;color:#1a1a1a;font-weight:700;margin-right:4px">結果</span>
           ${actualBadges}
         </div>
-      </div>
-      ${(r.buyMethod && r.buyMethod !== 'simple' && (r.winningSubs||[]).length > 0) ? `<div style="margin-top:6px;padding:6px 8px;background:rgba(46,204,113,0.06);border-radius:6px"><div style="font-size:0.65rem;color:#444;margin-bottom:2px">当たった${r.winningSubs.length}通りの明細:</div>${r.winningSubs.map(s=>{const isOrd=(r.betType==='umatan'||r.betType==='sanrentan');const joiner=isOrd?'→':'-';const combo=(s.selection||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:16px;height:16px;font-size:0.6rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#aaa;font-size:0.6rem;margin:0 1px">${joiner}</span>`);return `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(46,204,113,0.08);border-radius:5px;margin-top:3px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center">${combo}</span>${oddsChipHtml(s.odds, '', '0.7rem')}<span style="font-size:0.65rem;color:#444;font-weight:700">配当${(s.payout||0).toLocaleString()}</span></div>`;}).join('')}</div>` : ''}
+      </div>` : ''}
+      ${(r.buyMethod && r.buyMethod !== 'simple' && (r.winningSubs||[]).length > 0) ? `<div style="margin-top:6px;padding:6px 8px;background:rgba(46,204,113,0.06);border-radius:6px"><div style="font-size:0.82rem;color:#1a1a1a;font-weight:700;margin-bottom:2px">当たった${r.winningSubs.length}通りの明細:</div>${r.winningSubs.map(s=>{const isOrd=(r.betType==='umatan'||r.betType==='sanrentan');const joiner=isOrd?'→':'-';const combo=(s.selection||[]).map(hi=>`<span class="ibadge ${HC[hi]}" style="width:18px;height:18px;font-size:0.62rem;display:inline-flex;align-items:center;justify-content:center">${hi+1}</span>`).join(`<span style="color:#888;font-size:0.7rem;margin:0 1px">${joiner}</span>`);return `<div style="display:flex;align-items:center;gap:6px;padding:3px 6px;background:rgba(46,204,113,0.08);border-radius:5px;margin-top:3px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center">${combo}</span>${oddsChipHtml(s.odds, '', '0.7rem')}<span style="font-size:0.82rem;color:#1a1a1a;font-weight:700">配当${(s.payout||0).toLocaleString()}</span></div>`;}).join('')}</div>` : ''}
     </div>`;
   }).join('');
   // 各結果行に長押し/タップで「馬券＋当選ハイライト」詳細を付与
@@ -9597,7 +9597,9 @@ window.showRaceReveal = function(opts, done){
         if(h.placedRank===3){ tmo(lightConfirm,250); } } },90);
     timers.push(setTimeout(function(){clearInterval(iv);},700)); }
 
+  var _finished=false;
   function finishAll(){
+    if(_finished) return; _finished=true;
     cleanup();
     // 先に結果画面へ遷移させてから（done内でgoTo）、その上にあるレース演出を即削除する。
     // こうすることでオーバーレイの下が既に結果画面になり、遷移中に他画面が一瞬見えない。
@@ -9610,7 +9612,7 @@ window.showRaceReveal = function(opts, done){
     horses.forEach(function(h){ if(h.badgeEl) h.badgeEl.style.opacity='1'; if(h.dustEl) h.dustEl.style.opacity='0.4'; });
     var stageW=ov.clientWidth||360;
     var finishX=(stageW-40-58)-startLeft;
-    var last=null, startT=null, lastLevel=0, placeCount=0, done3=false;
+    var last=null, startT=null, lastLevel=0, placeCount=0, done3=false, top3Count=0, boardDoneScheduled=false;
     // 各馬の「ゴール時刻ターゲット」を着順に応じて決める（最終着順を保証）
     // finalRank 1が最速、N が最遅。基準時間に着順差で広げる。
     var baseTime=5.5; // 1着の想定到達秒
@@ -9649,8 +9651,9 @@ window.showRaceReveal = function(opts, done){
         if(h.legB) h.legB.style.transform='rotate('+(-sw)+'deg)';
         h.runEl.style.transform='translateY('+bob+'px)'+(done3?' rotate(-3deg)':'');
         h.dustEl.style.opacity=done3?'0.75':'0.4';
-        if(h.x>=finishX){ h.x=finishX; h.finished=true; placeCount++; h.placedRank=placeCount;
-          if(placeCount<=3){ flashShake(placeCount===1); lightBoard(h); } }
+        if(h.x>=finishX){ h.x=finishX; h.finished=true; placeCount++; h.placedRank=h.finalRank;
+          if(h.finalRank<=3){ flashShake(h.finalRank===1); lightBoard(h); top3Count++;
+            if(top3Count>=Math.min(3,N) && !boardDoneScheduled){ boardDoneScheduled=true; tmo(function(){ stopCrowd(); }, 300); tmo(finishAll, 1300); } } }
         h.el.style.left=(startLeft+h.x)+'px';
         h.el.style.zIndex=5+Math.round(h.x/12);
       });
