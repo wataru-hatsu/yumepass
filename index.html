@@ -9696,7 +9696,20 @@ window.showRaceReveal = function(opts, done){
     startCrowd();
     horses.forEach(function(h){ if(h.badgeEl) h.badgeEl.style.opacity='1'; if(h.dustEl) h.dustEl.style.opacity='0.4'; });
     var stageW=ov.clientWidth||360;
-    var finishX=(stageW-40-58)-startLeft;
+    // ゴール判定は「馬の鼻先（馬コンテナ rr-run の右端）」がゴール線（チェッカー線=画面右端から40px）を
+    // 切った瞬間とする。馬の絵のレンダリングは環境差があるため、実際のDOM位置を1回だけ実測して補正する。
+    var noseOffset=58; // フォールバック値（実測できない場合）
+    try{
+      var h0=horses[0];
+      if(h0 && h0.runEl && h0.el){
+        var rRun=h0.runEl.getBoundingClientRect();
+        var rRow=h0.el.getBoundingClientRect();
+        // row左端から馬の鼻先（rr-run右端）までの距離
+        var measured=rRun.right - rRow.left;
+        if(measured>10 && measured<200) noseOffset=measured;
+      }
+    }catch(e){}
+    var finishX=(stageW-40-noseOffset)-startLeft;
     var last=null, startT=null, lastLevel=0, placeCount=0, done3=false, top3Count=0, boardDoneScheduled=false;
     // 各馬の「ゴール時刻ターゲット」を着順に応じて決める（最終着順を保証）
     // finalRank 1が最速、N が最遅。基準時間に着順差で広げる。
