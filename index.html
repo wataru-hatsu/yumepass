@@ -1249,22 +1249,22 @@ body.modal-open{overflow:hidden !important;}
   </div>
   <div class="scroll-content">
     <!-- 親・子の役割一覧 -->
-    <div class="panel" style="padding:14px 16px">
-      <div style="margin-bottom:10px">
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:linear-gradient(135deg,#3a003a,#5a005a);border-radius:8px;border:1px solid var(--oya-light)">
-          <span class="oya-badge" style="font-size:0.85rem;padding:4px 10px">親</span>
-          <span style="color:white;font-size:1.1rem;font-weight:900" id="rs-oya-name">—</span>
-          <span style="color:#dda0dd;font-size:0.75rem;margin-left:auto">順位を決める人</span>
+    <div class="panel" style="padding:10px 12px">
+      <div style="margin-bottom:7px">
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#f0ead8;border-radius:8px;border:1.5px solid var(--gold)">
+          <span class="oya-badge" style="font-size:0.78rem;padding:3px 9px">親</span>
+          <span style="color:#1a1a1a;font-size:1rem;font-weight:900" id="rs-oya-name">—</span>
+          <span style="color:#1a1a1a;font-size:0.72rem;margin-left:auto;font-weight:600">順位を決める人</span>
         </div>
       </div>
-      <div style="font-size:0.75rem;color:#1a1a1a;font-weight:700;margin-bottom:6px;letter-spacing:1px">子（予想する人）</div>
-      <div id="rs-ko-list" style="display:flex;flex-direction:column;gap:6px"></div>
-      <div style="color:#ffcc00;font-size:0.75rem;margin-top:10px;text-align:center" id="rs-bonus-rate-label">子が的中したら配当の50%ボーナス獲得！</div>
+      <div style="font-size:0.72rem;color:#1a1a1a;font-weight:700;margin-bottom:5px;letter-spacing:1px">子（予想する人）</div>
+      <div id="rs-ko-list" style="display:flex;flex-direction:column;gap:5px"></div>
+      <div style="color:#1a1a1a;font-size:0.74rem;margin-top:8px;text-align:center;font-weight:700" id="rs-bonus-rate-label">子が的中したら配当の50%ボーナス獲得！</div>
     </div>
     <!-- 子へのお題選択指示バナー -->
     <div style="margin:0 10px;background:#0d2a1a;border:2px solid var(--green-light);border-radius:10px;padding:12px 14px">
       <div style="color:#7dff7d;font-size:0.8rem;font-weight:900;margin-bottom:4px">🗳️ 子のみなさんへ</div>
-      <div style="color:#5dcc5d;font-size:0.8rem;line-height:1.6" id="rs-ko-instruction">みんなで相談して、<strong style="color:white">親の〇〇さん</strong>へのお題を決めましょう！<br>代表者がタップして確定してください。<br><span style="color:#aaa;font-size:0.72rem">（親は相談に入っても、見ているだけでもOK）</span></div>
+      <div style="color:#5dcc5d;font-size:0.8rem;line-height:1.6" id="rs-ko-instruction">みんなで相談して、<strong style="color:white">親の〇〇さん</strong>へのお題を決めましょう！<br>代表者がタップして確定してください。</div>
     </div>
     <div class="panel" style="display:none"><table class="score-table" id="rs-score-table"></table></div>
     <div class="panel">
@@ -3149,9 +3149,9 @@ function goToRoundStart(){
     const oyaName=state.players[state.oyaIndex].name;
     if(state.koPlayers.length===1){
       const koName=state.players[state.koPlayers[0]].name;
-      instrEl.innerHTML=`<strong style="color:white">${koName}さん</strong>、<strong style="color:white">親の${oyaName}さん</strong>へのお題を決めましょう！<br>タップして確定してください。<br><span style="color:#aaa;font-size:0.72rem">（${oyaName}さんは見ているだけでOK）</span>`;
+      instrEl.innerHTML=`<strong style="color:white">${koName}さん</strong>、<strong style="color:white">親の${oyaName}さん</strong>へのお題を決めましょう！<br>タップして確定してください。`;
     } else {
-      instrEl.innerHTML=`みんなで相談して、<strong style="color:white">親の${oyaName}さん</strong>へのお題を決めましょう！<br>代表者がタップして確定してください。<br><span style="color:#aaa;font-size:0.72rem">（${oyaName}さんは見ているだけでOK）</span>`;
+      instrEl.innerHTML=`みんなで相談して、<strong style="color:white">親の${oyaName}さん</strong>へのお題を決めましょう！<br>代表者がタップして確定してください。`;
     }
   }
   const bonusLabel=document.getElementById('rs-bonus-rate-label');
@@ -3245,13 +3245,23 @@ function offSelectTopic(topicId){
   const all=getAllTopics();
   const t=all.find(x=>x.id===topicId);
   if(!t){ showNotif('\u26a0\ufe0f \u304a\u984c\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093'); return; }
-  state.selectedTopic=t;
-  if(!state.usedTopicIds.includes(t.id)) state.usedTopicIds.push(t.id);
-  startBetting();
+  // オンライン同様、選択肢の中身を見せて「決定／戻る」で確認
+  openTopicPopup(t, {
+    hideClose:true, noWrapButtons:true,
+    buttons:[
+      { label:'\u2190 \u623b\u308b', cls:'btn-secondary', onClick:()=>{} },
+      { label:'\u2b55 \u3053\u306e\u304a\u984c\u3067\u6c7a\u5b9a', cls:'btn-success', onClick:()=>offSelectTopicConfirmed(t.id) }
+    ]
+  });
 }
 function offSelectTopicConfirmed(topicId){
   if(typeof closeTopicPopup==='function') closeTopicPopup();
-  offSelectTopic(topicId);
+  const all=getAllTopics();
+  const t=all.find(x=>x.id===topicId);
+  if(!t){ showNotif('\u26a0\ufe0f \u304a\u984c\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093'); return; }
+  state.selectedTopic=t;
+  if(!state.usedTopicIds.includes(t.id)) state.usedTopicIds.push(t.id);
+  startBetting();
 }
 function resetCategoryStep(){renderCategoryStep();if(typeof updateScrollFabVisibility==='function')setTimeout(updateScrollFabVisibility,80);}
 function pickRandom(){
