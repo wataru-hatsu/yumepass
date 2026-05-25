@@ -155,7 +155,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .horse-card .horse-name{font-size:0.75rem;font-weight:700;line-height:1.2;word-break:break-word;overflow-wrap:anywhere;hyphens:auto;}
 .horse-card .sel-label{position:absolute;top:-6px;right:-6px;background:var(--gold);color:#333;font-size:0.6rem;font-weight:900;padding:2px 5px;border-radius:10px;}
 .sel-label.pos-2{background:#888;color:white;}.sel-label.pos-3{background:#cd7f32;color:white;}
-.c1{background:#7ec8f0;color:#0a3a55;border:1px solid #4aa8d8}.c2{background:#222;color:white}.c3{background:var(--red);color:white}
+.c1{background:#7ec8f0;color:#0a3a55;border:1px solid #4aa8d8}.c2{background:#7ac043;color:#173a0a;border:1px solid #5a9e2c}.c3{background:var(--red);color:white}
 .c4{background:#2a72e0;color:white}.c5{background:#e0b800;color:#333}.c6{background:#1a7a1a;color:white}.c7{background:#8b1a8b;color:white}.c8{background:#ff7f3f;color:white}
 .bet-types{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;}
 .bet-type-btn{padding:14px 4px 8px;border:2px solid #ddd;border-radius:10px;background:white;cursor:pointer;text-align:center;min-width:0;position:relative;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s,background 0.15s;overflow:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
@@ -5680,8 +5680,8 @@ const firebaseConfig = {
 };
 
 // 馬の選択肢(.c1〜.c8)と完全に同じ番号色。演出の番号バッジ等で使う（選択肢と色を統一）
-const HORSE_BG = ['#7ec8f0','#222','#c0392b','#2a72e0','#e0b800','#1a7a1a','#8b1a8b','#ff7f3f'];
-const HORSE_FG = ['#0a3a55','#fff','#fff','#fff','#333','#fff','#fff','#fff'];
+const HORSE_BG = ['#7ec8f0','#7ac043','#c0392b','#2a72e0','#e0b800','#1a7a1a','#8b1a8b','#ff7f3f'];
+const HORSE_FG = ['#0a3a55','#173a0a','#fff','#fff','#333','#fff','#fff','#fff'];
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
@@ -9771,10 +9771,10 @@ window.showRaceReveal = function(opts, done){
     var last=null, startT=null, lastLevel=0, placeCount=0, done3=false, top3Count=0, boardDoneScheduled=false;
     // 各馬の「ゴール時刻ターゲット」を着順に応じて決める（最終着順を保証）
     // finalRank 1が最速、N が最遅。基準時間に着順差で広げる。
-    var baseTime=6.4; // 1着の想定到達秒（終盤をゆっくり見せるため少し長め）
+    var baseTime=12.8; // 1着の想定到達秒（馬のスピードを2倍ゆっくりに）
     horses.forEach(function(h){
       // 着順差を大きめに取り、馬が1頭ずつ間を空けてゴールするようにする（順位の確定を楽しめる）
-      var gapSec = (h.finalRank-1) * (tight?0.16:0.34) + Math.random()*(tight?0.05:0.08);
+      var gapSec = (h.finalRank-1) * (tight?0.32:0.68) + Math.random()*(tight?0.10:0.16);
       h.targetTime = baseTime + gapSec;
     });
     function frame(ts){
@@ -9798,7 +9798,7 @@ window.showRaceReveal = function(opts, done){
         var needSpeed=remDist/remTime;
         var speed=needSpeed*wob*styleFactor;
         // 過剰補正を抑える（見た目の自然さ）
-        if(speed<8) speed=8;
+        if(speed<4) speed=4;
         h.x += speed*dt;
         if(h.x>finishX) h.x=finishX;
         // 着順保証：自分より上位（finalRankが小さい）の馬がまだゴールしていなければ、
@@ -9808,7 +9808,7 @@ window.showRaceReveal = function(opts, done){
           for(var ui=0;ui<horses.length;ui++){ if(horses[ui].finalRank < h.finalRank && !horses[ui].finished){ upperPending=true; break; } }
           if(upperPending){ h.x=finishX-3; }
         }
-        var g=elapsed*(done3?9:7)+h.p1;
+        var g=elapsed*(done3?6.5:5)+h.p1;
         var bob=Math.sin(g)*(done3?3:2.4);
         var sw=Math.sin(g*1.5)*13;
         if(h.legA) h.legA.style.transform='rotate('+sw+'deg)';
