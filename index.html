@@ -193,7 +193,8 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .odds-chip{display:inline-flex;align-items:center;gap:1px;background:linear-gradient(135deg,#ffe9a8 0%,#f5c842 45%,#c9960a 100%);color:#5a3a00;font-weight:900;border-radius:6px;padding:1px 8px;font-size:0.82rem;box-shadow:0 1px 3px rgba(201,150,10,0.4);border:1px solid rgba(201,150,10,0.5);text-shadow:0 1px 0 rgba(255,255,255,0.4);}
 .odds-chip-big{background:linear-gradient(135deg,#fff2c0 0%,#ffd24a 35%,#ff8c1a 70%,#e0530a 100%);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);font-size:0.95rem;padding:2px 10px;box-shadow:0 0 12px rgba(255,140,0,0.6),0 2px 4px rgba(0,0,0,0.3);border-color:#ff8c1a;animation:oddsGlow 1.6s ease-in-out infinite;}
 @keyframes oddsGlow{0%,100%{box-shadow:0 0 10px rgba(255,140,0,0.5),0 2px 4px rgba(0,0,0,0.3);}50%{box-shadow:0 0 20px rgba(255,170,30,0.95),0 2px 6px rgba(0,0,0,0.3);}}
-#screen-home{background:transparent;align-items:center;justify-content:center;padding:30px 20px;}
+#screen-home{background:transparent;align-items:center;justify-content:flex-start;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top) + 20px) 20px calc(env(safe-area-inset-bottom) + 28px);height:100dvh;max-height:100dvh;}
+#screen-home>*{flex-shrink:0;}
 .home-btns{width:100%;max-width:320px;display:flex;flex-direction:column;gap:14px;}
 .home-btns .btn{margin-top:0;}
 .scroll-content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(var(--band-total) + 20px);padding-bottom:0;scroll-padding-top:calc(var(--band-total) + 22px);scrollbar-width:none;-ms-overflow-style:none;touch-action:pan-y pinch-zoom;}
@@ -233,7 +234,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .topic-popup-close{margin:10px 16px 14px;display:block;width:calc(100% - 32px);padding:12px;background:#2d2d2d;color:var(--gold);border:none;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;}
 
 /* おしゃれな確認モーダル（すりガラス風） */
-.uiconfirm-overlay{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,8,20,0.55);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);animation:ucFade 0.18s ease;overscroll-behavior:contain;touch-action:manipulation;cursor:pointer;}
+.uiconfirm-overlay{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(8,6,16,0.86);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);animation:ucFade 0.18s ease;overscroll-behavior:contain;touch-action:manipulation;cursor:pointer;}
 body.modal-open{overflow:hidden !important;}
 .uiconfirm-overlay.hidden{display:none;}
 .modal-card{cursor:default;}
@@ -538,20 +539,20 @@ body.modal-open{overflow:hidden !important;}
 
 <!-- HOME -->
 <div class="screen active" id="screen-home">
-  <div style="margin-bottom:24px;padding:0 24px;width:100%;max-width:400px">
+  <div style="margin-bottom:24px;padding:0 clamp(8px,4vw,24px);width:100%;max-width:400px">
     <div style="background:linear-gradient(135deg,#2a1a00 0%,#5a3a00 30%,#c9960a 50%,#5a3a00 70%,#2a1a00 100%);border-radius:12px;border:3px solid #f5c842;box-shadow:0 0 30px rgba(245,200,66,0.5),inset 0 0 20px rgba(0,0,0,0.4);overflow:hidden;">
       <div style="height:10px;background:repeating-linear-gradient(90deg,transparent,transparent 8px,rgba(0,0,0,0.5) 8px,rgba(0,0,0,0.5) 10px);border-bottom:1px dashed rgba(245,200,66,0.4)"></div>
-      <div style="display:flex;padding:12px 16px;gap:12px;align-items:center">
+      <div style="display:flex;padding:12px clamp(8px,3vw,16px);gap:clamp(6px,2.5vw,12px);align-items:center">
         <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">
           <div style="width:14px;height:14px;background:#eee;border-radius:2px;border:1px solid #aaa"></div>
           <div style="width:14px;height:14px;background:#222;border-radius:2px"></div>
           <div style="width:14px;height:14px;background:#c0392b;border-radius:2px"></div>
           <div style="width:14px;height:14px;background:#1a5fcc;border-radius:2px"></div>
         </div>
-        <div style="flex:1;text-align:center">
+        <div style="flex:1;text-align:center;min-width:0">
           <div style="color:rgba(245,200,66,0.6);font-size:0.6rem;letter-spacing:4px;margin-bottom:2px">DREAM PASSPORT</div>
-          <div style="color:#f5c842;font-size:1.5rem;font-weight:900;letter-spacing:0.5px;text-shadow:0 0 10px rgba(245,200,66,0.8);font-family:'Racing Sans One',cursive;white-space:nowrap">夢へのパスポート</div>
-          <div style="color:rgba(255,255,255,0.7);font-size:0.85rem;margin-top:4px;white-space:nowrap">〜人の価値観を読んだ者が勝つ〜</div>
+          <div style="color:#f5c842;font-size:clamp(1.05rem,6.2vw,1.5rem);font-weight:900;letter-spacing:0.5px;text-shadow:0 0 10px rgba(245,200,66,0.8);font-family:'Racing Sans One',cursive;white-space:nowrap">夢へのパスポート</div>
+          <div style="color:rgba(255,255,255,0.7);font-size:clamp(0.7rem,3.4vw,0.85rem);margin-top:4px">〜人の価値観を読んだ者が勝つ〜</div>
           <div style="font-size:3rem;margin:8px 0">🏇</div>
           <div style="display:flex;justify-content:center;gap:6px;margin-top:4px">
             <span style="background:rgba(245,200,66,0.15);border:1px solid rgba(245,200,66,0.4);color:#f5c842;font-size:0.6rem;font-weight:700;padding:2px 8px;border-radius:4px">三連単</span>
@@ -5677,6 +5678,10 @@ const firebaseConfig = {
   appId: "1:503042220626:web:f11171468e0b09269f758b"
 };
 
+// 馬の選択肢(.c1〜.c8)と完全に同じ番号色。演出の番号バッジ等で使う（選択肢と色を統一）
+const HORSE_BG = ['#7ec8f0','#222','#c0392b','#2a72e0','#e0b800','#1a7a1a','#8b1a8b','#ff7f3f'];
+const HORSE_FG = ['#0a3a55','#fff','#fff','#fff','#333','#fff','#fff','#fff'];
+
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
@@ -9485,7 +9490,7 @@ window.showRaceReveal = function(opts, done){
   var N = Math.max(2, Math.min(8, horseNames.length));
   var order = (opts.order || []).filter(function(x){ return typeof x==='number' && x>=0 && x<N; });
   var raceNo = (opts.raceNo!=null) ? (opts.raceNo+'R') : '';
-  var RCOL=['#c0392b','#3498db','#27ae60','#f39c12','#9b59b6','#16a085','#e84393','#7f8c8d'];
+  var RCOL=HORSE_BG;
 
   // 既存の演出overlayがあれば消す
   var old=document.getElementById('race-reveal-overlay'); if(old) old.remove();
@@ -9635,11 +9640,11 @@ window.showRaceReveal = function(opts, done){
   function tmo(fn,ms){ var id=setTimeout(fn,ms); timers.push(id); return id; }
   function cleanup(){ timers.forEach(clearTimeout); timers=[]; if(raf) cancelAnimationFrame(raf); stopCrowd(); }
 
-  function darken(hex){var c=hex.replace('#','');var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return 'rgb('+Math.round(r*0.62)+','+Math.round(g*0.62)+','+Math.round(b*0.62)+')';}
+  function darken(hex){var c=hex.replace('#','');if(c.length===3){c=c[0]+c[0]+c[1]+c[1]+c[2]+c[2];}var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return 'rgb('+Math.round(r*0.62)+','+Math.round(g*0.62)+','+Math.round(b*0.62)+')';}
 
   function runnerHTML(color){
     var dk=darken(color), skin='#ffe0c0';
-    var jk='<svg width="30" height="35" viewBox="0 0 54 64" style="position:absolute;left:5px;top:-1px;z-index:3;overflow:visible;transform:scaleX(-1);transform-origin:center;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,0.3))">'
+    var jk='<svg width="30" height="35" viewBox="0 0 54 64" style="position:absolute;left:5px;top:-1px;z-index:3;overflow:visible;transform:scaleX(-1);transform-origin:center">'
       +'<g class="rr-legB" style="transform-origin:24px 42px"><path d="M22 40 Q18 48 22 55 L26 54 Q24 47 27 41 Z" fill="'+dk+'"/><ellipse cx="22" cy="56" rx="4.4" ry="2.8" fill="#241810"/></g>'
       +'<g class="rr-legA" style="transform-origin:30px 42px"><path d="M28 40 Q30 50 27 58 L32 58 Q34 49 33 41 Z" fill="'+color+'"/><ellipse cx="29" cy="59" rx="4.6" ry="2.9" fill="#3a2616"/></g>'
       +'<ellipse cx="26" cy="36" rx="11" ry="9" fill="'+color+'" stroke="rgba(255,255,255,0.55)" stroke-width="1" transform="rotate(-8 26 36)"/>'
@@ -9674,6 +9679,7 @@ window.showRaceReveal = function(opts, done){
 
   for(var i=0;i<N;i++){
     var color=RCOL[i%8];
+    var fg=HORSE_FG[i%8];
     var h={ num:i+1, idx:i, color:color, finalRank:rankOfHorse[i],
       p1:Math.random()*6.28, f1:0.7+Math.random()*0.5, a1:0.22+Math.random()*0.14,
       x:0, finished:false, tight:tight };
@@ -9683,8 +9689,8 @@ window.showRaceReveal = function(opts, done){
     else if(roll<0.67){ h.early=0.95; h.lateBoost=1.18; }
     else { h.early=0.8; h.lateBoost=1.35; }
     var row=document.createElement('div');
-    row.style.cssText='position:absolute;left:'+startLeft+'px;top:'+(lanesTop+i*laneGap)+'px;display:flex;align-items:center;gap:3px;will-change:left;';
-    var badge='<div class="rr-badge" style="opacity:0;transition:opacity 0.3s;width:21px;height:21px;border-radius:50%;background:'+color+';color:#fff;font-family:sans-serif;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);flex-shrink:0">'+(i+1)+'</div>';
+    row.style.cssText='position:absolute;left:'+startLeft+'px;top:'+(lanesTop+i*laneGap)+'px;display:flex;align-items:center;gap:3px;will-change:transform;transform:translateX(0)';
+    var badge='<div class="rr-badge" style="opacity:0;transition:opacity 0.3s;width:21px;height:21px;border-radius:50%;background:'+color+';color:'+fg+';font-family:sans-serif;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);flex-shrink:0">'+(i+1)+'</div>';
     var dust='<div class="rr-dust" style="font-size:11px;opacity:0;margin-left:-3px">💨</div>';
     row.innerHTML=dust+'<div class="rr-run">'+runnerHTML(color)+'</div>'+badge;
     track.appendChild(row);
@@ -9715,6 +9721,8 @@ window.showRaceReveal = function(opts, done){
   function lightBoard(h){ ding(900+h.placedRank*180);
     var row=document.getElementById('rr-brow'+h.placedRank); if(!row) return;
     var numEl=row.querySelector('.rr-bnum'); var blinks=0;
+    // 着順番号は点滅完了を待たず即座に確定書き込み（演出が途中で終了しても親の順位と必ず一致させる）
+    if(numEl){ numEl.textContent=h.num; numEl.style.color=h.color; numEl.style.textShadow='0 0 8px '+h.color; }
     var iv=setInterval(function(){ blinks++; row.style.opacity=(blinks%2===0)?'1':'0.25';
       if(blinks>=5){ clearInterval(iv); row.style.opacity='1'; numEl.style.color=h.color; numEl.style.textShadow='0 0 8px '+h.color; numEl.textContent=h.num;
         if(h.placedRank===3){ tmo(lightConfirm,250); } } },90);
@@ -9723,6 +9731,17 @@ window.showRaceReveal = function(opts, done){
   var _finished=false;
   function finishAll(){
     if(_finished) return; _finished=true;
+    // 念のため掲示板の1〜3着を親の順位(order)から直接確定（演出が途中終了しても表示を正しく保証）
+    try{
+      for(var rk=1; rk<=Math.min(3, order.length); rk++){
+        var hi=order[rk-1]; if(hi==null) continue;
+        var brow=document.getElementById('rr-brow'+rk); if(!brow) continue;
+        var bnum=brow.querySelector('.rr-bnum'); if(!bnum) continue;
+        var bcol=RCOL[hi%8];
+        bnum.textContent=(hi+1); bnum.style.color=bcol; bnum.style.textShadow='0 0 8px '+bcol;
+        brow.style.opacity='1';
+      }
+    }catch(e){}
     cleanup();
     // 先に結果画面へ遷移させてから（done内でgoTo）、その上にあるレース演出を即削除する。
     // こうすることでオーバーレイの下が既に結果画面になり、遷移中に他画面が一瞬見えない。
@@ -9751,9 +9770,10 @@ window.showRaceReveal = function(opts, done){
     var last=null, startT=null, lastLevel=0, placeCount=0, done3=false, top3Count=0, boardDoneScheduled=false;
     // 各馬の「ゴール時刻ターゲット」を着順に応じて決める（最終着順を保証）
     // finalRank 1が最速、N が最遅。基準時間に着順差で広げる。
-    var baseTime=5.5; // 1着の想定到達秒
+    var baseTime=6.4; // 1着の想定到達秒（終盤をゆっくり見せるため少し長め）
     horses.forEach(function(h){
-      var gapSec = (h.finalRank-1) * (tight?0.06:0.14) + Math.random()*(tight?0.03:0.05);
+      // 着順差を大きめに取り、馬が1頭ずつ間を空けてゴールするようにする（順位の確定を楽しめる）
+      var gapSec = (h.finalRank-1) * (tight?0.16:0.34) + Math.random()*(tight?0.05:0.08);
       h.targetTime = baseTime + gapSec;
     });
     function frame(ts){
@@ -9763,7 +9783,7 @@ window.showRaceReveal = function(opts, done){
       var lead=0; horses.forEach(function(h){ if(h.x>lead) lead=h.x; });
       var prog=Math.min(1, lead/finishX);
       if(prog-lastLevel>0.05){ lastLevel=prog; setCrowdLevel(prog); }
-      if(!done3 && prog>0.60){ straight.style.transition='width 0.7s'; straight.style.width='40%'; setCrowdLevel(1); done3=true; }
+      if(!done3 && prog>0.52){ straight.style.transition='width 0.7s'; straight.style.width='40%'; setCrowdLevel(1); done3=true; }
       horses.forEach(function(h){
         if(h.finished) return;
         // 演出（脚質による速度の揺れ）
@@ -9793,12 +9813,14 @@ window.showRaceReveal = function(opts, done){
         if(h.legA) h.legA.style.transform='rotate('+sw+'deg)';
         if(h.legB) h.legB.style.transform='rotate('+(-sw)+'deg)';
         h.runEl.style.transform='translateY('+bob+'px)'+(done3?' rotate(-3deg)':'');
-        h.dustEl.style.opacity=done3?'0.75':'0.4';
+        var dustOp=done3?'0.75':'0.4';
+        if(h._dustOp!==dustOp){ h.dustEl.style.opacity=dustOp; h._dustOp=dustOp; }
         if(h.x>=finishX){ h.x=finishX; h.finished=true; placeCount++; h.placedRank=h.finalRank;
           if(h.finalRank<=3){ flashShake(h.finalRank===1); lightBoard(h); top3Count++;
-            if(top3Count>=Math.min(3,N) && !boardDoneScheduled){ boardDoneScheduled=true; tmo(function(){ stopCrowd(); }, 300); tmo(finishAll, 1300); } } }
-        h.el.style.left=(startLeft+h.x)+'px';
-        h.el.style.zIndex=5+Math.round(h.x/12);
+            if(top3Count>=Math.min(3,N) && !boardDoneScheduled){ boardDoneScheduled=true; tmo(function(){ stopCrowd(); }, 300); tmo(finishAll, 2100); } } }
+        h.el.style.transform='translateX('+h.x+'px)';
+        var zi=5+Math.round(h.x/12);
+        if(h._zi!==zi){ h.el.style.zIndex=zi; h._zi=zi; }
       });
       if(!horses.every(function(h){return h.finished;})){ raf=requestAnimationFrame(frame); }
       else { tmo(function(){ stopCrowd(); }, 500); tmo(finishAll, 900); }
@@ -9831,11 +9853,11 @@ window.showPaddockClosing = function(opts, done){
  try{
   opts = opts || {};
   var N = Math.max(2, Math.min(8, parseInt(opts.horseCount) || 6));
-  var colors=['#c0392b','#3498db','#27ae60','#f39c12','#9b59b6','#16a085','#e84393','#7f8c8d'];
-  function darken(hex){var c=hex.replace('#','');var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return 'rgb('+Math.round(r*0.62)+','+Math.round(g*0.62)+','+Math.round(b*0.62)+')';}
+  var colors=HORSE_BG;
+  function darken(hex){var c=hex.replace('#','');if(c.length===3){c=c[0]+c[0]+c[1]+c[1]+c[2]+c[2];}var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return 'rgb('+Math.round(r*0.62)+','+Math.round(g*0.62)+','+Math.round(b*0.62)+')';}
   function runnerHTML(color){
     var dk=darken(color), skin='#ffe0c0';
-    var jk='<svg width="25" height="30" viewBox="0 0 54 64" style="position:absolute;left:5px;top:-2px;z-index:3;overflow:visible;transform:scaleX(-1);transform-origin:center;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,0.3))">'
+    var jk='<svg width="25" height="30" viewBox="0 0 54 64" style="position:absolute;left:5px;top:-2px;z-index:3;overflow:visible;transform:scaleX(-1);transform-origin:center">'
       +'<g class="legB" style="transform-origin:24px 42px"><path d="M22 40 Q18 48 22 55 L26 54 Q24 47 27 41 Z" fill="'+dk+'"/><ellipse cx="22" cy="56" rx="4.4" ry="2.8" fill="#241810"/></g>'
       +'<g class="legA" style="transform-origin:30px 42px"><path d="M28 40 Q30 50 27 58 L32 58 Q34 49 33 41 Z" fill="'+color+'"/><ellipse cx="29" cy="59" rx="4.6" ry="2.9" fill="#3a2616"/></g>'
       +'<ellipse cx="26" cy="36" rx="11" ry="9" fill="'+color+'" stroke="rgba(255,255,255,0.55)" stroke-width="1" transform="rotate(-8 26 36)"/>'
@@ -9890,14 +9912,26 @@ window.showPaddockClosing = function(opts, done){
   function build(){
     layer.innerHTML=''; horses=[];
     var W=ov.clientWidth||window.innerWidth, H=ov.clientHeight||window.innerHeight;
-    var cx=W/2, cy=H/2 - 16;
-    var rx=Math.min(W*0.39,140), ry=Math.min(H*0.28,150);
+    // 馬の円は点線トラック(#pc-ring2)の実寸に合わせる → 画面サイズに関わらず中心・大きさが一致
+    var cx=W/2, cy=H/2;
+    var rx, ry;
+    try{
+      var ring=ov.querySelector('#pc-ring2');
+      var rb=ring.getBoundingClientRect();
+      var ob=ov.getBoundingClientRect();
+      cx=(rb.left-ob.left)+rb.width/2;
+      cy=(rb.top-ob.top)+rb.height/2;
+      rx=rb.width/2;  ry=rb.height/2;
+    }catch(e){
+      rx=Math.min(W*0.40,165); ry=Math.min(H*0.34,194);
+    }
     for(var i=0;i<N;i++){
       var color=colors[i%8];
+      var fg=HORSE_FG[i%8];
       var el=document.createElement('div');
       el.style.cssText='position:absolute;left:0;top:0;will-change:transform;';
       el.innerHTML='<div style="position:relative">'+runnerHTML(color)
-        +'<div style="position:absolute;left:50%;top:-14px;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:'+color+';color:#fff;font-weight:900;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.4)">'+(i+1)+'</div></div>';
+        +'<div style="position:absolute;left:50%;top:-14px;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:'+color+';color:'+fg+';font-weight:900;font-size:10px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.4)">'+(i+1)+'</div></div>';
       layer.appendChild(el);
       horses.push({ el:el, phase:(i/N)*Math.PI*2, cx:cx, cy:cy, rx:rx, ry:ry,
         legA:el.querySelector('.legA'), legB:el.querySelector('.legB'), inner:el.querySelector('.runner-inner') });
@@ -9921,8 +9955,9 @@ window.showPaddockClosing = function(opts, done){
         if(h.legB) h.legB.style.transform='rotate('+(-sw)+'deg)';
         var bob=Math.sin(g)*2;
         h.el.style.transform='translate('+(x-19)+'px,'+(y-20+bob)+'px)';
-        h.el.style.zIndex=10+Math.round(y);
-        if(h.inner) h.inner.style.transform=faceLeft?'scaleX(1)':'scaleX(-1)';
+        var zi=10+Math.round(y);
+        if(h._zi!==zi){ h.el.style.zIndex=zi; h._zi=zi; }
+        if(h.inner){ var sx=faceLeft?'scaleX(1)':'scaleX(-1)'; if(h._sx!==sx){ h.inner.style.transform=sx; h._sx=sx; } }
       });
       raf=requestAnimationFrame(frame);
     }
@@ -9953,7 +9988,7 @@ window.showNoWinnerEffect = function(opts, done){
   opts=opts||{};
   var order=(opts.order||[]);
   var raceNo=(opts.raceNo!=null)?(opts.raceNo+'R'):'';
-  var RCOL=['#c0392b','#3498db','#27ae60','#f39c12','#9b59b6','#16a085','#e84393','#7f8c8d'];
+  var RCOL=HORSE_BG;
   var old=document.getElementById('nowin-overlay'); if(old) old.remove();
   var ov=document.createElement('div'); ov.id='nowin-overlay';
   ov.style.cssText='position:fixed;inset:0;z-index:99999;overflow:hidden;background:linear-gradient(180deg,#2a5d2e 0%,#234d27 60%,#1a3d1e 100%);';
