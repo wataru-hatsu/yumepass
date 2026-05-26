@@ -6262,19 +6262,12 @@ window.rejoinRoom = async function(){
     window.online.gameStarted = false;
     window.online._isRejoining = true; // 復帰時はゲーム開始ファンファーレを鳴らさない目印
 
-    // 復帰フラグを立てる（このラウンドは観戦のみ）
-    // ただし、お題選択フェーズ・抽選フェーズなら通常参加できる
-    const currentPhase = roomData.game?.phase;
-    const currentRound = roomData.game?.currentRound || 0;
-    const canParticipateThisRound = (currentPhase === 'topic-select' || currentPhase === 'topic-lottery');
-    if(!canParticipateThisRound){
-      const rejoinFlagRef = ref(db, `rooms/${code}/players/${playerId}/rejoinedRound`);
-      await set(rejoinFlagRef, currentRound);
-    } else {
-      // 既存の rejoinedRound があれば消す（通常参加できるので）
+    // 「待つ」方式：誰かが落ちても他の人はその人を待つので、復帰したらどのフェーズでも
+    // そのラウンドにそのまま参加できる（観戦スキップは廃止）。rejoinedRound は常にクリア。
+    try{
       const rejoinFlagRef = ref(db, `rooms/${code}/players/${playerId}/rejoinedRound`);
       await set(rejoinFlagRef, null);
-    }
+    }catch(e){}
 
     window.online.roomCode = code;
     window.online.playerId = playerId;
@@ -6334,6 +6327,8 @@ function enterLobby(){
       window.online._lobbyCount = cnt;
     } catch(e){}
     renderLobbyPlayers(players);
+    // 誰かがオフラインになったら、ホストに「待つ/退出させる」を選べる通知を出す
+    try{ notifyHostOnPlayerOffline(players); }catch(e){}
     // ゲーム中（ロビー以外）でも、ホストがオフラインになったらオンライン最古参が引き継いで進行を止めない
     try{ ensureHostAndProgress(players); }catch(e){}
   });
@@ -6635,30 +6630,8 @@ function onGameStarted(){
       } else if(phase === 'topic-lottery'){
         enterOnlineTopicLottery(game);
       } else if(phase === 'betting'){
-        // 復帰者は通常、観戦のみなので直接待機画面へ
-        const players = getOnlinePlayersArray();
-        const myPlayer = players.find(p => p.id === window.online.playerId);
-        const isRejoined = myPlayer && myPlayer.rejoinedRound != null && myPlayer.rejoinedRound === (game.currentRound || 1);
-        if(isRejoined){
-          // 子の場合はオフラインペナルティを記録
-          const oyaIdx = game.oyaIndex || 0;
-          const isOya = players[oyaIdx]?.id === window.online.playerId;
-          const myBet = game.bets?.[window.online.playerId];
-          if(!isOya && !myBet){
-            const minBet = window.online.settings?.minBet || 0;
-            const betRef = ref(db, `rooms/${window.online.roomCode}/game/bets/${window.online.playerId}`);
-            set(betRef, {
-              betType: 'tansho',
-              selections: [],
-              amount: 0,
-              skipped: true,
-              offlinePenalty: minBet
-            });
-          }
-          enterOnlineBetWait();
-        } else {
-          enterOnlineBetting(game);
-        }
+        // 「待つ」方式：復帰者も観戦せず通常の賭け画面へ
+        enterOnlineBetting(game);
       } else if(phase === 'reveal'){
         enterOnlineReveal(game);
       } else if(phase === 'result'){
@@ -6817,65 +6790,7 @@ function enterOnlineTopicSelect(){
   const currentRound = window.online.game?.currentRound || 1;
   const myPlayer = players.find(p => p.id === window.online.playerId);
 
-  // 復帰中（rejoinedRound === currentRound）なら自動でランダム選択して待機
-  if(myPlayer && myPlayer.rejoinedRound != null && myPlayer.rejoinedRound === currentRound){
-    const currentPhase = window.online.game?.phase;
-    // 既にフェーズが betting/reveal/result まで進んでいる → 直接賭け待機画面へ
-    if(currentPhase === 'betting' || currentPhase === 'reveal' || currentPhase === 'result'){
-      // 自分の bet が未登録ならオフラインベット記録
-      const myBet = window.online.game?.bets?.[window.online.playerId];
-      if(!myBet && !isOya){
-        const minBet = window.online.settings?.minBet || 0;
-        (async () => {
-          try {
-            const betRef = ref(db, `rooms/${window.online.roomCode}/game/bets/${window.online.playerId}`);
-            await set(betRef, {
-              betType: 'tansho',
-              selections: [],
-              amount: 0,
-              skipped: true,
-              offlinePenalty: minBet
-            });
-          } catch(e){ console.error(e); }
-        })();
-      }
-      // フェーズに応じた画面に遷移（賭け待機 / reveal はそのまま onGameStateUpdate で）
-      if(currentPhase === 'betting'){
-        enterOnlineBetWait();
-      }
-      // reveal/result の場合は onGameStateUpdate がうまく処理する
-      return;
-    }
-    // フェーズが topic-select/topic-lottery → 自動でランダム選択して待機
-    if(!(topicMode === 'children' && isOya)){
-      const mySel = window.online.game?.topicSelections?.[window.online.playerId];
-      if(!mySel){
-        const topics = getOnlineTopics();
-        if(topics && topics.length > 0){
-          const rand = topics[Math.floor(Math.random() * topics.length)];
-          const snapshot = {
-            id: rand.id,
-            title: rand.title,
-            icon: rand.icon || '🎯',
-            horses: rand.horses || [],
-            category: rand.category || 'g3'
-          };
-          (async () => {
-            try {
-              const selRef = ref(db, `rooms/${window.online.roomCode}/game/topicSelections/${window.online.playerId}`);
-              await set(selRef, snapshot);
-              if(categoryStep) categoryStep.style.display = 'none';
-              if(listStep) listStep.style.display = 'none';
-              showTopicSubmitted(rand.id);
-              goTo('screen-online-topic-select');
-            } catch(e){ console.error(e); }
-          })();
-          showNotif('🔄 復帰直後 — このラウンドは観戦のみ');
-          return;
-        }
-      }
-    }
-  }
+  // 「待つ」方式：途中復帰しても観戦スキップはしない。復帰者もそのラウンドに通常参加する。
 
   // お題選択方式が「子だけ」で自分が親 → 待機画面
   if(topicMode === 'children' && isOya){
@@ -7430,6 +7345,50 @@ function enterOnlineTopicLottery(game){
   }, 60);
 }
 
+// 誰かがオフラインになったら、ホストに「待つ / 退出させる」を選べる通知（ダイアログ）を出す。
+// 前回のオンライン状態を記憶し、true→false に変わった瞬間だけ通知する（連続通知を防ぐ）。
+function notifyHostOnPlayerOffline(playersObj){
+  try{
+    const prev = window.online._onlineState || {};
+    const cur = {};
+    const nowOffline = [];
+    Object.entries(playersObj || {}).forEach(([id, p]) => {
+      const isOnline = p.online !== false;
+      cur[id] = isOnline;
+      // 自分以外で、前回オンライン→今回オフラインに変わった人
+      if(id !== window.online.playerId && prev[id] === true && isOnline === false && !p.kicked){
+        nowOffline.push({ id, name: p.name || 'プレイヤー' });
+      }
+    });
+    window.online._onlineState = cur;
+
+    // ホストのみ、ゲーム中（gameStarted）に通知。1人ずつ確認ダイアログを出す。
+    if(!window.online.isHost || !window.online.gameStarted) return;
+    if(nowOffline.length === 0) return;
+    // 同時に複数落ちても順番に処理（最初の1人だけダイアログ、残りは次回の状態変化で）
+    const target = nowOffline[0];
+    // 既に確認中なら二重に出さない
+    if(window.online._offlineDialogFor === target.id) return;
+    window.online._offlineDialogFor = target.id;
+    (async () => {
+      try{
+        const ok = await window.uiConfirm({
+          icon:'📡',
+          title:`${target.name} さんがオフラインになりました`,
+          bodyHtml:'<div style="color:#c8bfa8;font-size:0.9rem;line-height:1.7">そのまま<strong>戻ってくるのを待つ</strong>こともできます。<br>戻ってこない場合は<strong>退出させて</strong>ゲームを進められます。</div>',
+          okText:`🚪 ${target.name} さんを退出させる`,
+          cancelText:'待つ'
+        });
+        window.online._offlineDialogFor = null;
+        if(ok){
+          // まだオフラインのままなら退出
+          if(typeof window.kickPlayer === 'function'){ window.kickPlayer(target.id, target.name); }
+        }
+      }catch(e){ window.online._offlineDialogFor = null; }
+    })();
+  }catch(e){ console.error('notifyHostOnPlayerOffline error:', e); }
+}
+
 // ゲーム状態をリアルタイム監視
 
 // プレイヤーリスト描画 + ホスト移譲
@@ -7632,34 +7591,8 @@ function enterOnlineBetting(game){
   const myBet = bets[window.online.playerId];
   const oyaResult = game.oyaResult;
 
-  // 復帰中（rejoinedRound === currentRound）なら、子はこのラウンド観戦のみ。
-  // 親は順位を入力すればラウンドを成立させられるので、観戦にせず通常フローへ進める（待ちで止まらないように）。
+  // 「待つ」方式：途中復帰しても観戦スキップはしない。復帰者（親も子も）はそのラウンドに通常参加する。
   const myPlayer = players.find(p => p.id === window.online.playerId);
-  if(myPlayer && myPlayer.rejoinedRound != null && myPlayer.rejoinedRound === (game.currentRound || 1)){
-    if(isOya){
-      // 親で復帰中：観戦にせず、通常どおり順位入力を促す（下の通常フローに進む）
-    } else {
-      // 子で復帰中の場合：自動でオフラインベット記録
-      if(!myBet){
-        const minBet = window.online.settings?.minBet || 0;
-        (async () => {
-          try {
-            const betRef = ref(db, `rooms/${window.online.roomCode}/game/bets/${window.online.playerId}`);
-            await set(betRef, {
-              betType: 'tansho',
-              selections: [],
-              amount: 0,
-              skipped: true,
-              offlinePenalty: minBet
-            });
-          } catch(e){ console.error(e); }
-        })();
-      }
-      enterOnlineBetWait();
-      showNotif('🔄 復帰直後 — このラウンドは観戦のみ');
-      return;
-    }
-  }
 
   if(isOya){
     if(oyaResult && oyaResult.length === 3){
@@ -9002,31 +8935,12 @@ function enterOnlineBetWait(){
   const isOya = players[oyaIdx]?.id === window.online.playerId;
   const currentRound = game?.currentRound || 1;
   const myPlayer = players.find(p => p.id === window.online.playerId);
-  const isRejoinedThisRound = !!(myPlayer && myPlayer.rejoinedRound != null && myPlayer.rejoinedRound === currentRound);
   const myBet = game?.bets?.[window.online.playerId];
   const minBet = window.online.settings?.minBet || 0;
 
   const msgEl = document.getElementById('obw-message');
   if(msgEl){
-    // 復帰直後でCPUが代行中の場合
-    if(isRejoinedThisRound){
-      const penaltyInfo = (myBet && myBet.offlinePenalty > 0)
-        ? `<div style="background:rgba(170,34,34,0.25);border:1px solid #ff8c8c;border-radius:8px;padding:10px 12px;margin-top:14px;text-align:left">
-            <div style="color:#ff8c8c;font-weight:900;font-size:0.85rem;margin-bottom:4px">💸 オフラインペナルティ</div>
-            <div style="color:#ffcccc;font-size:0.8rem;line-height:1.5">このラウンドの賭けに参加できなかったため、<br>最低ベット額 <strong style="color:#fff">${myBet.offlinePenalty.toLocaleString()}点</strong> が引かれます</div>
-          </div>`
-        : '';
-      msgEl.innerHTML = `
-        <div style="background:linear-gradient(135deg,#1a3d2a,#0d2a1a);border:3px solid #5ace5a;border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 0 24px rgba(90,206,90,0.3)">
-          <div style="color:#aef5a0;font-size:0.75rem;letter-spacing:4px;font-weight:900;margin-bottom:6px">RECONNECTED</div>
-          <div style="color:white;font-size:1.4rem;font-weight:900;margin-bottom:10px">🔄 復帰しました！</div>
-          <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:12px;color:#ffffff;font-size:0.95rem;line-height:1.6;font-weight:700">
-            このラウンドは<br><span style="color:#ffd700">CPUが代行中</span>です<br>
-            <span style="color:#aef5a0;font-size:0.85rem;font-weight:normal">次のラウンドから参加できます</span>
-          </div>
-          ${penaltyInfo}
-        </div>`;
-    } else if(isOya){
+    if(isOya){
       const r = window.onlineBet.oyaSelections;
       const topic = game?.selectedTopic;
       if(r.length === 3 && topic){
@@ -12279,14 +12193,8 @@ async function restartRoundWithNextOya(nextOyaId){
     const playersObj = (await get(ref(db, `rooms/${window.online.roomCode}/players`))).val() || {};
     const players = Object.entries(playersObj).map(([id,p])=>({id,...p})).sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
     if(!players.length) return;
-    // 賭け金の返金：今ラウンドで bets に金額がある子に返金（pointsを戻す）
-    const points = Object.assign({}, g.points || {});
-    const bets = g.bets || {};
-    Object.keys(bets).forEach(pid => {
-      const b = bets[pid];
-      const amt = (b && Number(b.amount)) ? Number(b.amount) : 0;
-      if(amt > 0 && points[pid] != null){ points[pid] = (Number(points[pid])||0) + amt; }
-    });
+    // 注意：賭け金は結果計算時にまとめて精算される設計（賭け確定時点では points から引かれていない）。
+    // よって、やり直し時に points をいじる必要はない（bets を破棄すれば賭けは無かったことになる）。
     // 次の親のインデックスを、キック前に決めた nextOyaId の新配列内位置から求める
     let nextOyaIdx = -1;
     if(nextOyaId){
@@ -12300,7 +12208,6 @@ async function restartRoundWithNextOya(nextOyaId){
     const updates = {};
     updates[`${base}/oyaIndex`] = nextOyaIdx;
     updates[`${base}/phase`] = 'topic-select';
-    updates[`${base}/points`] = points;
     updates[`${base}/bets`] = null;
     updates[`${base}/oyaResult`] = null;
     updates[`${base}/topicSelections`] = null;
@@ -12315,7 +12222,7 @@ async function restartRoundWithNextOya(nextOyaId){
     delete window.online._revealTriggered;
     delete window.online._resultTriggered;
     delete window.online._nextTriggered;
-    try{ if(window.showNotif) window.showNotif('🔄 親が抜けたため、親を交代してこのラウンドをやり直します（賭け金は返金）'); }catch(e){}
+    try{ if(window.showNotif) window.showNotif('🔄 親が抜けたため、親を交代してこのラウンドをやり直します（このラウンドの賭けは無効）'); }catch(e){}
   }catch(e){ console.error('restartRoundWithNextOya error:', e); }
 }
 
