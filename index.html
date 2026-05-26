@@ -851,7 +851,7 @@ body.modal-open{overflow:hidden !important;}
     <div id="ob-ko-area">
       <div class="panel" id="ob-bettype-panel">
         <div class="panel-title" style="display:flex;align-items:center;gap:8px">🎰 賭けの種類 <span onclick="var d=document.getElementById('ob-bettype-detail');d.style.display=(d.style.display==='none'?'block':'none')" style="margin-left:auto;background:var(--gold);color:#1a1a1a;font-size:0.62rem;font-weight:900;padding:3px 9px;border-radius:10px;cursor:pointer;letter-spacing:0;text-transform:none">👆 賭け方の詳細</span></div>
-        <div style="font-size:0.85rem;color:#333;line-height:1.5;margin-bottom:8px;background:rgba(245,200,66,0.14);border-radius:6px;padding:7px 9px">💡 オッズは人気で変動します。</div>
+        <div id="ob-odds-notice" style="font-size:0.85rem;color:#333;line-height:1.5;margin-bottom:8px;background:rgba(245,200,66,0.14);border-radius:6px;padding:7px 9px">💡 オッズは人気で変動します。</div>
         <!-- 賭け方の詳細（タップで開閉）-->
         <div id="ob-bettype-detail" style="display:none;margin-bottom:8px;background:rgba(0,0,0,0.04);border-radius:8px;padding:8px 10px;font-size:0.78rem;color:#222;line-height:1.7">
           <div><strong>単勝</strong>：1位をズバリ当てる</div>
@@ -1366,7 +1366,7 @@ body.modal-open{overflow:hidden !important;}
     </div>
     <div class="panel" id="off-bettype-panel">
       <div class="panel-title" style="display:flex;align-items:center;gap:8px">🎰 賭けの種類 <span onclick="var d=document.getElementById('off-bettype-detail');d.style.display=(d.style.display==='none'?'block':'none')" style="margin-left:auto;background:var(--gold);color:#1a1a1a;font-size:0.62rem;font-weight:900;padding:3px 9px;border-radius:10px;cursor:pointer;letter-spacing:0;text-transform:none">👆 賭け方の詳細</span></div>
-      <div style="font-size:0.85rem;color:#333;line-height:1.5;margin-bottom:8px;background:rgba(245,200,66,0.14);border-radius:6px;padding:7px 9px">💡 オッズは人気で変動します。</div>
+      <div id="off-odds-notice" style="font-size:0.85rem;color:#333;line-height:1.5;margin-bottom:8px;background:rgba(245,200,66,0.14);border-radius:6px;padding:7px 9px">💡 オッズは人気で変動します。</div>
       <!-- 賭け方の詳細（タップで開閉）-->
       <div id="off-bettype-detail" style="display:none;margin-bottom:8px;background:rgba(0,0,0,0.04);border-radius:8px;padding:8px 10px;font-size:0.78rem;color:#222;line-height:1.7">
         <div><strong>単勝</strong>：1位をズバリ当てる</div>
@@ -2310,6 +2310,45 @@ function getOddsRangeHint(betType){
   const hi = Number.isInteger(c.maxOdds) ? c.maxOdds : c.maxOdds.toFixed(1);
   return `目安 ×${lo}〜${hi}（人気で変動）`;
 }
+// 賭け方の詳細パネルを人数に応じて組み立てて差し込む
+// N>=3: 各賭け方にオッズ範囲(×lo〜hi)＋「人気で低く/薄く高く」の一言
+// N==2: 各賭け方に確定オッズ(×値 固定)のみ。変動の説明・上部の「人気で変動」案内は出さない
+function fillBetTypeDetail(detailId, noticeId, N){
+  const detail = document.getElementById(detailId);
+  if(!detail) return;
+  const ORDER = ['tansho','fukusho','umaren','umatan','wide','sanrenfuku','sanrentan'];
+  const DESC = {
+    tansho:'1位をズバリ当てる', fukusho:'選んだ1頭が3位以内ならOK',
+    umaren:'1・2位の2頭・順番自由', umatan:'1・2位を順番通り',
+    wide:'選んだ2頭が3位以内ならOK', sanrenfuku:'1〜3位の3頭・順番自由',
+    sanrentan:'1〜3位を順番通り'
+  };
+  const fmt = (v)=> Number.isInteger(v) ? v : v.toFixed(1);
+  const isN2 = (N === 2);
+  let rows = ORDER.map(function(k){
+    const nm = (typeof BET_NAMES!=='undefined' && BET_NAMES[k]) ? BET_NAMES[k] : k;
+    if(isN2){
+      const o = (typeof N2_FIXED_ODDS!=='undefined' && N2_FIXED_ODDS[k]!=null) ? N2_FIXED_ODDS[k] : null;
+      const odds = (o!=null) ? ` <span style="color:#1a6a1a;font-weight:800">（×${fmt(o)} 固定）</span>` : '';
+      return `<div><strong>${nm}</strong>：${DESC[k]}${odds}</div>`;
+    } else {
+      const c = (typeof BET_CONFIG!=='undefined') ? BET_CONFIG[k] : null;
+      const range = c ? ` <span style="color:#a06000;font-weight:700">（×${fmt(c.minOdds)}〜${fmt(c.maxOdds)}）</span>` : '';
+      return `<div><strong>${nm}</strong>：${DESC[k]}${range}</div>`;
+    }
+  }).join('');
+  if(!isN2){
+    rows += '<div style="margin-top:8px;padding-top:8px;border-top:1px dashed #ccc">'
+      + '<strong>📊 オッズ（倍率）の決まり方</strong><br>'
+      + '人気が集中した買い目ほどオッズは<strong>低く</strong>、人気が薄い買い目ほど<strong>高く</strong>なります。</div>';
+  }
+  detail.innerHTML = rows;
+  // 上部の「💡 オッズは人気で変動します」案内：2人時は隠す
+  if(noticeId){
+    const notice = document.getElementById(noticeId);
+    if(notice) notice.style.display = isN2 ? 'none' : '';
+  }
+}
 // 賭け方の「当てやすさ/配当」のざっくり度合い（★表記）
 const BET_DIFFICULTY = {
   tansho:    { hit:'★★★☆☆', pay:'★★☆☆☆' },
@@ -3122,6 +3161,17 @@ try{
 window.scrollScreenTop(_scr);
 try{ if(typeof window.syncSafeTop==='function') window.syncSafeTop(); }catch(e){}
 if(id==='screen-rules')renderRulesScreen();if(id==='screen-bet'&&typeof renderOfflineCart==='function'){try{renderOfflineCart();}catch(e){}}if(id==='screen-online-betting'&&typeof renderOnlineCart==='function'){try{renderOnlineCart();}catch(e){}}
+// 賭け方の詳細を人数に応じて埋める（3人以上=範囲＋変動の一言、2人=確定オッズのみ）
+try{
+  if(id==='screen-online-betting' && typeof fillBetTypeDetail==='function'){
+    var _no = (typeof window.getOnlinePlayersArray==='function') ? window.getOnlinePlayersArray().length : 0;
+    fillBetTypeDetail('ob-bettype-detail','ob-odds-notice', _no);
+  }
+  if(id==='screen-bet' && typeof fillBetTypeDetail==='function'){
+    var _nf = (typeof state==='object' && state && Array.isArray(state.players)) ? state.players.length : 0;
+    fillBetTypeDetail('off-bettype-detail','off-odds-notice', _nf);
+  }
+}catch(e){}
 // renderの後にもう一度（中身が増えて高さが変わるケースに対応）
 window.scrollScreenTop(_scr);
 // 最終結果画面に入ったら、画面表示の0.8秒後にクラッカー＋紙吹雪（このゲームで1回だけ）
