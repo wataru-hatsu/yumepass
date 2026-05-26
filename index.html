@@ -658,7 +658,7 @@ body.modal-open{overflow:hidden !important;}
 
     <div id="lobby-host-controls" style="display:none;margin:20px 10px">
       <details class="panel" id="lobby-host-settings">
-        <summary class="panel-title" style="cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;padding:12px 4px;margin:-6px 0;touch-action:manipulation;-webkit-tap-highlight-color:rgba(245,200,66,0.2);white-space:nowrap;font-size:0.95rem">⚙️ ゲーム設定（ホスト）<span style="margin-left:auto;font-size:0.7rem;color:#a07a10;font-weight:700;white-space:nowrap">タップで開閉 ▾</span></summary>
+        <summary class="panel-title" style="cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;padding:12px 4px;margin:-6px 0;touch-action:manipulation;-webkit-tap-highlight-color:rgba(245,200,66,0.2);white-space:nowrap;font-size:0.95rem">⚙️ ゲーム設定（ホスト）<span style="margin-left:auto;font-size:0.7rem;color:#1a1a1a;font-weight:700;white-space:nowrap">タップで開閉 ▾</span></summary>
 
         <div style="margin-top:10px">
           <label style="font-size:0.8rem;color:#333;display:block;margin-bottom:4px">🎯 ラウンド数</label>
@@ -705,7 +705,7 @@ body.modal-open{overflow:hidden !important;}
         </div>
       </details>
 
-      <button class="btn btn-primary sfx-mute" onclick="startOnlineGame()" style="background:linear-gradient(135deg,#1a5fcc,#0d3d7a);color:white;margin-top:10px">🎮 ゲームを開始（2人以上で）</button>
+      <button class="btn btn-primary sfx-mute" onclick="startOnlineGame()" style="background:linear-gradient(135deg,#1a5fcc,#0d3d7a);color:white;margin-top:22px">🎮 ゲームを開始（2人以上で）</button>
     </div>
 
     <div id="lobby-guest-info" style="display:none;margin:20px 10px">
@@ -5721,41 +5721,50 @@ function renderFinalGraph(){
     }
     return { name:p.name, pi, pts };
   });
-  // 値域
+  // 値域（縦軸はキリのいい値に）
   let maxV=-Infinity, minV=Infinity;
   series.forEach(s=>s.pts.forEach(v=>{ if(v>maxV)maxV=v; if(v<minV)minV=v; }));
-  if(maxV===minV){ maxV+=1; minV-=1; }
-  const pad=(maxV-minV)*0.1; maxV+=pad; minV-=pad; if(minV<0&&Math.min(...series.flatMap(s=>s.pts))>=0) minV=0;
+  if(!isFinite(maxV)) maxV=1000; if(!isFinite(minV)) minV=0;
+  // 下限は0（マイナスがある場合のみ下に拡張）、上限はキリのいい単位に切り上げ
+  const realMin = minV;
+  minV = realMin < 0 ? realMin : 0;
+  // 目盛り単位を値域に応じてキリよく選ぶ
+  const span0 = Math.max(1, maxV - minV);
+  const rawStep = span0/4;
+  const niceStep = (function(r){ const p=Math.pow(10,Math.floor(Math.log10(r))); const f=r/p; let n; if(f<=1)n=1; else if(f<=2)n=2; else if(f<=2.5)n=2.5; else if(f<=5)n=5; else n=10; return n*p; })(rawStep);
+  // 上限・下限を単位の倍数に丸める
+  maxV = Math.ceil(maxV/niceStep)*niceStep;
+  minV = Math.floor(minV/niceStep)*niceStep;
+  const GLINES = Math.max(2, Math.round((maxV-minV)/niceStep));
   // 寸法
-  const W=Math.max(300, 60+rounds*70), H=220, L=46, R=12, T=14, B=26;
+  const W=Math.max(320, 70+rounds*78), H=240, L=54, R=14, T=16, B=30;
   const plotW=W-L-R, plotH=H-T-B;
   const x=(i)=> L + (rounds===0?0:(i/rounds)*plotW);
   const y=(v)=> T + plotH - ((v-minV)/(maxV-minV))*plotH;
   // 色（CSS .c1〜.c8 と対応する代表色）
   const LINE=['#7ec8f0','#7ac043','#c0392b','#2a72e0','#e0b800','#1a7a1a','#8b1a8b','#ff7f3f'];
   let svg=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="font-family:sans-serif">`;
-  // 横グリッド＋目盛
-  const GLINES=4;
+  // 横グリッド＋目盛（キリのいい値）
   for(let g=0;g<=GLINES;g++){
-    const vv=minV+(maxV-minV)*(g/GLINES); const yy=y(vv);
+    const vv=minV+niceStep*g; const yy=y(vv);
     svg+=`<line x1="${L}" y1="${yy.toFixed(1)}" x2="${W-R}" y2="${yy.toFixed(1)}" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>`;
-    svg+=`<text x="${L-6}" y="${(yy+3).toFixed(1)}" text-anchor="end" font-size="9" fill="#bbb">${Math.round(vv).toLocaleString()}</text>`;
+    svg+=`<text x="${L-7}" y="${(yy+4).toFixed(1)}" text-anchor="end" font-size="12" fill="#999">${Math.round(vv).toLocaleString()}</text>`;
   }
   // X軸ラベル（R0=開始, R1.., 最終）
   for(let i=0;i<=rounds;i++){
-    svg+=`<text x="${x(i).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="9" fill="#bbb">${i===0?'開始':('R'+i)}</text>`;
+    svg+=`<text x="${x(i).toFixed(1)}" y="${H-9}" text-anchor="middle" font-size="12" fill="#999">${i===0?'開始':('R'+i)}</text>`;
   }
   // 折れ線
   series.forEach(s=>{
     const col=LINE[s.pi%8];
     const d=s.pts.map((v,i)=>`${i===0?'M':'L'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
-    svg+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>`;
-    s.pts.forEach((v,i)=>{ svg+=`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.6" fill="${col}"/>`; });
+    svg+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/>`;
+    s.pts.forEach((v,i)=>{ svg+=`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="3.2" fill="${col}"/>`; });
   });
   svg+=`</svg>`;
-  // 凡例
-  const legend='<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px">'+
-    series.map(s=>`<span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;color:#eee"><span style="width:14px;height:3px;background:${LINE[s.pi%8]};display:inline-block;border-radius:2px"></span>${escapeHtml(s.name)}</span>`).join('')+'</div>';
+  // 凡例（名前は黒文字・大きめ）
+  const legend='<div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:10px">'+
+    series.map(s=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:0.95rem;font-weight:700;color:#1a1a1a"><span style="width:18px;height:4px;background:${LINE[s.pi%8]};display:inline-block;border-radius:2px"></span>${escapeHtml(s.name)}</span>`).join('')+'</div>';
   box.innerHTML=svg+legend;
 }
 function renderFinalScreen(){
@@ -9355,7 +9364,7 @@ function _enterOnlineRevealBody(game){
   const myReady = (game.revealReady || {})[window.online.playerId];
   const btn = document.getElementById('orv-reveal-btn');
   if(btn){
-    btn.disabled = !!myReady;
+    btn.disabled = !!myReady; btn.style.opacity = myReady ? '0.6' : '1';
     btn.innerHTML = myReady ? '<span style="display:block;text-align:center;line-height:1.35">✅ 準備完了済み<br>他の人を待っています</span>' : '🎊 結果発表の準備完了！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.82rem;font-weight:800;margin-left:7px">👆タップ</span>';
   }
   updateRevealReadyStatus(game);
@@ -9375,7 +9384,7 @@ function updateRevealReadyStatus(game){
   const myReady = ready[window.online.playerId];
   const btn = document.getElementById('orv-reveal-btn');
   if(btn){
-    btn.disabled = !!myReady;
+    btn.disabled = !!myReady; btn.style.opacity = myReady ? '0.6' : '1';
     btn.innerHTML = myReady ? '<span style="display:block;text-align:center;line-height:1.35">✅ 準備完了済み<br>他の人を待っています</span>' : '🎊 結果発表の準備完了！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.82rem;font-weight:800;margin-left:7px">👆タップ</span>';
   }
 }
@@ -10749,7 +10758,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
     const myReady = (game.nextReady || {})[window.online.playerId];
     const btn = document.getElementById('orr-next-btn');
     if(btn){
-      btn.disabled = !!myReady;
+      btn.disabled = !!myReady; btn.style.opacity = myReady ? '0.6' : '1';
       btn.innerHTML = myReady ? '<span style="display:block;text-align:center;line-height:1.35">✅ 準備完了<br>他の人を待っています</span>' : '🔁 このラウンドをもう一度行う';
     }
     updateNextReadyStatus(game);
@@ -10822,7 +10831,7 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
   const myReady = (game.nextReady || {})[window.online.playerId];
   const btn = document.getElementById('orr-next-btn');
   if(btn){
-    btn.disabled = !!myReady;
+    btn.disabled = !!myReady; btn.style.opacity = myReady ? '0.6' : '1';
     const labelDone = isLast ? '<span style="display:block;text-align:center;line-height:1.35">✅ 最終結果待ち<br>他の人を待っています</span>' : '<span style="display:block;text-align:center;line-height:1.35">✅ 準備完了済み<br>他の人を待っています</span>';
     const labelTodo = isLast ? '🏆 最終結果を見る' : `<span style="display:inline-flex;align-items:center;gap:8px;justify-content:center">次のラウンド (${(game.currentRound||1)+1}/${totalRounds}) へ<span style="background:#1a1a1a;color:#ffe07a;font-size:0.82rem;font-weight:900;padding:3px 12px;border-radius:14px;letter-spacing:0">👆 タップ</span></span>`;
     btn.innerHTML = myReady ? labelDone : labelTodo;
@@ -11034,7 +11043,7 @@ function updateNextReadyStatus(game){
   const myReady = ready[window.online.playerId];
   const btn = document.getElementById('orr-next-btn');
   if(btn){
-    btn.disabled = !!myReady;
+    btn.disabled = !!myReady; btn.style.opacity = myReady ? '0.6' : '1';
     const labelDone = isLast ? '<span style="display:block;text-align:center;line-height:1.35">✅ 最終結果待ち<br>他の人を待っています</span>' : '<span style="display:block;text-align:center;line-height:1.35">✅ 準備完了済み<br>他の人を待っています</span>';
     const labelTodo = isLast ? '🏆 最終結果を見る' : `<span style="display:inline-flex;align-items:center;gap:8px;justify-content:center">次のラウンド (${(game.currentRound||1)+1}/${totalRounds}) へ<span style="background:#1a1a1a;color:#ffe07a;font-size:0.82rem;font-weight:900;padding:3px 12px;border-radius:14px;letter-spacing:0">👆 タップ</span></span>`;
     btn.innerHTML = myReady ? labelDone : labelTodo;
@@ -11219,26 +11228,32 @@ function renderOnlineFinalGraph(game, players, points){
   });
   let maxV=-Infinity,minV=Infinity;
   series.forEach(s=>s.pts.forEach(v=>{ if(v>maxV)maxV=v; if(v<minV)minV=v; }));
-  if(maxV===minV){ maxV+=1; minV-=1; }
-  const pad=(maxV-minV)*0.1; maxV+=pad; minV-=pad; if(minV<0 && Math.min(...series.flatMap(s=>s.pts))>=0) minV=0;
-  const W=Math.max(300,60+rounds*70),H=220,L=46,R=12,T=14,B=26;
+  if(!isFinite(maxV)) maxV=1000; if(!isFinite(minV)) minV=0;
+  const realMin = minV;
+  minV = realMin < 0 ? realMin : 0;
+  const span0 = Math.max(1, maxV - minV);
+  const rawStep = span0/4;
+  const niceStep = (function(r){ const p=Math.pow(10,Math.floor(Math.log10(r))); const f=r/p; let n; if(f<=1)n=1; else if(f<=2)n=2; else if(f<=2.5)n=2.5; else if(f<=5)n=5; else n=10; return n*p; })(rawStep);
+  maxV = Math.ceil(maxV/niceStep)*niceStep;
+  minV = Math.floor(minV/niceStep)*niceStep;
+  const GLINES = Math.max(2, Math.round((maxV-minV)/niceStep));
+  const W=Math.max(320,70+rounds*78),H=240,L=54,R=14,T=16,B=30;
   const plotW=W-L-R,plotH=H-T-B;
   const x=(i)=> L+(rounds===0?0:(i/rounds)*plotW);
   const y=(v)=> T+plotH-((v-minV)/(maxV-minV))*plotH;
   const LINE=['#7ec8f0','#7ac043','#c0392b','#2a72e0','#e0b800','#1a7a1a','#8b1a8b','#ff7f3f'];
   let svg=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="font-family:sans-serif">`;
-  const GLINES=4;
-  for(let g=0;g<=GLINES;g++){ const vv=minV+(maxV-minV)*(g/GLINES); const yy=y(vv);
+  for(let g=0;g<=GLINES;g++){ const vv=minV+niceStep*g; const yy=y(vv);
     svg+=`<line x1="${L}" y1="${yy.toFixed(1)}" x2="${W-R}" y2="${yy.toFixed(1)}" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>`;
-    svg+=`<text x="${L-6}" y="${(yy+3).toFixed(1)}" text-anchor="end" font-size="9" fill="#bbb">${Math.round(vv).toLocaleString()}</text>`; }
-  for(let i=0;i<=rounds;i++){ svg+=`<text x="${x(i).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="9" fill="#bbb">${i===0?'開始':('R'+i)}</text>`; }
+    svg+=`<text x="${L-7}" y="${(yy+4).toFixed(1)}" text-anchor="end" font-size="12" fill="#999">${Math.round(vv).toLocaleString()}</text>`; }
+  for(let i=0;i<=rounds;i++){ svg+=`<text x="${x(i).toFixed(1)}" y="${H-9}" text-anchor="middle" font-size="12" fill="#999">${i===0?'開始':('R'+i)}</text>`; }
   series.forEach(s=>{ const col=LINE[s.pi%8];
     const d=s.pts.map((v,i)=>`${i===0?'M':'L'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
-    svg+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="${s.me?3.2:2.4}" stroke-linejoin="round" stroke-linecap="round"${s.me?'':' opacity="0.92"'}/>`;
-    s.pts.forEach((v,i)=>{ svg+=`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="${s.me?3.2:2.6}" fill="${col}"/>`; }); });
+    svg+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="${s.me?3.6:2.8}" stroke-linejoin="round" stroke-linecap="round"${s.me?'':' opacity="0.92"'}/>`;
+    s.pts.forEach((v,i)=>{ svg+=`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="${s.me?3.8:3.2}" fill="${col}"/>`; }); });
   svg+=`</svg>`;
-  const legend='<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px">'+
-    series.map(s=>`<span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;color:#eee"><span style="width:14px;height:3px;background:${LINE[s.pi%8]};display:inline-block;border-radius:2px"></span>${escapeHtml(s.name)}${s.me?' <b style=\"color:#7ac043\">(あなた)</b>':''}</span>`).join('')+'</div>';
+  const legend='<div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:10px">'+
+    series.map(s=>`<span style="display:inline-flex;align-items:center;gap:6px;font-size:0.95rem;font-weight:700;color:#1a1a1a"><span style="width:18px;height:4px;background:${LINE[s.pi%8]};display:inline-block;border-radius:2px"></span>${escapeHtml(s.name)}${s.me?' <b style=\"color:#1a7a1a\">(あなた)</b>':''}</span>`).join('')+'</div>';
   box.innerHTML=svg+legend;
 }
 function enterOnlineFinal(game){
