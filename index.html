@@ -702,7 +702,7 @@ body.modal-open{overflow:hidden !important;}
         </div>
       </details>
 
-      <button class="btn btn-primary" onclick="startOnlineGame()" style="background:linear-gradient(135deg,#1a5fcc,#0d3d7a);color:white;margin-top:10px">🎮 ゲームを開始（2人以上で）</button>
+      <button class="btn btn-primary sfx-mute" onclick="startOnlineGame()" style="background:linear-gradient(135deg,#1a5fcc,#0d3d7a);color:white;margin-top:10px">🎮 ゲームを開始（2人以上で）</button>
     </div>
 
     <div id="lobby-guest-info" style="display:none;margin:20px 10px">
@@ -759,14 +759,14 @@ body.modal-open{overflow:hidden !important;}
     <!-- お題選択ステップ（カテゴリ選択後に表示） -->
     <div id="online-topic-list-step" style="display:none">
       <div style="margin:6px 10px">
-        <button class="btn btn-secondary" onclick="onlineBackToCategory()" style="font-size:0.85rem;padding:8px 14px">← カテゴリ選択に戻る</button>
+        <button class="btn btn-secondary sfx-pol" onclick="onlineBackToCategory()" style="font-size:0.85rem;padding:8px 14px">← カテゴリ選択に戻る</button>
       </div>
       <div class="panel">
         <div class="panel-title" id="online-topic-list-title">② お題を選ぼう</div>
         <div id="online-topic-list"></div>
       </div>
       <div style="margin:6px 10px 16px">
-        <button class="btn btn-secondary" onclick="onlineBackToCategory()" style="font-size:0.85rem;padding:8px 14px">← カテゴリ選択に戻る</button>
+        <button class="btn btn-secondary sfx-pol" onclick="onlineBackToCategory()" style="font-size:0.85rem;padding:8px 14px">← カテゴリ選択に戻る</button>
       </div>
     </div>
 
@@ -1145,7 +1145,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel"><div class="panel-title">📜 ラウンド履歴（親が何を選んだか）</div><div id="ofn-history"></div></div>
     <!-- ホスト用：もう一度ボタン -->
     <div id="ofn-host-controls" style="display:none;margin:10px">
-      <button class="btn btn-primary" onclick="onlineRestartGame()" style="background:linear-gradient(135deg,#c0392b,#922b21)">🔄 同じメンバーでもう一度</button>
+      <button class="btn btn-primary sfx-mute" onclick="onlineRestartGame()" style="background:linear-gradient(135deg,#c0392b,#922b21)">🔄 同じメンバーでもう一度</button>
     </div>
     <div id="ofn-guest-info" style="display:none;text-align:center;color:#aaa;font-size:0.85rem;padding:8px 16px">
       ホストが「もう一度」を押すと再戦できます
@@ -1310,12 +1310,12 @@ body.modal-open{overflow:hidden !important;}
       <!-- ② お題リスト（カテゴリ選択後に表示） -->
       <div id="off-topic-list-step" style="display:none">
         <div style="margin-bottom:8px">
-          <button class="btn btn-secondary" onclick="offBackToCategory()" style="margin-top:0;font-size:0.85rem;padding:8px 14px;width:auto;display:inline-block">← カテゴリ選択に戻る</button>
+          <button class="btn btn-secondary sfx-pol" onclick="offBackToCategory()" style="margin-top:0;font-size:0.85rem;padding:8px 14px;width:auto;display:inline-block">← カテゴリ選択に戻る</button>
         </div>
         <div class="panel-title" id="off-topic-list-title" style="border:none;padding:0;margin-bottom:8px">② お題を選ぼう</div>
         <div id="off-topic-list"></div>
         <div style="margin-top:12px">
-          <button class="btn btn-secondary" onclick="offBackToCategory()" style="margin-top:0;font-size:0.85rem;padding:8px 14px;width:auto;display:inline-block">← カテゴリ選択に戻る</button>
+          <button class="btn btn-secondary sfx-pol" onclick="offBackToCategory()" style="margin-top:0;font-size:0.85rem;padding:8px 14px;width:auto;display:inline-block">← カテゴリ選択に戻る</button>
         </div>
       </div>
 
@@ -1584,7 +1584,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel"><div class="panel-title">📜 ラウンド履歴</div><div id="final-history"></div></div>
     <div style="margin:10px">
       <button class="btn btn-primary" onclick="goTo('screen-home')">🏠 ホームに戻る</button>
-      <button class="btn btn-secondary" onclick="restartWithSamePlayers()">🔄 同じメンバーでもう一度</button>
+      <button class="btn btn-secondary sfx-mute" onclick="restartWithSamePlayers()">🔄 同じメンバーでもう一度</button>
     </div>
   </div>
 </div>
@@ -1847,6 +1847,21 @@ window.SFX = (function(){
       g.gain.exponentialRampToValueAtTime(p[3], t0+p[1]+0.01);
       g.gain.exponentialRampToValueAtTime(0.0001, t0+p[1]+p[2]);
       o.connect(g); g.connect(masterGain); o.start(t0+p[1]); o.stop(t0+p[1]+p[2]+0.03);
+    });
+  }
+  // ゲーム開始音「ファンファーレ」：設定→開始 / このメンバーでもう一度 で鳴らす（パッパカパーン）
+  function gamestart(){
+    if(!enabled) return;
+    const c = getCtx(); if(!c) return;
+    const t0 = c.currentTime;
+    // [周波数, 開始オフセット, 長さ, 音量]
+    [[523,0,0.12,0.12],[523,0.12,0.12,0.12],[784,0.24,0.34,0.14],[1047,0.40,0.40,0.12]].forEach(function(p){
+      const o=c.createOscillator(), g=c.createGain();
+      o.type='triangle'; o.frequency.setValueAtTime(p[0], t0+p[1]);
+      g.gain.setValueAtTime(0.0001, t0+p[1]);
+      g.gain.exponentialRampToValueAtTime(p[3], t0+p[1]+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+p[1]+p[2]);
+      o.connect(g); g.connect(masterGain); o.start(t0+p[1]); o.stop(t0+p[1]+p[2]+0.04);
     });
   }
   function warn(){ tone({type:'sawtooth', freq:300, freqEnd:200, dur:0.18, gain:0.1}); }
@@ -2114,7 +2129,7 @@ window.SFX = (function(){
 
   return {
     init, setEnabled, isEnabled, getCtx,
-    tap, click, select, confirm, decide, decide2, muffle, enter, notify, warn, whoosh,
+    tap, click, select, confirm, decide, decide2, muffle, enter, gamestart, notify, warn, whoosh,
     lottery, lotteryDecide, reveal, roundIntro,
     hitTansho, hitRenfuku, hitRentan, hitSanrenfuku, hitSanrentan, hitManbaken,
     finale, cracker
@@ -2168,7 +2183,7 @@ window.SFX = (function(){
 // 賭け・結果など進行系画面の一般ボタン（カート追加・購入を続ける・賭け方・点数プリセット等）は無音。
 (function(){
   const GO_SEL  = '.sfx-go';                                              // 確定系 → ピロン3
-  const POL_SEL = '.sound-toggle,.menu-toggle,.rules-toggle,.score-toggle,.sfx-pol'; // 上部・得点 → ポロン
+  const POL_SEL = '.sound-toggle,.menu-toggle,.rules-toggle,.score-toggle,.btn-category,.sfx-pol'; // 上部・得点・カテゴリ選択 → ポロン
   // メニュー系の画面（ホーム/設定/オンラインメニュー/ロビー/ルール/お題管理/最終結果）内のボタンはポロン
   const MENU_SCREENS = ['screen-home','screen-setup','screen-online-menu','screen-room-lobby','screen-rules','screen-topics','screen-final','screen-online-final'];
   const BTN_SEL = 'button,.btn,[role="button"]';
@@ -2181,7 +2196,7 @@ window.SFX = (function(){
       const btn = e.target.closest(BTN_SEL);
       if(btn){
         const scr = btn.closest('.screen');
-        if(scr && MENU_SCREENS.indexOf(scr.id) !== -1) pol = btn;
+        if(scr && MENU_SCREENS.indexOf(scr.id) !== -1 && !btn.classList.contains('sfx-mute')) pol = btn;
       }
     }
     const el = go || pol;
@@ -3287,7 +3302,9 @@ function startGame(){
     if(!ok) return;
     state.players=[];
     for(let i=1;i<=count;i++){ state.players.push({name:names[i-1],points:state.initialPoints,history:[]}); }
-    state.currentRound=0;state.history=[];state.oyaIndex=0;state.usedTopicIds=[];goToRoundStart();
+    state.currentRound=0;state.history=[];state.oyaIndex=0;state.usedTopicIds=[];
+    try{ if(window.SFX && typeof window.SFX.gamestart==='function') window.SFX.gamestart(); }catch(e){}
+    goToRoundStart();
   });
 }
 
@@ -5714,6 +5731,7 @@ function restartWithSamePlayers(){
   // 詳細設定の値を引き継ぐ（入力欄はそのまま）
   state.players.forEach(p=>{p.points=state.initialPoints;p.history=[]});
   state.currentRound=0;state.history=[];state.oyaIndex=0;state.usedTopicIds=[];
+  try{ if(window.SFX && typeof window.SFX.gamestart==='function') window.SFX.gamestart(); }catch(e){}
   goToRoundStart();
 }
 
@@ -6376,6 +6394,7 @@ window.startOnlineGame = async function(){
 
 // ゲーム開始時の全員共通処理（ロビーから遷移）
 function onGameStarted(){
+  try{ if(window.SFX && typeof window.SFX.gamestart==='function') window.SFX.gamestart(); }catch(e){}
   // 設定をローカルに保存
   const settingsRef = ref(db, `rooms/${window.online.roomCode}/settings`);
   get(settingsRef).then(snap => {
@@ -11082,6 +11101,7 @@ window.onlineRestartGame = async function(){
   if(!window.online.isHost) return;
   const ok = await uiConfirm({ icon:'🔄', title:'同じメンバーでもう一度プレイ？', bodyHtml:'<span style="color:#c8bfa8">点数とラウンド履歴はリセットされます。</span>', okText:'再戦する', cancelText:'戻る' });
   if(!ok) return;
+  try{ if(window.SFX && typeof window.SFX.gamestart==='function') window.SFX.gamestart(); }catch(e){}
   try {
     const players = getOnlinePlayersArray();
     const initial = window.online.settings?.initialPoints || 5000;
