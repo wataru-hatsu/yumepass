@@ -577,6 +577,9 @@ body.modal-open{overflow:hidden !important;}
     </div>
   </div>
   <div class="home-btns">
+    <div id="home-rejoin-banner" style="display:none;margin-bottom:6px">
+      <button class="btn btn-success" onclick="goTo('screen-online-menu');checkRejoinAvailable();" style="background:linear-gradient(135deg,#1a7a1a,#0f5a0f)">↩️ 前回の対戦に復帰する</button>
+    </div>
     <button class="btn btn-primary" onclick="goTo('screen-setup')">🐎 1台で遊ぶ（端末回す）</button>
     <button class="btn btn-primary" onclick="goTo('screen-online-menu');checkRejoinAvailable();">🌐 オンライン対戦</button>
     <button class="btn btn-secondary" onclick="goTo('screen-topics')">📝 お題を管理する</button>
@@ -860,13 +863,13 @@ body.modal-open{overflow:hidden !important;}
           <div><strong>3連単</strong>：1〜3位を順番通り</div>
         </div>
         <div class="bet-types">
-          <div class="bet-type-btn active" onclick="onlineSelectBetType('tansho',this)"><div class="bet-name">単勝</div></div>
-          <div class="bet-type-btn" onclick="onlineSelectBetType('fukusho',this)"><div class="bet-name">複勝</div></div>
-          <div class="bet-type-btn" onclick="onlineSelectBetType('umaren',this)"><div class="bet-name">馬連</div></div>
-          <div class="bet-type-btn" onclick="onlineSelectBetType('umatan',this)"><div class="bet-name">馬単</div></div>
-          <div class="bet-type-btn" onclick="onlineSelectBetType('wide',this)"><div class="bet-name">ワイド</div></div>
-          <div class="bet-type-btn" onclick="onlineSelectBetType('sanrenfuku',this)"><div class="bet-name">3連複</div></div>
-          <div class="bet-type-btn" onclick="onlineSelectBetType('sanrentan',this)"><div class="bet-name">3連単</div></div>
+          <div class="bet-type-btn active" onclick="onlineSelectBetType('tansho',this)"><div class="bet-name">単勝</div><div class="bet-desc">1着を当てる</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('fukusho',this)"><div class="bet-name">複勝</div><div class="bet-desc">3着以内に入る1頭</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('umaren',this)"><div class="bet-name">馬連</div><div class="bet-desc">1・2着の2頭（順不同）</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('umatan',this)"><div class="bet-name">馬単</div><div class="bet-desc">1・2着を順番通り</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('wide',this)"><div class="bet-name">ワイド</div><div class="bet-desc">3着内に入る2頭</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('sanrenfuku',this)"><div class="bet-name">3連複</div><div class="bet-desc">1〜3着の3頭（順不同）</div></div>
+          <div class="bet-type-btn" onclick="onlineSelectBetType('sanrentan',this)"><div class="bet-name">3連単</div><div class="bet-desc">1〜3着を順番通り</div></div>
         </div>
       </div>
       <!-- 買い方タブ（シンプル/ボックス/フォーメ/流し）- 該当賭け方の時のみ表示 -->
@@ -1142,6 +1145,7 @@ body.modal-open{overflow:hidden !important;}
       </div>
     </div>
     <div class="panel"><div class="panel-title">📊 最終得点表</div><table class="score-table" id="ofn-score-table"></table></div>
+    <div class="panel"><div class="panel-title">📈 得点の推移</div><div id="ofn-graph" style="overflow-x:auto"></div></div>
     <div class="panel"><div class="panel-title">📜 ラウンド履歴（親が何を選んだか）</div><div id="ofn-history"></div></div>
     <!-- ホスト用：もう一度ボタン -->
     <div id="ofn-host-controls" style="display:none;margin:10px">
@@ -1367,13 +1371,13 @@ body.modal-open{overflow:hidden !important;}
         <div><strong>3連単</strong>：1〜3位を順番通り</div>
       </div>
       <div class="bet-types">
-        <div class="bet-type-btn active" onclick="selectBetType('tansho',this)"><div class="bet-name">単勝</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('fukusho',this)"><div class="bet-name">複勝</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('umaren',this)"><div class="bet-name">馬連</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('umatan',this)"><div class="bet-name">馬単</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('wide',this)"><div class="bet-name">ワイド</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('sanrenfuku',this)"><div class="bet-name">3連複</div></div>
-        <div class="bet-type-btn" onclick="selectBetType('sanrentan',this)"><div class="bet-name">3連単</div></div>
+        <div class="bet-type-btn active" onclick="selectBetType('tansho',this)"><div class="bet-name">単勝</div><div class="bet-desc">1着を当てる</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('fukusho',this)"><div class="bet-name">複勝</div><div class="bet-desc">3着以内に入る1頭</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('umaren',this)"><div class="bet-name">馬連</div><div class="bet-desc">1・2着の2頭（順不同）</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('umatan',this)"><div class="bet-name">馬単</div><div class="bet-desc">1・2着を順番通り</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('wide',this)"><div class="bet-name">ワイド</div><div class="bet-desc">3着内に入る2頭</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('sanrenfuku',this)"><div class="bet-name">3連複</div><div class="bet-desc">1〜3着の3頭（順不同）</div></div>
+        <div class="bet-type-btn" onclick="selectBetType('sanrentan',this)"><div class="bet-name">3連単</div><div class="bet-desc">1〜3着を順番通り</div></div>
       </div>
     </div>
     <!-- 買い方タブ（シンプル/ボックス/フォーメ/流し）- 該当賭け方の時のみ表示 -->
@@ -1581,6 +1585,7 @@ body.modal-open{overflow:hidden !important;}
       </div>
     </div>
     <div class="panel"><div class="panel-title">📊 最終得点表</div><table class="score-table" id="final-score-table"></table></div>
+    <div class="panel"><div class="panel-title">📈 得点の推移</div><div id="final-graph" style="overflow-x:auto"></div></div>
     <div class="panel"><div class="panel-title">📜 ラウンド履歴</div><div id="final-history"></div></div>
     <div style="margin:10px">
       <button class="btn btn-primary" onclick="goTo('screen-home')">🏠 ホームに戻る</button>
@@ -3016,7 +3021,14 @@ const BASE_TOPICS = [
   {id:'base55',category:'g3',title:"お金をかけるべき自己投資は？",icon:"💰",horses:["ジム", "歯列矯正", "マッチングアプリ", "良質な寝具", "旅行", "全身脱毛", "英会話教室", "人脈づくり（交流・会食）"]},
   {id:'base56',category:'g3',title:"人に言いたくないことは？",icon:"🤫",horses:["体重", "貯金額", "MBTI", "最寄り駅", "学歴", "推し", "家庭環境", "年齢"]},
 ];
-window.onload=()=>{const s=localStorage.getItem('sanrentan_topics');state.topics=s?JSON.parse(s):[];initSetupScreen();renderTopicsScreen();initNewTopicOptions();initCategoryBtns();syncSafeTop();};
+window.onload=()=>{const s=localStorage.getItem('sanrentan_topics');state.topics=s?JSON.parse(s):[];initSetupScreen();renderTopicsScreen();initNewTopicOptions();initCategoryBtns();syncSafeTop();
+  // 前回のオンライン対戦が残っていればホームに復帰バナーを表示
+  try{
+    var rc=localStorage.getItem('yumepass_active_room');
+    var rb=document.getElementById('home-rejoin-banner');
+    if(rc && rb) rb.style.display='';
+  }catch(e){}
+};
 // env(safe-area-inset-top) の解釈差を吸収するため、実際の数値を計測して --safe-top に固定値で入れる。
 // これで帯のpadding-topとアイコンのtopが必ず同じ値になり、テキストとアイコンが同じ高さの帯に収まる。
 function syncSafeTop(){
@@ -5675,6 +5687,62 @@ function closeScorePopup(){ const ov=document.getElementById('score-popup-overla
 window.openScorePopup = openScorePopup;
 window.closeScorePopup = closeScorePopup;
 
+// 得点の推移グラフ（SVG折れ線）。各プレイヤーの初期点→各ラウンド後の持ち点を線で描く。
+function renderFinalGraph(){
+  const box=document.getElementById('final-graph');
+  if(!box) return;
+  const players=state.players||[];
+  const rounds=state.history ? state.history.length : 0;
+  if(!players.length || rounds<1){ box.innerHTML='<div style="text-align:center;color:#aaa;padding:14px;font-size:0.85rem">推移データがありません</div>'; return; }
+  // 各プレイヤーのラウンドごとの累積持ち点を復元（0=初期点, k=ラウンドk終了後）
+  const init=state.initialPoints||0;
+  const series=players.map((p,pi)=>{
+    const pts=[init]; let cur=init;
+    for(let r=1;r<=rounds;r++){
+      // そのラウンドのこのプレイヤーのchange合計
+      const hs=(p.history||[]).filter(h=>h.round===r);
+      hs.forEach(h=>{ cur += (h.change||0); });
+      pts.push(cur);
+    }
+    return { name:p.name, pi, pts };
+  });
+  // 値域
+  let maxV=-Infinity, minV=Infinity;
+  series.forEach(s=>s.pts.forEach(v=>{ if(v>maxV)maxV=v; if(v<minV)minV=v; }));
+  if(maxV===minV){ maxV+=1; minV-=1; }
+  const pad=(maxV-minV)*0.1; maxV+=pad; minV-=pad; if(minV<0&&Math.min(...series.flatMap(s=>s.pts))>=0) minV=0;
+  // 寸法
+  const W=Math.max(300, 60+rounds*70), H=220, L=46, R=12, T=14, B=26;
+  const plotW=W-L-R, plotH=H-T-B;
+  const x=(i)=> L + (rounds===0?0:(i/rounds)*plotW);
+  const y=(v)=> T + plotH - ((v-minV)/(maxV-minV))*plotH;
+  // 色（CSS .c1〜.c8 と対応する代表色）
+  const LINE=['#7ec8f0','#7ac043','#c0392b','#2a72e0','#e0b800','#1a7a1a','#8b1a8b','#ff7f3f'];
+  let svg=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="font-family:sans-serif">`;
+  // 横グリッド＋目盛
+  const GLINES=4;
+  for(let g=0;g<=GLINES;g++){
+    const vv=minV+(maxV-minV)*(g/GLINES); const yy=y(vv);
+    svg+=`<line x1="${L}" y1="${yy.toFixed(1)}" x2="${W-R}" y2="${yy.toFixed(1)}" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>`;
+    svg+=`<text x="${L-6}" y="${(yy+3).toFixed(1)}" text-anchor="end" font-size="9" fill="#bbb">${Math.round(vv).toLocaleString()}</text>`;
+  }
+  // X軸ラベル（R0=開始, R1.., 最終）
+  for(let i=0;i<=rounds;i++){
+    svg+=`<text x="${x(i).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="9" fill="#bbb">${i===0?'開始':('R'+i)}</text>`;
+  }
+  // 折れ線
+  series.forEach(s=>{
+    const col=LINE[s.pi%8];
+    const d=s.pts.map((v,i)=>`${i===0?'M':'L'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    svg+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>`;
+    s.pts.forEach((v,i)=>{ svg+=`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.6" fill="${col}"/>`; });
+  });
+  svg+=`</svg>`;
+  // 凡例
+  const legend='<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px">'+
+    series.map(s=>`<span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;color:#eee"><span style="width:14px;height:3px;background:${LINE[s.pi%8]};display:inline-block;border-radius:2px"></span>${escapeHtml(s.name)}</span>`).join('')+'</div>';
+  box.innerHTML=svg+legend;
+}
 function renderFinalScreen(){
   const sorted=[...state.players].map((p,i)=>({...p,oi:i})).sort((a,b)=>b.points-a.points);
   const winners=sorted.filter(p=>p.points===sorted[0].points);
@@ -5692,6 +5760,7 @@ function renderFinalScreen(){
 
   const histContainer=document.getElementById('final-history');
   histContainer.innerHTML='';
+  try{ renderFinalGraph(); }catch(e){ console.error('graph error', e); }
   if(!state.history.length){
     histContainer.innerHTML='<div style="text-align:center;color:#aaa;padding:14px;font-size:0.85rem">履歴がありません</div>';
   } else {
@@ -6398,6 +6467,15 @@ window.startOnlineGame = async function(){
       showNotif(`⚠️ 最低ベット額は初期持ち金の5%（${minRequired.toLocaleString()}点）以上に設定してください`);
       return;
     }
+
+    // 開始前の確認（オンラインでも設定を見せてから開始する）
+    const confirmBody = `<div style="text-align:left;line-height:1.9">`
+      + `<div>👥 参加人数：<b>${playerCount}人</b></div>`
+      + `<div>💰 初期持ち点：<b>${initialPoints.toLocaleString()}点</b></div>`
+      + `<div>🎫 最低ベット額：<b>${minBet.toLocaleString()}点</b></div>`
+      + `</div>`;
+    const okStart = await window.uiConfirm({ icon:'🏁', title:'この設定でゲームを開始しますか？', bodyHtml:confirmBody, okText:'🏁 開始する', cancelText:'戻る' });
+    if(!okStart) return;
 
     // 設定を最新にして開始
     await onlineSettingChanged();
@@ -9681,6 +9759,21 @@ window.showRaceReveal = function(opts, done){
   title.textContent='ROUND '+(opts.raceNo!=null?opts.raceNo:'')+' RACE';
   ov.appendChild(title);
 
+  // 早送りボタン（押している間だけレースを早送り）
+  window._raceFast = false;
+  var ffBtn=document.createElement('button');
+  ffBtn.textContent='⏩ 早送り（長押し）';
+  ffBtn.style.cssText='position:absolute;right:12px;bottom:calc(env(safe-area-inset-bottom) + 14px);z-index:30;background:rgba(10,8,4,0.78);color:#ffe8a0;border:1px solid #f5c842;border-radius:20px;padding:9px 16px;font-size:13px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;touch-action:none;';
+  var ffOn=function(e){ if(e&&e.preventDefault)e.preventDefault(); window._raceFast=true; ffBtn.style.background='rgba(245,200,66,0.92)'; ffBtn.style.color='#2a1a00'; };
+  var ffOff=function(){ window._raceFast=false; ffBtn.style.background='rgba(10,8,4,0.78)'; ffBtn.style.color='#ffe8a0'; };
+  ffBtn.addEventListener('touchstart', ffOn, {passive:false});
+  ffBtn.addEventListener('touchend', ffOff);
+  ffBtn.addEventListener('touchcancel', ffOff);
+  ffBtn.addEventListener('mousedown', ffOn);
+  ffBtn.addEventListener('mouseup', ffOff);
+  ffBtn.addEventListener('mouseleave', ffOff);
+  ov.appendChild(ffBtn);
+
   // ゴール（チェッカー）＋テープ＋直線ハイライト
   var boardH=Math.min(170, 54+N*0+ (N>=7?150:130));
   // 掲示板高さ：着順3行ぶん固定
@@ -9947,6 +10040,7 @@ window.showRaceReveal = function(opts, done){
       }
     }catch(e){}
     cleanup();
+    window._raceFast = false; // 早送りフラグを必ずリセット
     // 先に結果画面へ遷移させてから（done内でgoTo）、その上にあるレース演出を即削除する。
     // こうすることでオーバーレイの下が既に結果画面になり、遷移中に他画面が一瞬見えない。
     try { if(typeof done==='function') done(); } catch(e){ console.error(e); }
@@ -9972,6 +10066,7 @@ window.showRaceReveal = function(opts, done){
     }catch(e){}
     var finishX=(stageW-40-noseOffset)-startLeft;
     var last=null, startT=null, lastLevel=0, placeCount=0, done3=false, top3Count=0, boardDoneScheduled=false;
+    var simElapsed=0; // ゲーム内経過時間（早送り倍率を反映するため実時間とは別に累積）
     // 各馬の「ゴール時刻ターゲット」を着順に応じて決める（最終着順を保証）
     // finalRank 1が最速、N が最遅。基準時間に着順差で広げる。
     var baseTime=10.67; // 1着の想定到達秒（現状の1.2倍速）
@@ -9982,8 +10077,12 @@ window.showRaceReveal = function(opts, done){
     });
     function frame(ts){
       if(startT===null){ startT=ts; last=ts; }
-      var dt=Math.min(0.05,(ts-last)/1000); last=ts;
-      var elapsed=(ts-startT)/1000;
+      var realDt=Math.min(0.05,(ts-last)/1000); last=ts;
+      // 早送りボタンを押している間は時間を速く進める（最大3倍）
+      var rate = (window._raceFast) ? 3 : 1;
+      var dt = realDt*rate;
+      simElapsed += dt;
+      var elapsed = simElapsed;
       var lead=0; horses.forEach(function(h){ if(h.x>lead) lead=h.x; });
       var prog=Math.min(1, lead/finishX);
       if(prog-lastLevel>0.05){ lastLevel=prog; setCrowdLevel(prog); }
@@ -11058,6 +11157,57 @@ async function checkAllReadyForNext(){
 // 最終結果画面
 // ============================================================
 
+// オンライン版 得点推移グラフ：最終得点から各ラウンドのchangeを遡って各時点の持ち点を復元
+function renderOnlineFinalGraph(game, players, points){
+  const box=document.getElementById('ofn-graph');
+  if(!box) return;
+  const history=(game && game.history) ? game.history : [];
+  const rounds=history.length;
+  if(!players.length || rounds<1){ box.innerHTML='<div style="text-align:center;color:#aaa;padding:14px;font-size:0.85rem">推移データがありません</div>'; return; }
+  // 各プレイヤーのラウンドごとchange合計
+  const changeByRound = players.map(()=> new Array(rounds).fill(0));
+  const idIndex={}; players.forEach((p,i)=> idIndex[p.id]=i);
+  history.forEach((h,ri)=>{
+    const prs=(h && h.playerResults) ? h.playerResults : [];
+    prs.forEach(pr=>{
+      let idx = (pr.playerId!=null && idIndex[pr.playerId]!=null) ? idIndex[pr.playerId] : -1;
+      if(idx<0){ const bn=players.findIndex(p=>p.name===pr.name); idx=bn; }
+      if(idx>=0) changeByRound[idx][ri] += (pr.change||0);
+    });
+    // 親ボーナスは親に加算
+    if(h && h.oyaId!=null && idIndex[h.oyaId]!=null && h.oyaBonus){ changeByRound[idIndex[h.oyaId]][ri] += h.oyaBonus; }
+  });
+  // 最終点から遡って各時点の持ち点（pts[0]=開始, pts[rounds]=最終）
+  const series=players.map((p,pi)=>{
+    const finalPt = (points && points[p.id]!=null) ? points[p.id] : 0;
+    const pts=new Array(rounds+1); pts[rounds]=finalPt;
+    for(let r=rounds-1;r>=0;r--){ pts[r]=pts[r+1]-changeByRound[pi][r]; }
+    return { name:p.name, pi, pts, me:(p.id===window.online.playerId) };
+  });
+  let maxV=-Infinity,minV=Infinity;
+  series.forEach(s=>s.pts.forEach(v=>{ if(v>maxV)maxV=v; if(v<minV)minV=v; }));
+  if(maxV===minV){ maxV+=1; minV-=1; }
+  const pad=(maxV-minV)*0.1; maxV+=pad; minV-=pad; if(minV<0 && Math.min(...series.flatMap(s=>s.pts))>=0) minV=0;
+  const W=Math.max(300,60+rounds*70),H=220,L=46,R=12,T=14,B=26;
+  const plotW=W-L-R,plotH=H-T-B;
+  const x=(i)=> L+(rounds===0?0:(i/rounds)*plotW);
+  const y=(v)=> T+plotH-((v-minV)/(maxV-minV))*plotH;
+  const LINE=['#7ec8f0','#7ac043','#c0392b','#2a72e0','#e0b800','#1a7a1a','#8b1a8b','#ff7f3f'];
+  let svg=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="font-family:sans-serif">`;
+  const GLINES=4;
+  for(let g=0;g<=GLINES;g++){ const vv=minV+(maxV-minV)*(g/GLINES); const yy=y(vv);
+    svg+=`<line x1="${L}" y1="${yy.toFixed(1)}" x2="${W-R}" y2="${yy.toFixed(1)}" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>`;
+    svg+=`<text x="${L-6}" y="${(yy+3).toFixed(1)}" text-anchor="end" font-size="9" fill="#bbb">${Math.round(vv).toLocaleString()}</text>`; }
+  for(let i=0;i<=rounds;i++){ svg+=`<text x="${x(i).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="9" fill="#bbb">${i===0?'開始':('R'+i)}</text>`; }
+  series.forEach(s=>{ const col=LINE[s.pi%8];
+    const d=s.pts.map((v,i)=>`${i===0?'M':'L'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    svg+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="${s.me?3.2:2.4}" stroke-linejoin="round" stroke-linecap="round"${s.me?'':' opacity="0.92"'}/>`;
+    s.pts.forEach((v,i)=>{ svg+=`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="${s.me?3.2:2.6}" fill="${col}"/>`; }); });
+  svg+=`</svg>`;
+  const legend='<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px">'+
+    series.map(s=>`<span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;color:#eee"><span style="width:14px;height:3px;background:${LINE[s.pi%8]};display:inline-block;border-radius:2px"></span>${escapeHtml(s.name)}${s.me?' <b style=\"color:#7ac043\">(あなた)</b>':''}</span>`).join('')+'</div>';
+  box.innerHTML=svg+legend;
+}
 function enterOnlineFinal(game){
   // 初回のみ豪華フィナーレ演出
   // _lastFinalShown が null/undefined（復帰直後など）の場合も初回扱い
@@ -11108,6 +11258,8 @@ function enterOnlineFinal(game){
 
     // ラウンド履歴（親が選んだ順位を表示）
     const histEl = document.getElementById('ofn-history');
+    // 得点推移グラフ
+    try { renderOnlineFinalGraph(game, players, points); } catch(e){ console.error('online graph error', e); }
     if(histEl){
       const history = game.history || [];
       if(!history.length){
