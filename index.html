@@ -6276,6 +6276,7 @@ window.rejoinRoom = async function(){
     delete window.online._revealTriggered;
     delete window.online._resultTriggered;
     delete window.online._nextTriggered;
+    delete window.online._lotteryFinalized;
     delete window.online._noGameTriggered;
     window.online._lastSeenRound = null;
     window.online._lastRevealKey = null;
@@ -6690,6 +6691,7 @@ function onGameStateUpdate(game){
     delete window.online._revealTriggered;
     delete window.online._resultTriggered;
     delete window.online._nextTriggered;
+    delete window.online._lotteryFinalized;
     delete window.online._noGameTriggered;
     // 演出キャッシュもクリア（次ラウンドの結果で演出が出るように）
     window.online._lastResultRound = null;
@@ -6706,6 +6708,7 @@ function onGameStateUpdate(game){
     delete window.online._revealTriggered;
     delete window.online._resultTriggered;
     delete window.online._nextTriggered;
+    delete window.online._lotteryFinalized;
     delete window.online._noGameTriggered;
   }
 
@@ -6715,6 +6718,11 @@ function onGameStateUpdate(game){
   }
   if(game.phase === 'topic-lottery' && !document.getElementById('screen-online-topic-lottery').classList.contains('active')){
     enterOnlineTopicLottery(game);
+  }
+  // 抽選フェーズでは、ホストは保険として一定時間後に必ず賭けフェーズへ進める
+  // （演出のタイマーが失われた・ホスト交代した等でも止まらないように。多重実行は_lotteryFinalizedで防止）
+  if(game.phase === 'topic-lottery' && window.online.isHost){
+    setTimeout(() => { try{ if(window.online.game && window.online.game.phase==='topic-lottery') finalizeLotteryToBetting(); }catch(e){} }, 5000);
   }
   if(game.phase === 'betting'){
     // 初回遷移
@@ -7300,70 +7308,68 @@ function enterOnlineTopicLottery(game){
       setTimeout(() => { displayEl.style.transform = 'scale(1)'; }, 200);
       document.getElementById('lottery-result-info').style.display = 'block';
       document.getElementById('lottery-chosen-by').textContent = winPlayer ? `${winPlayer.name}さんのお題に決定！` : '';
-      // 3秒後に次フェーズへ（ホストだけがDB更新）
+      // 3秒後に次フェーズへ（ホストだけがDB更新）。
+      // ホストが落ちて戻った場合や新ホストに代わった場合も進めるよう、処理は finalizeLotteryToBetting に集約。
       if(window.online.isHost){
-        setTimeout(async () => {
-          try {
-            // 選ばれたお題の情報をDBに保存（全員が同じデータを使えるように）
-            // まず lottery.candidates から chosenTopicId に対応するお題情報を探す（最も信頼できる）
-            let topicData = null;
-            const winCandidate = (candidates || []).find(c => c.topicId === lottery.chosenTopicId);
-            if(winCandidate && winCandidate.topicSnapshot){
-              // candidatesに完全なお題スナップショットがあれば使う
-              topicData = winCandidate.topicSnapshot;
-            } else {
-              // フォールバック：ホストの localStorage から検索
-              const winTopicFull = topics.find(t => t.id === lottery.chosenTopicId);
-              if(winTopicFull){
-                topicData = {
-                  id: winTopicFull.id,
-                  title: winTopicFull.title,
-                  icon: winTopicFull.icon || '🎯',
-                  horses: winTopicFull.horses || [],
-                  category: winTopicFull.category || 'g3'
-                };
-              }
-            }
-
-            if(topicData && topicData.horses && topicData.horses.length > 0){
-              // 8択対応: 7択しかないお題は8つ目を自動補完
-              const eightTopic = (typeof ensureEightChoices === 'function')
-                ? ensureEightChoices(topicData)
-                : topicData;
-              // selectedTopicを先に null にクリアしてから上書き（古い horses が残らないように）
-              const topicRef = ref(db, `rooms/${window.online.roomCode}/game/selectedTopic`);
-              await set(topicRef, null);
-              await set(topicRef, {
-                id: eightTopic.id,
-                title: eightTopic.title,
-                icon: eightTopic.icon || '🎯',
-                horses: eightTopic.horses || [],
-                category: eightTopic.category || 'g3'
-              });
-            } else {
-              // お題情報が取得できない → エラー警告
-              console.error('⚠️ selectedTopic書き込み失敗：topicId=' + lottery.chosenTopicId + ' が見つからない');
-              showNotif('⚠️ お題情報の同期に失敗しました');
-              return;
-            }
-            // 初期持ち点をまだ設定していなければ設定
-            const pointsRef = ref(db, `rooms/${window.online.roomCode}/game/points`);
-            const pointsSnap = await get(pointsRef);
-            if(!pointsSnap.exists()){
-              const initial = window.online.settings?.initialPoints || 5000;
-              const players = getOnlinePlayersArray();
-              const pointsObj = {};
-              players.forEach(p => { pointsObj[p.id] = initial; });
-              await set(pointsRef, pointsObj);
-            }
-            // 賭けフェーズへ
-            const phaseRef = ref(db, `rooms/${window.online.roomCode}/game/phase`);
-            await set(phaseRef, 'betting');
-          } catch(e) { console.error(e); }
-        }, 3500);
+        setTimeout(() => { finalizeLotteryToBetting(); }, 3500);
       }
     }
   }, 60);
+}
+
+// 抽選で選ばれたお題を確定し、賭けフェーズへ進める（ホストのみ・多重実行ガード付き）。
+// 演出のsetTimeoutだけに頼らず、ensureHostAndProgress からも呼べるようにして、
+// 抽選中にオフラインが起きても（戻った／ホスト交代で）確実に進めるようにする。
+async function finalizeLotteryToBetting(){
+  try{
+    if(!window.online.isHost) return;
+    const game = window.online.game;
+    if(!game || game.phase !== 'topic-lottery') return;
+    const lottery = game.lotteryResult;
+    if(!lottery) return;
+    // 多重実行ガード（このラウンドの抽選で1回だけ）
+    const guardKey = `${game.currentRound || 1}-${lottery.chosenTopicId || ''}`;
+    if(window.online._lotteryFinalized === guardKey) return;
+    window.online._lotteryFinalized = guardKey;
+
+    const topics = getOnlineTopics();
+    const candidates = lottery.candidates || [];
+    let topicData = null;
+    const winCandidate = candidates.find(c => c.topicId === lottery.chosenTopicId);
+    if(winCandidate && winCandidate.topicSnapshot){
+      topicData = winCandidate.topicSnapshot;
+    } else {
+      const winTopicFull = topics.find(t => t.id === lottery.chosenTopicId);
+      if(winTopicFull){
+        topicData = { id:winTopicFull.id, title:winTopicFull.title, icon:winTopicFull.icon||'🎯', horses:winTopicFull.horses||[], category:winTopicFull.category||'g3' };
+      }
+    }
+    if(topicData && topicData.horses && topicData.horses.length > 0){
+      const eightTopic = (typeof ensureEightChoices === 'function') ? ensureEightChoices(topicData) : topicData;
+      const topicRef = ref(db, `rooms/${window.online.roomCode}/game/selectedTopic`);
+      await set(topicRef, null);
+      await set(topicRef, { id:eightTopic.id, title:eightTopic.title, icon:eightTopic.icon||'🎯', horses:eightTopic.horses||[], category:eightTopic.category||'g3' });
+    } else {
+      console.error('⚠️ selectedTopic書き込み失敗：topicId=' + lottery.chosenTopicId + ' が見つからない');
+      // ガードを解除して次回再試行できるように
+      window.online._lotteryFinalized = null;
+      try{ if(window.showNotif) window.showNotif('⚠️ お題情報の同期に失敗しました'); }catch(e){}
+      return;
+    }
+    // 初期持ち点をまだ設定していなければ設定
+    const pointsRef = ref(db, `rooms/${window.online.roomCode}/game/points`);
+    const pointsSnap = await get(pointsRef);
+    if(!pointsSnap.exists()){
+      const initial = window.online.settings?.initialPoints || 5000;
+      const players = getOnlinePlayersArray();
+      const pointsObj = {};
+      players.forEach(p => { pointsObj[p.id] = initial; });
+      await set(pointsRef, pointsObj);
+    }
+    // 賭けフェーズへ
+    const phaseRef = ref(db, `rooms/${window.online.roomCode}/game/phase`);
+    await set(phaseRef, 'betting');
+  }catch(e){ console.error('finalizeLotteryToBetting error:', e); window.online._lotteryFinalized = null; }
 }
 
 // オフライン中のプレイヤーがいる間、全員の画面上部に待機バナーを出す。
@@ -7469,6 +7475,7 @@ function ensureHostAndProgress(playersObj){
       const game = window.online.game;
       if(game){
         if(game.phase==='topic-select') checkAllTopicsSelected();
+        else if(game.phase==='topic-lottery') finalizeLotteryToBetting();
         else if(game.phase==='betting') checkAllBetsSubmitted();
         else if(game.phase==='reveal') checkAllReadyForResult();
         else if(game.phase==='result') checkAllReadyForNext();
@@ -12304,6 +12311,7 @@ async function restartRoundWithNextOya(nextOyaId){
     delete window.online._revealTriggered;
     delete window.online._resultTriggered;
     delete window.online._nextTriggered;
+    delete window.online._lotteryFinalized;
     try{ if(window.showNotif) window.showNotif('🔄 親が抜けたため、親を交代してこのラウンドをやり直します（このラウンドの賭けは無効）'); }catch(e){}
   }catch(e){ console.error('restartRoundWithNextOya error:', e); }
 }
