@@ -2084,7 +2084,19 @@ window.SFX = (function(){
 (function(){
   const SEL = 'button,.btn,.btn-sm,.point-btn,.bet-type-btn,.btn-oya,.horse-card,.uiconfirm-btn,.icon-btn,.tab,.chip,[role="button"]';
   let activeEl = null;
-  const setActive = (el) => { if(el){ el.classList.add('tap-active'); activeEl = el; } };
+  const setActive = (el) => {
+    if(el){
+      el.classList.add('tap-active'); activeEl = el;
+      // 押下時に小さなタップ音（感触フィードバック）
+      try { if(window.SFX && typeof window.SFX.tap==='function') window.SFX.tap(); } catch(e){}
+      // 入力欄にフォーカスが残っていると、iOSでは最初のタップがキーボードを閉じるだけで
+      // ボタンが反応しないことがある。押下と同時に入力欄を確定（blur）して初回タップで反応させる。
+      try {
+        var af = document.activeElement;
+        if(af && af !== el && (af.tagName === 'INPUT' || af.tagName === 'TEXTAREA')){ af.blur(); }
+      } catch(e){}
+    }
+  };
   const clearActive = () => { if(activeEl){ activeEl.classList.remove('tap-active'); activeEl = null; } };
   document.addEventListener('touchstart', (e) => {
     const el = e.target && e.target.closest ? e.target.closest(SEL) : null;
@@ -9797,6 +9809,8 @@ window.showRaceReveal = function(opts, done){
         var remTime=Math.max(0.25, h.targetTime-elapsed);
         var needSpeed=remDist/remTime;
         var speed=needSpeed*wob*styleFactor;
+        // ラストスパート(done3)に入るまでは1.3倍速でテンポよく見せる（スパート後は通常速度でじっくり）
+        if(!done3) speed*=1.3;
         // 過剰補正を抑える（見た目の自然さ）
         if(speed<4) speed=4;
         h.x += speed*dt;
