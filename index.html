@@ -2087,8 +2087,8 @@ window.SFX = (function(){
   const setActive = (el) => {
     if(el){
       el.classList.add('tap-active'); activeEl = el;
-      // 押下時に小さなタップ音（感触フィードバック）
-      try { if(window.SFX && typeof window.SFX.tap==='function') window.SFX.tap(); } catch(e){}
+      // 押下時に効果音（確定ボタンと同じはっきりした音で感触を出す）
+      try { if(window.SFX && typeof window.SFX.confirm==='function') window.SFX.confirm(); } catch(e){}
       // 入力欄にフォーカスが残っていると、iOSでは最初のタップがキーボードを閉じるだけで
       // ボタンが反応しないことがある。押下と同時に入力欄を確定（blur）して初回タップで反応させる。
       try {
@@ -3057,7 +3057,7 @@ function uiConfirm(opts){
       okBtn.onclick=null; cancelBtn.onclick=null; ov.onclick=null;
       resolve(val);
     };
-    okBtn.onclick=()=>{ try{ window.SFX && window.SFX.confirm && window.SFX.confirm(); }catch(e){} cleanup(true); };
+    okBtn.onclick=()=>{ cleanup(true); };
     cancelBtn.onclick=()=>cleanup(false);
     ov.onclick=(e)=>{ if(e.target===ov) cleanup(false); };
   });
@@ -11041,7 +11041,7 @@ window.toggleSound = function(){
   const btn = document.getElementById('sound-toggle');
   if(btn) btn.textContent = next ? '🔊' : '🔇';
   if(next){
-    window.SFX.confirm();
+    window.SFX.notify();
     showNotif('🔊 サウンドON');
   } else {
     showNotif('🔇 サウンドOFF');
