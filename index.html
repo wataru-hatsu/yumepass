@@ -577,11 +577,11 @@ body.modal-open{overflow:hidden !important;}
     </div>
   </div>
   <div class="home-btns">
-    <div id="home-rejoin-banner" style="display:none;margin-bottom:6px">
-      <button class="btn btn-success" onclick="goTo('screen-online-menu');checkRejoinAvailable();" style="background:linear-gradient(135deg,#1a7a1a,#0f5a0f)">↩️ 前回の対戦に復帰する</button>
-    </div>
     <button class="btn btn-primary" onclick="goTo('screen-setup')">🐎 1台で遊ぶ（端末回す）</button>
     <button class="btn btn-primary" onclick="goTo('screen-online-menu');checkRejoinAvailable();">🌐 オンライン対戦</button>
+    <div id="home-rejoin-banner" style="display:none">
+      <button class="btn btn-success" onclick="goTo('screen-online-menu');checkRejoinAvailable();" style="background:linear-gradient(135deg,#1a7a1a,#0f5a0f)">↩️ 前回の対戦に復帰する</button>
+    </div>
     <button class="btn btn-secondary" onclick="goTo('screen-topics')">📝 お題を管理する</button>
     <button class="btn btn-secondary" onclick="goTo('screen-rules')">📖 ルール確認</button>
   </div>
@@ -861,6 +861,13 @@ body.modal-open{overflow:hidden !important;}
           <div><strong>ワイド</strong>：選んだ2頭が3位以内ならOK</div>
           <div><strong>3連複</strong>：1〜3位の3頭・順番自由</div>
           <div><strong>3連単</strong>：1〜3位を順番通り</div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px dashed #ccc">
+            <strong>📊 オッズ（倍率）の決まり方</strong><br>
+            ・人気が集中した買い目ほどオッズは<strong>低く</strong>なります（みんなが買う＝当たっても配当は控えめ）。<br>
+            ・人気が薄い買い目ほどオッズは<strong>高く</strong>なります（当てれば大きな配当）。<br>
+            ・当てにくい賭け方（3連単など）ほどオッズの<strong>上限</strong>が高く設定されています。<br>
+            ・少人数のときは過度な高配当を防ぐため、オッズに上限がかかります。
+          </div>
         </div>
         <div class="bet-types">
           <div class="bet-type-btn active" onclick="onlineSelectBetType('tansho',this)"><div class="bet-name">単勝</div><div class="bet-desc">1着を当てる</div></div>
@@ -1122,7 +1129,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel" id="orr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="orr-oya-summary"></div></div>
     <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="orr-score-table"></table></div>
     <div style="margin:10px">
-      <button class="btn btn-primary sfx-go" id="orr-next-btn" onclick="onlineReadyForNext()">次のラウンドへ →</button>
+      <button class="btn btn-primary" id="orr-next-btn" onclick="onlineReadyForNext()">次のラウンドへ →</button>
       <div id="orr-ready-status" style="text-align:center;color:#aaa;font-size:0.85rem;margin-top:8px"></div>
       <button class="btn btn-secondary" onclick="confirmLeaveDuringGame()" style="margin-top:14px;font-size:0.85rem;opacity:0.7">🚪 ここで退室する</button>
     </div>
@@ -1369,6 +1376,13 @@ body.modal-open{overflow:hidden !important;}
         <div><strong>ワイド</strong>：選んだ2頭が3位以内ならOK</div>
         <div><strong>3連複</strong>：1〜3位の3頭・順番自由</div>
         <div><strong>3連単</strong>：1〜3位を順番通り</div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px dashed #ccc">
+          <strong>📊 オッズ（倍率）の決まり方</strong><br>
+          ・人気が集中した買い目ほどオッズは<strong>低く</strong>なります（みんなが買う＝当たっても配当は控えめ）。<br>
+          ・人気が薄い買い目ほどオッズは<strong>高く</strong>なります（当てれば大きな配当）。<br>
+          ・当てにくい賭け方（3連単など）ほどオッズの<strong>上限</strong>が高く設定されています。<br>
+          ・少人数のときは過度な高配当を防ぐため、オッズに上限がかかります。
+        </div>
       </div>
       <div class="bet-types">
         <div class="bet-type-btn active" onclick="selectBetType('tansho',this)"><div class="bet-name">単勝</div><div class="bet-desc">1着を当てる</div></div>
@@ -1565,7 +1579,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel"><div class="panel-title">💰 子の結果</div><div id="rr-player-results"></div></div>
     <div class="panel" id="rr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="rr-oya-summary"></div></div>
     <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="rr-score-table"></table></div>
-    <div style="margin:10px"><button class="btn btn-primary sfx-go" id="rr-next-btn" onclick="nextRound()">次のラウンドへ →</button></div>
+    <div style="margin:10px"><button class="btn btn-primary" id="rr-next-btn" onclick="nextRound()">次のラウンドへ →</button></div>
   </div>
 </div>
 
@@ -5574,6 +5588,7 @@ function launchStars(){
   setTimeout(clearCelebration,1800);
 }
 function nextRound(){
+  try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
   if(state.currentRound>=state.rounds){
     window._finalConfettiSession=(window._finalConfettiSession||0)+1;
     const _showOfflineFinal = function(){
@@ -6184,6 +6199,9 @@ window.rejoinRoom = async function(){
     delete window.online._noGameTriggered;
     window.online._lastSeenRound = null;
     window.online._lastRevealKey = null;
+    // 復帰時はゲーム開始フラグをリセット（これがtrueのままだとロビーで status==='playing' を検知できず進めない）
+    window.online.gameStarted = false;
+    window.online._isRejoining = true; // 復帰時はゲーム開始ファンファーレを鳴らさない目印
 
     // 復帰フラグを立てる（このラウンドは観戦のみ）
     // ただし、お題選択フェーズ・抽選フェーズなら通常参加できる
@@ -6511,7 +6529,9 @@ window.startOnlineGame = async function(){
 
 // ゲーム開始時の全員共通処理（ロビーから遷移）
 function onGameStarted(){
-  try{ if(window.SFX && typeof window.SFX.gamestart==='function') window.SFX.gamestart(); }catch(e){}
+  // 通常のゲーム開始時のみファンファーレ。復帰時は鳴らさない。
+  if(window.online._isRejoining){ window.online._isRejoining = false; }
+  else { try{ if(window.SFX && typeof window.SFX.gamestart==='function') window.SFX.gamestart(); }catch(e){} }
   // 設定をローカルに保存
   const settingsRef = ref(db, `rooms/${window.online.roomCode}/settings`);
   get(settingsRef).then(snap => {
@@ -9772,7 +9792,18 @@ window.showRaceReveal = function(opts, done){
   ffBtn.addEventListener('mousedown', ffOn);
   ffBtn.addEventListener('mouseup', ffOff);
   ffBtn.addEventListener('mouseleave', ffOff);
+  ffBtn.style.right='124px'; // スキップボタンと並べるため左へ
   ov.appendChild(ffBtn);
+
+  // スキップボタン（押すとレース演出を飛ばして結果へ）
+  var skipBtn=document.createElement('button');
+  skipBtn.textContent='⏭ スキップ';
+  skipBtn.style.cssText='position:absolute;right:12px;bottom:calc(env(safe-area-inset-bottom) + 14px);z-index:30;background:rgba(10,8,4,0.78);color:#ffe8a0;border:1px solid #f5c842;border-radius:20px;padding:9px 16px;font-size:13px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;';
+  skipBtn.addEventListener('click', function(){
+    try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
+    try{ if(typeof finishAll==='function') finishAll(); }catch(e){ console.error('skip error', e); }
+  });
+  ov.appendChild(skipBtn);
 
   // ゴール（チェッカー）＋テープ＋直線ハイライト
   var boardH=Math.min(170, 54+N*0+ (N>=7?150:130));
@@ -11011,6 +11042,8 @@ function updateNextReadyStatus(game){
 }
 
 window.onlineReadyForNext = async function(){
+  try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
+  try{ var _b=document.getElementById('orr-next-btn'); if(_b){ _b.disabled=true; _b.style.opacity='0.6'; _b.innerHTML='<span style="display:block;text-align:center">✅ 送信中…</span>'; } }catch(e){}
   try {
     const myReadyRef = ref(db, `rooms/${window.online.roomCode}/game/nextReady/${window.online.playerId}`);
     await set(myReadyRef, true);
