@@ -6119,8 +6119,10 @@ window.copyAdoptCode = function(key){
     const s = (window._adminSuggestions || {})[key];
     if(!s) return;
     const id = 'topic-' + (s.title||'').replace(/[^a-zA-Z0-9]/g,'').slice(0,10) + '-' + (s.createdAt||Date.now()).toString().slice(-5);
-    const horsesArr = (s.horses||[]).map(h => `'${String(h).replace(/'/g,"\\'")}'`).join(', ');
-    const code = `  { id: '${id}', category: '${s.category||'g3'}', title: '${String(s.title||'').replace(/'/g,"\\'")}', icon: '${s.icon||'🎯'}', horses: [${horsesArr}] },`;
+    // JSON.stringify で文字列を安全にエスケープ（引用符・バックスラッシュ・特殊文字に対応）
+    const q = (str) => JSON.stringify(String(str==null?'':str));
+    const horsesArr = (s.horses||[]).map(h => q(h)).join(', ');
+    const code = `  { id: ${q(id)}, category: ${q(s.category||'g3')}, title: ${q(s.title||'')}, icon: ${q(s.icon||'🎯')}, horses: [${horsesArr}] },`;
     const doCopy = (txt) => {
       if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(()=>{ if(window.showNotif) window.showNotif('📋 採用コードをコピーしました'); }).catch(()=>fallbackCopy(txt)); }
       else fallbackCopy(txt);
@@ -6218,6 +6220,7 @@ window.createRoom = async function(){
     window.online.playerId = playerId;
     window.online.playerName = name;
     window.online.isHost = true;
+    try{ localStorage.setItem('lastPlayerName', name); }catch(e){}
 
     // 切断時：プレイヤーを削除せず online: false に設定（復帰用）
     const playerOnlineRef = ref(db, `rooms/${code}/players/${playerId}/online`);
@@ -6308,6 +6311,7 @@ window.joinRoom = async function(){
     window.online.playerId = playerId;
     window.online.playerName = name;
     window.online.isHost = false;
+    try{ localStorage.setItem('lastPlayerName', name); }catch(e){}
 
     // 復帰用に localStorage に記録
     try {
