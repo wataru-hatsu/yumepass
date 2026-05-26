@@ -6315,6 +6315,16 @@ function enterLobby(){
   window.online._lobbyCount = undefined; // 初回スナップショットでは入室音を鳴らさない
   window.online.unsubscribe = onValue(playersRef, (snap) => {
     const players = snap.val() || {};
+    // 自分がホストにキックされた場合は、通知して退室
+    try{
+      const me = players[window.online.playerId];
+      if(me && me.kicked){
+        try{ if(window.showNotif) window.showNotif('👋 ホストにより退出させられました'); }catch(e){}
+        if(typeof window.leaveRoom==='function'){ window.leaveRoom(true); }
+        else { goTo('screen-home'); }
+        return;
+      }
+    }catch(e){}
     // 誰かが入室して人数が増えたら入室音（初回の表示時は鳴らさない）
     try {
       const cnt = Object.keys(players).length;
@@ -6324,6 +6334,8 @@ function enterLobby(){
       window.online._lobbyCount = cnt;
     } catch(e){}
     renderLobbyPlayers(players);
+    // ゲーム中（ロビー以外）でも、ホストがオフラインになったらオンライン最古参が引き継いで進行を止めない
+    try{ ensureHostAndProgress(players); }catch(e){}
   });
 
   // 設定をリアルタイム監視
@@ -7021,7 +7033,9 @@ function updateTopicProgressList(selections){
     else { status = '⏳ 選択中'; color = '#f5c842'; }
     const meBadge = isMe ? '<span style="background:#1a7a1a;color:white;font-size:0.6rem;padding:2px 5px;border-radius:4px;font-weight:700;margin-left:4px">あなた</span>' : '';
     const opacity = isOffline ? '0.6' : '1';
-    return `<div style="padding:4px 8px;border:1px solid #ddd;border-radius:6px;margin-bottom:3px;background:white;display:flex;align-items:center;opacity:${opacity}"><span style="flex:1;font-weight:700;font-size:0.78rem">${escapeHtml(p.name)}${meBadge}</span><span style="color:${color};font-weight:700;font-size:0.72rem">${status}</span></div>`;
+    // ホストは自分以外を退出させられる（戻らない人を待たずに進めるため）
+    const kickBtn = (window.online.isHost && !isMe) ? `<button onclick="kickPlayer('${p.id}','${escapeHtml(p.name).replace(/'/g,"\\'")}')" style="margin-left:6px;background:#c0392b;color:#fff;border:none;border-radius:5px;font-size:0.62rem;font-weight:700;padding:3px 7px;cursor:pointer">退出</button>` : '';
+    return `<div style="padding:4px 8px;border:1px solid #ddd;border-radius:6px;margin-bottom:3px;background:white;display:flex;align-items:center;opacity:${opacity}"><span style="flex:1;font-weight:700;font-size:0.78rem">${escapeHtml(p.name)}${meBadge}</span><span style="color:${color};font-weight:700;font-size:0.72rem">${status}</span>${kickBtn}</div>`;
   }).join('');
   const summary = html;
   const countText = `${done}/${total}人 完了`;
@@ -7254,32 +7268,8 @@ async function checkAllTopicsSelected(){
       targetPlayers = players.filter((p, idx) => idx !== oyaIdx);
     }
 
-    // オフラインプレイヤーには自動でランダムお題を選択（ホストが代理）
-    const topics = getOnlineTopics();
-    if(topics && topics.length > 0){
-      for(const p of targetPlayers){
-        if(p.online === false){
-          const selectionsNow = game.topicSelections || {};
-          if(!selectionsNow[p.id]){
-            // ランダムにお題を1つ選ぶ
-            const randomTopic = topics[Math.floor(Math.random() * topics.length)];
-            const snapshot = {
-              id: randomTopic.id,
-              title: randomTopic.title,
-              icon: randomTopic.icon || '🎯',
-              horses: randomTopic.horses || [],
-              category: randomTopic.category || 'g3'
-            };
-            try {
-              const selRef = ref(db, `rooms/${window.online.roomCode}/game/topicSelections/${p.id}`);
-              await set(selRef, snapshot);
-            } catch(e){ console.error('オフライン代理お題選択失敗:', e); }
-          }
-        }
-      }
-    }
-
-    // 再取得（代理選択を反映）
+    // CPU代理はしない：オフラインの人も「待つ」。全員（戻ってこない人はホストがキック）が選び終えるまで進めない。
+    // 選択状況を取得
     const snap2 = await get(gameRef);
     const game2 = snap2.val();
     const selections = (game2 && game2.topicSelections) || {};
@@ -7443,6 +7433,42 @@ function enterOnlineTopicLottery(game){
 // ゲーム状態をリアルタイム監視
 
 // プレイヤーリスト描画 + ホスト移譲
+// ホスト不在/オフライン時に、オンライン最古参が自動でホストを引き継ぎ、現フェーズの進行チェックを回す。
+// ロビー画面だけでなく、お題選択・賭けなどゲーム中の画面でも進行が止まらないようにするための共通処理。
+function ensureHostAndProgress(playersObj){
+  try{
+    const arr = Object.entries(playersObj||{}).map(([id,p])=>({id,...p}));
+    if(arr.length===0) return;
+    arr.sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
+    const currentHost = arr.find(p=>p.isHost);
+    const needTransfer = !currentHost || currentHost.online===false;
+    if(needTransfer){
+      const onlineArr = arr.filter(p=>p.online!==false);
+      const candidates = onlineArr.length>0 ? onlineArr : arr;
+      const newHostId = candidates[0].id;
+      if(newHostId===window.online.playerId && !window.online.isHost){
+        // 自分が新ホストになる
+        const updates={};
+        if(currentHost && currentHost.id!==newHostId){ updates[`rooms/${window.online.roomCode}/players/${currentHost.id}/isHost`]=false; }
+        updates[`rooms/${window.online.roomCode}/players/${newHostId}/isHost`]=true;
+        updates[`rooms/${window.online.roomCode}/hostId`]=newHostId;
+        update(ref(db), updates).catch(()=>{});
+        window.online.isHost = true;
+        try{ if(typeof window.showNotif==='function') window.showNotif('👑 ホストを引き継ぎました'); }catch(e){}
+      }
+    }
+    // ホストなら、現在のフェーズの進行チェックを回す（オフライン者の代理処理を含む）
+    if(window.online.isHost){
+      const game = window.online.game;
+      if(game){
+        if(game.phase==='topic-select') checkAllTopicsSelected();
+        else if(game.phase==='betting') checkAllBetsSubmitted();
+        else if(game.phase==='reveal') checkAllReadyForResult();
+        else if(game.phase==='result') checkAllReadyForNext();
+      }
+    }
+  }catch(e){ console.error('ensureHostAndProgress error:', e); }
+}
 function renderLobbyPlayers(players){
   const list = document.getElementById('lobby-players-list');
   const arr = Object.entries(players).map(([id, p]) => ({id, ...p}));
@@ -7505,7 +7531,9 @@ function renderLobbyPlayers(players){
     const meBadge = isMe ? '<span style="background:#1a7a1a;color:white;font-size:0.65rem;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:6px">あなた</span>' : '';
     const offlineBadge = isOffline ? '<span style="background:#aa2222;color:white;font-size:0.65rem;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:6px">🔴 オフライン</span>' : '';
     const opacity = isOffline ? '0.6' : '1';
-    return `<div style="padding:10px 12px;border:1px solid #ddd;border-radius:8px;margin-bottom:6px;background:${isMe?'#fffdf0':'white'};display:flex;align-items:center;opacity:${opacity}"><span style="flex:1;font-weight:700">${escapeHtml(p.name)}</span>${hostBadge}${meBadge}${offlineBadge}</div>`;
+    // ホストは自分以外を退出させられる
+    const kickBtn = (window.online.isHost && !isMe) ? `<button onclick="kickPlayer('${p.id}','${escapeHtml(p.name).replace(/'/g,"\\'")}')" style="margin-left:8px;background:#c0392b;color:#fff;border:none;border-radius:6px;font-size:0.7rem;font-weight:700;padding:5px 9px;cursor:pointer">退出</button>` : '';
+    return `<div style="padding:10px 12px;border:1px solid #ddd;border-radius:8px;margin-bottom:6px;background:${isMe?'#fffdf0':'white'};display:flex;align-items:center;opacity:${opacity}"><span style="flex:1;font-weight:700">${escapeHtml(p.name)}</span>${hostBadge}${meBadge}${offlineBadge}${kickBtn}</div>`;
   }).join('');
   // ロビーの参加者が増えたら下スクロール矢印の表示を更新
   if(typeof updateScrollFabVisibility==='function') setTimeout(updateScrollFabVisibility, 60);
@@ -9161,42 +9189,22 @@ async function checkAllBetsSubmitted(){
     const bets = game.bets || {};
     const oyaResult = game.oyaResult;
 
-    // === オフライン代理処理（ホストが代理実行）===
+    // === オフライン時の扱い ===
+    // 子はCPU代理しない＝「待つ」。戻ってこない子はホストがキックすれば人数から外れて進む。
+    // 親だけは例外：親がオフラインで順位未入力だと進めようがないため、ノーゲーム（賭け金返金）で次へ。
     if(window.online.isHost){
-      // 子のオフライン代理：未入力なら「オフラインベット」として記録（最低額減算）
-      const koPlayers = players.filter((p, i) => i !== oyaIdx);
-      for(const p of koPlayers){
-        if(p.online === false && !bets[p.id]){
-          const minBet = window.online.settings?.minBet || 0;
-          try {
-            const betRef = ref(db, `rooms/${window.online.roomCode}/game/bets/${p.id}`);
-            await set(betRef, {
-              betType: 'tansho',
-              selections: [],
-              amount: 0,
-              skipped: true,
-              offlinePenalty: minBet // 結果計算時に減算するための情報
-            });
-          } catch(e){ console.error('子オフライン代理失敗:', e); }
-        }
-      }
-      // 親のオフライン代理：3つ未選択ならノーゲーム判定
       if(oyaPlayer && oyaPlayer.online === false && (!oyaResult || oyaResult.length < 3)){
-        // 既にノーゲーム処理済みでないか確認
         if(window.online._noGameTriggered !== game.currentRound){
           window.online._noGameTriggered = game.currentRound;
-          // 全員の賭け金を返金してこのラウンドをスキップ
           await handleNoGameRound(game, players, oyaPlayer);
-          return; // ノーゲーム処理に流れたのでここで終了
+          return;
         }
       }
-      // 親のオフライン代理：3つ選択済みならそのまま進行（既に oyaResult あり）
-      // → 通常フローに任せる
     }
 
     // 親の順位入力完了？
     if(!oyaResult || oyaResult.length < 3) return;
-    // 子全員入力完了？
+    // 子全員入力完了？（オフラインの子も含めて待つ）
     const koPlayers = players.filter((p, i) => i !== oyaIdx);
     const allKoSubmitted = koPlayers.every(p => bets[p.id]);
     if(!allKoSubmitted) return;
@@ -9204,19 +9212,7 @@ async function checkAllBetsSubmitted(){
     // 全員入力完了 → bet-wait画面の公開ボタンを表示
     updateBetWaitRevealButton(game);
 
-    // オフラインプレイヤーの waitReady は自動で立てる（ホストが代理）
-    if(window.online.isHost){
-      const waitReadyNow = game.waitReady || {};
-      for(const p of players){
-        if(p.online === false && !waitReadyNow[p.id]){
-          try {
-            await set(ref(db, `rooms/${window.online.roomCode}/game/waitReady/${p.id}`), true);
-          } catch(e){ console.error(e); }
-        }
-      }
-    }
-
-    // 全員が「公開準備OK」ボタンを押したか？
+    // 全員が「公開準備OK」ボタンを押したか？（オフラインの人も待つ。CPU代理はしない）
     const waitReady = game.waitReady || {};
     const allWaitReady = players.every(p => waitReady[p.id]);
     if(!allWaitReady) return;
@@ -9498,16 +9494,7 @@ async function checkAllReadyForResult(){
     const players = getOnlinePlayersArray();
     if(!players.length) return;
 
-    // オフラインプレイヤーの revealReady は自動で立てる
-    const readyNow = game.revealReady || {};
-    for(const p of players){
-      if(p.online === false && !readyNow[p.id]){
-        try {
-          await set(ref(db, `rooms/${window.online.roomCode}/game/revealReady/${p.id}`), true);
-        } catch(e){ console.error(e); }
-      }
-    }
-
+    // CPU代理はしない：オフラインの人も「待つ」。戻らない人はホストがキックで外す。
     const ready = game.revealReady || {};
     const allReady = players.every(p => ready[p.id]);
     if(!allReady) return;
@@ -11127,27 +11114,8 @@ async function checkAllReadyForNext(){
     const players = getOnlinePlayersArray();
     if(!players.length) return;
 
-    // オフラインプレイヤーの nextReady は自動で立てる
-    const nextReadyNow = game.nextReady || {};
-    let didUpdate = false;
-    for(const p of players){
-      if(p.online === false && !nextReadyNow[p.id]){
-        try {
-          await set(ref(db, `rooms/${window.online.roomCode}/game/nextReady/${p.id}`), true);
-          didUpdate = true;
-        } catch(e){ console.error(e); }
-      }
-    }
-
-    // 自動セットした場合は最新データを再取得して判定
+    // CPU代理はしない：オフラインの人も「待つ」。戻らない人はホストがキックで外す。
     let ready = game.nextReady || {};
-    if(didUpdate){
-      try {
-        const readyRef = ref(db, `rooms/${window.online.roomCode}/game/nextReady`);
-        const snap = await get(readyRef);
-        ready = snap.val() || {};
-      } catch(e){ console.error(e); }
-    }
     const allReady = players.every(p => ready[p.id]);
     if(!allReady) return;
 
@@ -12237,6 +12205,42 @@ window.confirmLeaveDuringGame = async function(){
       localStorage.removeItem('yumepass_active_name');
     } catch(e){}
   });
+};
+
+// ホストが指定プレイヤーを部屋から排除（キック）する。
+// 戻ってこない人を待ち続けて進行が止まるのを防ぐため、ホストはいつでも誰でも排除できる。
+window.kickPlayer = async function(targetId, targetName){
+  if(!window.online.isHost){ try{ if(window.showNotif) window.showNotif('⚠️ ホストのみ操作できます'); }catch(e){} return; }
+  if(!targetId || targetId === window.online.playerId){ return; }
+  try{
+    const ok = await window.uiConfirm({
+      icon:'🚪',
+      title:`${targetName||'このプレイヤー'} さんを退出させますか？`,
+      bodyHtml:'<div style="color:#c8bfa8;font-size:0.85rem;line-height:1.6">このラウンドの賭けは無効になり、ゲームから外れます。<br>戻ってこない人を待たずに進めたいときに使います。</div>',
+      okText:'退出させる', cancelText:'やめる'
+    });
+    if(!ok) return;
+    const base = `rooms/${window.online.roomCode}`;
+    // まず kicked フラグを立てる（本人が検知して自分で退室する）
+    try{ await set(ref(db, `${base}/players/${targetId}/kicked`), true); }catch(e){}
+    // 少し待ってから、ホスト側でも対象のデータを削除（本人が既に居ない場合に備える）
+    setTimeout(async ()=>{
+      try{
+        const updates = {};
+        updates[`${base}/players/${targetId}`] = null;
+        updates[`${base}/game/points/${targetId}`] = null;
+        updates[`${base}/game/bets/${targetId}`] = null;
+        updates[`${base}/game/topicSelections/${targetId}`] = null;
+        updates[`${base}/game/waitReady/${targetId}`] = null;
+        updates[`${base}/game/revealReady/${targetId}`] = null;
+        updates[`${base}/game/nextReady/${targetId}`] = null;
+        await update(ref(db), updates);
+        // 削除後、現フェーズの進行チェックを回す（人数が減って全員完了になるかも）
+        try{ ensureHostAndProgress((await get(ref(db, `${base}/players`))).val() || {}); }catch(e){}
+      }catch(e){ console.error('kickPlayer cleanup error:', e); }
+    }, 700);
+    try{ if(window.showNotif) window.showNotif(`👋 ${targetName||'プレイヤー'} さんを退出させました`); }catch(e){}
+  }catch(e){ console.error('kickPlayer error:', e); }
 };
 
 window.leaveRoom = async function(skipConfirm){
