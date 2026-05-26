@@ -974,7 +974,7 @@ body.modal-open{overflow:hidden !important;}
       </div>
     </div>
     <div style="margin:10px">
-      <button class="btn btn-primary sfx-go" onclick="onlineConfirmBet()" style="background:linear-gradient(135deg,#c0392b,#922b21);box-shadow:0 3px 8px rgba(192,57,43,0.4)">🏁 この馬券で勝負する！</button>
+      <button class="btn btn-primary" onclick="onlineConfirmBet()" style="background:linear-gradient(135deg,#c0392b,#922b21);box-shadow:0 3px 8px rgba(192,57,43,0.4)">🏁 この馬券で勝負する！</button>
       <button class="btn btn-secondary sfx-go" onclick="goTo('screen-online-betting')" style="margin-top:8px">← 賭けを修正する</button>
     </div>
   </div>
@@ -1461,7 +1461,7 @@ body.modal-open{overflow:hidden !important;}
       </div>
     </div>
     <div style="margin:10px">
-      <button class="btn btn-primary sfx-go" onclick="confirmBet()" style="background:linear-gradient(135deg,#c0392b,#922b21);box-shadow:0 3px 8px rgba(192,57,43,0.4)">🏁 この馬券で勝負する！</button>
+      <button class="btn btn-primary" onclick="confirmBet()" style="background:linear-gradient(135deg,#c0392b,#922b21);box-shadow:0 3px 8px rgba(192,57,43,0.4)">🏁 この馬券で勝負する！</button>
       <button class="btn btn-secondary sfx-go" onclick="goTo('screen-bet')" style="margin-top:8px">← 賭けを修正する</button>
     </div>
   </div>
@@ -1525,7 +1525,7 @@ body.modal-open{overflow:hidden !important;}
       <div class="horse-grid" id="result-horse-grid"></div>
     </div>
     <div class="panel"><div class="panel-title">📊 入力内容</div><div id="result-preview-content"><div class="empty">馬を選んでください</div></div></div>
-    <div style="margin:10px" id="result-confirm-wrap"><button class="btn btn-oya sfx-go" id="result-confirm-btn" onclick="goToReveal()" disabled>順位を決定する</button></div>
+    <div style="margin:10px" id="result-confirm-wrap"><button class="btn btn-oya" id="result-confirm-btn" onclick="goToReveal()" disabled>順位を決定する</button></div>
   </div>
 </div>
 
@@ -3597,7 +3597,7 @@ function startBetting(){
   showPrivacyCover(first.name,false,()=>{renderBetScreen();goTo('screen-bet');});
 }
 function showPrivacyCover(name,isOya,cb){document.getElementById('privacyIcon').textContent=isOya?'👑':'🙈';document.getElementById('privacyName').textContent=name+' さんの番！';document.getElementById('privacyMsg').innerHTML=isOya?'👑 親の番です<br>端末を受け取って結果を入力してね':'端末を渡してください<br>画面を下に向けて渡してね';document.getElementById('privacyCover').classList.remove('hidden');window._cb=cb;}
-function revealPlayer(){document.getElementById('privacyCover').classList.add('hidden');if(window._cb){window._cb();window._cb=null;}}
+function revealPlayer(){try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}document.getElementById('privacyCover').classList.add('hidden');if(window._cb){window._cb();window._cb=null;}}
 function renderBetScreen(){
   const koIdx=state.koPlayers[state.currentBetPlayerIndex];const p=state.players[koIdx];currentBetType='tansho';selectedHorses=[];betInputVal='';
   // 買い方の状態をリセット
@@ -4467,6 +4467,7 @@ function confirmSkip(){
 
 // 旧確認画面からの確定（後方互換）：保留中の単一賭けを確定して次へ
 function confirmBet(){
+  try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
   const koIdx=state.koPlayers[state.currentBetPlayerIndex];
   const pending=window._offPendingBet;
   if(!pending){showNotif('⚠️ 賭け情報がありません');goTo('screen-bet');return;}
@@ -4528,6 +4529,7 @@ function goToReveal(){
 }
 
 function _doGoToReveal(){
+  try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
   const t0=state.selectedTopic;
   state.actualResult=[...resultSelections];
   document.getElementById('rv-round-label').textContent=`ROUND ${state.currentRound} REVEAL`;
@@ -4574,6 +4576,7 @@ function _doGoToReveal(){
     goTo('screen-reveal');
   }
 }function calculateResults(){
+  try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
   const [r1,r2,r3] = state.actualResult;
   const oya = state.players[state.oyaIndex];
   const oyaBonusRate = state.oyaBonusRate || 0;
@@ -8644,6 +8647,7 @@ window.onlineSubmitKoBet = function(){
 
 // 馬券確定 → DBに保存
 window.onlineConfirmBet = async function(){
+  try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
   const pending = window.onlineBet._pendingSubmit;
   if (!pending) {
     showNotif('⚠️ 賭け情報がありません。賭け直してください');
@@ -8738,6 +8742,7 @@ window.onlineConfirmOyaResult = async function(){
     return;
   }
   try {
+    try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
     const oyaResultRef = ref(db, `rooms/${window.online.roomCode}/game/oyaResult`);
     await set(oyaResultRef, [...window.onlineBet.oyaSelections]);
     enterOnlineBetWait();
@@ -9243,6 +9248,7 @@ function updateRevealReadyStatus(game){
 
 // 自分が「賭け公開の準備OK」を押した（bet-wait画面）
 window.onlineReadyForReveal = async function(){
+  try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
   try {
     const myReadyRef = ref(db, `rooms/${window.online.roomCode}/game/waitReady/${window.online.playerId}`);
     await set(myReadyRef, true);
@@ -9251,6 +9257,7 @@ window.onlineReadyForReveal = async function(){
 
 // 自分が「結果発表の準備完了」を押した（reveal画面）
 window.onlineReadyForResult = async function(){
+  try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
   try {
     const myReadyRef = ref(db, `rooms/${window.online.roomCode}/game/revealReady/${window.online.playerId}`);
     await set(myReadyRef, true);
