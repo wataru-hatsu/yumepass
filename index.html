@@ -6284,10 +6284,16 @@ window.rejoinRoom = async function(){
 
     showNotif('🎉 部屋に復帰しました！');
 
+    // 古いリアルタイム監視が残っていると新しい状態を受け取れないことがあるため、すべて解除してから入り直す
+    try{ if(window.online.unsubscribe){ window.online.unsubscribe(); window.online.unsubscribe=null; } }catch(e){}
+    try{ if(window.online.settingsUnsub){ window.online.settingsUnsub(); window.online.settingsUnsub=null; } }catch(e){}
+    try{ if(window.online.statusUnsub){ window.online.statusUnsub(); window.online.statusUnsub=null; } }catch(e){}
+    try{ if(window.online.gameUnsub){ window.online.gameUnsub(); window.online.gameUnsub=null; } }catch(e){}
+
     // ゲーム中ならゲーム画面へ、待機中ならロビーへ
     if(roomData.status === 'playing'){
       // ゲーム中の復帰 — currentPhaseに応じた画面に遷移するロジックは onGameStateUpdate で処理
-      enterLobby(); // まずロビーへ。その後 onGameStateUpdate で適切に遷移
+      enterLobby(); // まずロビーへ。その後 status監視/onGameStateUpdate で適切に遷移
     } else {
       enterLobby();
     }
@@ -6339,11 +6345,15 @@ function enterLobby(){
     }
   });
 
-  // ゲーム開始シグナルを監視
+  // ゲーム開始シグナルを監視（再入室時も確実に検知できるよう、既存監視を解除してから張り直す）
+  try{ if(window.online.statusUnsub){ window.online.statusUnsub(); window.online.statusUnsub=null; } }catch(e){}
   const statusRef = ref(db, `rooms/${window.online.roomCode}/status`);
   window.online.statusUnsub = onValue(statusRef, (snap) => {
     const status = snap.val();
-    if(status === 'playing' && !window.online.gameStarted){
+    // ゲームが進行中(playing)で、まだゲーム画面に居なければゲームへ進む。
+    // 再入室時は gameStarted が残っていることがあるため、現在ロビー画面に居るかどうかでも判定する。
+    const inLobby = document.getElementById('screen-room-lobby') && document.getElementById('screen-room-lobby').classList.contains('active');
+    if(status === 'playing' && (!window.online.gameStarted || inLobby)){
       window.online.gameStarted = true;
       onGameStarted();
     }
