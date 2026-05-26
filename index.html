@@ -5966,17 +5966,42 @@ function renderTopicsScreen(){
       const catUser=user.filter(t=>(t.category||'g3')===cat.id);
       if(catUser.length===0)return;
       html+=`<div style="font-size:0.72rem;font-weight:700;color:${cat.color};margin:8px 0 4px;display:flex;align-items:center;gap:4px"><span style="background:${cat.color};color:${cat.textColor};padding:1px 6px;border-radius:4px;font-size:0.65rem">${cat.label}</span>${catUser.length}問</div>`;
-      html+=catUser.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #ddd;border-radius:8px;margin-bottom:4px;background:white;cursor:default"><div style="font-size:1.2rem;flex-shrink:0">${t.icon}</div><div style="flex:1;font-weight:700;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div><button class="btn btn-danger btn-sm" onclick="deleteTopic('${t.id}')">削除</button></div>`).join('');
+      html+=catUser.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #ddd;border-radius:8px;margin-bottom:4px;background:white;cursor:default"><div style="font-size:1.2rem;flex-shrink:0">${t.icon}</div><div style="flex:1;font-weight:700;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div><button class="btn btn-sm" style="background:#c9960a;color:#1a1a1a;font-weight:800" onclick="proposeTopic('${t.id}')">📤 提案</button><button class="btn btn-danger btn-sm" onclick="deleteTopic('${t.id}')">削除</button></div>`).join('');
     });
     // カテゴリー未設定分
     const noCat=user.filter(t=>!cats.find(c=>c.id===t.category));
     if(noCat.length>0){
-      html+=noCat.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #ddd;border-radius:8px;margin-bottom:4px;background:white;cursor:default"><div style="font-size:1.2rem;flex-shrink:0">${t.icon}</div><div style="flex:1;font-weight:700;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div><button class="btn btn-danger btn-sm" onclick="deleteTopic('${t.id}')">削除</button></div>`).join('');
+      html+=noCat.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #ddd;border-radius:8px;margin-bottom:4px;background:white;cursor:default"><div style="font-size:1.2rem;flex-shrink:0">${t.icon}</div><div style="flex:1;font-weight:700;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div><button class="btn btn-sm" style="background:#c9960a;color:#1a1a1a;font-weight:800" onclick="proposeTopic('${t.id}')">📤 提案</button><button class="btn btn-danger btn-sm" onclick="deleteTopic('${t.id}')">削除</button></div>`).join('');
     }
   }
   c.innerHTML=html;
 }
 function deleteTopic(id){state.topics=state.topics.filter(t=>t.id!==id);saveTopics();renderTopicsScreen();showNotif('🗑️ お題を削除しました');}
+
+// お題を開発者に提案する（採用されると公式お題になるかも、という楽しみ）
+async function proposeTopic(id){
+  const t = state.topics.find(x => x.id === id);
+  if(!t){ showNotif('⚠️ お題が見つかりません'); return; }
+  // 確認ダイアログ
+  const ok = await (window.uiConfirm ? window.uiConfirm({
+    icon:'📤',
+    title:'このお題を提案しますか？',
+    bodyHtml:`<div style="color:#5a4a20;font-size:0.85rem;line-height:1.7;text-align:left"><strong>${(t.icon||'🎯')} ${escapeHtml(t.title)}</strong> を開発者に送ります。<br>良いお題は公式お題に採用されるかもしれません！<br><span style="color:#888;font-size:0.78rem">※選択肢の内容も一緒に送られます</span></div>`,
+    okText:'提案する', cancelText:'やめる'
+  }) : Promise.resolve(confirm('このお題を提案しますか？')));
+  if(!ok) return;
+  // 提案者名（あれば直近のオンライン名、なければ入力を促す簡易版として匿名）
+  let suggester = '匿名';
+  try{
+    const nm = (window.online && window.online.playerName) ? window.online.playerName : (localStorage.getItem('lastPlayerName') || '');
+    if(nm) suggester = nm;
+  }catch(e){}
+  if(typeof window.submitTopicSuggestion === 'function'){
+    await window.submitTopicSuggestion({ title:t.title, icon:t.icon, category:t.category||'g3', horses:t.horses }, suggester);
+  } else {
+    showNotif('⚠️ 送信機能が利用できません（オンライン接続が必要です）');
+  }
+}
 </script>
 
 <!-- Firebase SDK & Online Multiplayer -->
@@ -6000,6 +6025,129 @@ const HORSE_FG = ['#0a3a55','#173a0a','#fff','#fff','#333','#fff','#fff','#fff']
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+
+// ===== お題提案システム =====
+// プレイヤーが作ったお題を開発者に届ける。Firebaseの topicSuggestions に溜める。
+// 採用は隠しURL（?admin=合言葉）の管理画面で行い、貼り付け用コードをコピーする方式。
+const ADMIN_PASSPHRASE = 'wataru-yumepass-2026'; // 管理画面を開く合言葉（あなただけが知る）
+
+// お題を提案として送信（classic側のお題管理画面から呼ばれる）
+window.submitTopicSuggestion = async function(topic, suggesterName){
+  try{
+    if(!topic || !topic.title || !Array.isArray(topic.horses) || topic.horses.length < 3){
+      if(window.showNotif) window.showNotif('⚠️ お題が不完全です（選択肢3つ以上必要）');
+      return false;
+    }
+    const data = {
+      title: String(topic.title).slice(0,60),
+      icon: String(topic.icon || '🎯').slice(0,8),
+      category: topic.category || 'g3',
+      horses: topic.horses.slice(0,8).map(h => String(h).slice(0,40)),
+      suggester: String(suggesterName || '匿名').slice(0,30),
+      createdAt: Date.now(),
+      status: 'pending'
+    };
+    await push(ref(db, 'topicSuggestions'), data);
+    if(window.showNotif) window.showNotif('📤 お題を提案しました！ありがとうございます');
+    return true;
+  }catch(e){ console.error('submitTopicSuggestion error:', e); if(window.showNotif) window.showNotif('⚠️ 提案の送信に失敗しました'); return false; }
+};
+
+// 管理画面：合言葉が合っていれば提案一覧を表示
+window.openAdminPanelIfRequested = function(){
+  try{
+    const params = new URLSearchParams(window.location.search);
+    const pass = params.get('admin');
+    if(!pass) return;
+    if(pass !== ADMIN_PASSPHRASE){ return; } // 合言葉が違えば何もしない（存在を隠す）
+    renderAdminPanel();
+  }catch(e){ console.error('openAdminPanelIfRequested error:', e); }
+};
+
+// 管理画面の描画＋提案のリアルタイム購読
+function renderAdminPanel(){
+  // 既存の画面を隠して管理画面オーバーレイを出す
+  let panel = document.getElementById('admin-suggestions-panel');
+  if(!panel){
+    panel = document.createElement('div');
+    panel.id = 'admin-suggestions-panel';
+    panel.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#14120e;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 14px 40px';
+    document.body.appendChild(panel);
+  }
+  panel.innerHTML = '<div style="color:#f5c842;font-weight:900;font-size:1.2rem;text-align:center;margin-bottom:4px">🛠 お題提案 管理画面</div><div style="color:#c8bfa8;font-size:0.78rem;text-align:center;margin-bottom:14px">提案されたお題を確認し、採用するものは「コードをコピー」してindex.htmlのBASE_TOPICSに貼り付けてください</div><div id="admin-sugg-list" style="max-width:680px;margin:0 auto"><div style="color:#888;text-align:center;padding:30px">読み込み中…</div></div>';
+  // リアルタイムで提案を購読
+  try{
+    onValue(ref(db, 'topicSuggestions'), (snap) => {
+      const val = snap.val() || {};
+      const list = document.getElementById('admin-sugg-list');
+      if(!list) return;
+      const entries = Object.entries(val).map(([key, s]) => ({ key, ...s })).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+      if(entries.length === 0){ list.innerHTML = '<div style="color:#888;text-align:center;padding:30px">まだ提案はありません</div>'; return; }
+      const catColor = { g1:'#8b1a8b', g2:'#1a5fcc', g3:'#1a7a1a' };
+      list.innerHTML = entries.map(s => {
+        const col = catColor[s.category] || '#1a7a1a';
+        const horsesHtml = (s.horses||[]).map((h,i)=>`<span style="display:inline-block;background:rgba(255,255,255,0.08);color:#f0e8d4;font-size:0.72rem;padding:2px 8px;border-radius:5px;margin:2px">${i+1}. ${escapeHtmlAdmin(h)}</span>`).join('');
+        const dateStr = s.createdAt ? new Date(s.createdAt).toLocaleString('ja-JP') : '';
+        const statusBadge = s.status === 'adopted' ? '<span style="background:#1a7a1a;color:#fff;font-size:0.65rem;padding:2px 8px;border-radius:5px;font-weight:700">採用済</span>' : '';
+        return `<div style="background:#1f1c16;border:1px solid ${col};border-radius:11px;padding:13px;margin-bottom:11px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+            <span style="font-size:1.4rem">${escapeHtmlAdmin(s.icon||'🎯')}</span>
+            <span style="flex:1;color:#fff;font-weight:800;font-size:0.98rem">${escapeHtmlAdmin(s.title||'')}</span>
+            <span style="background:${col};color:#fff;font-size:0.62rem;padding:2px 7px;border-radius:5px;font-weight:700">${(s.category||'g3').toUpperCase()}</span>
+            ${statusBadge}
+          </div>
+          <div style="margin-bottom:8px">${horsesHtml}</div>
+          <div style="color:#9a8e72;font-size:0.68rem;margin-bottom:9px">提案者：${escapeHtmlAdmin(s.suggester||'匿名')} ／ ${dateStr}</div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap">
+            <button onclick="copyAdoptCode('${s.key}')" style="background:#c9960a;color:#1a1a1a;border:none;border-radius:7px;font-size:0.76rem;font-weight:800;padding:7px 13px;cursor:pointer">📋 採用コードをコピー</button>
+            <button onclick="markSuggestionAdopted('${s.key}')" style="background:#1a7a1a;color:#fff;border:none;border-radius:7px;font-size:0.76rem;font-weight:700;padding:7px 13px;cursor:pointer">✅ 採用済みにする</button>
+            <button onclick="deleteSuggestion('${s.key}')" style="background:#7a2222;color:#fff;border:none;border-radius:7px;font-size:0.76rem;font-weight:700;padding:7px 13px;cursor:pointer">🗑 削除</button>
+          </div>
+        </div>`;
+      }).join('');
+      // データを後で使えるよう保持
+      window._adminSuggestions = val;
+    });
+  }catch(e){ console.error('admin subscribe error:', e); }
+}
+
+function escapeHtmlAdmin(str){ return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// 採用コード（BASE_TOPICSに貼る1行）をクリップボードにコピー
+window.copyAdoptCode = function(key){
+  try{
+    const s = (window._adminSuggestions || {})[key];
+    if(!s) return;
+    const id = 'topic-' + (s.title||'').replace(/[^a-zA-Z0-9]/g,'').slice(0,10) + '-' + (s.createdAt||Date.now()).toString().slice(-5);
+    const horsesArr = (s.horses||[]).map(h => `'${String(h).replace(/'/g,"\\'")}'`).join(', ');
+    const code = `  { id: '${id}', category: '${s.category||'g3'}', title: '${String(s.title||'').replace(/'/g,"\\'")}', icon: '${s.icon||'🎯'}', horses: [${horsesArr}] },`;
+    const doCopy = (txt) => {
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(()=>{ if(window.showNotif) window.showNotif('📋 採用コードをコピーしました'); }).catch(()=>fallbackCopy(txt)); }
+      else fallbackCopy(txt);
+    };
+    const fallbackCopy = (txt) => {
+      const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); if(window.showNotif) window.showNotif('📋 採用コードをコピーしました'); }catch(e){ window.prompt('以下をコピーしてください：', txt); }
+      document.body.removeChild(ta);
+    };
+    doCopy(code);
+  }catch(e){ console.error('copyAdoptCode error:', e); }
+};
+
+window.markSuggestionAdopted = async function(key){
+  try{ await update(ref(db, `topicSuggestions/${key}`), { status: 'adopted' }); }catch(e){ console.error(e); }
+};
+window.deleteSuggestion = async function(key){
+  try{
+    const ok = await window.uiConfirm({ icon:'🗑', title:'この提案を削除しますか？', okText:'削除', cancelText:'やめる' });
+    if(!ok) return;
+    await remove(ref(db, `topicSuggestions/${key}`));
+  }catch(e){ console.error(e); }
+};
+
+// ページ読み込み時に管理画面チェック
+try{ openAdminPanelIfRequested(); }catch(e){}
+
 
 // オンライン対戦の状態管理
 window.online = {
@@ -6273,6 +6421,7 @@ window.rejoinRoom = async function(){
 
     // 復帰時に演出系のローカルキャッシュをクリア（of 再発火させるため）
     window.online._lastResultRound = null;
+    window.online._raceRevealing = null;
     window.online._lastFinalShown = null;
     delete window.online._revealTriggered;
     delete window.online._resultTriggered;
@@ -6696,6 +6845,7 @@ function onGameStateUpdate(game){
     delete window.online._noGameTriggered;
     // 演出キャッシュもクリア（次ラウンドの結果で演出が出るように）
     window.online._lastResultRound = null;
+    window.online._raceRevealing = null;
     window.online._lastRevealKey = null;
   }
 
@@ -6706,6 +6856,7 @@ function onGameStateUpdate(game){
   if(lastPhase === 'result' && game.phase === 'topic-select'){
     // 同ラウンドのやり直し or 次ラウンド開始 → 演出キャッシュをクリア
     window.online._lastResultRound = null;
+    window.online._raceRevealing = null;
     delete window.online._revealTriggered;
     delete window.online._resultTriggered;
     delete window.online._nextTriggered;
@@ -10687,13 +10838,19 @@ function enterOnlineRoundResult(game){
   const cdOn = (typeof window.isCountdownEnabled === 'function') ? window.isCountdownEnabled() : true;
   if(cdOn && isFirstShow && !log.noGame && window.online._countdownRound !== roundKey){
     window.online._countdownRound = roundKey;
+    window.online._raceRevealing = roundKey; // レース演出中の目印（完了まで結果発表に進ませない）
     const _raceOrder = (Array.isArray(game.oyaResult) ? game.oyaResult : (log.oyaResult || [])).slice(0,3);
     const _raceNames = (log.topicHorses || (topic && topic.horses) || []).slice();
     if(typeof window.showRaceReveal === 'function'){
-      window.showRaceReveal({ raceNo: game.currentRound, horseNames: _raceNames, order: _raceOrder }, () => { enterOnlineRoundResult(game); });
+      window.showRaceReveal({ raceNo: game.currentRound, horseNames: _raceNames, order: _raceOrder }, () => { window.online._raceRevealing = null; enterOnlineRoundResult(game); });
     } else {
-      showResultCountdown(() => { enterOnlineRoundResult(game); });
+      showResultCountdown(() => { window.online._raceRevealing = null; enterOnlineRoundResult(game); });
     }
+    return;
+  }
+  // レース演出がまだ実行中（このラウンドの演出が完了していない）なら、結果発表に進まない。
+  // 演出中に onGameStateUpdate が再発火しても、レース途中で結果発表が割り込むのを防ぐ。
+  if(window.online._raceRevealing === roundKey){
     return;
   }
 
@@ -11461,6 +11618,7 @@ window.onlineRestartGame = async function(){
     await update(ref(db), updates);
     // 演出用キャッシュもクリア
     window.online._lastResultRound = null;
+    window.online._raceRevealing = null;
     window.online._lastFinalShown = null;
     window.online._revealTriggered = null;
     window.online._resultTriggered = null;
@@ -12446,6 +12604,7 @@ window.leaveRoom = async function(skipConfirm){
     window.online.settings = null;
     window.online.cachedPlayers = null;
     window.online._lastResultRound = null;
+    window.online._raceRevealing = null;
     window.online._lastFinalShown = null;
     window.online._revealTriggered = null;
     window.online._resultTriggered = null;
