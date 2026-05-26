@@ -897,7 +897,7 @@ body.modal-open{overflow:hidden !important;}
       <!-- 点数表示 -->
       <div id="ob-combo-info" style="display:none;font-size:0.85rem;color:#fff;background:rgba(245,200,66,0.15);border:1px solid var(--gold);border-radius:8px;padding:8px 12px;margin:8px 10px;text-align:center"></div>
       <div class="panel" id="ob-betamount-panel">
-        <div class="panel-title" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">💴 ベット額 <button onclick="openScorePopup()" style="margin-left:auto;flex-shrink:0;background:rgba(15,15,18,0.9);border:1px solid rgba(245,200,66,0.6);color:#f5c842;font-size:0.74rem;font-weight:800;border-radius:14px;padding:4px 10px;cursor:pointer;white-space:nowrap;letter-spacing:0;text-transform:none">📊 得点</button></div>
+        <div class="panel-title" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">💴 ベット額 <button class="sfx-pol" onclick="openScorePopup()" style="margin-left:auto;flex-shrink:0;background:rgba(15,15,18,0.9);border:1px solid rgba(245,200,66,0.6);color:#f5c842;font-size:0.74rem;font-weight:800;border-radius:14px;padding:4px 10px;cursor:pointer;white-space:nowrap;letter-spacing:0;text-transform:none">📊 得点</button></div>
         <div id="ob-bet-hint" style="font-size:0.86rem;color:#333;font-weight:600;margin-bottom:6px">最低500点 / 1点単位でOK</div>
         <div id="ob-bet-display" onclick="focusOnlineBetInput()" style="position:relative;background:#1a1a1a;border-radius:10px;padding:24px 14px 22px;text-align:right;font-size:1.5rem;font-weight:900;color:var(--gold);letter-spacing:1px;min-height:46px;margin-bottom:6px;cursor:text"><div style="position:absolute;left:12px;top:6px;font-size:0.74rem;color:#5db0ff;font-weight:800;letter-spacing:0;text-align:left">👆 タップして数字を入力</div>0<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:var(--gold);font-weight:800;letter-spacing:0;opacity:0.95"></div></div>
         <input id="ob-bet-native-input" inputmode="numeric" pattern="[0-9]*" oninput="onOnlineBetNativeInput(this.value)" style="position:absolute;opacity:0;height:1px;width:1px;pointer-events:none;left:-9999px">
@@ -913,7 +913,7 @@ body.modal-open{overflow:hidden !important;}
       </div>
       <div id="ob-finalize-btn" style="display:none;margin:10px"><div style="display:flex;gap:8px">
         <button class="btn" onclick="onlineContinueBuying()" style="flex:1;background:linear-gradient(135deg,#5db0ff,#2f8fe0);color:#fff;border:none;font-weight:900;box-shadow:0 3px 8px rgba(47,143,224,0.4)">➕ 購入を続ける</button>
-        <button class="btn" onclick="onlineFinalizeCart()" style="flex:1;background:linear-gradient(135deg,#3a8fe0,#1565c0);color:#fff;border:none;font-weight:900;box-shadow:0 3px 8px rgba(21,101,192,0.45)">次へ →</button>
+        <button class="btn sfx-go" onclick="onlineFinalizeCart()" style="flex:1;background:linear-gradient(135deg,#3a8fe0,#1565c0);color:#fff;border:none;font-weight:900;box-shadow:0 3px 8px rgba(21,101,192,0.45)">次へ →</button>
       </div></div>
     </div>
 
@@ -974,8 +974,8 @@ body.modal-open{overflow:hidden !important;}
       </div>
     </div>
     <div style="margin:10px">
-      <button class="btn btn-primary" onclick="onlineConfirmBet()" style="background:linear-gradient(135deg,#c0392b,#922b21);box-shadow:0 3px 8px rgba(192,57,43,0.4)">🏁 この馬券で勝負する！</button>
-      <button class="btn btn-secondary" onclick="goTo('screen-online-betting')" style="margin-top:8px">← 賭けを修正する</button>
+      <button class="btn btn-primary sfx-go" onclick="onlineConfirmBet()" style="background:linear-gradient(135deg,#c0392b,#922b21);box-shadow:0 3px 8px rgba(192,57,43,0.4)">🏁 この馬券で勝負する！</button>
+      <button class="btn btn-secondary sfx-go" onclick="goTo('screen-online-betting')" style="margin-top:8px">← 賭けを修正する</button>
     </div>
   </div>
 </div>
@@ -1119,7 +1119,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel" id="orr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="orr-oya-summary"></div></div>
     <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="orr-score-table"></table></div>
     <div style="margin:10px">
-      <button class="btn btn-primary" id="orr-next-btn" onclick="onlineReadyForNext()">次のラウンドへ →</button>
+      <button class="btn btn-primary sfx-go" id="orr-next-btn" onclick="onlineReadyForNext()">次のラウンドへ →</button>
       <div id="orr-ready-status" style="text-align:center;color:#aaa;font-size:0.85rem;margin-top:8px"></div>
       <button class="btn btn-secondary" onclick="confirmLeaveDuringGame()" style="margin-top:14px;font-size:0.85rem;opacity:0.7">🚪 ここで退室する</button>
     </div>
@@ -1404,7 +1404,7 @@ body.modal-open{overflow:hidden !important;}
     <!-- 点数表示 -->
     <div id="off-combo-info" style="display:none;font-size:0.85rem;background:rgba(245,200,66,0.15);border:1px solid var(--gold-dark);border-radius:8px;padding:8px 12px;margin:8px 0;text-align:center"></div>
     <div class="panel" id="off-betamount-panel">
-      <div class="panel-title" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">💴 ベット額 <button onclick="openScorePopup()" style="margin-left:auto;flex-shrink:0;background:rgba(15,15,18,0.9);border:1px solid rgba(245,200,66,0.6);color:#f5c842;font-size:0.74rem;font-weight:800;border-radius:14px;padding:4px 10px;cursor:pointer;white-space:nowrap;letter-spacing:0;text-transform:none">📊 得点</button></div>
+      <div class="panel-title" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap">💴 ベット額 <button class="sfx-pol" onclick="openScorePopup()" style="margin-left:auto;flex-shrink:0;background:rgba(15,15,18,0.9);border:1px solid rgba(245,200,66,0.6);color:#f5c842;font-size:0.74rem;font-weight:800;border-radius:14px;padding:4px 10px;cursor:pointer;white-space:nowrap;letter-spacing:0;text-transform:none">📊 得点</button></div>
       <div id="bet-hint" style="font-size:0.9rem;color:#1a1a1a;font-weight:700;margin-bottom:8px">最低500点 / 1点単位でOK</div>
       <div id="bet-display" onclick="focusBetInput()" style="position:relative;background:#1a1a1a;border-radius:10px;padding:24px 16px 22px;text-align:right;font-size:1.8rem;font-weight:900;color:var(--gold);letter-spacing:2px;min-height:58px;margin-bottom:6px;cursor:text"><div style="position:absolute;left:12px;top:6px;font-size:0.74rem;color:#5db0ff;font-weight:800;letter-spacing:0;text-align:left">👆 タップして数字を入力</div>0<div id="bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:var(--gold);font-weight:800;letter-spacing:0;opacity:0.95"></div></div>
       <div style="text-align:center;font-size:0.86rem;color:#1a1a1a;font-weight:700;margin-bottom:8px">👆 上の枠をタップして数字を入力</div>
@@ -1421,7 +1421,7 @@ body.modal-open{overflow:hidden !important;}
     </div>
     <div id="off-finalize-btn" style="display:none;margin:10px"><div style="display:flex;gap:8px">
       <button class="btn" onclick="offContinueBuying()" style="flex:1;background:linear-gradient(135deg,#5db0ff,#2f8fe0);color:#fff;border:none;font-weight:900;box-shadow:0 3px 8px rgba(47,143,224,0.4)">➕ 購入を続ける</button>
-      <button class="btn" onclick="finalizeOfflineCart()" style="flex:1;background:linear-gradient(135deg,#3a8fe0,#1565c0);color:#fff;border:none;font-weight:900;box-shadow:0 3px 8px rgba(21,101,192,0.45)">次へ →</button>
+      <button class="btn sfx-go" onclick="finalizeOfflineCart()" style="flex:1;background:linear-gradient(135deg,#3a8fe0,#1565c0);color:#fff;border:none;font-weight:900;box-shadow:0 3px 8px rgba(21,101,192,0.45)">次へ →</button>
     </div></div>
   </div>
 </div>
@@ -1461,8 +1461,8 @@ body.modal-open{overflow:hidden !important;}
       </div>
     </div>
     <div style="margin:10px">
-      <button class="btn btn-primary" onclick="confirmBet()" style="background:linear-gradient(135deg,#c0392b,#922b21);box-shadow:0 3px 8px rgba(192,57,43,0.4)">🏁 この馬券で勝負する！</button>
-      <button class="btn btn-secondary" onclick="goTo('screen-bet')" style="margin-top:8px">← 賭けを修正する</button>
+      <button class="btn btn-primary sfx-go" onclick="confirmBet()" style="background:linear-gradient(135deg,#c0392b,#922b21);box-shadow:0 3px 8px rgba(192,57,43,0.4)">🏁 この馬券で勝負する！</button>
+      <button class="btn btn-secondary sfx-go" onclick="goTo('screen-bet')" style="margin-top:8px">← 賭けを修正する</button>
     </div>
   </div>
 </div>
@@ -1525,7 +1525,7 @@ body.modal-open{overflow:hidden !important;}
       <div class="horse-grid" id="result-horse-grid"></div>
     </div>
     <div class="panel"><div class="panel-title">📊 入力内容</div><div id="result-preview-content"><div class="empty">馬を選んでください</div></div></div>
-    <div style="margin:10px" id="result-confirm-wrap"><button class="btn btn-oya" id="result-confirm-btn" onclick="goToReveal()" disabled>順位を決定する</button></div>
+    <div style="margin:10px" id="result-confirm-wrap"><button class="btn btn-oya sfx-go" id="result-confirm-btn" onclick="goToReveal()" disabled>順位を決定する</button></div>
   </div>
 </div>
 
@@ -1561,7 +1561,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel"><div class="panel-title">💰 子の結果</div><div id="rr-player-results"></div></div>
     <div class="panel" id="rr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="rr-oya-summary"></div></div>
     <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="rr-score-table"></table></div>
-    <div style="margin:10px"><button class="btn btn-primary" id="rr-next-btn" onclick="nextRound()">次のラウンドへ →</button></div>
+    <div style="margin:10px"><button class="btn btn-primary sfx-go" id="rr-next-btn" onclick="nextRound()">次のラウンドへ →</button></div>
   </div>
 </div>
 
@@ -1818,7 +1818,37 @@ window.SFX = (function(){
   }
   // 長押し/右クリックも同じ音に統一（互換のため関数名は残す）
   function muffle(){ decide(); }
+  // 確定音「ピロン3」：勝負する/順位決定/決定/次のラウンドへ など「確定」系ボタン用（きらめく3音）
+  function decide2(){
+    if(!enabled) return;
+    const c = getCtx(); if(!c) return;
+    const t0 = c.currentTime;
+    // [周波数, 開始オフセット, 長さ, 音量]
+    [[784,0,0.08,0.11],[1047,0.06,0.10,0.11],[1568,0.13,0.16,0.09]].forEach(function(p){
+      const o=c.createOscillator(), g=c.createGain();
+      o.type='triangle'; o.frequency.setValueAtTime(p[0], t0+p[1]);
+      g.gain.setValueAtTime(0.0001, t0+p[1]);
+      g.gain.exponentialRampToValueAtTime(p[3], t0+p[1]+0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+p[1]+p[2]);
+      o.connect(g); g.connect(masterGain); o.start(t0+p[1]); o.stop(t0+p[1]+p[2]+0.03);
+    });
+  }
   function notify(){ tone({type:'sine', freq:880, dur:0.12, gain:0.1}); setTimeout(()=>tone({type:'sine', freq:1320, dur:0.15, gain:0.1}), 80); }
+  // 入室音：誰かが入ってきたときの明るい上昇チャイム（ピンポン風）
+  function enter(){
+    if(!enabled) return;
+    const c = getCtx(); if(!c) return;
+    const t0 = c.currentTime;
+    // [周波数, 開始オフセット, 長さ, 音量]  ド→ミ→ソ の明るい上昇
+    [[523,0,0.12,0.12],[659,0.10,0.12,0.12],[880,0.20,0.22,0.13]].forEach(function(p){
+      const o=c.createOscillator(), g=c.createGain();
+      o.type='sine'; o.frequency.setValueAtTime(p[0], t0+p[1]);
+      g.gain.setValueAtTime(0.0001, t0+p[1]);
+      g.gain.exponentialRampToValueAtTime(p[3], t0+p[1]+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+p[1]+p[2]);
+      o.connect(g); g.connect(masterGain); o.start(t0+p[1]); o.stop(t0+p[1]+p[2]+0.03);
+    });
+  }
   function warn(){ tone({type:'sawtooth', freq:300, freqEnd:200, dur:0.18, gain:0.1}); }
   function whoosh(){ noise({freq:2000, freqEnd:200, dur:0.4, gain:0.15, filterType:'bandpass', Q:3}); }
   function lottery(){
@@ -2084,7 +2114,7 @@ window.SFX = (function(){
 
   return {
     init, setEnabled, isEnabled, getCtx,
-    tap, click, select, confirm, decide, muffle, notify, warn, whoosh,
+    tap, click, select, confirm, decide, decide2, muffle, enter, notify, warn, whoosh,
     lottery, lotteryDecide, reveal, roundIntro,
     hitTansho, hitRenfuku, hitRentan, hitSanrenfuku, hitSanrentan, hitManbaken,
     finale, cracker
@@ -2133,17 +2163,36 @@ window.SFX = (function(){
   document.addEventListener('pointercancel', clearActive);
 })();
 
-// 「決定など」主要ボタンの押下音。clickイベントで鳴らすことでiOSでも確実に再生される
-// （touchstartやsetTimeout経由だとiOSはユーザー操作の延長と見なさず音をブロックすることがある）。
+// ボタン押下音。clickイベントで鳴らすことでiOSでも確実に再生される。
+// 系統: ①確定系(.sfx-go) = ピロン3(decide2)  ②上部アイコン/得点ボタン/メニュー系画面のボタン = ポロン(decide)
+// 賭け・結果など進行系画面の一般ボタン（カート追加・購入を続ける・賭け方・点数プリセット等）は無音。
 (function(){
-  // 対象：メインボタン・上部アイコン(📖📊🔊)・確認ダイアログ・親/賭け種/お題決定など
-  const SOUND_SEL = '.btn,.btn-primary,.btn-secondary,.btn-sm,.icon-btn,.uiconfirm-btn,.btn-oya,.point-btn,.sound-toggle,.menu-toggle,.rules-toggle,.score-toggle,[role="button"]';
+  const GO_SEL  = '.sfx-go';                                              // 確定系 → ピロン3
+  const POL_SEL = '.sound-toggle,.menu-toggle,.rules-toggle,.score-toggle,.sfx-pol'; // 上部・得点 → ポロン
+  // メニュー系の画面（ホーム/設定/オンラインメニュー/ロビー/ルール/お題管理/最終結果）内のボタンはポロン
+  const MENU_SCREENS = ['screen-home','screen-setup','screen-online-menu','screen-room-lobby','screen-rules','screen-topics','screen-final','screen-online-final'];
+  const BTN_SEL = 'button,.btn,[role="button"]';
   document.addEventListener('click', (e) => {
-    const el = e.target && e.target.closest ? e.target.closest(SOUND_SEL) : null;
+    if(!e.target || !e.target.closest) return;
+    const go = e.target.closest(GO_SEL);
+    let pol = !go ? e.target.closest(POL_SEL) : null;
+    // メニュー系画面内のボタンも（sfx-goでなければ）ポロン対象に
+    if(!go && !pol){
+      const btn = e.target.closest(BTN_SEL);
+      if(btn){
+        const scr = btn.closest('.screen');
+        if(scr && MENU_SCREENS.indexOf(scr.id) !== -1) pol = btn;
+      }
+    }
+    const el = go || pol;
     if(!el) return;
-    if(el.getAttribute && el.getAttribute('aria-disabled')==='true') return;
-    if(el.disabled) return;
-    try { if(window.SFX){ (typeof window.SFX.decide==='function' ? window.SFX.decide() : (window.SFX.confirm && window.SFX.confirm())); } } catch(err){}
+    if((el.getAttribute && el.getAttribute('aria-disabled')==='true') || el.disabled) return;
+    try {
+      if(window.SFX){
+        if(go){ (typeof window.SFX.decide2==='function' ? window.SFX.decide2() : (window.SFX.confirm&&window.SFX.confirm())); }
+        else { (typeof window.SFX.decide==='function' ? window.SFX.decide() : (window.SFX.confirm&&window.SFX.confirm())); }
+      }
+    } catch(err){}
   });
 })();
 
@@ -3499,7 +3548,7 @@ function openTopicPopup(t, opts){
       btn.className='btn '+(b.cls||'btn-secondary');
       btn.style.cssText = b.fullWidth ? 'flex:1 1 100%;margin-top:0;padding:9px 4px;font-size:0.86rem;white-space:nowrap' : 'flex:1;margin-top:0;padding:9px 4px;font-size:0.86rem;white-space:nowrap';
       btn.textContent=b.label;
-      btn.onclick=()=>{ try{ if(window.SFX && typeof window.SFX.decide==='function') window.SFX.decide(); }catch(e){} closeTopicPopup(); if(typeof b.onClick==='function') b.onClick(); };
+      btn.onclick=()=>{ try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){} closeTopicPopup(); if(typeof b.onClick==='function') b.onClick(); };
       actions.appendChild(btn);
     });
     if(closeBtn) closeBtn.style.display=(opts.hideClose? 'none':'');
@@ -6054,8 +6103,17 @@ function enterLobby(){
 
   // プレイヤーリストをリアルタイム監視
   const playersRef = ref(db, `rooms/${window.online.roomCode}/players`);
+  window.online._lobbyCount = undefined; // 初回スナップショットでは入室音を鳴らさない
   window.online.unsubscribe = onValue(playersRef, (snap) => {
     const players = snap.val() || {};
+    // 誰かが入室して人数が増えたら入室音（初回の表示時は鳴らさない）
+    try {
+      const cnt = Object.keys(players).length;
+      if(typeof window.online._lobbyCount === 'number' && cnt > window.online._lobbyCount){
+        if(window.SFX && typeof window.SFX.enter === 'function') window.SFX.enter();
+      }
+      window.online._lobbyCount = cnt;
+    } catch(e){}
     renderLobbyPlayers(players);
   });
 
