@@ -7632,17 +7632,12 @@ function enterOnlineBetting(game){
   const myBet = bets[window.online.playerId];
   const oyaResult = game.oyaResult;
 
-  // 復帰中（rejoinedRound === currentRound）なら自動でベットして待機へ
+  // 復帰中（rejoinedRound === currentRound）なら、子はこのラウンド観戦のみ。
+  // 親は順位を入力すればラウンドを成立させられるので、観戦にせず通常フローへ進める（待ちで止まらないように）。
   const myPlayer = players.find(p => p.id === window.online.playerId);
   if(myPlayer && myPlayer.rejoinedRound != null && myPlayer.rejoinedRound === (game.currentRound || 1)){
-    // このラウンドは観戦のみ
     if(isOya){
-      // 親で復帰中の場合：3つ未選択なら、ノーゲーム判定にお任せ
-      if(!oyaResult || oyaResult.length < 3){
-        enterOnlineBetWait();
-        showNotif('🔄 復帰直後 — このラウンドは観戦のみ');
-        return;
-      }
+      // 親で復帰中：観戦にせず、通常どおり順位入力を促す（下の通常フローに進む）
     } else {
       // 子で復帰中の場合：自動でオフラインベット記録
       if(!myBet){
@@ -9190,19 +9185,10 @@ async function checkAllBetsSubmitted(){
     const oyaResult = game.oyaResult;
 
     // === オフライン時の扱い ===
-    // 子はCPU代理しない＝「待つ」。戻ってこない子はホストがキックすれば人数から外れて進む。
-    // 親だけは例外：親がオフラインで順位未入力だと進めようがないため、ノーゲーム（賭け金返金）で次へ。
-    if(window.online.isHost){
-      if(oyaPlayer && oyaPlayer.online === false && (!oyaResult || oyaResult.length < 3)){
-        if(window.online._noGameTriggered !== game.currentRound){
-          window.online._noGameTriggered = game.currentRound;
-          await handleNoGameRound(game, players, oyaPlayer);
-          return;
-        }
-      }
-    }
+    // CPU代理はしない＝全員「待つ」。親も例外なく待つ（親が戻れば順位入力して続行できる）。
+    // 親が戻ってこない場合は、ホストが親を退出（キック）させると、次の親へ自動でノーゲーム進行する（kickPlayer→ラウンド再構成）。
 
-    // 親の順位入力完了？
+    // 親の順位入力完了？（親がオフラインでも、入力されるまで待つ）
     if(!oyaResult || oyaResult.length < 3) return;
     // 子全員入力完了？（オフラインの子も含めて待つ）
     const koPlayers = players.filter((p, i) => i !== oyaIdx);
@@ -12221,6 +12207,36 @@ window.kickPlayer = async function(targetId, targetName){
     });
     if(!ok) return;
     const base = `rooms/${window.online.roomCode}`;
+
+    // キック対象が「現在の親」かどうかを判定（親をキックする場合はラウンドを次の親でやり直す必要がある）
+    let targetIsOya = false;
+    let nextOyaId = null; // 親をキックする場合の、次の親プレイヤーID（キック前の正しい並びで決める）
+    try{
+      const gameSnapVal = (await get(ref(db, `${base}/game`))).val();
+      if(gameSnapVal){
+        const arr = getOnlinePlayersArray();
+        const oyaIdx = gameSnapVal.oyaIndex || 0;
+        const oyaP = arr[oyaIdx];
+        if(oyaP && oyaP.id === targetId){
+          targetIsOya = true;
+          // キック前の配列で「親の次」からオンライン者（キック対象自身は除く）を次の親に
+          if(arr.length > 1){
+            for(let step=1; step<arr.length; step++){
+              const cand = arr[(oyaIdx + step) % arr.length];
+              if(cand && cand.id !== targetId && cand.online !== false){ nextOyaId = cand.id; break; }
+            }
+            // 全員オフラインなら、対象以外の誰かを暫定で
+            if(!nextOyaId){
+              for(let step=1; step<arr.length; step++){
+                const cand = arr[(oyaIdx + step) % arr.length];
+                if(cand && cand.id !== targetId){ nextOyaId = cand.id; break; }
+              }
+            }
+          }
+        }
+      }
+    }catch(e){}
+
     // まず kicked フラグを立てる（本人が検知して自分で退室する）
     try{ await set(ref(db, `${base}/players/${targetId}/kicked`), true); }catch(e){}
     // 少し待ってから、ホスト側でも対象のデータを削除（本人が既に居ない場合に備える）
@@ -12235,13 +12251,73 @@ window.kickPlayer = async function(targetId, targetName){
         updates[`${base}/game/revealReady/${targetId}`] = null;
         updates[`${base}/game/nextReady/${targetId}`] = null;
         await update(ref(db), updates);
-        // 削除後、現フェーズの進行チェックを回す（人数が減って全員完了になるかも）
-        try{ ensureHostAndProgress((await get(ref(db, `${base}/players`))).val() || {}); }catch(e){}
+
+        // キックしたのが現在の親で、まだ結果が出ていない（ゲームが親待ちで止まっている）なら、
+        // 親不在のままでは進めないので「次の親でこのラウンドをやり直す」処理を行う。
+        const g = (await get(ref(db, `${base}/game`))).val();
+        const stillInRound = g && (g.phase === 'topic-select' || g.phase === 'topic-lottery' || g.phase === 'betting' || g.phase === 'reveal');
+        if(targetIsOya && stillInRound){
+          try{ await restartRoundWithNextOya(nextOyaId); }catch(e){ console.error('親キック後のやり直し失敗:', e); }
+        } else {
+          // 子のキック、または既に結果フェーズ：人数が減って全員完了になるか進行チェック
+          try{ ensureHostAndProgress((await get(ref(db, `${base}/players`))).val() || {}); }catch(e){}
+        }
       }catch(e){ console.error('kickPlayer cleanup error:', e); }
     }, 700);
     try{ if(window.showNotif) window.showNotif(`👋 ${targetName||'プレイヤー'} さんを退出させました`); }catch(e){}
   }catch(e){ console.error('kickPlayer error:', e); }
 };
+
+// 親が抜けた（キックされた）後、次の親でこのラウンドを最初からやり直す（賭け金は各自に返金）。
+// nextOyaId: キック前に決めた「次の親」のプレイヤーID（無ければ範囲内で補正）
+async function restartRoundWithNextOya(nextOyaId){
+  try{
+    const base = `rooms/${window.online.roomCode}/game`;
+    const g = (await get(ref(db, base))).val();
+    if(!g) return;
+    // 最新の players を直接取得して、joinedAt 順の配列を作る（キック反映後の正しい並び）
+    const playersObj = (await get(ref(db, `rooms/${window.online.roomCode}/players`))).val() || {};
+    const players = Object.entries(playersObj).map(([id,p])=>({id,...p})).sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
+    if(!players.length) return;
+    // 賭け金の返金：今ラウンドで bets に金額がある子に返金（pointsを戻す）
+    const points = Object.assign({}, g.points || {});
+    const bets = g.bets || {};
+    Object.keys(bets).forEach(pid => {
+      const b = bets[pid];
+      const amt = (b && Number(b.amount)) ? Number(b.amount) : 0;
+      if(amt > 0 && points[pid] != null){ points[pid] = (Number(points[pid])||0) + amt; }
+    });
+    // 次の親のインデックスを、キック前に決めた nextOyaId の新配列内位置から求める
+    let nextOyaIdx = -1;
+    if(nextOyaId){
+      nextOyaIdx = players.findIndex(p => p.id === nextOyaId);
+    }
+    // 見つからなければ（ID未指定や既に居ない）、先頭のオンライン者、いなければ先頭
+    if(nextOyaIdx < 0){
+      nextOyaIdx = players.findIndex(p => p.online !== false);
+      if(nextOyaIdx < 0) nextOyaIdx = 0;
+    }
+    const updates = {};
+    updates[`${base}/oyaIndex`] = nextOyaIdx;
+    updates[`${base}/phase`] = 'topic-select';
+    updates[`${base}/points`] = points;
+    updates[`${base}/bets`] = null;
+    updates[`${base}/oyaResult`] = null;
+    updates[`${base}/topicSelections`] = null;
+    updates[`${base}/lotteryResult`] = null;
+    updates[`${base}/waitReady`] = null;
+    updates[`${base}/revealReady`] = null;
+    updates[`${base}/nextReady`] = null;
+    updates[`${base}/results`] = null;
+    await update(ref(db), updates);
+    // トリガーキャッシュをリセット
+    delete window.online._noGameTriggered;
+    delete window.online._revealTriggered;
+    delete window.online._resultTriggered;
+    delete window.online._nextTriggered;
+    try{ if(window.showNotif) window.showNotif('🔄 親が抜けたため、親を交代してこのラウンドをやり直します（賭け金は返金）'); }catch(e){}
+  }catch(e){ console.error('restartRoundWithNextOya error:', e); }
+}
 
 window.leaveRoom = async function(skipConfirm){
   if(!skipConfirm){ const ok = await uiConfirm({ icon:'🚪', title:'部屋を出ますか？', okText:'出る', cancelText:'戻る' }); if(!ok) return; }
