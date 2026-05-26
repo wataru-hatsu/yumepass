@@ -1801,32 +1801,23 @@ window.SFX = (function(){
   function confirm(){ tone({type:'triangle', freq:500, dur:0.08, gain:0.12}); setTimeout(()=>tone({type:'triangle', freq:800, dur:0.12, gain:0.12}), 60); }
   // iOSはsetTimeout経由の音をユーザー操作の延長と見なさずブロックすることがあるため、
   // 2音目もAudioContextのタイムライン上で予約する（同期的に鳴り、iOSでも確実）。
+  // 候補E「ポロン」：鈴のような余韻のある音。長押し/クリック/上部ボタン/得点ボタンで共通使用。
   function decide(){
     if(!enabled) return;
     const c = getCtx(); if(!c) return;
     const t0 = c.currentTime;
-    [[500,0,0.10],[800,0.06,0.14]].forEach(function(p){
+    // [周波数, 開始オフセット, 長さ, 音量]
+    [[740,0,0.16,0.11],[1110,0.02,0.20,0.06]].forEach(function(p){
       const o=c.createOscillator(), g=c.createGain();
-      o.type='triangle'; o.frequency.setValueAtTime(p[0], t0+p[1]);
+      o.type='sine'; o.frequency.setValueAtTime(p[0], t0+p[1]);
       g.gain.setValueAtTime(0.0001, t0+p[1]);
-      g.gain.exponentialRampToValueAtTime(0.14, t0+p[1]+0.005);
+      g.gain.exponentialRampToValueAtTime(p[3], t0+p[1]+0.005);
       g.gain.exponentialRampToValueAtTime(0.0001, t0+p[1]+p[2]);
-      o.connect(g); g.connect(masterGain); o.start(t0+p[1]); o.stop(t0+p[1]+p[2]+0.02);
+      o.connect(g); g.connect(masterGain); o.start(t0+p[1]); o.stop(t0+p[1]+p[2]+0.03);
     });
   }
-  // 「ボソッ」という低くこもった短い音（長押し/右クリックでお題の選択肢を見るとき用）
-  function muffle(){
-    if(!enabled) return;
-    const c = getCtx(); if(!c) return;
-    const t0 = c.currentTime;
-    const o=c.createOscillator(), g=c.createGain(), lp=c.createBiquadFilter();
-    o.type='sine'; o.frequency.setValueAtTime(180, t0); o.frequency.exponentialRampToValueAtTime(90, t0+0.12);
-    lp.type='lowpass'; lp.frequency.value=400;
-    g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(0.16, t0+0.008);
-    g.gain.exponentialRampToValueAtTime(0.0001, t0+0.14);
-    o.connect(lp); lp.connect(g); g.connect(masterGain); o.start(t0); o.stop(t0+0.16);
-  }
+  // 長押し/右クリックも同じ音に統一（互換のため関数名は残す）
+  function muffle(){ decide(); }
   function notify(){ tone({type:'sine', freq:880, dur:0.12, gain:0.1}); setTimeout(()=>tone({type:'sine', freq:1320, dur:0.15, gain:0.1}), 80); }
   function warn(){ tone({type:'sawtooth', freq:300, freqEnd:200, dur:0.18, gain:0.1}); }
   function whoosh(){ noise({freq:2000, freqEnd:200, dur:0.4, gain:0.15, filterType:'bandpass', Q:3}); }
@@ -3508,7 +3499,7 @@ function openTopicPopup(t, opts){
       btn.className='btn '+(b.cls||'btn-secondary');
       btn.style.cssText = b.fullWidth ? 'flex:1 1 100%;margin-top:0;padding:9px 4px;font-size:0.86rem;white-space:nowrap' : 'flex:1;margin-top:0;padding:9px 4px;font-size:0.86rem;white-space:nowrap';
       btn.textContent=b.label;
-      btn.onclick=()=>{ closeTopicPopup(); if(typeof b.onClick==='function') b.onClick(); };
+      btn.onclick=()=>{ try{ if(window.SFX && typeof window.SFX.decide==='function') window.SFX.decide(); }catch(e){} closeTopicPopup(); if(typeof b.onClick==='function') b.onClick(); };
       actions.appendChild(btn);
     });
     if(closeBtn) closeBtn.style.display=(opts.hideClose? 'none':'');
