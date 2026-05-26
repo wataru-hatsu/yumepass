@@ -1814,6 +1814,19 @@ window.SFX = (function(){
       o.connect(g); g.connect(masterGain); o.start(t0+p[1]); o.stop(t0+p[1]+p[2]+0.02);
     });
   }
+  // 「ボソッ」という低くこもった短い音（長押し/右クリックでお題の選択肢を見るとき用）
+  function muffle(){
+    if(!enabled) return;
+    const c = getCtx(); if(!c) return;
+    const t0 = c.currentTime;
+    const o=c.createOscillator(), g=c.createGain(), lp=c.createBiquadFilter();
+    o.type='sine'; o.frequency.setValueAtTime(180, t0); o.frequency.exponentialRampToValueAtTime(90, t0+0.12);
+    lp.type='lowpass'; lp.frequency.value=400;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.16, t0+0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0+0.14);
+    o.connect(lp); lp.connect(g); g.connect(masterGain); o.start(t0); o.stop(t0+0.16);
+  }
   function notify(){ tone({type:'sine', freq:880, dur:0.12, gain:0.1}); setTimeout(()=>tone({type:'sine', freq:1320, dur:0.15, gain:0.1}), 80); }
   function warn(){ tone({type:'sawtooth', freq:300, freqEnd:200, dur:0.18, gain:0.1}); }
   function whoosh(){ noise({freq:2000, freqEnd:200, dur:0.4, gain:0.15, filterType:'bandpass', Q:3}); }
@@ -2080,7 +2093,7 @@ window.SFX = (function(){
 
   return {
     init, setEnabled, isEnabled, getCtx,
-    tap, click, select, confirm, decide, notify, warn, whoosh,
+    tap, click, select, confirm, decide, muffle, notify, warn, whoosh,
     lottery, lotteryDecide, reveal, roundIntro,
     hitTansho, hitRenfuku, hitRentan, hitSanrenfuku, hitSanrentan, hitManbaken,
     finale, cracker
@@ -2133,7 +2146,7 @@ window.SFX = (function(){
 // （touchstartやsetTimeout経由だとiOSはユーザー操作の延長と見なさず音をブロックすることがある）。
 (function(){
   // 対象：メインボタン・上部アイコン(📖📊🔊)・確認ダイアログ・親/賭け種/お題決定など
-  const SOUND_SEL = '.btn,.btn-primary,.btn-secondary,.btn-sm,.icon-btn,.uiconfirm-btn,.btn-oya,.bet-type-btn,.point-btn,[role="button"]';
+  const SOUND_SEL = '.btn,.btn-primary,.btn-secondary,.btn-sm,.icon-btn,.uiconfirm-btn,.btn-oya,.point-btn,.sound-toggle,.menu-toggle,.rules-toggle,.score-toggle,[role="button"]';
   document.addEventListener('click', (e) => {
     const el = e.target && e.target.closest ? e.target.closest(SOUND_SEL) : null;
     if(!el) return;
@@ -3358,13 +3371,13 @@ function renderOffTopicListByCategory(category){
     d.style.cssText='padding:14px;border:2px solid '+(used?'#e0d8c0':'#ddd')+';border-radius:10px;margin-bottom:8px;cursor:pointer;background:'+(used?'#f3eedd':'white')+';transition:all 0.15s;user-select:none;-webkit-user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent';
     d.innerHTML='<div style="font-weight:700;font-size:0.95rem;color:#1a1a1a">'+(t.icon||'')+' '+escapeHtml(t.title)+(used?'<span style="font-size:0.7rem;color:#a08c50;font-weight:700;margin-left:6px">\uff08\u4f7f\u7528\u6e08\u307f\uff09</span>':'')+'</div>';
     let pt=null, longPressed=false;
-    d.addEventListener('touchstart',()=>{ longPressed=false; pt=setTimeout(()=>{ longPressed=true; openTopicPopup(t); },400); },{passive:true});
+    d.addEventListener('touchstart',()=>{ longPressed=false; pt=setTimeout(()=>{ longPressed=true; try{window.SFX&&window.SFX.muffle&&window.SFX.muffle();}catch(e){} openTopicPopup(t); },400); },{passive:true});
     d.addEventListener('touchend',()=>clearTimeout(pt));
     d.addEventListener('touchmove',()=>clearTimeout(pt));
-    d.addEventListener('mousedown',(e)=>{ if(e.button===0){ longPressed=false; pt=setTimeout(()=>{ longPressed=true; openTopicPopup(t); },600); } });
+    d.addEventListener('mousedown',(e)=>{ if(e.button===0){ longPressed=false; pt=setTimeout(()=>{ longPressed=true; try{window.SFX&&window.SFX.muffle&&window.SFX.muffle();}catch(e){} openTopicPopup(t); },600); } });
     d.addEventListener('mouseup',()=>clearTimeout(pt));
-    d.addEventListener('contextmenu',(e)=>{ e.preventDefault(); longPressed=true; openTopicPopup(t); });
-    d.addEventListener('click',()=>{ if(longPressed){ longPressed=false; return; } offSelectTopic(t.id); });
+    d.addEventListener('contextmenu',(e)=>{ e.preventDefault(); longPressed=true; try{window.SFX&&window.SFX.muffle&&window.SFX.muffle();}catch(e){} openTopicPopup(t); });
+    d.addEventListener('click',()=>{ if(longPressed){ longPressed=false; return; } try{window.SFX&&window.SFX.decide&&window.SFX.decide();}catch(e){} offSelectTopic(t.id); });
     listEl.appendChild(d);
   }
   pool.forEach(makeCard);
@@ -3466,12 +3479,13 @@ function renderTopicList(){
     const d=document.createElement('div');d.style.cssText=`display:flex;align-items:center;gap:10px;padding:12px 10px;border:2px solid ${isSelected?'var(--gold-dark)':'#ddd'};border-radius:8px;margin-bottom:6px;background:${isSelected?'#fffbe6':'white'};cursor:pointer;`;
     d.innerHTML=`<div style="font-size:1.3rem;flex-shrink:0">${t.icon}</div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div><div style="margin-top:3px">${isBase?`<span style="background:${cat?.color||'#c9960a'};color:${cat?.textColor||'white'};font-size:0.6rem;padding:1px 6px;border-radius:6px;font-weight:700">${cat?.label||'公式'}</span>`:''}</div></div>${isSelected?'<div style="font-size:1.2rem;flex-shrink:0">✅</div>':''}`;
     d.addEventListener('click',()=>{
+      try{ if(window.SFX && typeof window.SFX.decide==='function') window.SFX.decide(); }catch(e){}
       state.selectedTopic=t;
       document.getElementById('random-step').dataset.wasVisible='false';
       document.getElementById('list-step').dataset.wasVisible='true';
       showConfirmStep();
     });
-    let pt=null;d.addEventListener('touchstart',()=>{pt=setTimeout(()=>openTopicPopup(t),400);},{passive:true});d.addEventListener('touchend',()=>clearTimeout(pt));d.addEventListener('touchmove',()=>clearTimeout(pt));d.addEventListener('mousedown',(e)=>{if(e.button===0)pt=setTimeout(()=>openTopicPopup(t),600);});d.addEventListener('mouseup',()=>clearTimeout(pt));d.addEventListener('contextmenu',(e)=>{e.preventDefault();openTopicPopup(t);});
+    let pt=null;d.addEventListener('touchstart',()=>{pt=setTimeout(()=>{try{window.SFX&&window.SFX.muffle&&window.SFX.muffle();}catch(e){}openTopicPopup(t);},400);},{passive:true});d.addEventListener('touchend',()=>clearTimeout(pt));d.addEventListener('touchmove',()=>clearTimeout(pt));d.addEventListener('mousedown',(e)=>{if(e.button===0)pt=setTimeout(()=>{try{window.SFX&&window.SFX.muffle&&window.SFX.muffle();}catch(e){}openTopicPopup(t);},600);});d.addEventListener('mouseup',()=>clearTimeout(pt));d.addEventListener('contextmenu',(e)=>{e.preventDefault();try{window.SFX&&window.SFX.muffle&&window.SFX.muffle();}catch(e){}openTopicPopup(t);});
     c.appendChild(d);
   });
 }
