@@ -157,7 +157,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .sel-label.pos-2{background:#888;color:white;}.sel-label.pos-3{background:#cd7f32;color:white;}
 .c1{background:#7ec8f0;color:#0a3a55;border:1px solid #4aa8d8}.c2{background:#7ac043;color:#173a0a;border:1px solid #5a9e2c}.c3{background:var(--red);color:white}
 .c4{background:#2a72e0;color:white}.c5{background:#e0b800;color:#333}.c6{background:#1a7a1a;color:white}.c7{background:#8b1a8b;color:white}.c8{background:#ff7f3f;color:white}
-.bet-types{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;}
+.bet-types{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px;}
 .bet-type-btn{padding:14px 4px 8px;border:2px solid #ddd;border-radius:10px;background:white;cursor:pointer;text-align:center;min-width:0;position:relative;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s,background 0.15s;overflow:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .bet-type-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:#ccc;}
 /* 券種カラー: 演出（的中エフェクト）の色と揃える。馬連とワイドは別色に */
@@ -2193,6 +2193,26 @@ window.SFX = (function(){
   });
   document.addEventListener('pointerup', clearActive);
   document.addEventListener('pointercancel', clearActive);
+})();
+
+// 賭け方ボタン(.bet-type-btn)の誤タップ防止：
+// 指を置いたボタンと、指を離した（クリックが発生した）ボタンが異なる場合は選択を無効化する。
+// これにより「押したつもりが隣のボタンになる」ズレを防ぐ。captureフェーズで先に判定する。
+(function(){
+  let pressedBet = null;
+  const getBet = (e) => (e.target && e.target.closest) ? e.target.closest('.bet-type-btn') : null;
+  document.addEventListener('touchstart', (e) => { pressedBet = getBet(e); }, { passive:true, capture:true });
+  document.addEventListener('pointerdown', (e) => { if(e.pointerType==='touch') return; pressedBet = getBet(e); }, true);
+  document.addEventListener('click', (e) => {
+    const clickedBet = getBet(e);
+    if(!clickedBet) return;            // 賭け方ボタン以外は対象外
+    if(pressedBet && pressedBet !== clickedBet){
+      // 押し始めたボタンと違う賭け方ボタンで離した → 誤タップとみなして無効化
+      e.preventDefault();
+      e.stopPropagation();
+      pressedBet = null;
+    }
+  }, true); // captureフェーズ：onclick(バブリング)より先に判定
 })();
 
 // ボタン押下音。clickイベントで鳴らすことでiOSでも確実に再生される。
@@ -5454,7 +5474,7 @@ function triggerOfflineEffects(log){
       }
       window.showGachaRoundIntro(log, () => {
         window.showHitEffect(topHitType, null, extraInfo);
-      });
+      }, topHitType);
     } catch(e){
       console.error('triggerOfflineEffects error:', e);
     }
@@ -10539,7 +10559,7 @@ function enterOnlineRoundResult(game){
             if(maxHitType && typeof window.showHitEffect === 'function'){
               window.showHitEffect(maxHitType, null, extraInfo);
             }
-          });
+          }, maxHitType);
         } catch(e){ console.error('online effect error:', e); }
       }, 0);
     });
@@ -11790,31 +11810,36 @@ const showHitEffect = window.showHitEffect;
 // ============================================================
 
 // ラウンド結果直前のガチャ風オーバーレイ
-window.showGachaRoundIntro = function(log, onDone){
+window.showGachaRoundIntro = function(log, onDone, forcedHitType){
   const overlay = document.getElementById('gacha-overlay');
   if(!overlay){ if(onDone) onDone(); return; }
 
   // ヒット度合いで色/絵文字/タイトル変える
   const priority = {'3連単的中🎊':7, '三連単的中🎊':7, '3連複的中':6, '馬単的中':5, '連単的中':5, '馬連的中':4, '連複的中':4, 'ワイド的中':3, '単勝的中':2, '複勝的中':1};
   let maxPriority = 0, maxHit = null;
-  // ① 実際に的中した券種から判定（買い方や複数券種でも確実に拾える。単勝などの取りこぼし防止）
-  try {
-    const extract = window.extractWinningBets;
-    if(typeof extract === 'function'){
-      (log.playerResults || []).forEach(r => {
-        extract(r).forEach(w => {
-          const ht = (window.effectHitTypeFor ? window.effectHitTypeFor(w.betType) : '') ;
-          const pr = priority[ht] || 0;
-          if(pr > maxPriority){ maxPriority = pr; maxHit = ht; }
+  if(forcedHitType && priority[forcedHitType]){
+    // 呼び出し元が決めた主役券種（的中エフェクトと必ず一致させる）
+    maxHit = forcedHitType; maxPriority = priority[forcedHitType];
+  } else {
+    // ① 実際に的中した券種から判定（買い方や複数券種でも確実に拾える。単勝などの取りこぼし防止）
+    try {
+      const extract = window.extractWinningBets;
+      if(typeof extract === 'function'){
+        (log.playerResults || []).forEach(r => {
+          extract(r).forEach(w => {
+            const ht = (window.effectHitTypeFor ? window.effectHitTypeFor(w.betType) : '') ;
+            const pr = priority[ht] || 0;
+            if(pr > maxPriority){ maxPriority = pr; maxHit = ht; }
+          });
         });
-      });
-    }
-  } catch(e){}
-  // ② フォールバック：従来どおり hitType 文字列からも判定（①で拾えなかった場合に備える）
-  (log.playerResults || []).forEach(r => {
-    const pr = priority[r.hitType] || 0;
-    if(pr > maxPriority){ maxPriority = pr; maxHit = r.hitType; }
-  });
+      }
+    } catch(e){}
+    // ② フォールバック：従来どおり hitType 文字列からも判定（①で拾えなかった場合に備える）
+    (log.playerResults || []).forEach(r => {
+      const pr = priority[r.hitType] || 0;
+      if(pr > maxPriority){ maxPriority = pr; maxHit = r.hitType; }
+    });
+  }
 
   // 的中なしの場合は演出も音も完全になし
   if(maxPriority === 0){
