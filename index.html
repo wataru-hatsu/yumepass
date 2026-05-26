@@ -1799,6 +1799,21 @@ window.SFX = (function(){
   function click(){ tone({type:'square', freq:800, freqEnd:400, dur:0.08, gain:0.07}); }
   function select(){ tone({type:'triangle', freq:700, freqEnd:900, dur:0.1, gain:0.1}); }
   function confirm(){ tone({type:'triangle', freq:500, dur:0.08, gain:0.12}); setTimeout(()=>tone({type:'triangle', freq:800, dur:0.12, gain:0.12}), 60); }
+  // iOSはsetTimeout経由の音をユーザー操作の延長と見なさずブロックすることがあるため、
+  // 2音目もAudioContextのタイムライン上で予約する（同期的に鳴り、iOSでも確実）。
+  function decide(){
+    if(!enabled) return;
+    const c = getCtx(); if(!c) return;
+    const t0 = c.currentTime;
+    [[500,0,0.10],[800,0.06,0.14]].forEach(function(p){
+      const o=c.createOscillator(), g=c.createGain();
+      o.type='triangle'; o.frequency.setValueAtTime(p[0], t0+p[1]);
+      g.gain.setValueAtTime(0.0001, t0+p[1]);
+      g.gain.exponentialRampToValueAtTime(0.14, t0+p[1]+0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+p[1]+p[2]);
+      o.connect(g); g.connect(masterGain); o.start(t0+p[1]); o.stop(t0+p[1]+p[2]+0.02);
+    });
+  }
   function notify(){ tone({type:'sine', freq:880, dur:0.12, gain:0.1}); setTimeout(()=>tone({type:'sine', freq:1320, dur:0.15, gain:0.1}), 80); }
   function warn(){ tone({type:'sawtooth', freq:300, freqEnd:200, dur:0.18, gain:0.1}); }
   function whoosh(){ noise({freq:2000, freqEnd:200, dur:0.4, gain:0.15, filterType:'bandpass', Q:3}); }
@@ -2065,7 +2080,7 @@ window.SFX = (function(){
 
   return {
     init, setEnabled, isEnabled, getCtx,
-    tap, click, select, confirm, notify, warn, whoosh,
+    tap, click, select, confirm, decide, notify, warn, whoosh,
     lottery, lotteryDecide, reveal, roundIntro,
     hitTansho, hitRenfuku, hitRentan, hitSanrenfuku, hitSanrentan, hitManbaken,
     finale, cracker
@@ -2087,8 +2102,6 @@ window.SFX = (function(){
   const setActive = (el) => {
     if(el){
       el.classList.add('tap-active'); activeEl = el;
-      // 押下時に効果音（確定ボタンと同じはっきりした音で感触を出す）
-      try { if(window.SFX && typeof window.SFX.confirm==='function') window.SFX.confirm(); } catch(e){}
       // 入力欄にフォーカスが残っていると、iOSでは最初のタップがキーボードを閉じるだけで
       // ボタンが反応しないことがある。押下と同時に入力欄を確定（blur）して初回タップで反応させる。
       try {
@@ -2114,6 +2127,20 @@ window.SFX = (function(){
   });
   document.addEventListener('pointerup', clearActive);
   document.addEventListener('pointercancel', clearActive);
+})();
+
+// 「決定など」主要ボタンの押下音。clickイベントで鳴らすことでiOSでも確実に再生される
+// （touchstartやsetTimeout経由だとiOSはユーザー操作の延長と見なさず音をブロックすることがある）。
+(function(){
+  // 対象：メインボタン・上部アイコン(📖📊🔊)・確認ダイアログ・親/賭け種/お題決定など
+  const SOUND_SEL = '.btn,.btn-primary,.btn-secondary,.btn-sm,.icon-btn,.uiconfirm-btn,.btn-oya,.bet-type-btn,.point-btn,[role="button"]';
+  document.addEventListener('click', (e) => {
+    const el = e.target && e.target.closest ? e.target.closest(SOUND_SEL) : null;
+    if(!el) return;
+    if(el.getAttribute && el.getAttribute('aria-disabled')==='true') return;
+    if(el.disabled) return;
+    try { if(window.SFX){ (typeof window.SFX.decide==='function' ? window.SFX.decide() : (window.SFX.confirm && window.SFX.confirm())); } } catch(err){}
+  });
 })();
 
 // ============================================================
@@ -9783,10 +9810,10 @@ window.showRaceReveal = function(opts, done){
     var last=null, startT=null, lastLevel=0, placeCount=0, done3=false, top3Count=0, boardDoneScheduled=false;
     // 各馬の「ゴール時刻ターゲット」を着順に応じて決める（最終着順を保証）
     // finalRank 1が最速、N が最遅。基準時間に着順差で広げる。
-    var baseTime=12.8; // 1着の想定到達秒（馬のスピードを2倍ゆっくりに）
+    var baseTime=10.67; // 1着の想定到達秒（現状の1.2倍速）
     horses.forEach(function(h){
       // 着順差を大きめに取り、馬が1頭ずつ間を空けてゴールするようにする（順位の確定を楽しめる）
-      var gapSec = (h.finalRank-1) * (tight?0.32:0.68) + Math.random()*(tight?0.10:0.16);
+      var gapSec = (h.finalRank-1) * (tight?0.27:0.57) + Math.random()*(tight?0.083:0.13);
       h.targetTime = baseTime + gapSec;
     });
     function frame(ts){
