@@ -10001,11 +10001,11 @@ window.showRaceReveal = function(opts, done){
   title.textContent='ROUND '+(opts.raceNo!=null?opts.raceNo:'')+' RACE';
   ov.appendChild(title);
 
-  // 早送りボタン（押している間だけレースを早送り）
+  // 早送りボタン（押している間だけレースを早送り）。掲示板の上に縦並びで配置（下＝早送り）
   window._raceFast = false;
   var ffBtn=document.createElement('button');
   ffBtn.textContent='⏩ 早送り（長押し）';
-  ffBtn.style.cssText='position:absolute;right:12px;bottom:calc(env(safe-area-inset-bottom) + 14px);z-index:30;background:rgba(10,8,4,0.78);color:#ffe8a0;border:1px solid #f5c842;border-radius:20px;padding:9px 16px;font-size:13px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;touch-action:none;';
+  ffBtn.style.cssText='position:absolute;right:12px;bottom:calc('+boardH+'px + 22px);z-index:30;background:rgba(10,8,4,0.78);color:#ffe8a0;border:1px solid #f5c842;border-radius:20px;padding:9px 16px;font-size:13px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;touch-action:none;';
   var ffOn=function(e){ if(e&&e.preventDefault)e.preventDefault(); window._raceFast=true; ffBtn.style.background='rgba(245,200,66,0.92)'; ffBtn.style.color='#2a1a00'; };
   var ffOff=function(){ window._raceFast=false; ffBtn.style.background='rgba(10,8,4,0.78)'; ffBtn.style.color='#ffe8a0'; };
   ffBtn.addEventListener('touchstart', ffOn, {passive:false});
@@ -10014,13 +10014,12 @@ window.showRaceReveal = function(opts, done){
   ffBtn.addEventListener('mousedown', ffOn);
   ffBtn.addEventListener('mouseup', ffOff);
   ffBtn.addEventListener('mouseleave', ffOff);
-  ffBtn.style.right='124px'; // スキップボタンと並べるため左へ
   ov.appendChild(ffBtn);
 
-  // スキップボタン（押すとレース演出を飛ばして結果へ）
+  // スキップボタン（押すとレース演出を飛ばして結果へ）。早送りの真上に配置
   var skipBtn=document.createElement('button');
   skipBtn.textContent='⏭ スキップ';
-  skipBtn.style.cssText='position:absolute;right:12px;bottom:calc(env(safe-area-inset-bottom) + 14px);z-index:30;background:rgba(10,8,4,0.78);color:#ffe8a0;border:1px solid #f5c842;border-radius:20px;padding:9px 16px;font-size:13px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;';
+  skipBtn.style.cssText='position:absolute;right:12px;bottom:calc('+boardH+'px + 70px);z-index:30;background:rgba(10,8,4,0.78);color:#ffe8a0;border:1px solid #f5c842;border-radius:20px;padding:9px 16px;font-size:13px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;';
   skipBtn.addEventListener('click', function(){
     try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
     try{ if(typeof finishAll==='function') finishAll(); }catch(e){ console.error('skip error', e); }
