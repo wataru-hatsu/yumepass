@@ -67,7 +67,7 @@ label{font-size:1rem !important;}
 body.fx-active{background:#000;}
 html.fx-active{background:#000;}
 #app-bg-layer{position:fixed;top:0;left:0;right:0;bottom:0;height:100%;z-index:-1;pointer-events:none;background:#000;transition:background 0.25s;}
-.screen{display:none;position:fixed;top:0;left:0;right:0;bottom:0;height:100vh;height:100dvh;overflow:hidden;flex-direction:column;background:transparent;}.screen.active{display:flex;}
+.screen{display:none;position:fixed;top:0;left:0;right:0;bottom:0;height:100vh;height:100dvh;overflow:hidden;flex-direction:column;background:transparent;touch-action:manipulation;}.screen.active{display:flex;}
 #screen-online-oya-confirm,#screen-online-reveal{background:transparent;}
 #screen-online-topic-lottery{background:transparent!important;}
 #screen-online-roundresult{--result-accent:#3fd0c8;--result-accent-soft:rgba(63,208,200,0.4);--result-accent-dark:#0a4a44;--result-accent-bg:rgba(63,208,200,0.12);--result-panel1:#06302e;--result-panel2:#0a4a44;background:transparent;}
@@ -183,7 +183,7 @@ label{font-size:0.85rem;font-weight:700;color:#555;}
 .odds-chip{display:inline-flex;align-items:center;gap:1px;background:linear-gradient(135deg,#ffe9a8 0%,#f5c842 45%,#c9960a 100%);color:#5a3a00;font-weight:900;border-radius:6px;padding:1px 8px;font-size:0.82rem;box-shadow:0 1px 3px rgba(201,150,10,0.4);border:1px solid rgba(201,150,10,0.5);text-shadow:0 1px 0 rgba(255,255,255,0.4);}
 .odds-chip-big{background:linear-gradient(135deg,#fff2c0 0%,#ffd24a 35%,#ff8c1a 70%,#e0530a 100%);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);font-size:0.95rem;padding:2px 10px;box-shadow:0 0 12px rgba(255,140,0,0.6),0 2px 4px rgba(0,0,0,0.3);border-color:#ff8c1a;animation:oddsGlow 1.6s ease-in-out infinite;}
 @keyframes oddsGlow{0%,100%{box-shadow:0 0 10px rgba(255,140,0,0.5),0 2px 4px rgba(0,0,0,0.3);}50%{box-shadow:0 0 20px rgba(255,170,30,0.95),0 2px 6px rgba(0,0,0,0.3);}}
-#screen-home{background:transparent;align-items:center;justify-content:safe center;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top) + 20px) 20px calc(env(safe-area-inset-bottom) + 28px);height:100dvh;max-height:100dvh;}
+#screen-home{background:transparent;align-items:center;justify-content:safe center;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top) + 20px) 20px calc(env(safe-area-inset-bottom) + 28px);height:100dvh;max-height:100dvh;touch-action:manipulation;}
 #screen-home>*{flex-shrink:0;}
 .home-btns{width:100%;max-width:320px;display:flex;flex-direction:column;gap:14px;}
 .home-btns .btn{margin-top:0;}
@@ -1115,7 +1115,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel" style="background:linear-gradient(135deg,#fdf8ed,#f5edd8);border:1px solid #e0c83a"><div class="panel-title" style="color:#8a6a10">🎯 子の賭け内容</div><div id="orv-bets-list"></div></div>
     <div style="color:#f5c842;text-align:center;padding:12px;font-size:0.85rem;font-weight:700">みんなで確認したら結果発表！</div>
     <div style="margin:10px">
-      <button class="btn btn-primary" id="orv-reveal-btn" onclick="onlineReadyForResult()" style="font-size:0.95rem !important;padding:14px 8px;line-height:1.4">🎊 結果発表の準備完了！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.8rem;font-weight:800;margin-left:7px;white-space:nowrap;display:inline-block">👆タップ</span></button>
+      <button class="btn btn-primary" id="orv-reveal-btn" onclick="onlineReadyForResult()" style="font-size:1rem !important;padding:14px 10px;white-space:nowrap">🎊 結果発表の準備完了！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.8rem;font-weight:800;margin-left:7px">👆タップ</span></button>
       <div id="orv-ready-status" style="text-align:center;color:#f5c842;font-size:0.85rem;margin-top:8px"></div>
     </div>
   </div>
@@ -2280,9 +2280,75 @@ window.SFX = (function(){
 })();
 
 // ============================================================
-// 新ゲーム仕様（v2.0 - 6.5択モデル最終版）
-// オッズ計算: R(N) × W^β × P / (B + P × 0.01)、最低×1.1保証
-// N=2 は固定オッズ + 親ボーナス強制0
+// タップ反応性の改善（メニュー・ホーム画面のボタン取りこぼし対策）
+// 症状：iOS Safariで「タップしても何も起きない」ことがある。原因はclickイベントの遅延・取りこぼし。
+// 対策：pointerup（指を離した瞬間）で button/.btn を検出し、即 click() を発火。
+//      短い指の移動・スクロールはキャンセル。同じ要素に来るclickは抑制して二重発火を防ぐ。
+// 対象：メニュー・ホーム系画面のボタンと、上部アイコン(.menu-toggle等)。
+// 対象外：レース演出のボタン、賭け方ボタン(.bet-type-btn 既存処理あり)、馬選択カード(.horse-card 既存処理あり)。
+// ============================================================
+(function(){
+  // 対象画面（メニュー・ホーム系）。レース中・賭け中などプレイ画面は除外
+  const FAST_SCREENS = ['screen-home','screen-setup','screen-online-menu','screen-room-lobby','screen-rules','screen-topics','screen-final','screen-online-final'];
+  // 対象セレクタ（個別。常に対象）
+  const ALWAYS_SEL = '.menu-toggle,.sound-toggle,.rules-toggle,.score-toggle';
+  // 除外（誤発火させたくないもの）
+  const EXCLUDE_SEL = '.bet-type-btn,.horse-card,.point-btn,.no-fastclick,input,textarea,select';
+
+  let startX=0, startY=0, startTime=0, startEl=null, justFired=null, justFiredAt=0;
+
+  function getTarget(e){
+    if(!e.target || !e.target.closest) return null;
+    if(e.target.closest(EXCLUDE_SEL)) return null;
+    // ALWAYS_SEL は画面問わず対象
+    const always = e.target.closest(ALWAYS_SEL);
+    if(always) return always;
+    // それ以外は FAST_SCREENS 内の button/.btn/[role=button] のみ対象
+    const btn = e.target.closest('button,.btn,[role="button"]');
+    if(!btn) return null;
+    if(btn.disabled || btn.getAttribute('aria-disabled')==='true') return null;
+    const scr = btn.closest('.screen');
+    if(!scr || FAST_SCREENS.indexOf(scr.id) === -1) return null;
+    return btn;
+  }
+
+  document.addEventListener('pointerdown', (e)=>{
+    if(e.pointerType==='mouse') return; // マウスは通常のclickでOK
+    const t = getTarget(e);
+    if(!t) { startEl=null; return; }
+    startEl = t;
+    startX = e.clientX; startY = e.clientY; startTime = Date.now();
+  }, {passive:true, capture:true});
+
+  document.addEventListener('pointerup', (e)=>{
+    if(e.pointerType==='mouse') return;
+    const t = getTarget(e);
+    if(!t || !startEl || t !== startEl) { startEl=null; return; }
+    // 指の移動距離・経過時間チェック
+    const dx = Math.abs(e.clientX - startX);
+    const dy = Math.abs(e.clientY - startY);
+    const dt = Date.now() - startTime;
+    if(dx > 10 || dy > 10 || dt > 700) { startEl=null; return; } // スクロール/長押し扱い
+    // 即発火
+    justFired = t; justFiredAt = Date.now();
+    try { t.click(); } catch(err) {}
+    startEl = null;
+  }, {passive:true, capture:true});
+
+  document.addEventListener('pointercancel', ()=>{ startEl=null; }, {passive:true, capture:true});
+
+  // 同じ要素に来る本来のclickを抑制（二重発火防止）。350ms以内のみ抑制。
+  document.addEventListener('click', (e)=>{
+    if(!justFired) return;
+    if(Date.now() - justFiredAt > 350) { justFired=null; return; }
+    const t = e.target && e.target.closest ? e.target.closest('button,.btn,[role="button"]') : null;
+    if(t && t === justFired){
+      e.stopPropagation();
+      e.preventDefault();
+      justFired = null;
+    }
+  }, true); // captureフェーズで早期抑制
+})();
 // ============================================================
 
 // 賭け方の設定（β、R、W、min/maxOdds）- Phase 2 仕様
@@ -10062,7 +10128,7 @@ window.showRaceReveal = function(opts, done){
 
   // 掲示板高さ（固定ステージ内では一定）
   var boardH=BOARD_H;
-  var bFont=30, bNumFont=34, smallScreen=false, headTop=48;
+  var bFont=24, bNumFont=28, smallScreen=false, headTop=52;
   var trackBottom=boardH+18;
 
   // 早送り・スキップボタン：電光掲示板の右下に重なるように縦並び（上＝スキップ、下＝早送り）
@@ -10070,7 +10136,7 @@ window.showRaceReveal = function(opts, done){
   window._raceFast = false;
   var skipBtn=document.createElement('button');
   skipBtn.textContent='⏭ スキップ';
-  skipBtn.style.cssText='position:absolute;right:18px;top:'+(boardTop+boardH-96)+'px;z-index:30;background:rgba(10,8,4,0.9);color:#ffe8a0;border:1.5px solid #f5c842;border-radius:20px;padding:11px 18px;font-size:17px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 10px rgba(0,0,0,0.6);user-select:none;-webkit-user-select:none;white-space:nowrap;';
+  skipBtn.style.cssText='position:absolute;right:18px;top:'+(boardTop+boardH-140)+'px;z-index:30;background:rgba(10,8,4,0.9);color:#ffe8a0;border:1.5px solid #f5c842;border-radius:20px;padding:11px 18px;font-size:17px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 10px rgba(0,0,0,0.6);user-select:none;-webkit-user-select:none;white-space:nowrap;';
   skipBtn.addEventListener('click', function(){
     try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
     try{ if(typeof finishAll==='function') finishAll(); }catch(e){ console.error('skip error', e); }
@@ -10079,7 +10145,7 @@ window.showRaceReveal = function(opts, done){
 
   var ffBtn=document.createElement('button');
   ffBtn.textContent='⏩ 早送り（長押し）';
-  ffBtn.style.cssText='position:absolute;right:18px;top:'+(boardTop+boardH-46)+'px;z-index:30;background:rgba(10,8,4,0.9);color:#ffe8a0;border:1.5px solid #f5c842;border-radius:20px;padding:11px 18px;font-size:17px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 10px rgba(0,0,0,0.6);user-select:none;-webkit-user-select:none;touch-action:none;white-space:nowrap;';
+  ffBtn.style.cssText='position:absolute;right:18px;top:'+(boardTop+boardH-90)+'px;z-index:30;background:rgba(10,8,4,0.9);color:#ffe8a0;border:1.5px solid #f5c842;border-radius:20px;padding:11px 18px;font-size:17px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 10px rgba(0,0,0,0.6);user-select:none;-webkit-user-select:none;touch-action:none;white-space:nowrap;';
   var ffOn=function(e){ if(e&&e.preventDefault)e.preventDefault(); window._raceFast=true; ffBtn.style.background='rgba(245,200,66,0.92)'; ffBtn.style.color='#2a1a00'; };
   var ffOff=function(){ window._raceFast=false; ffBtn.style.background='rgba(10,8,4,0.9)'; ffBtn.style.color='#ffe8a0'; };
   ffBtn.addEventListener('touchstart', ffOn, {passive:false});
@@ -10134,7 +10200,7 @@ window.showRaceReveal = function(opts, done){
     '<div style="position:absolute;top:12px;left:16px;font-family:monospace;font-size:22px;font-weight:900;color:#ff3b30;text-shadow:0 0 8px rgba(255,59,48,0.8)">'+raceNo+'</div>'+
     '<div style="position:absolute;top:13px;left:0;right:0;text-align:center;font-family:monospace;font-size:18px;letter-spacing:3px;color:#ffae00;text-shadow:0 0 8px rgba(255,174,0,0.8);font-weight:700">― 着 順 ―</div>'+
     '<div id="rr-confirm-lamp" style="position:absolute;top:10px;right:14px;font-family:monospace;font-size:20px;font-weight:900;color:#1a3a1a;border:2px solid #1a3a1a;border-radius:6px;padding:4px 11px;letter-spacing:1px;transition:all 0.15s">確定</div>'+
-    '<div id="rr-board-rows" style="position:absolute;top:'+headTop+'px;left:0;right:0;bottom:10px;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:0 28px"></div>';
+    '<div id="rr-board-rows" style="position:absolute;top:'+headTop+'px;left:0;right:0;bottom:10px;display:flex;flex-direction:column;justify-content:center;gap:0px;padding:0 28px"></div>';
   ov.appendChild(board);
   document.body.appendChild(ovFrame);
 
@@ -10143,9 +10209,9 @@ window.showRaceReveal = function(opts, done){
   for(var r=1;r<=3;r++){
     var row=document.createElement('div');
     row.id='rr-brow'+r;
-    row.style.cssText='display:flex;align-items:center;gap:20px;font-family:monospace;opacity:0.18;transition:opacity 0.1s;';
-    row.innerHTML='<span style="color:#ffae00;font-size:'+bFont+'px;font-weight:700;width:64px;text-shadow:0 0 6px rgba(255,174,0,0.6)">'+r+'着</span>'+
-      '<span class="rr-bnum" style="color:#444;font-size:'+bNumFont+'px;font-weight:900;width:40px;text-align:center">--</span>';
+    row.style.cssText='display:flex;align-items:center;gap:20px;font-family:monospace;opacity:0.18;transition:opacity 0.1s;line-height:1;';
+    row.innerHTML='<span style="color:#ffae00;font-size:'+bFont+'px;font-weight:700;width:60px;text-shadow:0 0 6px rgba(255,174,0,0.6);line-height:1">'+r+'着</span>'+
+      '<span class="rr-bnum" style="color:#444;font-size:'+bNumFont+'px;font-weight:900;width:40px;text-align:center;line-height:1">--</span>';
     boardRows.appendChild(row);
   }
 
@@ -10206,7 +10272,7 @@ window.showRaceReveal = function(opts, done){
 
   function runnerHTML(color){
     var dk=darken(color), skin='#ffe0c0';
-    var jk='<svg width="30" height="35" viewBox="0 0 54 64" style="position:absolute;left:5px;top:-1px;z-index:3;overflow:visible;transform:scaleX(-1);transform-origin:center">'
+    var jk='<svg width="39" height="45" viewBox="0 0 54 64" style="position:absolute;left:7px;top:-2px;z-index:3;overflow:visible;transform:scaleX(-1);transform-origin:center">'
       +'<g class="rr-legB" style="transform-origin:24px 42px"><path d="M22 40 Q18 48 22 55 L26 54 Q24 47 27 41 Z" fill="'+dk+'"/><ellipse cx="22" cy="56" rx="4.4" ry="2.8" fill="#241810"/></g>'
       +'<g class="rr-legA" style="transform-origin:30px 42px"><path d="M28 40 Q30 50 27 58 L32 58 Q34 49 33 41 Z" fill="'+color+'"/><ellipse cx="29" cy="59" rx="4.6" ry="2.9" fill="#3a2616"/></g>'
       +'<ellipse cx="26" cy="36" rx="11" ry="9" fill="'+color+'" stroke="rgba(255,255,255,0.55)" stroke-width="1" transform="rotate(-8 26 36)"/>'
@@ -10220,7 +10286,7 @@ window.showRaceReveal = function(opts, done){
       +'<path d="M32 23.6 Q34.5 25.8 37 23.6" stroke="#c0604a" stroke-width="1.1" fill="none" stroke-linecap="round"/>'
       +'<path d="M25 18 Q26 10 34 10 Q42 10 42 18 Q34 15.5 25 18 Z" fill="'+color+'" stroke="#fff" stroke-width="1.1"/>'
       +'<ellipse cx="32" cy="12.5" rx="3" ry="1.6" fill="rgba(255,255,255,0.35)"/><rect x="39" y="16.5" width="6" height="2.5" rx="1.25" fill="'+dk+'"/></svg>';
-    return '<div style="position:relative;width:42px;height:44px;transform:scaleX(-1)"><div style="position:absolute;left:0;bottom:0;font-size:33px;line-height:1">🐎</div>'+jk+'</div>';
+    return '<div style="position:relative;width:55px;height:57px;transform:scaleX(-1)"><div style="position:absolute;left:0;bottom:0;font-size:43px;line-height:1">🐎</div>'+jk+'</div>';
   }
 
   // ---- 馬の生成 ----
@@ -10288,8 +10354,8 @@ window.showRaceReveal = function(opts, done){
     }
     var row=document.createElement('div');
     row.style.cssText='position:absolute;left:'+startLeft+'px;top:'+(lanesTop+i*laneGap)+'px;display:flex;align-items:center;gap:3px;will-change:transform;transform:translateX(0)';
-    var badge='<div class="rr-badge" style="opacity:0;transition:opacity 0.3s;width:21px;height:21px;border-radius:50%;background:'+color+';color:'+fg+';text-shadow:0 0 2px rgba(0,0,0,0.9),0 1px 1px rgba(0,0,0,0.8);font-family:sans-serif;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);flex-shrink:0">'+(i+1)+'</div>';
-    var dust='<div class="rr-dust" style="font-size:11px;opacity:0;margin-left:-3px">💨</div>';
+    var badge='<div class="rr-badge" style="opacity:0;transition:opacity 0.3s;width:27px;height:27px;border-radius:50%;background:'+color+';color:'+fg+';text-shadow:0 0 2px rgba(0,0,0,0.9),0 1px 1px rgba(0,0,0,0.8);font-family:sans-serif;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);flex-shrink:0">'+(i+1)+'</div>';
+    var dust='<div class="rr-dust" style="font-size:14px;opacity:0;margin-left:-3px">💨</div>';
     row.innerHTML=dust+'<div class="rr-run">'+runnerHTML(color)+'</div>'+badge;
     track.appendChild(row);
     h.el=row; h.runEl=row.querySelector('.rr-run'); h.dustEl=row.querySelector('.rr-dust'); h.badgeEl=row.querySelector('.rr-badge');
