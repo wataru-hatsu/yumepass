@@ -10021,11 +10021,33 @@ window.showRaceReveal = function(opts, done){
   var old=document.getElementById('race-reveal-overlay'); if(old) old.remove();
 
   // ---- レイアウト計算（縦に N 頭を並べる） ----
-  var laneGap = Math.max(30, Math.min(46, Math.floor((430)/N)));
-  var lanesTop = 40;
+  // 【新方式】固定サイズのステージを作り、画面に合わせて全体をscaleで縮小する。
+  // これにより、どの端末でも馬・ゴール・掲示板・ボタンが必ず全部収まり、重ならない。
+  // レースの仕組み・馬/騎手の見た目・着順ロジック・音は一切変更しない（座標系を固定化するだけ）。
+  var STAGE_W = 560;                 // ステージ基準幅（固定）
+  var lanesTop = 66;                 // 1頭目の縦位置（固定）
+  var laneGap = 92;                  // 馬の縦間隔（固定）
+  var BOARD_H = 200;                 // 電光掲示板の高さ（固定・ゆったり）
+  var STAGE_H = lanesTop + laneGap*N + 30 + BOARD_H + 18; // 全要素が収まる総高さ
+
+  // 外側フレーム（画面いっぱい・背景・中央寄せ）
+  var ovFrame=document.createElement('div');
+  ovFrame.id='race-reveal-overlay';
+  ovFrame.style.cssText='position:fixed;inset:0;z-index:99999;overflow:hidden;background:#1d4d22;display:flex;align-items:center;justify-content:center;';
+
+  // 内側ステージ（固定サイズ。これをscaleで縮小）。既存コードはこの ov を使う＝ロジック不変。
   var ov=document.createElement('div');
-  ov.id='race-reveal-overlay';
-  ov.style.cssText='position:fixed;inset:0;z-index:99999;overflow:hidden;background:linear-gradient(180deg,#3a8a3e 0%,#2f7d36 45%,#256b2d 100%);';
+  ov.style.cssText='position:relative;flex:0 0 auto;flex-shrink:0;width:'+STAGE_W+'px;min-width:'+STAGE_W+'px;max-width:'+STAGE_W+'px;height:'+STAGE_H+'px;overflow:hidden;background:linear-gradient(180deg,#3a8a3e 0%,#2f7d36 45%,#256b2d 100%);transform-origin:center center;';
+  ovFrame.appendChild(ov);
+
+  // 画面サイズに合わせて全体をscale（縦をめいっぱい、横がはみ出すなら横基準）
+  function fitStage(){
+    var vw=window.innerWidth||360, vh=window.innerHeight||640;
+    var s=vh/STAGE_H; if(STAGE_W*s>vw){ s=vw/STAGE_W; }
+    ov.style.transform='scale('+s+')';
+  }
+  fitStage();
+  window.addEventListener('resize', fitStage);
 
   // 芝ストライプ
   var turf=document.createElement('div');
@@ -10034,27 +10056,32 @@ window.showRaceReveal = function(opts, done){
 
   // タイトル
   var title=document.createElement('div');
-  title.style.cssText='position:absolute;top:calc(env(safe-area-inset-top) + 10px);left:0;right:0;text-align:center;color:#eaffe0;font-family:sans-serif;font-size:15px;letter-spacing:3px;font-weight:700;z-index:6;text-shadow:0 1px 3px rgba(0,0,0,0.4);';
+  title.style.cssText='position:absolute;top:14px;left:0;right:0;text-align:center;color:#eaffe0;font-family:sans-serif;font-size:22px;letter-spacing:3px;font-weight:700;z-index:6;text-shadow:0 1px 3px rgba(0,0,0,0.4);';
   title.textContent='ROUND '+(opts.raceNo!=null?opts.raceNo:'')+' RACE';
   ov.appendChild(title);
 
-  // ゴール（チェッカー）＋テープ＋直線ハイライト
-  var boardH=Math.min(170, 54+N*0+ (N>=7?150:130));
-  // 掲示板高さ：着順3行ぶんをコンパクトに（SEなど小画面でも馬が隠れないよう低めに）
-  var vh0 = window.innerHeight || document.documentElement.clientHeight || 720;
-  var smallScreen = (vh0 < 700);
-  boardH = smallScreen ? 112 : 144;  // 小画面では更に低く
-  var bFont = smallScreen ? 19 : 24;   // 着順ラベルの文字サイズ
-  var bNumFont = smallScreen ? 22 : 28; // 着順番号の文字サイズ
-  var trackBottom=boardH+14;
+  // 掲示板高さ（固定ステージ内では一定）
+  var boardH=BOARD_H;
+  var bFont=30, bNumFont=34, smallScreen=false, headTop=48;
+  var trackBottom=boardH+18;
 
-  // 早送り・スキップボタン：掲示板の右上のすぐ上に縦並び（下＝早送り、上＝スキップ）
+  // 早送り・スキップボタン：電光掲示板の右下に重なるように縦並び（上＝スキップ、下＝早送り）
+  var boardTop = STAGE_H - boardH - 14;     // 掲示板の上端
   window._raceFast = false;
+  var skipBtn=document.createElement('button');
+  skipBtn.textContent='⏭ スキップ';
+  skipBtn.style.cssText='position:absolute;right:18px;top:'+(boardTop+boardH-96)+'px;z-index:30;background:rgba(10,8,4,0.9);color:#ffe8a0;border:1.5px solid #f5c842;border-radius:20px;padding:11px 18px;font-size:17px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 10px rgba(0,0,0,0.6);user-select:none;-webkit-user-select:none;white-space:nowrap;';
+  skipBtn.addEventListener('click', function(){
+    try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
+    try{ if(typeof finishAll==='function') finishAll(); }catch(e){ console.error('skip error', e); }
+  });
+  ov.appendChild(skipBtn);
+
   var ffBtn=document.createElement('button');
   ffBtn.textContent='⏩ 早送り（長押し）';
-  ffBtn.style.cssText='position:absolute;right:10px;bottom:'+(boardH+10)+'px;z-index:30;background:rgba(10,8,4,0.82);color:#ffe8a0;border:1px solid #f5c842;border-radius:18px;padding:7px 13px;font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;touch-action:none;white-space:nowrap;';
+  ffBtn.style.cssText='position:absolute;right:18px;top:'+(boardTop+boardH-46)+'px;z-index:30;background:rgba(10,8,4,0.9);color:#ffe8a0;border:1.5px solid #f5c842;border-radius:20px;padding:11px 18px;font-size:17px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 10px rgba(0,0,0,0.6);user-select:none;-webkit-user-select:none;touch-action:none;white-space:nowrap;';
   var ffOn=function(e){ if(e&&e.preventDefault)e.preventDefault(); window._raceFast=true; ffBtn.style.background='rgba(245,200,66,0.92)'; ffBtn.style.color='#2a1a00'; };
-  var ffOff=function(){ window._raceFast=false; ffBtn.style.background='rgba(10,8,4,0.82)'; ffBtn.style.color='#ffe8a0'; };
+  var ffOff=function(){ window._raceFast=false; ffBtn.style.background='rgba(10,8,4,0.9)'; ffBtn.style.color='#ffe8a0'; };
   ffBtn.addEventListener('touchstart', ffOn, {passive:false});
   ffBtn.addEventListener('touchend', ffOff);
   ffBtn.addEventListener('touchcancel', ffOff);
@@ -10063,25 +10090,6 @@ window.showRaceReveal = function(opts, done){
   ffBtn.addEventListener('mouseleave', ffOff);
   ov.appendChild(ffBtn);
 
-  var skipBtn=document.createElement('button');
-  skipBtn.textContent='⏭ スキップ';
-  skipBtn.style.cssText='position:absolute;right:10px;bottom:'+(boardH+50)+'px;z-index:30;background:rgba(10,8,4,0.82);color:#ffe8a0;border:1px solid #f5c842;border-radius:18px;padding:7px 13px;font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;white-space:nowrap;';
-  skipBtn.addEventListener('click', function(){
-    try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
-    try{ if(typeof finishAll==='function') finishAll(); }catch(e){ console.error('skip error', e); }
-  });
-  ov.appendChild(skipBtn);
-
-  // 馬の縦間隔：画面高さに合わせて均等に広げる（最後の馬が掲示板に重ならないよう計算）。
-  // 利用可能なトラック高さ ÷ (頭数-1) を間隔とし、広げすぎ・詰めすぎを上下限で抑える。
-  try{
-    var vh = window.innerHeight || document.documentElement.clientHeight || 720;
-    var horseH = 44; // 馬1頭の高さ（拡大後）
-    var safeTop = 36; // safe-area + タイトルぶんの余白
-    var usableH = vh - (lanesTop + safeTop) - trackBottom - horseH;
-    var dynGap = (N > 1) ? Math.floor(usableH / (N - 1)) : 0;
-    laneGap = Math.max(46, Math.min(74, dynGap)); // 間隔広め（下限46/上限74）
-  }catch(e){ laneGap = Math.max(46, Math.min(74, Math.floor(470/N))); }
   var fin=document.createElement('div');
   fin.style.cssText='position:absolute;top:'+ (lanesTop-6) +'px;bottom:'+ (trackBottom+8) +'px;right:40px;width:6px;background:repeating-linear-gradient(180deg,#fff 0 9px,#111 9px 18px);z-index:3;';
   ov.appendChild(fin);
@@ -10119,26 +10127,25 @@ window.showRaceReveal = function(opts, done){
   cdNum.style.cssText='font-family:sans-serif;font-size:130px;font-weight:900;color:#fff;text-shadow:0 0 30px rgba(0,0,0,0.6),0 4px 12px rgba(0,0,0,0.5);opacity:0;';
   cdWrap.appendChild(cdNum); ov.appendChild(cdWrap);
 
-  // 電光掲示板
-  var headTop = smallScreen ? 28 : 38;  // 着順行の開始位置（ヘッダー下）
+  // 電光掲示板（固定ステージの下部に固定配置）
   var board=document.createElement('div');
-  board.style.cssText='position:absolute;left:8px;right:8px;bottom:10px;height:'+boardH+'px;background:#0a0a0a;border:3px solid #2a2a2a;border-radius:9px;box-shadow:inset 0 0 0 2px #000, 0 4px 14px rgba(0,0,0,0.5);z-index:12;overflow:hidden;';
+  board.style.cssText='position:absolute;left:8px;right:8px;top:'+boardTop+'px;height:'+boardH+'px;background:#0a0a0a;border:3px solid #2a2a2a;border-radius:11px;box-shadow:inset 0 0 0 2px #000, 0 4px 14px rgba(0,0,0,0.5);z-index:12;overflow:hidden;';
   board.innerHTML='<div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);background-size:6px 6px;pointer-events:none"></div>'+
-    '<div style="position:absolute;top:'+(smallScreen?6:9)+'px;left:12px;font-family:monospace;font-size:'+(smallScreen?15:18)+'px;font-weight:900;color:#ff3b30;text-shadow:0 0 8px rgba(255,59,48,0.8)">'+raceNo+'</div>'+
-    '<div style="position:absolute;top:'+(smallScreen?7:10)+'px;left:0;right:0;text-align:center;font-family:monospace;font-size:'+(smallScreen?12:14)+'px;letter-spacing:3px;color:#ffae00;text-shadow:0 0 8px rgba(255,174,0,0.8);font-weight:700">― 着 順 ―</div>'+
-    '<div id="rr-confirm-lamp" style="position:absolute;top:'+(smallScreen?5:7)+'px;right:10px;font-family:monospace;font-size:'+(smallScreen?13:16)+'px;font-weight:900;color:#1a3a1a;border:2px solid #1a3a1a;border-radius:6px;padding:3px 9px;letter-spacing:1px;transition:all 0.15s">確定</div>'+
-    '<div id="rr-board-rows" style="position:absolute;top:'+headTop+'px;left:0;right:0;bottom:6px;display:flex;flex-direction:column;justify-content:center;gap:'+(smallScreen?3:5)+'px;padding:0 24px"></div>';
+    '<div style="position:absolute;top:12px;left:16px;font-family:monospace;font-size:22px;font-weight:900;color:#ff3b30;text-shadow:0 0 8px rgba(255,59,48,0.8)">'+raceNo+'</div>'+
+    '<div style="position:absolute;top:13px;left:0;right:0;text-align:center;font-family:monospace;font-size:18px;letter-spacing:3px;color:#ffae00;text-shadow:0 0 8px rgba(255,174,0,0.8);font-weight:700">― 着 順 ―</div>'+
+    '<div id="rr-confirm-lamp" style="position:absolute;top:10px;right:14px;font-family:monospace;font-size:20px;font-weight:900;color:#1a3a1a;border:2px solid #1a3a1a;border-radius:6px;padding:4px 11px;letter-spacing:1px;transition:all 0.15s">確定</div>'+
+    '<div id="rr-board-rows" style="position:absolute;top:'+headTop+'px;left:0;right:0;bottom:10px;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:0 28px"></div>';
   ov.appendChild(board);
-  document.body.appendChild(ov);
+  document.body.appendChild(ovFrame);
 
   var confirmLamp=board.querySelector('#rr-confirm-lamp');
   var boardRows=board.querySelector('#rr-board-rows');
   for(var r=1;r<=3;r++){
     var row=document.createElement('div');
     row.id='rr-brow'+r;
-    row.style.cssText='display:flex;align-items:center;gap:'+(smallScreen?10:16)+'px;font-family:monospace;opacity:0.18;transition:opacity 0.1s;';
-    row.innerHTML='<span style="color:#ffae00;font-size:'+bFont+'px;font-weight:700;width:'+(smallScreen?46:58)+'px;text-shadow:0 0 6px rgba(255,174,0,0.6)">'+r+'着</span>'+
-      '<span class="rr-bnum" style="color:#444;font-size:'+bNumFont+'px;font-weight:900;width:34px;text-align:center">--</span>';
+    row.style.cssText='display:flex;align-items:center;gap:20px;font-family:monospace;opacity:0.18;transition:opacity 0.1s;';
+    row.innerHTML='<span style="color:#ffae00;font-size:'+bFont+'px;font-weight:700;width:64px;text-shadow:0 0 6px rgba(255,174,0,0.6)">'+r+'着</span>'+
+      '<span class="rr-bnum" style="color:#444;font-size:'+bNumFont+'px;font-weight:900;width:40px;text-align:center">--</span>';
     boardRows.appendChild(row);
   }
 
@@ -10193,7 +10200,7 @@ window.showRaceReveal = function(opts, done){
 
   var timers=[]; var raf=null;
   function tmo(fn,ms){ var id=setTimeout(fn,ms); timers.push(id); return id; }
-  function cleanup(){ timers.forEach(clearTimeout); timers=[]; if(raf) cancelAnimationFrame(raf); stopCrowd(); }
+  function cleanup(){ timers.forEach(clearTimeout); timers=[]; if(raf) cancelAnimationFrame(raf); stopCrowd(); try{ window.removeEventListener('resize', fitStage); }catch(e){} }
 
   function darken(hex){var c=hex.replace('#','');if(c.length===3){c=c[0]+c[0]+c[1]+c[1]+c[2]+c[2];}var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return 'rgb('+Math.round(r*0.62)+','+Math.round(g*0.62)+','+Math.round(b*0.62)+')';}
 
@@ -10338,7 +10345,7 @@ window.showRaceReveal = function(opts, done){
     // 先に結果画面へ遷移させてから（done内でgoTo）、その上にあるレース演出を即削除する。
     // こうすることでオーバーレイの下が既に結果画面になり、遷移中に他画面が一瞬見えない。
     try { if(typeof done==='function') done(); } catch(e){ console.error(e); }
-    if(ov.parentNode) ov.remove();
+    if(ovFrame.parentNode) ovFrame.remove();
   }
 
   function startRace(){
@@ -10353,8 +10360,13 @@ window.showRaceReveal = function(opts, done){
       if(h0 && h0.runEl && h0.el){
         var rRun=h0.runEl.getBoundingClientRect();
         var rRow=h0.el.getBoundingClientRect();
-        // row左端から馬の鼻先（rr-run右端）までの距離
-        var measured=rRun.right - rRow.left;
+        // getBoundingClientRect は transform:scale 適用後の実寸を返すため、
+        // finishX計算(stageW=clientWidth=scale前)と単位を揃えるよう scale比率で割って戻す。
+        var _ovRect=ov.getBoundingClientRect();
+        var _scale=(ov.clientWidth>0)? (_ovRect.width/ov.clientWidth) : 1;
+        if(!_scale || _scale<=0) _scale=1;
+        // row左端から馬の鼻先（rr-run右端）までの距離（scale前換算）
+        var measured=(rRun.right - rRow.left)/_scale;
         if(measured>10 && measured<200) noseOffset=measured;
       }
     }catch(e){}
