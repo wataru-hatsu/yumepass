@@ -6550,8 +6550,16 @@ window.rejoinRoom = async function(){
 
     // ゲーム中ならゲーム画面へ、待機中ならロビーへ
     if(roomData.status === 'playing'){
-      // ゲーム中の復帰 — currentPhaseに応じた画面に遷移するロジックは onGameStateUpdate で処理
-      enterLobby(); // まずロビーへ。その後 status監視/onGameStateUpdate で適切に遷移
+      // ゲーム中の復帰 — まずロビーへ入って各種監視を貼り、その上で直接 onGameStarted を呼んで
+      // フェーズに応じた画面に遷移させる。onValue の初回コールバック待ちにすると、
+      // 「ロビー画面で止まったまま進まない」というタイミング問題が起きるため、ここで明示的に進める。
+      enterLobby();
+      // gameStarted フラグを立ててから onGameStarted を呼ぶ（重複起動防止）
+      if(!window.online.gameStarted){
+        window.online.gameStarted = true;
+        // 各種onValueの初回コールバックを一瞬待ってから遷移（cachedPlayersを埋めるため）
+        setTimeout(() => { try{ onGameStarted(); }catch(e){ console.error('onGameStarted from rejoin error:', e); } }, 100);
+      }
     } else {
       enterLobby();
     }
@@ -6882,32 +6890,42 @@ function onGameStarted(){
     window.online.settings = s;
     // ゲーム状態の監視を開始
     startGameStateWatch();
-    // ゲーム状態を取得して、現在のフェーズに応じた画面に遷移
-    const gameRef = ref(db, `rooms/${window.online.roomCode}/game`);
-    get(gameRef).then(gameSnap => {
-      const game = gameSnap.val();
-      if(!game){
-        enterOnlineTopicSelect();
-        return;
-      }
-      window.online.game = game;
-      const phase = game.phase;
-      if(phase === 'topic-select'){
-        enterOnlineTopicSelect();
-      } else if(phase === 'topic-lottery'){
-        enterOnlineTopicLottery(game);
-      } else if(phase === 'betting'){
-        // 「待つ」方式：復帰者も観戦せず通常の賭け画面へ
-        enterOnlineBetting(game);
-      } else if(phase === 'reveal'){
-        enterOnlineReveal(game);
-      } else if(phase === 'result'){
-        enterOnlineRoundResult(game);
-      } else if(phase === 'final'){
-        enterOnlineFinal(game);
-      } else {
-        enterOnlineTopicSelect();
-      }
+    // 復帰時など cachedPlayers がまだ空の場合に備え、playersも一度fetchして埋める
+    // （ロビーの onValue 初回コールバックより前に onGameStarted が走ると、cachedPlayersが空のままになるのを防ぐ）
+    const playersRef = ref(db, `rooms/${window.online.roomCode}/players`);
+    get(playersRef).then(playersSnap => {
+      try{
+        const playersObj = playersSnap.val() || {};
+        const arr = Object.entries(playersObj).map(([id, p]) => ({id, ...p})).sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
+        if(arr.length > 0) window.online.cachedPlayers = arr;
+      }catch(e){}
+      // ゲーム状態を取得して、現在のフェーズに応じた画面に遷移
+      const gameRef = ref(db, `rooms/${window.online.roomCode}/game`);
+      get(gameRef).then(gameSnap => {
+        const game = gameSnap.val();
+        if(!game){
+          enterOnlineTopicSelect();
+          return;
+        }
+        window.online.game = game;
+        const phase = game.phase;
+        if(phase === 'topic-select'){
+          enterOnlineTopicSelect();
+        } else if(phase === 'topic-lottery'){
+          enterOnlineTopicLottery(game);
+        } else if(phase === 'betting'){
+          // 「待つ」方式：復帰者も観戦せず通常の賭け画面へ
+          enterOnlineBetting(game);
+        } else if(phase === 'reveal'){
+          enterOnlineReveal(game);
+        } else if(phase === 'result'){
+          enterOnlineRoundResult(game);
+        } else if(phase === 'final'){
+          enterOnlineFinal(game);
+        } else {
+          enterOnlineTopicSelect();
+        }
+      });
     });
   });
 }
@@ -6984,6 +7002,9 @@ function onGameStateUpdate(game){
         updateBetWaitProgress(game);
         updateBetWaitRevealButton(game);
       }
+      // 点数テーブルを最新化（game.pointsが更新された時に確実に反映するため）
+      try{ if(document.getElementById('ob-score-table')) renderOnlineScoreTable('ob-score-table', game); }catch(e){}
+      try{ if(document.getElementById('obw-score-table')) renderOnlineScoreTable('obw-score-table', game, {showBetDeduction:true}); }catch(e){}
     }
     // 全員入力完了チェック → 公開ボタン表示 → 全員ボタン押下 → reveal遷移
     checkAllBetsSubmitted();
@@ -7001,6 +7022,8 @@ function onGameStateUpdate(game){
   if(game.phase === 'result' && document.getElementById('screen-online-roundresult').classList.contains('active')){
     updateNextReadyStatus(game);
     checkAllReadyForNext();
+    // 結果画面に既にいる時もgame.pointsの更新を画面に反映（点数表が古いままにならないように）
+    try{ renderOnlineScoreTable('orr-score-table', game); }catch(e){}
   }
   if(game.phase === 'final' && !document.getElementById('screen-online-final').classList.contains('active')){
     enterOnlineFinal(game);
