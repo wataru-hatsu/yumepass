@@ -419,7 +419,7 @@ body.modal-open{overflow:hidden !important;}
 @keyframes scrollFabBounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(4px);}}
 .game-menu-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9990;display:flex;align-items:center;justify-content:center;padding:20px;touch-action:manipulation;cursor:pointer;}
 .game-menu-modal.hidden{display:none;}
-.game-menu-content{background:linear-gradient(135deg,#1a1a1a,#2d2d2d);border:2px solid var(--gold);border-radius:14px;padding:20px;max-width:340px;width:100%;box-shadow:0 0 40px rgba(245,200,66,0.4);cursor:default;}
+.game-menu-content{background:linear-gradient(135deg,#1a1a1a,#2d2d2d);border:2px solid var(--gold);border-radius:14px;padding:20px;max-width:340px;width:100%;box-shadow:0 0 40px rgba(245,200,66,0.4);cursor:default;max-height:calc(100dvh - 40px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
 .game-menu-title{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:1.3rem;letter-spacing:3px;text-align:center;margin-bottom:14px;border-bottom:1px solid rgba(245,200,66,0.3);padding-bottom:8px;}
 </style>
 </head>
@@ -1164,7 +1164,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel"><div class="panel-title">📜 ラウンド履歴（親が何を選んだか）</div><div id="ofn-history"></div></div>
     <!-- ホスト用：もう一度ボタン -->
     <div id="ofn-host-controls" style="display:none;margin:10px">
-      <button class="btn btn-primary sfx-mute" onclick="onlineRestartGame()" style="background:linear-gradient(135deg,#c0392b,#922b21)">🔄 同じメンバーでもう一度</button>
+      <button class="btn btn-primary sfx-mute" onclick="onlineRestartGame()" style="background:linear-gradient(135deg,#4db8e8,#2a8fc7)">🔄 同じメンバーでもう一度</button>
     </div>
     <div id="ofn-guest-info" style="display:none;text-align:center;color:#aaa;font-size:0.85rem;padding:8px 16px">
       ホストが「もう一度」を押すと再戦できます
@@ -1611,7 +1611,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel"><div class="panel-title">📜 ラウンド履歴</div><div id="final-history"></div></div>
     <div style="margin:10px">
       <button class="btn btn-primary" onclick="goTo('screen-home')">🏠 ホームに戻る</button>
-      <button class="btn btn-secondary sfx-mute" onclick="restartWithSamePlayers()">🔄 同じメンバーでもう一度</button>
+      <button class="btn btn-secondary sfx-mute" onclick="restartWithSamePlayers()" style="background:linear-gradient(135deg,#4db8e8,#2a8fc7)">🔄 同じメンバーでもう一度</button>
     </div>
   </div>
 </div>
@@ -6007,7 +6007,7 @@ const firebaseConfig = {
 
 // 馬の選択肢(.c1〜.c8)と完全に同じ番号色。演出の番号バッジ等で使う（選択肢と色を統一）
 const HORSE_BG = ['#7ec8f0','#7ac043','#c0392b','#2a72e0','#e0b800','#1a7a1a','#8b1a8b','#ff7f3f'];
-const HORSE_FG = ['#0a3a55','#173a0a','#fff','#fff','#333','#fff','#fff','#fff'];
+const HORSE_FG = ['#fff','#fff','#fff','#fff','#fff','#fff','#fff','#fff'];
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
@@ -6147,6 +6147,33 @@ window.online = {
   unsubscribe: null
 };
 
+// ===== presence（在席）管理 =====
+// Firebaseの .info/connected を監視し、サーバーに接続できている間は必ず online:true を維持する。
+// スマホの画面ロック・アプリ切替・一時的な電波断などで接続が切れても、復帰した瞬間に
+// 自動で online:true に戻し、onDisconnect(false) を貼り直す。これにより「ちゃんといるのに
+// オフライン扱いになる」誤判定を防ぐ。
+function startPresence(code, playerId){
+  try{
+    // 多重登録を防ぐ
+    if(window.online._presenceUnsub){ try{ window.online._presenceUnsub(); }catch(e){} window.online._presenceUnsub=null; }
+    const onlineRef = ref(db, `rooms/${code}/players/${playerId}/online`);
+    const connectedRef = ref(db, '.info/connected');
+    const unsub = onValue(connectedRef, function(snap){
+      if(snap.val() === true){
+        // 接続できている：切断時の予約を貼り直してから online:true に戻す
+        try{ onDisconnect(onlineRef).set(false); }catch(e){}
+        try{ set(onlineRef, true); }catch(e){}
+      }
+    });
+    window.online._presenceUnsub = unsub;
+  }catch(e){ console.error('startPresence error:', e); }
+}
+function stopPresence(){
+  try{ if(window.online._presenceUnsub){ window.online._presenceUnsub(); window.online._presenceUnsub=null; } }catch(e){}
+}
+window.startPresence = startPresence;
+window.stopPresence = stopPresence;
+
 // 6桁ランダムコード生成
 function generateRoomCode(){
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -6211,6 +6238,8 @@ window.createRoom = async function(){
     // 切断時：プレイヤーを削除せず online: false に設定（復帰用）
     const playerOnlineRef = ref(db, `rooms/${code}/players/${playerId}/online`);
     onDisconnect(playerOnlineRef).set(false);
+    // 接続が回復したら自動で online:true に戻す（誤オフライン防止）
+    startPresence(code, playerId);
 
     // 復帰用に localStorage に記録
     try {
@@ -6292,6 +6321,8 @@ window.joinRoom = async function(){
     // 切断時：online: false にする（プレイヤー情報は残す）
     const playerOnlineRef = ref(db, `rooms/${code}/players/${playerId}/online`);
     onDisconnect(playerOnlineRef).set(false);
+    // 接続が回復したら自動で online:true に戻す（誤オフライン防止）
+    startPresence(code, playerId);
 
     window.online.roomCode = code;
     window.online.playerId = playerId;
@@ -6408,6 +6439,8 @@ window.rejoinRoom = async function(){
     const playerOnlineRef = ref(db, `rooms/${code}/players/${playerId}/online`);
     await set(playerOnlineRef, true);
     onDisconnect(playerOnlineRef).set(false);
+    // 接続が回復したら自動で online:true に戻す（誤オフライン防止）
+    startPresence(code, playerId);
 
     // 復帰時に演出系のローカルキャッシュをクリア（of 再発火させるため）
     window.online._lastResultRound = null;
@@ -10001,13 +10034,20 @@ window.showRaceReveal = function(opts, done){
   title.textContent='ROUND '+(opts.raceNo!=null?opts.raceNo:'')+' RACE';
   ov.appendChild(title);
 
-  // 早送りボタン（押している間だけレースを早送り）。掲示板の上に縦並びで配置（下＝早送り）
+  // ゴール（チェッカー）＋テープ＋直線ハイライト
+  var boardH=Math.min(170, 54+N*0+ (N>=7?150:130));
+  // 掲示板高さ：着順3行ぶんをコンパクトに（SEなど小画面でも馬が隠れないよう低めに）
+  var vh0 = window.innerHeight || document.documentElement.clientHeight || 720;
+  boardH = (vh0 < 700) ? 132 : 150;  // 小画面では更に低く
+  var trackBottom=boardH+18;
+
+  // 早送り・スキップボタン：右下に縦並び（下＝早送り、上＝スキップ）。掲示板の右上の余白に配置。
   window._raceFast = false;
   var ffBtn=document.createElement('button');
   ffBtn.textContent='⏩ 早送り（長押し）';
-  ffBtn.style.cssText='position:absolute;right:12px;bottom:calc('+boardH+'px + 22px);z-index:30;background:rgba(10,8,4,0.78);color:#ffe8a0;border:1px solid #f5c842;border-radius:20px;padding:9px 16px;font-size:13px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;touch-action:none;';
+  ffBtn.style.cssText='position:absolute;right:10px;bottom:'+(boardH+12)+'px;z-index:30;background:rgba(10,8,4,0.82);color:#ffe8a0;border:1px solid #f5c842;border-radius:18px;padding:8px 14px;font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;touch-action:none;white-space:nowrap;';
   var ffOn=function(e){ if(e&&e.preventDefault)e.preventDefault(); window._raceFast=true; ffBtn.style.background='rgba(245,200,66,0.92)'; ffBtn.style.color='#2a1a00'; };
-  var ffOff=function(){ window._raceFast=false; ffBtn.style.background='rgba(10,8,4,0.78)'; ffBtn.style.color='#ffe8a0'; };
+  var ffOff=function(){ window._raceFast=false; ffBtn.style.background='rgba(10,8,4,0.82)'; ffBtn.style.color='#ffe8a0'; };
   ffBtn.addEventListener('touchstart', ffOn, {passive:false});
   ffBtn.addEventListener('touchend', ffOff);
   ffBtn.addEventListener('touchcancel', ffOff);
@@ -10016,21 +10056,15 @@ window.showRaceReveal = function(opts, done){
   ffBtn.addEventListener('mouseleave', ffOff);
   ov.appendChild(ffBtn);
 
-  // スキップボタン（押すとレース演出を飛ばして結果へ）。早送りの真上に配置
   var skipBtn=document.createElement('button');
   skipBtn.textContent='⏭ スキップ';
-  skipBtn.style.cssText='position:absolute;right:12px;bottom:calc('+boardH+'px + 70px);z-index:30;background:rgba(10,8,4,0.78);color:#ffe8a0;border:1px solid #f5c842;border-radius:20px;padding:9px 16px;font-size:13px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;';
+  skipBtn.style.cssText='position:absolute;right:10px;bottom:'+(boardH+56)+'px;z-index:30;background:rgba(10,8,4,0.82);color:#ffe8a0;border:1px solid #f5c842;border-radius:18px;padding:8px 14px;font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;white-space:nowrap;';
   skipBtn.addEventListener('click', function(){
     try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
     try{ if(typeof finishAll==='function') finishAll(); }catch(e){ console.error('skip error', e); }
   });
   ov.appendChild(skipBtn);
 
-  // ゴール（チェッカー）＋テープ＋直線ハイライト
-  var boardH=Math.min(170, 54+N*0+ (N>=7?150:130));
-  // 掲示板高さ：着順3行ぶん固定
-  boardH=178;
-  var trackBottom=boardH+18;
   // 馬の縦間隔：画面高さに合わせて均等に広げる（最後の馬が掲示板に重ならないよう計算）。
   // 利用可能なトラック高さ ÷ (頭数-1) を間隔とし、広げすぎ・詰めすぎを上下限で抑える。
   try{
@@ -10085,7 +10119,7 @@ window.showRaceReveal = function(opts, done){
     '<div style="position:absolute;top:9px;left:12px;font-family:monospace;font-size:18px;font-weight:900;color:#ff3b30;text-shadow:0 0 8px rgba(255,59,48,0.8)">'+raceNo+'</div>'+
     '<div style="position:absolute;top:10px;left:0;right:0;text-align:center;font-family:monospace;font-size:14px;letter-spacing:3px;color:#ffae00;text-shadow:0 0 8px rgba(255,174,0,0.8);font-weight:700">― 着 順 ―</div>'+
     '<div id="rr-confirm-lamp" style="position:absolute;top:7px;right:10px;font-family:monospace;font-size:16px;font-weight:900;color:#1a3a1a;border:2px solid #1a3a1a;border-radius:6px;padding:3px 9px;letter-spacing:1px;transition:all 0.15s">確定</div>'+
-    '<div id="rr-board-rows" style="position:absolute;top:42px;left:0;right:0;bottom:8px;display:flex;flex-direction:column;justify-content:center;gap:7px;padding:0 24px"></div>';
+    '<div id="rr-board-rows" style="position:absolute;top:38px;left:0;right:0;bottom:6px;display:flex;flex-direction:column;justify-content:center;gap:5px;padding:0 24px"></div>';
   ov.appendChild(board);
   document.body.appendChild(ov);
 
@@ -10239,7 +10273,7 @@ window.showRaceReveal = function(opts, done){
     }
     var row=document.createElement('div');
     row.style.cssText='position:absolute;left:'+startLeft+'px;top:'+(lanesTop+i*laneGap)+'px;display:flex;align-items:center;gap:3px;will-change:transform;transform:translateX(0)';
-    var badge='<div class="rr-badge" style="opacity:0;transition:opacity 0.3s;width:21px;height:21px;border-radius:50%;background:'+color+';color:'+fg+';font-family:sans-serif;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);flex-shrink:0">'+(i+1)+'</div>';
+    var badge='<div class="rr-badge" style="opacity:0;transition:opacity 0.3s;width:21px;height:21px;border-radius:50%;background:'+color+';color:'+fg+';text-shadow:0 0 2px rgba(0,0,0,0.9),0 1px 1px rgba(0,0,0,0.8);font-family:sans-serif;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);flex-shrink:0">'+(i+1)+'</div>';
     var dust='<div class="rr-dust" style="font-size:11px;opacity:0;margin-left:-3px">💨</div>';
     row.innerHTML=dust+'<div class="rr-run">'+runnerHTML(color)+'</div>'+badge;
     track.appendChild(row);
@@ -12592,6 +12626,8 @@ window.leaveRoom = async function(skipConfirm){
   try{ var _owb=document.getElementById('offline-wait-banner'); if(_owb) _owb.style.display='none'; document.body.style.paddingTop=''; }catch(e){}
 
   try {
+    // presence監視を停止（これを止めないと退室後も online:true を書き戻してしまう）
+    stopPresence();
     if(window.online.unsubscribe){
       window.online.unsubscribe();
       window.online.unsubscribe = null;
