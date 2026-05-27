@@ -82,7 +82,11 @@ html.fx-active{background:#000;}
 /* 上部4ボタンの指認識範囲を拡大（見た目は40pxのまま、透明な当たり判定を上下優先で拡張・隣と重ならない範囲） */
 .menu-toggle::before,.rules-toggle::before,.score-toggle::before,.sound-toggle::before{content:'';position:absolute;top:-14px;left:-3px;right:-3px;bottom:-14px;}
 .menu-toggle:active,.rules-toggle:active,.score-toggle:active,.sound-toggle:active{box-shadow:0 1px 2px rgba(0,0,0,0.4),inset 0 1px 2px rgba(0,0,0,0.3);}
-.header h1{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:0.95rem;letter-spacing:1px;text-shadow:0 0 14px rgba(245,200,66,0.5),0 2px 4px rgba(0,0,0,0.6);}
+.header h1{font-family:'Racing Sans One',cursive;color:var(--gold);font-size:0.95rem;letter-spacing:1px;text-shadow:0 0 14px rgba(245,200,66,0.5),0 2px 4px rgba(0,0,0,0.6);white-space:nowrap;}
+@media (max-width: 390px){
+  .header{padding-left:88px;padding-right:88px;}
+  .header h1{font-size:0.84rem;letter-spacing:0.5px;}
+}
 .header .subtitle{color:#b9b9b9;font-size:0.56rem;letter-spacing:2px;}
 .panel{background:linear-gradient(160deg,rgba(253,248,237,0.93),rgba(250,243,225,0.88));backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1);border:1px solid rgba(201,150,10,0.55);border-radius:14px;padding:12px;margin:7px 10px;box-shadow:0 8px 26px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.6);}
 .panel-title{font-size:0.66rem;letter-spacing:3px;color:var(--gold-dark);font-weight:900;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1.5px solid rgba(201,150,10,0.45);}
@@ -1079,7 +1083,7 @@ body.modal-open{overflow:hidden !important;}
     </div>
     <!-- 全員揃ったら表示される公開ボタンエリア -->
     <div id="obw-reveal-area" style="display:none;margin:10px">
-      <button class="btn btn-primary" id="obw-reveal-btn" onclick="onlineReadyForReveal()" style="background:linear-gradient(135deg,#f5c842,#c9960a);font-size:1rem !important;padding:18px 10px;box-shadow:0 0 20px rgba(245,200,66,0.5);white-space:nowrap">📢 賭け公開の準備OK！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.8rem;font-weight:800;margin-left:7px">👆タップ</span></button>
+      <button class="btn btn-primary" id="obw-reveal-btn" onclick="onlineReadyForReveal()" style="background:linear-gradient(135deg,#f5c842,#c9960a);font-size:0.95rem !important;padding:16px 8px;line-height:1.4;box-shadow:0 0 20px rgba(245,200,66,0.5)">📢 賭け公開の準備OK！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.8rem;font-weight:800;margin-left:7px;white-space:nowrap;display:inline-block">👆タップ</span></button>
       <div id="obw-reveal-status" style="text-align:center;color:#aef5a0;font-size:0.9rem;margin-top:10px;font-weight:700"></div>
     </div>
     <div class="panel" style="padding:8px 10px">
@@ -1111,7 +1115,7 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel" style="background:linear-gradient(135deg,#fdf8ed,#f5edd8);border:1px solid #e0c83a"><div class="panel-title" style="color:#8a6a10">🎯 子の賭け内容</div><div id="orv-bets-list"></div></div>
     <div style="color:#f5c842;text-align:center;padding:12px;font-size:0.85rem;font-weight:700">みんなで確認したら結果発表！</div>
     <div style="margin:10px">
-      <button class="btn btn-primary" id="orv-reveal-btn" onclick="onlineReadyForResult()" style="font-size:1rem !important;padding:14px 10px;white-space:nowrap">🎊 結果発表の準備完了！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.8rem;font-weight:800;margin-left:7px">👆タップ</span></button>
+      <button class="btn btn-primary" id="orv-reveal-btn" onclick="onlineReadyForResult()" style="font-size:0.95rem !important;padding:14px 8px;line-height:1.4">🎊 結果発表の準備完了！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.8rem;font-weight:800;margin-left:7px;white-space:nowrap;display:inline-block">👆タップ</span></button>
       <div id="orv-ready-status" style="text-align:center;color:#f5c842;font-size:0.85rem;margin-top:8px"></div>
     </div>
   </div>
@@ -5806,11 +5810,11 @@ function renderFinalGraph(){
   for(let g=0;g<=GLINES;g++){
     const vv=minV+niceStep*g; const yy=y(vv);
     svg+=`<line x1="${L}" y1="${yy.toFixed(1)}" x2="${W-R}" y2="${yy.toFixed(1)}" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>`;
-    svg+=`<text x="${L-7}" y="${(yy+4).toFixed(1)}" text-anchor="end" font-size="12" fill="#999">${Math.round(vv).toLocaleString()}</text>`;
+    svg+=`<text x="${L-7}" y="${(yy+4).toFixed(1)}" text-anchor="end" font-size="12" fill="#1a1a1a" font-weight="700">${Math.round(vv).toLocaleString()}</text>`;
   }
   // X軸ラベル（R0=開始, R1.., 最終）
   for(let i=0;i<=rounds;i++){
-    svg+=`<text x="${x(i).toFixed(1)}" y="${H-9}" text-anchor="middle" font-size="12" fill="#999">${i===0?'開始':('R'+i)}</text>`;
+    svg+=`<text x="${x(i).toFixed(1)}" y="${H-9}" text-anchor="middle" font-size="12" fill="#1a1a1a" font-weight="700">${i===0?'開始':('R'+i)}</text>`;
   }
   // 折れ線
   series.forEach(s=>{
@@ -10038,14 +10042,17 @@ window.showRaceReveal = function(opts, done){
   var boardH=Math.min(170, 54+N*0+ (N>=7?150:130));
   // 掲示板高さ：着順3行ぶんをコンパクトに（SEなど小画面でも馬が隠れないよう低めに）
   var vh0 = window.innerHeight || document.documentElement.clientHeight || 720;
-  boardH = (vh0 < 700) ? 132 : 150;  // 小画面では更に低く
-  var trackBottom=boardH+18;
+  var smallScreen = (vh0 < 700);
+  boardH = smallScreen ? 112 : 144;  // 小画面では更に低く
+  var bFont = smallScreen ? 19 : 24;   // 着順ラベルの文字サイズ
+  var bNumFont = smallScreen ? 22 : 28; // 着順番号の文字サイズ
+  var trackBottom=boardH+14;
 
-  // 早送り・スキップボタン：右下に縦並び（下＝早送り、上＝スキップ）。掲示板の右上の余白に配置。
+  // 早送り・スキップボタン：掲示板の右上のすぐ上に縦並び（下＝早送り、上＝スキップ）
   window._raceFast = false;
   var ffBtn=document.createElement('button');
   ffBtn.textContent='⏩ 早送り（長押し）';
-  ffBtn.style.cssText='position:absolute;right:10px;bottom:'+(boardH+12)+'px;z-index:30;background:rgba(10,8,4,0.82);color:#ffe8a0;border:1px solid #f5c842;border-radius:18px;padding:8px 14px;font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;touch-action:none;white-space:nowrap;';
+  ffBtn.style.cssText='position:absolute;right:10px;bottom:'+(boardH+10)+'px;z-index:30;background:rgba(10,8,4,0.82);color:#ffe8a0;border:1px solid #f5c842;border-radius:18px;padding:7px 13px;font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;touch-action:none;white-space:nowrap;';
   var ffOn=function(e){ if(e&&e.preventDefault)e.preventDefault(); window._raceFast=true; ffBtn.style.background='rgba(245,200,66,0.92)'; ffBtn.style.color='#2a1a00'; };
   var ffOff=function(){ window._raceFast=false; ffBtn.style.background='rgba(10,8,4,0.82)'; ffBtn.style.color='#ffe8a0'; };
   ffBtn.addEventListener('touchstart', ffOn, {passive:false});
@@ -10058,7 +10065,7 @@ window.showRaceReveal = function(opts, done){
 
   var skipBtn=document.createElement('button');
   skipBtn.textContent='⏭ スキップ';
-  skipBtn.style.cssText='position:absolute;right:10px;bottom:'+(boardH+56)+'px;z-index:30;background:rgba(10,8,4,0.82);color:#ffe8a0;border:1px solid #f5c842;border-radius:18px;padding:8px 14px;font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;white-space:nowrap;';
+  skipBtn.style.cssText='position:absolute;right:10px;bottom:'+(boardH+50)+'px;z-index:30;background:rgba(10,8,4,0.82);color:#ffe8a0;border:1px solid #f5c842;border-radius:18px;padding:7px 13px;font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;-webkit-user-select:none;white-space:nowrap;';
   skipBtn.addEventListener('click', function(){
     try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
     try{ if(typeof finishAll==='function') finishAll(); }catch(e){ console.error('skip error', e); }
@@ -10113,13 +10120,14 @@ window.showRaceReveal = function(opts, done){
   cdWrap.appendChild(cdNum); ov.appendChild(cdWrap);
 
   // 電光掲示板
+  var headTop = smallScreen ? 28 : 38;  // 着順行の開始位置（ヘッダー下）
   var board=document.createElement('div');
   board.style.cssText='position:absolute;left:8px;right:8px;bottom:10px;height:'+boardH+'px;background:#0a0a0a;border:3px solid #2a2a2a;border-radius:9px;box-shadow:inset 0 0 0 2px #000, 0 4px 14px rgba(0,0,0,0.5);z-index:12;overflow:hidden;';
   board.innerHTML='<div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);background-size:6px 6px;pointer-events:none"></div>'+
-    '<div style="position:absolute;top:9px;left:12px;font-family:monospace;font-size:18px;font-weight:900;color:#ff3b30;text-shadow:0 0 8px rgba(255,59,48,0.8)">'+raceNo+'</div>'+
-    '<div style="position:absolute;top:10px;left:0;right:0;text-align:center;font-family:monospace;font-size:14px;letter-spacing:3px;color:#ffae00;text-shadow:0 0 8px rgba(255,174,0,0.8);font-weight:700">― 着 順 ―</div>'+
-    '<div id="rr-confirm-lamp" style="position:absolute;top:7px;right:10px;font-family:monospace;font-size:16px;font-weight:900;color:#1a3a1a;border:2px solid #1a3a1a;border-radius:6px;padding:3px 9px;letter-spacing:1px;transition:all 0.15s">確定</div>'+
-    '<div id="rr-board-rows" style="position:absolute;top:38px;left:0;right:0;bottom:6px;display:flex;flex-direction:column;justify-content:center;gap:5px;padding:0 24px"></div>';
+    '<div style="position:absolute;top:'+(smallScreen?6:9)+'px;left:12px;font-family:monospace;font-size:'+(smallScreen?15:18)+'px;font-weight:900;color:#ff3b30;text-shadow:0 0 8px rgba(255,59,48,0.8)">'+raceNo+'</div>'+
+    '<div style="position:absolute;top:'+(smallScreen?7:10)+'px;left:0;right:0;text-align:center;font-family:monospace;font-size:'+(smallScreen?12:14)+'px;letter-spacing:3px;color:#ffae00;text-shadow:0 0 8px rgba(255,174,0,0.8);font-weight:700">― 着 順 ―</div>'+
+    '<div id="rr-confirm-lamp" style="position:absolute;top:'+(smallScreen?5:7)+'px;right:10px;font-family:monospace;font-size:'+(smallScreen?13:16)+'px;font-weight:900;color:#1a3a1a;border:2px solid #1a3a1a;border-radius:6px;padding:3px 9px;letter-spacing:1px;transition:all 0.15s">確定</div>'+
+    '<div id="rr-board-rows" style="position:absolute;top:'+headTop+'px;left:0;right:0;bottom:6px;display:flex;flex-direction:column;justify-content:center;gap:'+(smallScreen?3:5)+'px;padding:0 24px"></div>';
   ov.appendChild(board);
   document.body.appendChild(ov);
 
@@ -10128,9 +10136,9 @@ window.showRaceReveal = function(opts, done){
   for(var r=1;r<=3;r++){
     var row=document.createElement('div');
     row.id='rr-brow'+r;
-    row.style.cssText='display:flex;align-items:center;gap:16px;font-family:monospace;opacity:0.18;transition:opacity 0.1s;';
-    row.innerHTML='<span style="color:#ffae00;font-size:24px;font-weight:700;width:58px;text-shadow:0 0 6px rgba(255,174,0,0.6)">'+r+'着</span>'+
-      '<span class="rr-bnum" style="color:#444;font-size:28px;font-weight:900;width:34px;text-align:center">--</span>';
+    row.style.cssText='display:flex;align-items:center;gap:'+(smallScreen?10:16)+'px;font-family:monospace;opacity:0.18;transition:opacity 0.1s;';
+    row.innerHTML='<span style="color:#ffae00;font-size:'+bFont+'px;font-weight:700;width:'+(smallScreen?46:58)+'px;text-shadow:0 0 6px rgba(255,174,0,0.6)">'+r+'着</span>'+
+      '<span class="rr-bnum" style="color:#444;font-size:'+bNumFont+'px;font-weight:900;width:34px;text-align:center">--</span>';
     boardRows.appendChild(row);
   }
 
@@ -11478,8 +11486,8 @@ function renderOnlineFinalGraph(game, players, points){
   let svg=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="font-family:sans-serif">`;
   for(let g=0;g<=GLINES;g++){ const vv=minV+niceStep*g; const yy=y(vv);
     svg+=`<line x1="${L}" y1="${yy.toFixed(1)}" x2="${W-R}" y2="${yy.toFixed(1)}" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>`;
-    svg+=`<text x="${L-7}" y="${(yy+4).toFixed(1)}" text-anchor="end" font-size="12" fill="#999">${Math.round(vv).toLocaleString()}</text>`; }
-  for(let i=0;i<=rounds;i++){ svg+=`<text x="${x(i).toFixed(1)}" y="${H-9}" text-anchor="middle" font-size="12" fill="#999">${i===0?'開始':('R'+i)}</text>`; }
+    svg+=`<text x="${L-7}" y="${(yy+4).toFixed(1)}" text-anchor="end" font-size="12" fill="#1a1a1a" font-weight="700">${Math.round(vv).toLocaleString()}</text>`; }
+  for(let i=0;i<=rounds;i++){ svg+=`<text x="${x(i).toFixed(1)}" y="${H-9}" text-anchor="middle" font-size="12" fill="#1a1a1a" font-weight="700">${i===0?'開始':('R'+i)}</text>`; }
   series.forEach(s=>{ const col=LINE[s.pi%8];
     const d=s.pts.map((v,i)=>`${i===0?'M':'L'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
     svg+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="${s.me?3.6:2.8}" stroke-linejoin="round" stroke-linecap="round"${s.me?'':' opacity="0.92"'}/>`;
