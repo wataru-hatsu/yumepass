@@ -10225,30 +10225,114 @@ window.showRaceReveal = function(opts, done){
   track.style.cssText='position:absolute;left:0;right:0;top:0;bottom:'+trackBottom+'px;z-index:5;';
   ov.appendChild(track);
 
-  // 自分が賭けた馬番号を、その馬のレーンの芝生に薄く大きく表示（オンラインのみ・opts.myBetHorses指定時）
+  // 自分が賭けた馬券を、芝生に薄く重ねて表示（オンラインのみ・opts.myBetUnits指定時）
   // わかりやすさのため。レースの仕組み・着順には一切影響しない純粋な装飾。
   try{
-    var myBetHorses = Array.isArray(opts.myBetHorses) ? opts.myBetHorses.filter(function(h){ return typeof h==='number' && h>=0 && h<N; }) : [];
-    if(myBetHorses.length){
-      var betSet={}; myBetHorses.forEach(function(h){ betSet[h]=true; });
-      for(var bi=0; bi<N; bi++){
-        if(!betSet[bi]) continue;
-        var laneY = lanesTop + bi*laneGap;
-        var mark=document.createElement('div');
-        // レーンの中央あたりの芝生に、薄い白で大きな番号を表示
-        mark.style.cssText='position:absolute;top:'+(laneY+8)+'px;left:230px;width:70px;height:70px;z-index:1;'+
-          'display:flex;align-items:center;justify-content:center;font-family:sans-serif;font-weight:900;font-size:62px;'+
-          'color:rgba(255,255,255,0.22);text-shadow:0 1px 3px rgba(0,0,0,0.15);pointer-events:none;line-height:1;';
-        mark.textContent=(bi+1);
-        ov.appendChild(mark);
+    var myBetUnits = Array.isArray(opts.myBetUnits) ? opts.myBetUnits : [];
+    if(myBetUnits.length){
+      // 定数（block1で定義されたグローバルを利用。無い場合のフォールバックも用意）
+      var _BET_NAMES = (typeof BET_NAMES!=='undefined') ? BET_NAMES : {tansho:'単勝',fukusho:'複勝',umaren:'馬連',umatan:'馬単',wide:'ワイド',sanrenfuku:'3連複',sanrentan:'3連単',rentan:'馬単',renfuku:'馬連'};
+      var _METHOD = (typeof BUY_METHOD_NAMES!=='undefined') ? BUY_METHOD_NAMES : {simple:'シンプル',box:'ボックス',formation:'フォーメーション',nagashi:'流し'};
+      var _norm = (typeof normalizeBetType==='function') ? normalizeBetType : function(t){return t;};
+      var ORDERED = {tansho:true,umatan:true,sanrentan:true,rentan:true};
+
+      // 馬番号の小さなチップ（芝生に薄く）
+      function chip(hi){
+        var col = (RCOL && RCOL[hi]) ? RCOL[hi] : '#888';
+        return '<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:'+col+';color:#fff;font-weight:900;font-size:13px;border:1.5px solid rgba(255,255,255,0.7);box-shadow:0 1px 2px rgba(0,0,0,0.3);flex-shrink:0;line-height:1">'+(hi+1)+'</span>';
       }
-      // 凡例（芝生の右上・ゴール寄りに「あなたの馬券」と小さく表示。馬や1番と重ならない位置）
-      var legend=document.createElement('div');
-      legend.style.cssText='position:absolute;top:'+(lanesTop-28)+'px;left:230px;z-index:6;font-family:sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);pointer-events:none;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,0.5);';
-      legend.textContent='🎯 芝生の数字 = あなたの馬券';
-      ov.appendChild(legend);
+      var arrowH = '<span style="color:rgba(255,255,255,0.85);font-weight:900;font-size:13px;margin:0 3px">─</span>'; // 横つなぎ
+      var dot = '<span style="color:rgba(255,255,255,0.7);margin:0 2px">・</span>';
+
+      // フォーメーション/組み合わせを「競馬新聞風の階段ツリー」でHTML化
+      // positions: [[1着候補],[2着候補],[3着候補]] を直積で展開し、前行と同じ列は省略、変わる箇所を斜め線(└)でつなぐ
+      function formationTreeHtml(positions){
+        // 直積を作る（同じ馬が複数着に来る組み合わせは除外）
+        var combos = [[]];
+        positions.forEach(function(pos){
+          var next=[];
+          combos.forEach(function(c){
+            (pos||[]).forEach(function(h){
+              if(c.indexOf(h)===-1) next.push(c.concat([h]));
+            });
+          });
+          combos=next;
+        });
+        if(!combos.length) return '';
+        // ツリー描画：各行で、前の行と同じ深さまでは空白、変わった列から表示。変わる列の頭に斜め線。
+        var prev=[];
+        var rows = combos.map(function(c, ri){
+          var cellW = 28; // チップ＋線の1列幅の目安
+          var html = '<div style="display:flex;align-items:center;height:26px">';
+          var diverged=false;
+          for(var col=0; col<c.length; col++){
+            var same = (!diverged && prev.length>col && prev[col]===c[col]);
+            if(col>0){
+              // つなぎ目：同じ値が続くなら横線、値が変わった行の最初の分岐は斜め線(└)
+              if(!same && ri>0 && prev.length>col){
+                // 段差：斜め線で表現
+                html += '<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;color:rgba(255,255,255,0.85);font-weight:900;font-size:15px">└</span>';
+                diverged=true;
+              }else{
+                html += arrowH;
+              }
+            }
+            if(same){
+              // 前行と同じ → 空白（位置合わせ）
+              html += '<span style="display:inline-block;width:22px;height:22px"></span>';
+            }else{
+              html += chip(c[col]);
+              if(ri>0 && !diverged && col>0) diverged=true;
+            }
+          }
+          html += '</div>';
+          prev=c;
+          return html;
+        }).join('');
+        return rows;
+      }
+
+      // 1ユニットを1行（または複数行）でHTML化
+      function unitHtml(u){
+        var bt = _norm(u.betType);
+        var name = _BET_NAMES[bt] || bt;
+        var method = u.buyMethod || 'simple';
+        var ordered = !!ORDERED[bt];
+        var struct = u.structure || null;
+        var label = name;
+        if(method!=='simple' && _METHOD[method]) label += '('+_METHOD[method].charAt(0)+')'; // フォ/ボ/流
+
+        var bodyHtml='';
+        if(struct && struct.kind==='formation' && Array.isArray(struct.positions)){
+          bodyHtml = formationTreeHtml(struct.positions);
+        }else if(struct && struct.kind==='box'){
+          var hs = struct.horses || u.selections || [];
+          bodyHtml = '<div style="display:flex;align-items:center;gap:3px;flex-wrap:wrap">'+hs.map(chip).join(dot)+'</div>';
+        }else if(struct && struct.kind==='nagashi'){
+          var axis = (struct.axis!=null)?[struct.axis]:[]; var opp = struct.opponents||[];
+          bodyHtml = '<div style="display:flex;align-items:center;gap:3px;flex-wrap:wrap">'+axis.map(chip).join('')+
+            '<span style="color:rgba(255,255,255,0.75);font-size:11px;margin:0 4px">流し</span>'+opp.map(chip).join(dot)+'</div>';
+        }else{
+          // シンプル
+          var sel = u.selections || [];
+          var join = ordered ? arrowH : dot;
+          bodyHtml = '<div style="display:flex;align-items:center;flex-wrap:wrap">'+sel.map(chip).join(join)+'</div>';
+        }
+        return '<div style="margin-bottom:7px">'+
+          '<div style="color:rgba(255,255,255,0.85);font-size:12px;font-weight:800;margin-bottom:2px;letter-spacing:1px">'+label+'</div>'+
+          bodyHtml+'</div>';
+      }
+
+      var listHtml = myBetUnits.map(unitHtml).join('');
+      // 芝生に薄く重ねるパネル（馬の邪魔をしない左側・トラック中央付近、半透明）
+      var panel=document.createElement('div');
+      panel.style.cssText='position:absolute;top:'+(lanesTop+2)+'px;left:130px;z-index:1;'+
+        'max-width:290px;opacity:0.62;pointer-events:none;'+
+        'font-family:sans-serif;line-height:1;';
+      panel.innerHTML='<div style="color:rgba(255,255,255,0.8);font-size:12px;font-weight:800;margin-bottom:8px;letter-spacing:1px">🎯 あなたの馬券</div>'+listHtml;
+      ov.appendChild(panel);
     }
-  }catch(e){}
+  }catch(e){ console.error('bet overlay error:', e); }
 
   // フラッシュ
   var flash=document.createElement('div');
@@ -11043,25 +11127,16 @@ function enterOnlineRoundResult(game){
     window.online._raceRevealing = roundKey; // レース演出中の目印（完了まで結果発表に進ませない）
     const _raceOrder = (Array.isArray(game.oyaResult) ? game.oyaResult : (log.oyaResult || [])).slice(0,3);
     const _raceNames = (log.topicHorses || (topic && topic.horses) || []).slice();
-    // 自分が賭けた馬番号（馬index）を集める。芝生に薄く表示してわかりやすくするため（オンラインのみ）。
-    var _myBetHorses = [];
+    // 自分が賭けた馬券（券種・買い方・組み合わせ）を集める。芝生に薄く表示してわかりやすくするため（オンラインのみ）。
+    var _myBetUnits = [];
     try{
       const myBet = (game.bets || {})[window.online.playerId];
       if(myBet && !myBet.skipped){
-        const units = Array.isArray(myBet.multiBets) ? myBet.multiBets.filter(u=>u && !u.skipped) : [myBet];
-        const setH = {};
-        units.forEach(u=>{
-          (u.selections || []).forEach(hi=>{ if(typeof hi==='number') setH[hi]=true; });
-          // box買いなどで combinations がある場合もそこから拾う
-          if(Array.isArray(u.combinations)){
-            u.combinations.forEach(combo=>{ (combo||[]).forEach(hi=>{ if(typeof hi==='number') setH[hi]=true; }); });
-          }
-        });
-        _myBetHorses = Object.keys(setH).map(k=>parseInt(k,10)).filter(n=>!isNaN(n));
+        _myBetUnits = Array.isArray(myBet.multiBets) ? myBet.multiBets.filter(u=>u && !u.skipped) : [myBet];
       }
     }catch(e){}
     if(typeof window.showRaceReveal === 'function'){
-      window.showRaceReveal({ raceNo: game.currentRound, horseNames: _raceNames, order: _raceOrder, myBetHorses: _myBetHorses }, () => { window.online._raceRevealing = null; enterOnlineRoundResult(game); });
+      window.showRaceReveal({ raceNo: game.currentRound, horseNames: _raceNames, order: _raceOrder, myBetUnits: _myBetUnits }, () => { window.online._raceRevealing = null; enterOnlineRoundResult(game); });
     } else {
       showResultCountdown(() => { window.online._raceRevealing = null; enterOnlineRoundResult(game); });
     }
