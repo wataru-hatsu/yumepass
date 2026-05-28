@@ -10225,6 +10225,31 @@ window.showRaceReveal = function(opts, done){
   track.style.cssText='position:absolute;left:0;right:0;top:0;bottom:'+trackBottom+'px;z-index:5;';
   ov.appendChild(track);
 
+  // 自分が賭けた馬番号を、その馬のレーンの芝生に薄く大きく表示（オンラインのみ・opts.myBetHorses指定時）
+  // わかりやすさのため。レースの仕組み・着順には一切影響しない純粋な装飾。
+  try{
+    var myBetHorses = Array.isArray(opts.myBetHorses) ? opts.myBetHorses.filter(function(h){ return typeof h==='number' && h>=0 && h<N; }) : [];
+    if(myBetHorses.length){
+      var betSet={}; myBetHorses.forEach(function(h){ betSet[h]=true; });
+      for(var bi=0; bi<N; bi++){
+        if(!betSet[bi]) continue;
+        var laneY = lanesTop + bi*laneGap;
+        var mark=document.createElement('div');
+        // レーンの中央あたりの芝生に、薄い白で大きな番号を表示
+        mark.style.cssText='position:absolute;top:'+(laneY+8)+'px;left:230px;width:70px;height:70px;z-index:1;'+
+          'display:flex;align-items:center;justify-content:center;font-family:sans-serif;font-weight:900;font-size:62px;'+
+          'color:rgba(255,255,255,0.22);text-shadow:0 1px 3px rgba(0,0,0,0.15);pointer-events:none;line-height:1;';
+        mark.textContent=(bi+1);
+        ov.appendChild(mark);
+      }
+      // 凡例（芝生の右上・ゴール寄りに「あなたの馬券」と小さく表示。馬や1番と重ならない位置）
+      var legend=document.createElement('div');
+      legend.style.cssText='position:absolute;top:'+(lanesTop-28)+'px;left:230px;z-index:6;font-family:sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);pointer-events:none;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,0.5);';
+      legend.textContent='🎯 芝生の数字 = あなたの馬券';
+      ov.appendChild(legend);
+    }
+  }catch(e){}
+
   // フラッシュ
   var flash=document.createElement('div');
   flash.style.cssText='position:absolute;inset:0;background:#fff;opacity:0;z-index:8;pointer-events:none;';
@@ -11018,8 +11043,25 @@ function enterOnlineRoundResult(game){
     window.online._raceRevealing = roundKey; // レース演出中の目印（完了まで結果発表に進ませない）
     const _raceOrder = (Array.isArray(game.oyaResult) ? game.oyaResult : (log.oyaResult || [])).slice(0,3);
     const _raceNames = (log.topicHorses || (topic && topic.horses) || []).slice();
+    // 自分が賭けた馬番号（馬index）を集める。芝生に薄く表示してわかりやすくするため（オンラインのみ）。
+    var _myBetHorses = [];
+    try{
+      const myBet = (game.bets || {})[window.online.playerId];
+      if(myBet && !myBet.skipped){
+        const units = Array.isArray(myBet.multiBets) ? myBet.multiBets.filter(u=>u && !u.skipped) : [myBet];
+        const setH = {};
+        units.forEach(u=>{
+          (u.selections || []).forEach(hi=>{ if(typeof hi==='number') setH[hi]=true; });
+          // box買いなどで combinations がある場合もそこから拾う
+          if(Array.isArray(u.combinations)){
+            u.combinations.forEach(combo=>{ (combo||[]).forEach(hi=>{ if(typeof hi==='number') setH[hi]=true; }); });
+          }
+        });
+        _myBetHorses = Object.keys(setH).map(k=>parseInt(k,10)).filter(n=>!isNaN(n));
+      }
+    }catch(e){}
     if(typeof window.showRaceReveal === 'function'){
-      window.showRaceReveal({ raceNo: game.currentRound, horseNames: _raceNames, order: _raceOrder }, () => { window.online._raceRevealing = null; enterOnlineRoundResult(game); });
+      window.showRaceReveal({ raceNo: game.currentRound, horseNames: _raceNames, order: _raceOrder, myBetHorses: _myBetHorses }, () => { window.online._raceRevealing = null; enterOnlineRoundResult(game); });
     } else {
       showResultCountdown(() => { window.online._raceRevealing = null; enterOnlineRoundResult(game); });
     }
