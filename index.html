@@ -590,9 +590,9 @@ body.modal-open{overflow:hidden !important;}
   </div>
   <div class="home-btns">
     <button class="btn btn-primary" onclick="goTo('screen-setup')">🐎 1台で遊ぶ（端末回す）</button>
-    <button class="btn btn-primary" onclick="goTo('screen-online-menu');checkRejoinAvailable();">🌐 オンライン対戦</button>
+    <button class="btn btn-primary" onclick="goTo('screen-online-menu')">🌐 オンライン対戦</button>
     <div id="home-rejoin-banner" style="display:none">
-      <button class="btn btn-success" onclick="goTo('screen-online-menu');checkRejoinAvailable();" style="background:linear-gradient(135deg,#1a7a1a,#0f5a0f)">↩️ 前回の対戦に復帰する</button>
+      <button class="btn btn-success" onclick="rejoinRoom()" style="background:linear-gradient(135deg,#1a7a1a,#0f5a0f)">↩️ 前回の対戦に復帰する</button>
     </div>
     <button class="btn btn-secondary" onclick="goTo('screen-topics')">📝 お題を管理する</button>
     <button class="btn btn-secondary" onclick="goTo('screen-rules')">📖 ルール確認</button>
@@ -6424,48 +6424,12 @@ window.joinRoom = async function(){
 // ============================================================
 
 // online-menu表示時に呼ばれて、復帰可能か確認
+// ※復帰はホーム画面の「↩️ 前回の対戦に復帰する」ボタンに一本化したため、
+//   オンラインメニュー内の復帰パネル(rejoin-panel)はもう表示しない（常に非表示）。
 window.checkRejoinAvailable = async function(){
-  const code = localStorage.getItem('yumepass_active_room');
-  const name = localStorage.getItem('yumepass_active_name');
   const panel = document.getElementById('rejoin-panel');
-  if(!code || !name || !panel){
-    if(panel) panel.style.display = 'none';
-    return;
-  }
-  // 既に同じ部屋に接続中なら復帰不要
-  if(window.online.roomCode === code){
-    panel.style.display = 'none';
-    return;
-  }
-  try {
-    const roomRef = ref(db, `rooms/${code}`);
-    const snap = await get(roomRef);
-    if(!snap.exists()){
-      // 部屋が消えてた → localStorageもクリア
-      localStorage.removeItem('yumepass_active_room');
-      localStorage.removeItem('yumepass_active_name');
-      panel.style.display = 'none';
-      return;
-    }
-    const roomData = snap.val();
-    const playerId = getOrCreatePlayerId();
-    // 自分のplayer情報が部屋にあるか確認
-    const myPlayer = (roomData.players || {})[playerId];
-    if(!myPlayer){
-      // 既に退室済み（誰かに完全削除された）
-      localStorage.removeItem('yumepass_active_room');
-      localStorage.removeItem('yumepass_active_name');
-      panel.style.display = 'none';
-      return;
-    }
-    // 復帰可能！パネルを表示
-    document.getElementById('rejoin-room-code').textContent = code;
-    document.getElementById('rejoin-name').textContent = myPlayer.name || name;
-    panel.style.display = '';
-  } catch(e){
-    console.error('checkRejoinAvailable error:', e);
-    panel.style.display = 'none';
-  }
+  if(panel) panel.style.display = 'none';
+  return;
 };
 
 // 復帰しないと選択
