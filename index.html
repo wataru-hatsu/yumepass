@@ -10240,12 +10240,12 @@ window.showRaceReveal = function(opts, done){
       // 何頭を着順に並べる券種か（位置ラベル用）
       var POS_COUNT = {tansho:1,fukusho:1,umaren:2,umatan:2,wide:2,sanrenfuku:3,sanrentan:3,rentan:2,renfuku:2};
 
-      // 馬番号チップ（少し大きく・くっきり）
+      // 馬番号チップ（少し大きく・くっきり、ただし数字は少し薄め）
       function chip(hi){
         var col = (RCOL && RCOL[hi]) ? RCOL[hi] : '#888';
-        return '<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:'+col+';color:#fff;font-weight:900;font-size:19px;border:2px solid rgba(255,255,255,0.6);box-shadow:0 1px 3px rgba(0,0,0,0.3);flex-shrink:0;line-height:1">'+(hi+1)+'</span>';
+        return '<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:'+col+';color:#fff;font-weight:900;font-size:19px;border:2px solid rgba(255,255,255,0.5);box-shadow:0 1px 3px rgba(0,0,0,0.25);flex-shrink:0;line-height:1;opacity:0.78">'+(hi+1)+'</span>';
       }
-      var dot = '<span style="color:rgba(255,255,255,0.6);margin:0 1px;align-self:center;font-size:18px">・</span>';
+      var dot = '<span style="color:rgba(255,255,255,0.55);margin:0 1px;align-self:center;font-size:16px">･</span>';
 
       // 1つの「着位置（ポジション）」を、ラベル＋候補チップのまとまりで表示
       function posGroup(label, horses){
@@ -10256,13 +10256,28 @@ window.showRaceReveal = function(opts, done){
           '<div style="display:flex;flex-wrap:wrap;gap:3px;justify-content:center">'+chips+'</div>'+
         '</div>';
       }
-      // 複数ポジションを横に並べ、間に区切り矢印（順序あり）または「・」（順序なし）
-      function renderPositions(positions, ordered, labels){
+      // 複数ポジションを並べる。stack=true なら縦に改行して積む（フォーメーション用）
+      // 区切りは順序あり=⇨、順序なし=･
+      function renderPositions(positions, ordered, labels, stack){
+        var sepChar = ordered ? '⇨' : '･';
+        if(stack){
+          // 縦並び：各ポジションを1行ずつ、行頭に矢印（2行目以降）
+          return '<div style="display:flex;flex-direction:column;gap:3px">'+
+            positions.map(function(g, gi){
+              var lbl = labels ? (labels[gi]||'') : '';
+              var arrow = (gi>0)
+                ? '<span style="display:inline-flex;align-items:center;color:rgba(255,255,255,0.65);font-weight:900;font-size:17px;margin-right:4px">'+sepChar+'</span>'
+                : '<span style="display:inline-block;width:21px"></span>';
+              return '<div style="display:flex;align-items:center">'+arrow+posGroup(lbl, g)+'</div>';
+            }).join('')+
+          '</div>';
+        }
+        // 横並び
         return '<div style="display:flex;align-items:stretch;flex-wrap:wrap;gap:1px">'+
           positions.map(function(g, gi){
             var lbl = labels ? (labels[gi]||'') : '';
             var sep = (gi < positions.length-1)
-              ? '<span style="display:flex;align-items:center;color:rgba(255,255,255,0.7);font-weight:900;font-size:17px;margin:0 2px">'+(ordered?'▶':'・')+'</span>'
+              ? '<span style="display:flex;align-items:center;color:rgba(255,255,255,0.65);font-weight:900;font-size:17px;margin:0 3px">'+sepChar+'</span>'
               : '';
             return posGroup(lbl, g) + sep;
           }).join('')+
@@ -10290,10 +10305,11 @@ window.showRaceReveal = function(opts, done){
         if(struct && struct.kind==='box'){
           // ★ボックスは1行で（着位置ごとに同じ候補を並べない）。「選んだ馬すべて」を1グループ表示。
           var hs = (struct.horses || u.selections || []).slice();
-          bodyHtml = renderPositions([hs], false, null);
+          bodyHtml = renderPositions([hs], false, null, false);
         }else if(struct && struct.kind==='formation' && Array.isArray(struct.positions)){
           var positions = struct.positions.map(function(a){ return (a||[]).slice(); });
-          bodyHtml = renderPositions(positions, ordered, posLabels);
+          // フォーメーションは改行（縦並び）でわかりやすく
+          bodyHtml = renderPositions(positions, ordered, posLabels, true);
         }else if(struct && struct.kind==='nagashi'){
           var axis = (struct.axis!=null) ? [struct.axis] : [];
           var opp = (struct.opponents||[]).slice();
@@ -10305,20 +10321,20 @@ window.showRaceReveal = function(opts, done){
             positions2.push(axis.slice());
             positions2.push(opp.slice());
           }
-          // 流しは軸ラベル＋相手ラベル
+          // 流しは軸ラベル＋相手ラベル。候補が多いので縦並び
           var nLabels = ordered ? posLabels : null;
-          bodyHtml = renderPositions(positions2, ordered, nLabels);
+          bodyHtml = renderPositions(positions2, ordered, nLabels, true);
         }else{
           // シンプル
           var sel = (u.selections||[]).slice();
           if(ordered){
-            bodyHtml = renderPositions(sel.map(function(h){ return [h]; }), true, posLabels);
+            bodyHtml = renderPositions(sel.map(function(h){ return [h]; }), true, posLabels, false);
           }else{
-            bodyHtml = renderPositions([sel], false, null);
+            bodyHtml = renderPositions([sel], false, null, false);
           }
         }
-        return '<div class="rr-bet-unit" style="margin-bottom:10px">'+
-          '<div style="color:rgba(255,255,255,0.82);font-size:16px;font-weight:800;margin-bottom:4px;letter-spacing:1px">'+label+'</div>'+
+        return '<div class="rr-bet-unit" style="margin-bottom:16px">'+
+          '<div style="color:rgba(255,255,255,0.85);font-size:18px;font-weight:800;margin-bottom:5px;letter-spacing:1px">'+label+'</div>'+
           bodyHtml+'</div>';
       }
 
@@ -10327,7 +10343,7 @@ window.showRaceReveal = function(opts, done){
       panel.style.cssText='position:absolute;top:'+(lanesTop+2)+'px;left:120px;z-index:1;'+
         'max-width:380px;opacity:0.4;pointer-events:none;'+
         'font-family:sans-serif;line-height:1;';
-      panel.innerHTML='<div id="rr-bet-head" style="color:rgba(255,255,255,0.78);font-size:16px;font-weight:800;margin-bottom:10px;letter-spacing:1px">🎯 あなたの馬券</div>';
+      panel.innerHTML='<div id="rr-bet-head" style="color:rgba(255,255,255,0.82);font-size:18px;font-weight:800;margin-bottom:12px;letter-spacing:1px">🎯 あなたの馬券</div>';
       // 電光掲示板に隠れない高さの上限（ステージ内で、掲示板上端より少し上まで）
       var maxBottom = boardTop - 10; // 掲示板の上端の少し上
       var addedUnits = 0;
