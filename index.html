@@ -10227,7 +10227,9 @@ window.showRaceReveal = function(opts, done){
 
   // 自分が賭けた馬券を、芝生に薄く重ねて表示（オンラインのみ・opts.myBetUnits指定時）
   // わかりやすさのため。レースの仕組み・着順には一切影響しない純粋な装飾。
-  try{
+  // ※offsetHeightで高さ判定するため、ov が body に append された後で呼ぶ（下の document.body.appendChild 後）
+  function renderBetOverlay(){
+   try{
     var myBetUnits = Array.isArray(opts.myBetUnits) ? opts.myBetUnits : [];
     if(myBetUnits.length){
       // 定数（block1で定義されたグローバルを利用。無い場合のフォールバックも用意）
@@ -10238,36 +10240,42 @@ window.showRaceReveal = function(opts, done){
       // 何頭を着順に並べる券種か（位置ラベル用）
       var POS_COUNT = {tansho:1,fukusho:1,umaren:2,umatan:2,wide:2,sanrenfuku:3,sanrentan:3,rentan:2,renfuku:2};
 
-      // 馬番号の小さなチップ（芝生に薄く）
+      // 馬番号チップ（少し大きく・くっきり）
       function chip(hi){
         var col = (RCOL && RCOL[hi]) ? RCOL[hi] : '#888';
-        return '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:'+col+';color:#fff;font-weight:900;font-size:17px;border:2px solid rgba(255,255,255,0.55);box-shadow:0 1px 2px rgba(0,0,0,0.25);flex-shrink:0;line-height:1">'+(hi+1)+'</span>';
+        return '<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:'+col+';color:#fff;font-weight:900;font-size:19px;border:2px solid rgba(255,255,255,0.6);box-shadow:0 1px 3px rgba(0,0,0,0.3);flex-shrink:0;line-height:1">'+(hi+1)+'</span>';
       }
-      var dot = '<span style="color:rgba(255,255,255,0.6);margin:0 1px;align-self:center">・</span>';
+      var dot = '<span style="color:rgba(255,255,255,0.6);margin:0 1px;align-self:center;font-size:18px">・</span>';
 
       // 1つの「着位置（ポジション）」を、ラベル＋候補チップのまとまりで表示
       function posGroup(label, horses){
         var chips = (horses||[]).map(chip).join(dot);
         return '<div style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;'+
-          'background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.18);border-radius:9px;padding:5px 8px;margin:0 3px 0 0">'+
-          (label?'<div style="color:rgba(255,255,255,0.7);font-size:12px;font-weight:700">'+label+'</div>':'')+
+          'border-radius:9px;padding:2px 4px;margin:0 2px 0 0">'+
+          (label?'<div style="color:rgba(255,255,255,0.7);font-size:14px;font-weight:700">'+label+'</div>':'')+
           '<div style="display:flex;flex-wrap:wrap;gap:3px;justify-content:center">'+chips+'</div>'+
         '</div>';
       }
       // 複数ポジションを横に並べ、間に区切り矢印（順序あり）または「・」（順序なし）
       function renderPositions(positions, ordered, labels){
-        return '<div style="display:flex;align-items:stretch;flex-wrap:wrap;gap:2px">'+
+        return '<div style="display:flex;align-items:stretch;flex-wrap:wrap;gap:1px">'+
           positions.map(function(g, gi){
             var lbl = labels ? (labels[gi]||'') : '';
             var sep = (gi < positions.length-1)
-              ? '<span style="display:flex;align-items:center;color:rgba(255,255,255,0.7);font-weight:900;font-size:16px;margin:0 2px">'+(ordered?'▶':'・')+'</span>'
+              ? '<span style="display:flex;align-items:center;color:rgba(255,255,255,0.7);font-weight:900;font-size:17px;margin:0 2px">'+(ordered?'▶':'・')+'</span>'
               : '';
             return posGroup(lbl, g) + sep;
           }).join('')+
         '</div>';
       }
 
-      // 1ユニットをHTML化（フォーメーション・ボックス・流し・シンプルすべてポジション形式に統一）
+      // ユニットの通り数（combinations.length があればそれ、なければ1）
+      function comboCount(u){
+        if(Array.isArray(u.combinations)) return u.combinations.length;
+        return 1;
+      }
+
+      // 1ユニットをHTML化（フォーメーション・流し・シンプルはポジション形式、ボックスは1行）
       function unitHtml(u){
         var bt = _norm(u.betType);
         var name = _BET_NAMES[bt] || bt;
@@ -10275,58 +10283,83 @@ window.showRaceReveal = function(opts, done){
         var ordered = !!ORDERED[bt];
         var struct = u.structure || null;
         var pc = POS_COUNT[bt] || (u.selections ? u.selections.length : 1);
-        // 正式名称でラベル表示（略さない）
         var label = name + (method!=='simple' && _METHOD[method] ? '（'+_METHOD[method]+'）' : '');
-        // 着位置ラベル（順序あり=1着/2着/3着、順序なし=ラベルなし）
         var posLabels = ordered ? ['1着','2着','3着'].slice(0,pc) : null;
 
-        var positions = null;
-        if(struct && struct.kind==='formation' && Array.isArray(struct.positions)){
-          positions = struct.positions.map(function(a){ return (a||[]).slice(); });
-        }else if(struct && struct.kind==='box'){
-          // ボックス：選んだ馬を各着位置すべての候補とする（pc段に同じ候補を並べる）
+        var bodyHtml='';
+        if(struct && struct.kind==='box'){
+          // ★ボックスは1行で（着位置ごとに同じ候補を並べない）。「選んだ馬すべて」を1グループ表示。
           var hs = (struct.horses || u.selections || []).slice();
-          positions = [];
-          for(var k=0;k<pc;k++) positions.push(hs.slice());
+          bodyHtml = renderPositions([hs], false, null);
+        }else if(struct && struct.kind==='formation' && Array.isArray(struct.positions)){
+          var positions = struct.positions.map(function(a){ return (a||[]).slice(); });
+          bodyHtml = renderPositions(positions, ordered, posLabels);
         }else if(struct && struct.kind==='nagashi'){
-          // 流し：軸＋相手。着順ありなら軸を1着、相手を残りの着位置候補に
           var axis = (struct.axis!=null) ? [struct.axis] : [];
           var opp = (struct.opponents||[]).slice();
-          positions = [];
+          var positions2 = [];
           if(ordered){
-            positions.push(axis.slice());
-            for(var k2=1;k2<pc;k2++) positions.push(opp.slice());
+            positions2.push(axis.slice());
+            for(var k2=1;k2<pc;k2++) positions2.push(opp.slice());
           }else{
-            positions.push(axis.slice());
-            positions.push(opp.slice());
+            positions2.push(axis.slice());
+            positions2.push(opp.slice());
           }
+          // 流しは軸ラベル＋相手ラベル
+          var nLabels = ordered ? posLabels : null;
+          bodyHtml = renderPositions(positions2, ordered, nLabels);
         }else{
-          // シンプル：1点を着順付きで
+          // シンプル
           var sel = (u.selections||[]).slice();
           if(ordered){
-            positions = sel.map(function(h){ return [h]; });
+            bodyHtml = renderPositions(sel.map(function(h){ return [h]; }), true, posLabels);
           }else{
-            positions = [sel];
-            posLabels = null;
+            bodyHtml = renderPositions([sel], false, null);
           }
         }
-
-        var bodyHtml = renderPositions(positions, ordered, posLabels);
-        return '<div style="margin-bottom:9px">'+
-          '<div style="color:rgba(255,255,255,0.78);font-size:14px;font-weight:800;margin-bottom:4px;letter-spacing:1px">'+label+'</div>'+
+        return '<div class="rr-bet-unit" style="margin-bottom:10px">'+
+          '<div style="color:rgba(255,255,255,0.82);font-size:16px;font-weight:800;margin-bottom:4px;letter-spacing:1px">'+label+'</div>'+
           bodyHtml+'</div>';
       }
 
-      var listHtml = myBetUnits.map(unitHtml).join('');
-      // 芝生に薄く重ねるパネル（馬の邪魔をしない位置・半透明）
+      // 芝生に薄く重ねるパネル（馬の邪魔をしない位置・半透明・クリア）
       var panel=document.createElement('div');
       panel.style.cssText='position:absolute;top:'+(lanesTop+2)+'px;left:120px;z-index:1;'+
-        'max-width:380px;opacity:0.42;pointer-events:none;'+
+        'max-width:380px;opacity:0.4;pointer-events:none;'+
         'font-family:sans-serif;line-height:1;';
-      panel.innerHTML='<div style="color:rgba(255,255,255,0.72);font-size:14px;font-weight:800;margin-bottom:10px;letter-spacing:1px">🎯 あなたの馬券</div>'+listHtml;
+      panel.innerHTML='<div id="rr-bet-head" style="color:rgba(255,255,255,0.78);font-size:16px;font-weight:800;margin-bottom:10px;letter-spacing:1px">🎯 あなたの馬券</div>';
+      // 電光掲示板に隠れない高さの上限（ステージ内で、掲示板上端より少し上まで）
+      var maxBottom = boardTop - 10; // 掲示板の上端の少し上
+      var addedUnits = 0;
+      var hiddenCombos = 0;
       ov.appendChild(panel);
+      // 1つずつ追加して、はみ出したら止める
+      for(var ui=0; ui<myBetUnits.length; ui++){
+        var u = myBetUnits[ui];
+        var tmp = document.createElement('div');
+        tmp.innerHTML = unitHtml(u);
+        var node = tmp.firstChild;
+        panel.appendChild(node);
+        // パネル下端がmaxBottomを超えたら、この馬券は隠れる → 取り除いて残りを集計
+        var panelBottomInStage = (lanesTop+2) + panel.offsetHeight;
+        if(panelBottomInStage > maxBottom && addedUnits > 0){
+          panel.removeChild(node);
+          // 残り（この馬券含む）の通り数を合算
+          for(var rj=ui; rj<myBetUnits.length; rj++){ hiddenCombos += comboCount(myBetUnits[rj]); }
+          break;
+        }
+        addedUnits++;
+      }
+      // 隠れた分があれば「…ほか N通り」を表示
+      if(hiddenCombos > 0){
+        var more=document.createElement('div');
+        more.style.cssText='color:rgba(255,255,255,0.85);font-size:15px;font-weight:800;margin-top:2px;letter-spacing:1px';
+        more.textContent='…ほか '+hiddenCombos+'通り';
+        panel.appendChild(more);
+      }
     }
   }catch(e){ console.error('bet overlay error:', e); }
+  }
 
   // フラッシュ
   var flash=document.createElement('div');
@@ -10350,6 +10383,9 @@ window.showRaceReveal = function(opts, done){
     '<div id="rr-board-rows" style="position:absolute;top:'+headTop+'px;left:0;right:0;bottom:10px;display:flex;flex-direction:column;justify-content:center;gap:0px;padding:0 28px"></div>';
   ov.appendChild(board);
   document.body.appendChild(ovFrame);
+
+  // 馬券オーバーレイは ov が body に接続された後で描画（offsetHeightで掲示板はみ出し判定するため）
+  try{ renderBetOverlay(); }catch(e){ console.error('renderBetOverlay call error:', e); }
 
   var confirmLamp=board.querySelector('#rr-confirm-lamp');
   var boardRows=board.querySelector('#rr-board-rows');
