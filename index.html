@@ -10240,12 +10240,12 @@ window.showRaceReveal = function(opts, done){
       // 何頭を着順に並べる券種か（位置ラベル用）
       var POS_COUNT = {tansho:1,fukusho:1,umaren:2,umatan:2,wide:2,sanrenfuku:3,sanrentan:3,rentan:2,renfuku:2};
 
-      // 馬番号チップ（少し大きく・くっきり、ただし数字は少し薄め）
+      // 馬番号チップ（大きく・くっきり、数字は少し薄め）
       function chip(hi){
         var col = (RCOL && RCOL[hi]) ? RCOL[hi] : '#888';
-        return '<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:'+col+';color:#fff;font-weight:900;font-size:19px;border:2px solid rgba(255,255,255,0.5);box-shadow:0 1px 3px rgba(0,0,0,0.25);flex-shrink:0;line-height:1;opacity:0.78">'+(hi+1)+'</span>';
+        return '<span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:'+col+';color:#fff;font-weight:900;font-size:21px;border:2px solid rgba(255,255,255,0.5);box-shadow:0 1px 3px rgba(0,0,0,0.25);flex-shrink:0;line-height:1;opacity:0.78">'+(hi+1)+'</span>';
       }
-      var dot = '<span style="color:rgba(255,255,255,0.55);margin:0 1px;align-self:center;font-size:16px">･</span>';
+      var dot = '<span style="color:rgba(255,255,255,0.55);margin:0 1px;align-self:center;font-size:18px">･</span>';
 
       // 1つの「着位置（ポジション）」を、ラベル＋候補チップのまとまりで表示
       // leftAlign=true なら左寄せ（縦並び・フォーメーション用に列を揃える）
@@ -10255,24 +10255,24 @@ window.showRaceReveal = function(opts, done){
         var justifyChips = leftAlign ? 'flex-start' : 'center';
         return '<div style="display:inline-flex;flex-direction:column;align-items:'+alignItems+';gap:2px;'+
           'border-radius:9px;padding:2px 4px;margin:0 2px 0 0">'+
-          (label?'<div style="color:rgba(255,255,255,0.7);font-size:14px;font-weight:700">'+label+'</div>':'')+
+          (label?'<div style="color:rgba(255,255,255,0.72);font-size:15px;font-weight:700">'+label+'</div>':'')+
           '<div style="display:flex;flex-wrap:wrap;gap:3px;justify-content:'+justifyChips+'">'+chips+'</div>'+
         '</div>';
       }
-      // 複数ポジションを並べる。stack=true なら縦に改行して積む（フォーメーション用）
-      // 区切りは順序あり=➡（半角風に幅を詰める）、順序なし=･
-      var ARROW_W = 24; // 矢印・空白の固定幅（列揃え用）
+      // 矢印・空白の固定幅（全券種で列揃え用）
+      var ARROW_W = 26;
       function arrowSpan(show, sepChar){
         if(show){
-          return '<span style="display:inline-flex;align-items:center;justify-content:center;width:'+ARROW_W+'px;color:rgba(255,255,255,0.7);font-weight:900;font-size:16px;flex-shrink:0">'+sepChar+'</span>';
+          return '<span style="display:inline-flex;align-items:center;justify-content:center;width:'+ARROW_W+'px;color:rgba(255,255,255,0.7);font-weight:900;font-size:17px;flex-shrink:0;margin-top:7px">'+sepChar+'</span>';
         }
         return '<span style="display:inline-block;width:'+ARROW_W+'px;flex-shrink:0"></span>';
       }
+      // 複数ポジションを並べる。
+      // すべての行で先頭に固定幅スペース/矢印を置き、券種をまたいでチップ左端を揃える。
       function renderPositions(positions, ordered, labels, stack){
         var sepChar = ordered ? '➡' : '･';
         if(stack){
           // 縦並び：各ポジションを1行ずつ。行頭に矢印（2行目以降）か空白（1行目）。
-          // ラベルもチップも左寄せにして、行間で左端を揃える。
           return '<div style="display:flex;flex-direction:column;gap:4px">'+
             positions.map(function(g, gi){
               var lbl = labels ? (labels[gi]||'') : '';
@@ -10280,28 +10280,21 @@ window.showRaceReveal = function(opts, done){
             }).join('')+
           '</div>';
         }
-        // 横並び
-        return '<div style="display:flex;align-items:stretch;flex-wrap:wrap;gap:1px">'+
-          positions.map(function(g, gi){
-            var lbl = labels ? (labels[gi]||'') : '';
-            var sep = (gi < positions.length-1)
-              ? '<span style="display:flex;align-items:center;color:rgba(255,255,255,0.7);font-weight:900;font-size:16px;margin:0 3px">'+sepChar+'</span>'
-              : '';
-            return posGroup(lbl, g, false) + sep;
-          }).join('')+
-        '</div>';
+        // 横並び：先頭に空白スペースを置いて（縦並び券種と左端を揃える）、グループ間に区切り
+        var inner = positions.map(function(g, gi){
+          var lbl = labels ? (labels[gi]||'') : '';
+          var sep = (gi < positions.length-1)
+            ? '<span style="display:flex;align-items:center;color:rgba(255,255,255,0.7);font-weight:900;font-size:17px;margin:0 3px">'+sepChar+'</span>'
+            : '';
+          return posGroup(lbl, g, true) + sep;
+        }).join('');
+        return '<div style="display:flex;align-items:center;flex-wrap:wrap">'+arrowSpan(false,'')+inner+'</div>';
       }
-      // 流し専用の縦並び描画：軸（固定）→ ➖ → 相手...
+      // 流し専用の縦並び描画：軸（固定）→ 相手...
       function renderNagashi(axis, opp, axisPosLabel){
         var rows = [];
-        // 軸：ラベル「○位固定」、行頭は空白
         var axisLbl = axisPosLabel ? (axisPosLabel+'（固定）') : '軸（固定）';
         rows.push('<div style="display:flex;align-items:center">'+arrowSpan(false,'')+posGroup(axisLbl, axis, true)+'</div>');
-        // 軸の下に「➖」（矢印と同じ幅・位置）
-        rows.push('<div style="display:flex;align-items:center">'+
-          '<span style="display:inline-flex;align-items:center;justify-content:center;width:'+ARROW_W+'px;color:rgba(255,255,255,0.6);font-weight:900;font-size:16px;flex-shrink:0">➖</span>'+
-        '</div>');
-        // 相手：行頭に ➡
         rows.push('<div style="display:flex;align-items:center">'+arrowSpan(true,'➡')+posGroup('相手', opp, true)+'</div>');
         return '<div style="display:flex;flex-direction:column;gap:4px">'+rows.join('')+'</div>';
       }
@@ -10348,7 +10341,7 @@ window.showRaceReveal = function(opts, done){
           }
         }
         return '<div class="rr-bet-unit" style="margin-bottom:16px">'+
-          '<div style="color:rgba(255,255,255,0.85);font-size:18px;font-weight:800;margin-bottom:5px;letter-spacing:1px">'+label+'</div>'+
+          '<div style="color:rgba(255,255,255,0.85);font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:1px">'+label+'</div>'+
           bodyHtml+'</div>';
       }
 
@@ -10357,7 +10350,7 @@ window.showRaceReveal = function(opts, done){
       panel.style.cssText='position:absolute;top:'+(lanesTop+2)+'px;left:120px;z-index:1;'+
         'max-width:380px;opacity:0.4;pointer-events:none;'+
         'font-family:sans-serif;line-height:1;';
-      panel.innerHTML='<div id="rr-bet-head" style="color:rgba(255,255,255,0.82);font-size:18px;font-weight:800;margin-bottom:12px;letter-spacing:1px">🎯 あなたの馬券</div>';
+      panel.innerHTML='<div id="rr-bet-head" style="color:rgba(255,255,255,0.82);font-size:20px;font-weight:800;margin-bottom:12px;letter-spacing:1px">🎯 あなたの馬券</div>';
       // 電光掲示板に隠れない高さの上限（ステージ内で、掲示板上端より少し上まで）
       var maxBottom = boardTop - 10; // 掲示板の上端の少し上
       var addedUnits = 0;
@@ -10485,7 +10478,7 @@ window.showRaceReveal = function(opts, done){
 
   function runnerHTML(color){
     var dk=darken(color), skin='#ffe0c0';
-    var jk='<svg width="39" height="45" viewBox="0 0 54 64" style="position:absolute;left:7px;top:-2px;z-index:3;overflow:visible;transform:scaleX(-1);transform-origin:center">'
+    var jk='<svg width="47" height="54" viewBox="0 0 54 64" style="position:absolute;left:9px;top:-2px;z-index:3;overflow:visible;transform:scaleX(-1);transform-origin:center">'
       +'<g class="rr-legB" style="transform-origin:24px 42px"><path d="M22 40 Q18 48 22 55 L26 54 Q24 47 27 41 Z" fill="'+dk+'"/><ellipse cx="22" cy="56" rx="4.4" ry="2.8" fill="#241810"/></g>'
       +'<g class="rr-legA" style="transform-origin:30px 42px"><path d="M28 40 Q30 50 27 58 L32 58 Q34 49 33 41 Z" fill="'+color+'"/><ellipse cx="29" cy="59" rx="4.6" ry="2.9" fill="#3a2616"/></g>'
       +'<ellipse cx="26" cy="36" rx="11" ry="9" fill="'+color+'" stroke="rgba(255,255,255,0.55)" stroke-width="1" transform="rotate(-8 26 36)"/>'
@@ -10499,7 +10492,7 @@ window.showRaceReveal = function(opts, done){
       +'<path d="M32 23.6 Q34.5 25.8 37 23.6" stroke="#c0604a" stroke-width="1.1" fill="none" stroke-linecap="round"/>'
       +'<path d="M25 18 Q26 10 34 10 Q42 10 42 18 Q34 15.5 25 18 Z" fill="'+color+'" stroke="#fff" stroke-width="1.1"/>'
       +'<ellipse cx="32" cy="12.5" rx="3" ry="1.6" fill="rgba(255,255,255,0.35)"/><rect x="39" y="16.5" width="6" height="2.5" rx="1.25" fill="'+dk+'"/></svg>';
-    return '<div style="position:relative;width:55px;height:57px;transform:scaleX(-1)"><div style="position:absolute;left:0;bottom:0;font-size:43px;line-height:1">🐎</div>'+jk+'</div>';
+    return '<div style="position:relative;width:66px;height:68px;transform:scaleX(-1)"><div style="position:absolute;left:0;bottom:0;font-size:52px;line-height:1">🐎</div>'+jk+'</div>';
   }
 
   // ---- 馬の生成 ----
@@ -10566,9 +10559,9 @@ window.showRaceReveal = function(opts, done){
       h.surgeAt=0.45+Math.random()*0.3;
     }
     var row=document.createElement('div');
-    row.style.cssText='position:absolute;left:'+startLeft+'px;top:'+(lanesTop+i*laneGap)+'px;display:flex;align-items:center;gap:3px;will-change:transform;transform:translateX(0)';
-    var badge='<div class="rr-badge" style="opacity:0;transition:opacity 0.3s;width:27px;height:27px;border-radius:50%;background:'+color+';color:'+fg+';text-shadow:0 0 2px rgba(0,0,0,0.9),0 1px 1px rgba(0,0,0,0.8);font-family:sans-serif;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);flex-shrink:0">'+(i+1)+'</div>';
-    var dust='<div class="rr-dust" style="font-size:14px;opacity:0;margin-left:-3px">💨</div>';
+    row.style.cssText='position:absolute;left:'+startLeft+'px;top:'+(lanesTop+i*laneGap+10)+'px;display:flex;align-items:center;gap:3px;will-change:transform;transform:translateX(0)';
+    var badge='<div class="rr-badge" style="opacity:0;transition:opacity 0.3s;width:30px;height:30px;border-radius:50%;background:'+color+';color:'+fg+';text-shadow:0 0 2px rgba(0,0,0,0.9),0 1px 1px rgba(0,0,0,0.8);font-family:sans-serif;font-weight:900;font-size:17px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);flex-shrink:0">'+(i+1)+'</div>';
+    var dust='<div class="rr-dust" style="font-size:16px;opacity:0;margin-left:-3px">💨</div>';
     row.innerHTML=dust+'<div class="rr-run">'+runnerHTML(color)+'</div>'+badge;
     track.appendChild(row);
     h.el=row; h.runEl=row.querySelector('.rr-run'); h.dustEl=row.querySelector('.rr-dust'); h.badgeEl=row.querySelector('.rr-badge');
