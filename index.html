@@ -10496,7 +10496,7 @@ window.showRaceReveal = function(opts, done){
   }
 
   // ---- 馬の生成 ----
-  var startLeft=-25;
+  var startLeft=-38;
   var horses=[];
   // 着順: order[0]=1着, order[1]=2着, order[2]=3着。残りは4着以降（ランダム順）。
   var rankOfHorse={}; // horseIndex -> finalRank(1..N)
@@ -10582,7 +10582,7 @@ window.showRaceReveal = function(opts, done){
     tmo(function(){ gate.style.opacity='0.2'; }, 250); }
   function flashShake(strong){ flash.style.transition='opacity 0.12s'; flash.style.opacity= strong?'0.5':'0.35';
     tmo(function(){ flash.style.transition='opacity 0.35s'; flash.style.opacity='0'; },110);
-    var d=strong?5:3; ov.animate([{transform:'translateX(0)'},{transform:'translateX(-'+d+'px)'},{transform:'translateX('+d+'px)'},{transform:'translateX(0)'}],{duration:170}); }
+    /* 画面の揺れ（translateX振動）は廃止。視覚的に揺らさず、音とフラッシュのみで演出する。 */ }
   function lightConfirm(){ fanfare(); var b=0;
     var iv=setInterval(function(){ b++; var on=(b%2===1);
       confirmLamp.style.color=on?'#39ff6a':'#1a3a1a'; confirmLamp.style.borderColor=on?'#39ff6a':'#1a3a1a'; confirmLamp.style.boxShadow=on?'0 0 14px rgba(57,255,106,0.9)':'none';
