@@ -1123,6 +1123,8 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel" style="background:linear-gradient(135deg,#0e2452,#16346e);border:1px solid #3a6ad0"><div id="orv-oya-block"></div></div>
     <!-- 子パネル（下）クリーム -->
     <div class="panel" style="background:linear-gradient(135deg,#fdf8ed,#f5edd8);border:1px solid #e0c83a"><div class="panel-title" style="color:#8a6a10">🎯 子の賭け内容</div><div id="orv-bets-list"></div></div>
+    <!-- スコアパネル（全員の賭け額を引いた現在地） -->
+    <div class="panel" style="background:linear-gradient(135deg,#1a2a4a,#0e1f3a);border:1px solid #4a6aa0"><div class="panel-title" style="color:#9ec1ff">💰 現在の得点状況（賭け後）</div><table class="score-table" id="orv-score-table"></table></div>
     <div style="color:#f5c842;text-align:center;padding:12px;font-size:0.85rem;font-weight:700">みんなで確認したら結果発表！</div>
     <div style="margin:10px">
       <button class="btn btn-primary" id="orv-reveal-btn" onclick="onlineReadyForResult()" style="font-size:1rem !important;padding:14px 10px;white-space:nowrap">🎊 結果発表の準備完了！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.8rem;font-weight:800;margin-left:7px">👆タップ</span></button>
@@ -6998,7 +7000,8 @@ function onGameStateUpdate(game){
         updateBetWaitRevealButton(game);
       }
       // 点数テーブルを最新化（game.pointsが更新された時に確実に反映するため）
-      try{ if(document.getElementById('ob-score-table')) renderOnlineScoreTable('ob-score-table', game); }catch(e){}
+      // 賭け画面では自分の賭け額を引いて表示（showBetDeduction:true）
+      try{ if(document.getElementById('ob-score-table')) renderOnlineScoreTable('ob-score-table', game, {showBetDeduction:true}); }catch(e){}
       try{ if(document.getElementById('obw-score-table')) renderOnlineScoreTable('obw-score-table', game, {showBetDeduction:true}); }catch(e){}
     }
     // 全員入力完了チェック → 公開ボタン表示 → 全員ボタン押下 → reveal遷移
@@ -7010,6 +7013,8 @@ function onGameStateUpdate(game){
   if(game.phase === 'reveal' && document.getElementById('screen-online-reveal').classList.contains('active')){
     updateRevealReadyStatus(game);
     checkAllReadyForResult();
+    // 賭け公開画面の点数表もgame.pointsやbets変化に追従して更新
+    try{ if(document.getElementById('orv-score-table')) renderOnlineScoreTable('orv-score-table', game, {showAllBetsDeducted:true}); }catch(e){}
   }
   if(game.phase === 'result' && !document.getElementById('screen-online-roundresult').classList.contains('active')){
     enterOnlineRoundResult(game);
@@ -8048,8 +8053,8 @@ function enterOnlineBetting(game){
     document.getElementById('ob-ko-area').style.display = '';
     document.getElementById('ob-oya-area').style.display = 'none';
     document.getElementById('ob-my-label').textContent = '🎯 子 — 賭け';
-    // 得点表
-    renderOnlineScoreTable('ob-score-table', game);
+    // 得点表（賭けフェーズなので自分の賭け額を引いて表示）
+    renderOnlineScoreTable('ob-score-table', game, {showBetDeduction:true});
     // 倍率表示更新
     updateOnlineBetTypeLabels();
     // 馬グリッド初期描画（単勝）
@@ -8610,6 +8615,7 @@ function setOnlineBetInputVal(v){
     const d = document.getElementById('ob-bet-display');
     if(d){ d.innerHTML = _topHint + _start.toLocaleString() + ' 点' + `<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:var(--gold);font-weight:800;letter-spacing:0;opacity:0.95">所持 0点</div>`; d.style.color = '#ff5a5a'; }
     if (typeof updateOnlineComboInfo === 'function') updateOnlineComboInfo();
+    if (typeof refreshBetScoreTable === 'function') refreshBetScoreTable();
     return;
   }
   window.onlineBet.betInputVal = v;
@@ -8640,6 +8646,8 @@ function setOnlineBetInputVal(v){
   } catch(e){}
   // 組み合わせ情報も更新
   if (typeof updateOnlineComboInfo === 'function') updateOnlineComboInfo();
+  // 賭け入力に応じてスコア表（自分の賭け後点数）を即時更新
+  if (typeof refreshBetScoreTable === 'function') refreshBetScoreTable();
 }
 
 function renderOnlineKeypad(maxPoints){
@@ -8850,6 +8858,7 @@ window.onlineAddBetToCart = function(){
   window.onlineBet.cart.push(unit);
   resetOnlineBetBuilder();
   renderOnlineCart();
+  if (typeof refreshBetScoreTable === 'function') refreshBetScoreTable();
   showNotif('✅ カートに追加しました');
   scrollActiveScreenToBottom();
 };
@@ -8868,6 +8877,7 @@ window.onlineRemoveCartItem = function(idx){
     const myPoints = (game?.points && game.points[window.online.playerId]) || 0;
     const remaining = Math.max(0, myPoints - onlineCartTotal());
     if(typeof renderOnlineKeypad==='function') renderOnlineKeypad(remaining);
+    if (typeof refreshBetScoreTable === 'function') refreshBetScoreTable();
   });
 };
 
@@ -9702,6 +9712,9 @@ function _enterOnlineRevealBody(game){
       attachBakenLongPress(el, betObj, orvHorses, p.name, { bottomHtml:`合計賭け金：<strong style="color:var(--gold)">${(bet.amount||0).toLocaleString()}点</strong>` });
     });
   }
+
+  // スコア表（全員の賭け額を引いた現在地）
+  try{ renderOnlineScoreTable('orv-score-table', game, {showAllBetsDeducted:true}); }catch(e){}
 
   // 自分の準備状況をリセット表示
   const myReady = (game.revealReady || {})[window.online.playerId];
@@ -11482,6 +11495,22 @@ function triggerHitCelebration(hitType){
   } catch(e){ console.error(e); }
 }
 
+// 賭け画面の点数表を、現在の賭け入力に応じて即時再描画する共通ヘルパー。
+// betInputVal や selectedHorses が変わるたびに呼ぶ → スコアが連動して動く。
+function refreshBetScoreTable(){
+  try{
+    const game = window.online && window.online.game;
+    if(!game) return;
+    if(document.getElementById('ob-score-table')){
+      renderOnlineScoreTable('ob-score-table', game, {showBetDeduction:true});
+    }
+    if(document.getElementById('obw-score-table')){
+      renderOnlineScoreTable('obw-score-table', game, {showBetDeduction:true});
+    }
+  }catch(e){}
+}
+window.refreshBetScoreTable = refreshBetScoreTable;
+
 function renderOnlineScoreTable(tableId, game, opts){
   opts = opts || {};
   try { window._lastOnlineGame = game; } catch(e){}
@@ -11494,6 +11523,8 @@ function renderOnlineScoreTable(tableId, game, opts){
   const initPts = (window.online.settings && window.online.settings.initialPoints) || 5000;
   // 賭けフェーズ中は「自分の」賭け額だけ引いて表示（他人の賭け額は伏せる）
   const showDeduct = !!opts.showBetDeduction;
+  // 賭け公開フェーズ以降：全員の確定済み賭け額を引いて表示
+  const showAllBets = !!opts.showAllBetsDeducted;
   const confirmedBet = (showDeduct && bets[myId]) ? (Number(bets[myId].amount) || 0) : 0;
   // カートに入れただけ（未確定）の分も引く
   const cartPending = (showDeduct && typeof window.onlineCartTotal==='function') ? (Number(window.onlineCartTotal()) || 0) : 0;
@@ -11513,7 +11544,13 @@ function renderOnlineScoreTable(tableId, game, opts){
   const arr = players.map((p, i) => {
     let pts = (points[p.id] != null) ? points[p.id] : initPts;
     let deducted = false;
+    // 自分だけ控除（賭けフェーズ中）
     if(showDeduct && p.id === myId && myBetAmt > 0){ pts = Math.max(0, pts - myBetAmt); deducted = true; }
+    // 全員の確定済み賭け額を控除（公開フェーズ以降）
+    if(showAllBets && bets[p.id]){
+      const amt = Number(bets[p.id].amount) || 0;
+      if(amt > 0){ pts = Math.max(0, pts - amt); deducted = true; }
+    }
     return { ...p, points: pts, isOya: i === oyaIdx, deducted };
   }).sort((a, b) => b.points - a.points);
   // 同点処理
@@ -11534,7 +11571,7 @@ function renderOnlineScoreTable(tableId, game, opts){
     html += `<tr class="${cls}"><td>${p.rank}位</td><td>${p.name}${oyaBadge}${meMarker}</td><td><strong>${p.points.toLocaleString()}</strong>点${deductNote}</td></tr>`;
   });
   t.innerHTML = html;
-  // 注記（賭けフェーズ中のみ）
+  // 注記（賭けフェーズ中・公開フェーズ）
   if(showDeduct){
     let note = document.getElementById(tableId + '-note');
     if(!note){
@@ -11548,8 +11585,17 @@ function renderOnlineScoreTable(tableId, game, opts){
     } else {
       note.innerHTML = `💡 賭けると、その分だけあなたの得点から引かれます。<br>他の人の賭け額は「賭け公開」まで分かりません。`;
     }
+  } else if(showAllBets){
+    let note = document.getElementById(tableId + '-note');
+    if(!note){
+      note = document.createElement('div');
+      note.id = tableId + '-note';
+      note.style.cssText = 'font-size:0.72rem;color:#8a6500;margin-top:8px;line-height:1.5';
+      t.parentElement.appendChild(note);
+    }
+    note.innerHTML = `💡 各プレイヤーが今回賭けた額を引いた得点です（結果反映前）。`;
   } else {
-    // 賭けフェーズ外では注記を消す
+    // 通常フェーズでは注記を消す
     const oldNote = document.getElementById(tableId + '-note');
     if(oldNote) oldNote.remove();
   }
