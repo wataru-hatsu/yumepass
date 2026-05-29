@@ -1123,8 +1123,6 @@ body.modal-open{overflow:hidden !important;}
     <div class="panel" style="background:linear-gradient(135deg,#0e2452,#16346e);border:1px solid #3a6ad0"><div id="orv-oya-block"></div></div>
     <!-- 子パネル（下）クリーム -->
     <div class="panel" style="background:linear-gradient(135deg,#fdf8ed,#f5edd8);border:1px solid #e0c83a"><div class="panel-title" style="color:#8a6a10">🎯 子の賭け内容</div><div id="orv-bets-list"></div></div>
-    <!-- スコアパネル（全員の賭け額を引いた現在地） -->
-    <div class="panel" style="background:linear-gradient(135deg,#1a2a4a,#0e1f3a);border:1px solid #4a6aa0"><div class="panel-title" style="color:#9ec1ff">💰 現在の得点状況（賭け後）</div><table class="score-table" id="orv-score-table"></table></div>
     <div style="color:#f5c842;text-align:center;padding:12px;font-size:0.85rem;font-weight:700">みんなで確認したら結果発表！</div>
     <div style="margin:10px">
       <button class="btn btn-primary" id="orv-reveal-btn" onclick="onlineReadyForResult()" style="font-size:1rem !important;padding:14px 10px;white-space:nowrap">🎊 結果発表の準備完了！<span style="background:rgba(0,0,0,0.8);color:#fff;border-radius:11px;padding:2px 9px;font-size:0.8rem;font-weight:800;margin-left:7px">👆タップ</span></button>
@@ -5831,7 +5829,15 @@ function openScorePopup(){
       const bettingScreens=['screen-online-betting','screen-online-bet-wait','screen-online-bet-confirm','screen-online-skip-confirm','screen-online-oya-confirm'];
       const onBettingScreen = bettingScreens.some(id=>{const el=document.getElementById(id);return el&&el.classList.contains('active');});
       const inBetting = onBettingScreen || (og && og.phase === 'betting');
-      renderOnline('popup-score-table', og, { showBetDeduction: inBetting });
+      // 賭け公開フェーズなら、全員の確定済み賭け額を引いて表示（結果反映前の状態）
+      const revealScreens=['screen-online-reveal'];
+      const onRevealScreen = revealScreens.some(id=>{const el=document.getElementById(id);return el&&el.classList.contains('active');});
+      const inReveal = onRevealScreen || (og && og.phase === 'reveal');
+      if(inReveal && !inBetting){
+        renderOnline('popup-score-table', og, { showAllBetsDeducted: true });
+      } else {
+        renderOnline('popup-score-table', og, { showBetDeduction: inBetting });
+      }
     } else if(hasOffline){
       const offBetting = (function(){ const el=document.getElementById('screen-bet'); return el && el.classList.contains('active'); })();
       const offReveal = (function(){ const el=document.getElementById('screen-reveal'); return el && el.classList.contains('active'); })();
@@ -7013,8 +7019,6 @@ function onGameStateUpdate(game){
   if(game.phase === 'reveal' && document.getElementById('screen-online-reveal').classList.contains('active')){
     updateRevealReadyStatus(game);
     checkAllReadyForResult();
-    // 賭け公開画面の点数表もgame.pointsやbets変化に追従して更新
-    try{ if(document.getElementById('orv-score-table')) renderOnlineScoreTable('orv-score-table', game, {showAllBetsDeducted:true}); }catch(e){}
   }
   if(game.phase === 'result' && !document.getElementById('screen-online-roundresult').classList.contains('active')){
     enterOnlineRoundResult(game);
@@ -9712,9 +9716,6 @@ function _enterOnlineRevealBody(game){
       attachBakenLongPress(el, betObj, orvHorses, p.name, { bottomHtml:`合計賭け金：<strong style="color:var(--gold)">${(bet.amount||0).toLocaleString()}点</strong>` });
     });
   }
-
-  // スコア表（全員の賭け額を引いた現在地）
-  try{ renderOnlineScoreTable('orv-score-table', game, {showAllBetsDeducted:true}); }catch(e){}
 
   // 自分の準備状況をリセット表示
   const myReady = (game.revealReady || {})[window.online.playerId];
