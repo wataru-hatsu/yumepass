@@ -5160,14 +5160,16 @@ function renderRoundResultBody(){
     if(log.oyaBonus>0)oyaSum.innerHTML=`<div class="player-result oya-bonus"><div class="player-result-header"><span class="player-result-name">${log.oyaName} <span class="oya-badge">親</span></span><span class="player-result-change change-oya">+${log.oyaBonus.toLocaleString()}点</span></div><div class="player-result-detail">子の的中配当合計の${state.oyaBonusRate}%ボーナス</div></div>`;
     else oyaSum.innerHTML=`<div style="text-align:center;color:#aaa;padding:12px;font-size:0.85rem">子が全員外れたため、ボーナスなし 😞<br><span style="font-size:0.75rem">(${log.oyaName})</span></div>`;
   }
-  // === 最終ラウンドの結果画面：点数状況を隠して「最終結果まで見えません」表示にする ===
+  // === 最終ラウンドの結果画面：点数状況パネルを丸ごと非表示にする ===
+  // （最後の結果発表のサプライズを保つため、画面には点数を一切表示しない）
   const _isLastOffline = state.currentRound >= state.rounds;
   try {
     const scorePanel = document.getElementById('rr-score-panel');
     if(scorePanel){
       if(_isLastOffline){
-        scorePanel.innerHTML = '<div style="text-align:center;padding:18px 12px"><div style="font-size:2rem;margin-bottom:6px">🎁</div><div style="color:var(--gold);font-size:1rem;font-weight:900;letter-spacing:1px;margin-bottom:6px">最終結果までお楽しみ！</div><div style="color:#c8bfa8;font-size:0.82rem;line-height:1.55">最終ラウンドの結果発表前なので、<br>得点状況は表示されません。<br>このあとの<strong style="color:var(--gold)">最終結果</strong>で公開されます。</div></div>';
+        scorePanel.style.display = 'none';
       } else {
+        scorePanel.style.display = '';
         if(!document.getElementById('rr-score-table')){
           scorePanel.innerHTML = '<div class="panel-title">📊 現在の得点</div><table class="score-table" id="rr-score-table"></table>';
           renderScoreTable('rr-score-table');
@@ -11480,15 +11482,17 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
     btn.innerHTML = myReady ? labelDone : labelTodo;
   }
   updateNextReadyStatus(game);
-  // === 最終ラウンドの結果画面：点数状況を隠して「最終結果まで見えません」表示にする ===
-  // （最後の結果発表のサプライズを保つため、点数表もスコアアイコンからの表示も封じる）
+  // === 最終ラウンドの結果画面：点数状況パネルを丸ごと非表示にする ===
+  // （最後の結果発表のサプライズを保つため、画面には点数を一切表示しない。スコアアイコンを押した時のポップアップでのみ「最終結果まで見えません」と案内する）
   try {
     const scorePanel = document.getElementById('orr-score-panel');
     if(scorePanel){
       if(isLast){
-        scorePanel.innerHTML = '<div style="text-align:center;padding:18px 12px"><div style="font-size:2rem;margin-bottom:6px">🎁</div><div style="color:var(--gold);font-size:1rem;font-weight:900;letter-spacing:1px;margin-bottom:6px">最終結果までお楽しみ！</div><div style="color:#c8bfa8;font-size:0.82rem;line-height:1.55">最終ラウンドの結果発表前なので、<br>得点状況は表示されません。<br>このあとの<strong style="color:var(--gold)">最終結果</strong>で公開されます。</div></div>';
+        // パネル自体を非表示
+        scorePanel.style.display = 'none';
       } else {
-        // 通常ラウンドでは通常の点数表を再構築（前回最終ラウンドからの戻りに備える）
+        // 通常ラウンドではパネルを表示し、点数表を再構築
+        scorePanel.style.display = '';
         if(!document.getElementById('orr-score-table')){
           scorePanel.innerHTML = '<div class="panel-title">📊 現在の得点</div><table class="score-table" id="orr-score-table"></table>';
           renderOnlineScoreTable('orr-score-table', game);
