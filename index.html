@@ -1170,7 +1170,7 @@ body:has(#screen-result.active) .sound-toggle::after{
     <div class="panel" style="background:linear-gradient(135deg,var(--result-panel1),var(--result-panel2));border:1px solid var(--result-accent-soft)"><div class="panel-title" id="orr-actual-title" style="color:var(--result-accent)">🏆 親の実際の順位</div><div id="orr-actual-result"></div></div>
     <div class="panel"><div class="panel-title">💰 子の結果</div><div id="orr-player-results"></div></div>
     <div class="panel" id="orr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="orr-oya-summary"></div></div>
-    <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="orr-score-table"></table></div>
+    <div class="panel" id="orr-score-panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="orr-score-table"></table></div>
     <div style="margin:10px">
       <button class="btn btn-primary" id="orr-next-btn" onclick="onlineReadyForNext()">次のラウンドへ →</button>
       <div id="orr-ready-status" style="text-align:center;color:#aaa;font-size:0.85rem;margin-top:8px"></div>
@@ -1621,7 +1621,7 @@ body:has(#screen-result.active) .sound-toggle::after{
     <div class="panel" style="background:linear-gradient(135deg,var(--result-panel1),var(--result-panel2));border:1px solid var(--result-accent-soft)"><div class="panel-title" id="rr-actual-title" style="color:var(--result-accent)">🏆 親の実際の順位</div><div id="rr-actual-result"></div></div>
     <div class="panel"><div class="panel-title">💰 子の結果</div><div id="rr-player-results"></div></div>
     <div class="panel" id="rr-oya-panel"><div class="panel-title">👑 親ボーナス</div><div id="rr-oya-summary"></div></div>
-    <div class="panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="rr-score-table"></table></div>
+    <div class="panel" id="rr-score-panel"><div class="panel-title">📊 現在の得点</div><table class="score-table" id="rr-score-table"></table></div>
     <div style="margin:10px"><button class="btn btn-primary" id="rr-next-btn" onclick="nextRound()">次のラウンドへ →</button></div>
   </div>
 </div>
@@ -3236,14 +3236,17 @@ function getAllTopics(){
 }
 function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const _scr=document.getElementById(id);_scr.classList.add('active');
 // ラウンド結果画面（金色帯背景）のときだけ、上部4ラベルの文字色を黒にするためのクラスを body に付与。
-try{ const _isResult = (id==='screen-online-roundresult' || id==='screen-roundresult' || id==='screen-result'); document.body.classList.toggle('on-roundresult', _isResult); }catch(e){}
+try{ const _isResult = (id==='screen-online-roundresult' || id==='screen-roundresult' || id==='screen-result'); document.body.classList.toggle('on-roundresult', _isResult); 
+  // 結果画面から離れたら「最終ラウンドの結果」フラグも必ず解除（次のラウンドで点数表が正しく出るように）
+  if(!_isResult) document.body.classList.remove('on-final-round-result');
+}catch(e){}
 // 背景は「単色1枚」に統一。背景レイヤー・html・body すべて同一色にして継ぎ目をなくす。
 try{
   const bg=document.getElementById('app-bg-layer');
   const rootS=document.documentElement.style;
   let solid, accent, accentDark;
   if(id==='screen-home'){
-    solid='#1a6b2a'; accent='#2d9e44'; accentDark='#0d4d1f';            // トップ：緑
+    solid='#000'; accent='#2d9e44'; accentDark='#0d4d1f';                // トップ：黒（下部余白を黒に保つため）
   } else if(id==='screen-online-topic-lottery'||id==='screen-online-topic-select'){
     solid='#2a1550'; accent='#a060c0'; accentDark='#3a1f6a';            // お題：紫
   } else if(id==='screen-online-betting'||id==='screen-bet'||id==='screen-online-bet-confirm'||id==='screen-bet-confirm'||id==='screen-online-skip-confirm'||id==='screen-skip-confirm'){
@@ -3255,9 +3258,11 @@ try{
   } else if(id==='screen-roundresult'||id==='screen-result'){
     solid='#5a3f05'; accent='#c9960a'; accentDark='#5a3f05';            // 結果発表・入力：金
   } else if(id==='screen-online-final'||id==='screen-final'){
-    solid='#3a1f6a'; accent='#a060c0'; accentDark='#3a1f6a';            // 最終結果：紫
+    solid='#000'; accent='#a060c0'; accentDark='#3a1f6a';                // 最終結果：黒（下部余白も黒に統一）
+  } else if(id==='screen-online-menu'||id==='screen-room-lobby'){
+    solid='#000'; accent='#2d9e44'; accentDark='#0d4d1f';                // メニュー・ロビー：黒（下部余白を黒に）
   } else {
-    solid='#123d20'; accent='#2d9e44'; accentDark='#0d4d1f';            // 既定（ロビー・設定など）：緑
+    solid='#123d20'; accent='#2d9e44'; accentDark='#0d4d1f';            // 既定（設定など）：緑
   }
   if(bg) bg.style.background=solid;
   document.documentElement.style.background='#000';
@@ -5155,7 +5160,24 @@ function renderRoundResultBody(){
     if(log.oyaBonus>0)oyaSum.innerHTML=`<div class="player-result oya-bonus"><div class="player-result-header"><span class="player-result-name">${log.oyaName} <span class="oya-badge">親</span></span><span class="player-result-change change-oya">+${log.oyaBonus.toLocaleString()}点</span></div><div class="player-result-detail">子の的中配当合計の${state.oyaBonusRate}%ボーナス</div></div>`;
     else oyaSum.innerHTML=`<div style="text-align:center;color:#aaa;padding:12px;font-size:0.85rem">子が全員外れたため、ボーナスなし 😞<br><span style="font-size:0.75rem">(${log.oyaName})</span></div>`;
   }
-  renderScoreTable('rr-score-table');
+  // === 最終ラウンドの結果画面：点数状況を隠して「最終結果まで見えません」表示にする ===
+  const _isLastOffline = state.currentRound >= state.rounds;
+  try {
+    const scorePanel = document.getElementById('rr-score-panel');
+    if(scorePanel){
+      if(_isLastOffline){
+        scorePanel.innerHTML = '<div style="text-align:center;padding:18px 12px"><div style="font-size:2rem;margin-bottom:6px">🎁</div><div style="color:var(--gold);font-size:1rem;font-weight:900;letter-spacing:1px;margin-bottom:6px">最終結果までお楽しみ！</div><div style="color:#c8bfa8;font-size:0.82rem;line-height:1.55">最終ラウンドの結果発表前なので、<br>得点状況は表示されません。<br>このあとの<strong style="color:var(--gold)">最終結果</strong>で公開されます。</div></div>';
+      } else {
+        if(!document.getElementById('rr-score-table')){
+          scorePanel.innerHTML = '<div class="panel-title">📊 現在の得点</div><table class="score-table" id="rr-score-table"></table>';
+          renderScoreTable('rr-score-table');
+        } else {
+          renderScoreTable('rr-score-table');
+        }
+      }
+    }
+    document.body.classList.toggle('on-final-round-result', !!_isLastOffline);
+  } catch(e){}
   try { applyJackpotDyeOffline(log); } catch(e){ console.error('offline dye error', e); }
   document.getElementById('rr-next-btn').innerHTML=state.currentRound>=state.rounds?'🏆 最終結果を見る':`<span style="display:inline-flex;align-items:center;gap:8px;justify-content:center">次のラウンド (${state.currentRound+1}/${state.rounds}) へ<span style="background:#1a1a1a;color:#ffe07a;font-size:0.82rem;font-weight:900;padding:3px 12px;border-radius:14px;letter-spacing:0">👆 タップ</span></span>`;
 }
@@ -5834,6 +5856,24 @@ function openScorePopup(){
     const ov=document.getElementById('score-popup-overlay');
     if(!ov) return;
     const tbl=document.getElementById('popup-score-table');
+    // === 最終ラウンドの結果画面（最後の結果発表前）では、点数状況を非表示にして「最終結果まで見えません」と表示 ===
+    // body.on-final-round-result はラウンド結果描画時に付与される（最終ラウンドの結果画面でのみtrue）
+    const onFinalRoundResult = document.body.classList.contains('on-final-round-result');
+    const onRoundResultScreen = (function(){
+      const a = document.getElementById('screen-online-roundresult');
+      const b = document.getElementById('screen-roundresult');
+      return (a && a.classList.contains('active')) || (b && b.classList.contains('active'));
+    })();
+    if(onFinalRoundResult && onRoundResultScreen){
+      if(tbl){
+        tbl.innerHTML = '<tr><td style="padding:24px 16px;text-align:center"><div style="font-size:2.2rem;margin-bottom:8px">🎁</div><div style="color:#8a6500;font-size:1rem;font-weight:900;letter-spacing:1px;margin-bottom:8px">最終結果までお楽しみ！</div><div style="color:#4a3500;font-size:0.85rem;line-height:1.55">最終ラウンドの結果発表前なので、<br>得点状況は表示されません。<br>このあとの<strong>最終結果</strong>で公開されます。</div></td></tr>';
+      }
+      // 注記も消す
+      const note=document.getElementById('popup-score-table-note'); if(note) note.remove();
+      ov.classList.remove('hidden');
+      document.body.classList.add('modal-open');
+      return;
+    }
     // モジュールスコープの関数は window 経由で参照（クラシックスコープからは直接見えない）
     const getPlayers = (typeof window.getOnlinePlayersArray==='function') ? window.getOnlinePlayersArray : null;
     const renderOnline = (typeof window.renderOnlineScoreTable==='function') ? window.renderOnlineScoreTable : null;
@@ -11440,6 +11480,24 @@ function _renderRoundResultBody(game, log, topic, isFirstShow){
     btn.innerHTML = myReady ? labelDone : labelTodo;
   }
   updateNextReadyStatus(game);
+  // === 最終ラウンドの結果画面：点数状況を隠して「最終結果まで見えません」表示にする ===
+  // （最後の結果発表のサプライズを保つため、点数表もスコアアイコンからの表示も封じる）
+  try {
+    const scorePanel = document.getElementById('orr-score-panel');
+    if(scorePanel){
+      if(isLast){
+        scorePanel.innerHTML = '<div style="text-align:center;padding:18px 12px"><div style="font-size:2rem;margin-bottom:6px">🎁</div><div style="color:var(--gold);font-size:1rem;font-weight:900;letter-spacing:1px;margin-bottom:6px">最終結果までお楽しみ！</div><div style="color:#c8bfa8;font-size:0.82rem;line-height:1.55">最終ラウンドの結果発表前なので、<br>得点状況は表示されません。<br>このあとの<strong style="color:var(--gold)">最終結果</strong>で公開されます。</div></div>';
+      } else {
+        // 通常ラウンドでは通常の点数表を再構築（前回最終ラウンドからの戻りに備える）
+        if(!document.getElementById('orr-score-table')){
+          scorePanel.innerHTML = '<div class="panel-title">📊 現在の得点</div><table class="score-table" id="orr-score-table"></table>';
+          renderOnlineScoreTable('orr-score-table', game);
+        }
+      }
+    }
+    // 最終ラウンドフラグをbodyに付与（CSSでスコアポップアップを差し替える）
+    document.body.classList.toggle('on-final-round-result', !!isLast);
+  } catch(e){}
   // === 高オッズ的中で結果画面をその賭け方の色に染める ===
   try { applyJackpotDye(log); } catch(e){}
 }
