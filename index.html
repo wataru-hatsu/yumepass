@@ -8421,6 +8421,10 @@ function renderOnlineNagashiPositionButtons(){
 
 // 点数・金額情報を表示
 function updateOnlineComboInfo(){
+  // 馬選択・買い方変更で組み合わせ数が変わると total(=num×combos) も変わるため、
+  // ベット額表示の左下「所持○○点」を再描画して、カート＋入力の合計を正しく引いた残り点数を表示する。
+  // ※setOnlineBetInputVal は内部でこの関数を呼ぶため、無限ループにならないよう所持点だけ更新する関数を直接呼ぶ。
+  try{ if(typeof refreshOnlineHoldingDisplay==='function') refreshOnlineHoldingDisplay(); }catch(e){}
   const el = document.getElementById('ob-combo-info');
   if (!el) return;
   const combos = computeCurrentCombinations();
@@ -8434,6 +8438,30 @@ function updateOnlineComboInfo(){
   el.style.display = '';
   el.innerHTML = `<span style="color:var(--gold);font-weight:700"><strong>${combos.length}通り</strong> × 1通りあたり ${unit.toLocaleString()}点 = <strong>合計 ${total.toLocaleString()}点</strong></span><br><span style="color:var(--gold);font-weight:700;font-size:0.78rem;opacity:0.9">（最低価格で賭けた場合）</span>`;
 }
+
+// ベット額表示の左下「所持○○点」だけを軽量に更新する。
+// 馬選択や買い方変更で組み合わせ数(combos)が変わる時に呼ぶ → 残り点数が正しく追従する。
+function refreshOnlineHoldingDisplay(){
+  try{
+    const game = window.online.game;
+    if(!game) return;
+    const myPoints = (game.points && game.points[window.online.playerId]) || 0;
+    const cartTotal = (typeof onlineCartTotal === 'function') ? onlineCartTotal() : 0;
+    const num = parseInt(window.onlineBet.betInputVal) || 0;
+    const method = window.onlineBet.buyMethod || 'simple';
+    const combos = (typeof computeCurrentCombinations === 'function') ? computeCurrentCombinations() : [];
+    const points = combos.length;
+    const total = (method === 'simple') ? num : (num * points);
+    const usedTotal = cartTotal + total;
+    const remaining = Math.max(0, myPoints - usedTotal);
+    const holding = document.getElementById('ob-bet-holding');
+    if(holding){
+      holding.textContent = `所持 ${remaining.toLocaleString()}点`;
+      holding.style.color = (usedTotal > myPoints) ? '#ff8a8a' : 'var(--gold)';
+    }
+  }catch(e){}
+}
+window.refreshOnlineHoldingDisplay = refreshOnlineHoldingDisplay;
 
 // 現在の入力から組み合わせを生成
 function computeCurrentCombinations(){
@@ -8633,10 +8661,15 @@ function setOnlineBetInputVal(v){
   try {
     const game = window.online.game;
     const myPoints = (game?.points && game.points[window.online.playerId]) || 0;
+    // カートに既に追加済みの賭け額も合計から引く（スコアの控除と合わせる）
+    const cartTotal = (typeof onlineCartTotal === 'function') ? onlineCartTotal() : 0;
     const minBetRaw = window.online.settings?.minBet || 0;
     const minBet = myPoints <= minBetRaw ? myPoints : minBetRaw;
-    // 持ち点（左下に黄色表示）。今回の賭け額を引いた残り
-    const holdingHtml = `<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:var(--gold);font-weight:800;letter-spacing:0;opacity:0.95">所持 ${Math.max(0, myPoints - total).toLocaleString()}点</div>`;
+    // 持ち点（左下に黄色表示）。カート合計＋今回の入力額を引いた残り
+    const usedTotal = cartTotal + total;
+    const remaining = Math.max(0, myPoints - usedTotal);
+    const holdingColor = (usedTotal > myPoints) ? '#ff8a8a' : 'var(--gold)';
+    const holdingHtml = `<div id="ob-bet-holding" style="position:absolute;left:12px;bottom:6px;font-size:0.78rem;color:${holdingColor};font-weight:800;letter-spacing:0;opacity:0.95">所持 ${remaining.toLocaleString()}点</div>`;
     // 表示テキスト（金額本体）
     let mainHtml;
     if (method === 'simple' || points === 0) {
@@ -8645,8 +8678,8 @@ function setOnlineBetInputVal(v){
       mainHtml = `<span style="font-size:0.5em;color:#bbb">1点あたり</span> ${num.toLocaleString()} <span style="font-size:0.45em;color:#555"> × ${points}通り = </span><br><span style="font-size:0.7em">合計 ${total.toLocaleString()}点</span>`;
     }
     display.innerHTML = _topHint + mainHtml + holdingHtml;
-    // 色判定: 合計が持ち点を超えたら警告色
-    display.style.color = total > myPoints ? '#e74c3c' : num >= minBet ? '#2ecc71' : 'var(--gold)';
+    // 色判定: カート合計＋今回の入力が持ち点を超えたら警告色
+    display.style.color = usedTotal > myPoints ? '#e74c3c' : num >= minBet ? '#2ecc71' : 'var(--gold)';
   } catch(e){}
   // 組み合わせ情報も更新
   if (typeof updateOnlineComboInfo === 'function') updateOnlineComboInfo();
@@ -8881,6 +8914,8 @@ window.onlineRemoveCartItem = function(idx){
     const myPoints = (game?.points && game.points[window.online.playerId]) || 0;
     const remaining = Math.max(0, myPoints - onlineCartTotal());
     if(typeof renderOnlineKeypad==='function') renderOnlineKeypad(remaining);
+    // ベット額表示の左下「所持○○点」もカート変更を反映して再描画
+    if(typeof setOnlineBetInputVal==='function') setOnlineBetInputVal(window.onlineBet.betInputVal || '');
     if (typeof refreshBetScoreTable === 'function') refreshBetScoreTable();
   });
 };
