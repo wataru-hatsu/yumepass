@@ -414,16 +414,37 @@ body.modal-open{overflow:hidden !important;}
 .score-toggle{position:fixed;top:var(--safe-top);right:58px;width:var(--icon-d);height:var(--icon-d);border-radius:50%;background:rgba(15,15,18,0.96);border:1px solid rgba(245,200,66,0.5);color:#f5c842;font-size:1.05rem;cursor:pointer;z-index:1000;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .score-toggle:active{transform:scale(0.92);}
 .menu-toggle:active{transform:scale(0.92);}
-/* 各アイコンの下に「メニュー/ルール/スコア/音」の小さなラベルを表示（何のボタンか分かるように） */
+/* 各アイコンの下に「メニュー/ルール/スコア/サウンド」の小さなラベルを表示（何のボタンか分かるように） */
+/* 4つとも同じ位置にラベルが出るよう、アイコンの内部フォントサイズに依存しない固定値で配置 */
 .menu-toggle::after,.rules-toggle::after,.score-toggle::after,.sound-toggle::after{
-  position:absolute;left:50%;transform:translateX(-50%);top:calc(100% + 2px);
-  font-size:9px;font-weight:700;color:#f5c842;text-shadow:0 1px 2px rgba(0,0,0,0.9);
-  white-space:nowrap;letter-spacing:0.5px;pointer-events:none;font-family:sans-serif;
+  position:absolute;left:50%;transform:translateX(-50%);top:calc(var(--icon-d) + 2px);
+  font-size:9px;font-weight:700;color:#f5c842;text-shadow:0 1px 3px rgba(0,0,0,0.95),0 0 4px rgba(0,0,0,0.85);
+  white-space:nowrap;letter-spacing:0.5px;pointer-events:none;font-family:sans-serif;line-height:1;
 }
 .menu-toggle::after{content:'メニュー';}
 .rules-toggle::after{content:'ルール';}
 .score-toggle::after{content:'スコア';}
 .sound-toggle::after{content:'サウンド';}
+/* ラウンド結果画面（金色の帯背景）のときだけ、4ラベルの文字色を黒に変える（金色背景に黄色は読みにくいため） */
+/* body.on-roundresult はJS経由（後方互換）、:has() は対応ブラウザでJSなしで自動適用 */
+body.on-roundresult .menu-toggle::after,
+body.on-roundresult .rules-toggle::after,
+body.on-roundresult .score-toggle::after,
+body.on-roundresult .sound-toggle::after,
+body:has(#screen-online-roundresult.active) .menu-toggle::after,
+body:has(#screen-online-roundresult.active) .rules-toggle::after,
+body:has(#screen-online-roundresult.active) .score-toggle::after,
+body:has(#screen-online-roundresult.active) .sound-toggle::after,
+body:has(#screen-roundresult.active) .menu-toggle::after,
+body:has(#screen-roundresult.active) .rules-toggle::after,
+body:has(#screen-roundresult.active) .score-toggle::after,
+body:has(#screen-roundresult.active) .sound-toggle::after,
+body:has(#screen-result.active) .menu-toggle::after,
+body:has(#screen-result.active) .rules-toggle::after,
+body:has(#screen-result.active) .score-toggle::after,
+body:has(#screen-result.active) .sound-toggle::after{
+  color:#1a1a1a;text-shadow:0 1px 2px rgba(255,255,255,0.7),0 0 4px rgba(255,255,255,0.5);
+}
 /* 一番下までスクロールする矢印（小さく半透明・邪魔にならない） */
 .scroll-down-fab{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;min-width:78px;height:38px;padding:0 14px;border-radius:19px;background:rgba(24,95,165,0.82);border:1px solid rgba(110,170,235,0.8);color:#eaf4ff;cursor:pointer;z-index:90;display:none;align-items:center;justify-content:center;gap:5px;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(2px);box-shadow:0 2px 10px rgba(24,95,165,0.5);animation:scrollFabBounce 1.8s ease-in-out infinite;transition:opacity 0.3s;}
 .scroll-down-fab:active{transform:translateX(-50%) scale(0.9);}
@@ -3214,6 +3235,8 @@ function getAllTopics(){
   return all.map(ensureEightChoices);
 }
 function goTo(id){state.prevScreen=document.querySelector('.screen.active')?.id||'screen-home';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const _scr=document.getElementById(id);_scr.classList.add('active');
+// ラウンド結果画面（金色帯背景）のときだけ、上部4ラベルの文字色を黒にするためのクラスを body に付与。
+try{ const _isResult = (id==='screen-online-roundresult' || id==='screen-roundresult' || id==='screen-result'); document.body.classList.toggle('on-roundresult', _isResult); }catch(e){}
 // 背景は「単色1枚」に統一。背景レイヤー・html・body すべて同一色にして継ぎ目をなくす。
 try{
   const bg=document.getElementById('app-bg-layer');
