@@ -10208,7 +10208,7 @@ window.showRaceReveal = function(opts, done){
   window._raceFast = false;
   var skipBtn=document.createElement('button');
   skipBtn.textContent='⏭ スキップ';
-  skipBtn.style.cssText='position:absolute;right:18px;top:'+(boardTop+boardH-140)+'px;z-index:30;background:rgba(10,8,4,0.9);color:#ffe8a0;border:1.5px solid #f5c842;border-radius:20px;padding:11px 18px;font-size:17px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 10px rgba(0,0,0,0.6);user-select:none;-webkit-user-select:none;white-space:nowrap;';
+  skipBtn.style.cssText='position:absolute;right:18px;top:'+(boardTop+boardH-150)+'px;z-index:30;background:rgba(10,8,4,0.9);color:#ffe8a0;border:1.5px solid #f5c842;border-radius:20px;padding:11px 18px;font-size:17px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 10px rgba(0,0,0,0.6);user-select:none;-webkit-user-select:none;white-space:nowrap;';
   skipBtn.addEventListener('click', function(){
     try{ if(window.SFX && typeof window.SFX.decide2==='function') window.SFX.decide2(); }catch(e){}
     try{ if(typeof finishAll==='function') finishAll(); }catch(e){ console.error('skip error', e); }
@@ -10217,7 +10217,7 @@ window.showRaceReveal = function(opts, done){
 
   var ffBtn=document.createElement('button');
   ffBtn.textContent='⏩ 早送り（長押し）';
-  ffBtn.style.cssText='position:absolute;right:18px;top:'+(boardTop+boardH-90)+'px;z-index:30;background:rgba(10,8,4,0.9);color:#ffe8a0;border:1.5px solid #f5c842;border-radius:20px;padding:11px 18px;font-size:17px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 10px rgba(0,0,0,0.6);user-select:none;-webkit-user-select:none;touch-action:none;white-space:nowrap;';
+  ffBtn.style.cssText='position:absolute;right:18px;top:'+(boardTop+boardH-70)+'px;z-index:30;background:rgba(10,8,4,0.9);color:#ffe8a0;border:1.5px solid #f5c842;border-radius:20px;padding:11px 18px;font-size:17px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 10px rgba(0,0,0,0.6);user-select:none;-webkit-user-select:none;touch-action:none;white-space:nowrap;';
   var ffOn=function(e){ if(e&&e.preventDefault)e.preventDefault(); window._raceFast=true; ffBtn.style.background='rgba(245,200,66,0.92)'; ffBtn.style.color='#2a1a00'; };
   var ffOff=function(){ window._raceFast=false; ffBtn.style.background='rgba(10,8,4,0.9)'; ffBtn.style.color='#ffe8a0'; };
   ffBtn.addEventListener('touchstart', ffOn, {passive:false});
