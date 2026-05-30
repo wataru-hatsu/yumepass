@@ -8895,6 +8895,8 @@ window.onlineAddBetToCart = function(){
   window.onlineBet.cart.push(unit);
   resetOnlineBetBuilder();
   renderOnlineCart();
+  // カート追加直後にも明示的に所持点表示を最新化（resetOnlineBetBuilder/renderOnlineCartの順序や中断に依存しない保険）
+  if (typeof refreshOnlineHoldingDisplay === 'function') refreshOnlineHoldingDisplay();
   if (typeof refreshBetScoreTable === 'function') refreshBetScoreTable();
   showNotif('✅ カートに追加しました');
   scrollActiveScreenToBottom();
@@ -9061,6 +9063,9 @@ function renderOnlineCart(){
   const total = onlineCartTotal();
   const remaining = myPoints - total;
   if (totalEl) totalEl.innerHTML = `<span style="color:#1a1a1a;font-size:0.92rem">合計 <span style="font-size:1.12rem;font-weight:900">${total.toLocaleString()}</span>点</span>　<span style="color:${remaining<0?'#c0392b':'#1a1a1a'};font-size:0.92rem">残り所持点 <span style="font-size:1.12rem;font-weight:900">${remaining.toLocaleString()}</span>点</span>`;
+  // カート描画と同時にベット額表示の「所持○○点」も最新のカート合計を引いた値に同期する。
+  // （カート追加・削除・初期描画など、カートが変化する全ての経路でここを通る → 連動が確実になる）
+  if(typeof refreshOnlineHoldingDisplay==='function') refreshOnlineHoldingDisplay();
 }
 
 // 「購入を続ける」→ 新しい賭けを組むため、入力をリセットして賭けの種類へスクロール
